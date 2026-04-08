@@ -1,0 +1,171 @@
+/* ============================================================
+   StudyMD Theme System
+   Three palettes: midnight (default), lavender, forest
+   Apply via data-theme attribute on <html> or <body>
+   ============================================================ */
+
+:root,
+[data-theme="midnight"] {
+  /* Backgrounds */
+  --bg: #0d0f14;
+  --surface: #13161d;
+  --surface2: #1a1e27;
+  --surface3: #212638;
+  --border: #252a36;
+  --border-subtle: #1e2330;
+
+  /* Accents */
+  --accent: #5b8dee;
+  --accent2: #8b5cf6;
+  --accent-hover: #7aa3f5;
+  --accent2-hover: #a37af9;
+  --accent-dim: rgba(91, 141, 238, 0.15);
+  --accent2-dim: rgba(139, 92, 246, 0.15);
+
+  /* Text */
+  --text: #e8eaf0;
+  --text-muted: #6b7280;
+  --text-subtle: #3d4455;
+  --text-on-accent: #ffffff;
+
+  /* Semantic */
+  --success: #10b981;
+  --success-dim: rgba(16, 185, 129, 0.15);
+  --warning: #f59e0b;
+  --warning-dim: rgba(245, 158, 11, 0.15);
+  --danger: #ef4444;
+  --danger-dim: rgba(239, 68, 68, 0.15);
+
+  /* Course colors */
+  --course-pd: #5b8dee;
+  --course-ap: #8b5cf6;
+  --course-ld: #10b981;
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(135deg, #0d0f14 0%, #131829 50%, #0d0f14 100%);
+  --gradient-card: linear-gradient(145deg, #13161d, #1a1e27);
+  --gradient-accent: linear-gradient(135deg, var(--accent), var(--accent2));
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-accent: 0 4px 20px rgba(91, 141, 238, 0.25);
+  --shadow-accent2: 0 4px 20px rgba(139, 92, 246, 0.25);
+
+  /* Misc */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+[data-theme="lavender"] {
+  /* Backgrounds */
+  --bg: #16121e;
+  --surface: #1e1829;
+  --surface2: #261f33;
+  --surface3: #2e2640;
+  --border: #352c45;
+  --border-subtle: #2a2238;
+
+  /* Accents */
+  --accent: #a78bfa;
+  --accent2: #f472b6;
+  --accent-hover: #bba3fc;
+  --accent2-hover: #f78dc7;
+  --accent-dim: rgba(167, 139, 250, 0.15);
+  --accent2-dim: rgba(244, 114, 182, 0.15);
+
+  /* Text */
+  --text: #ede9fe;
+  --text-muted: #7c6f99;
+  --text-subtle: #4a3f60;
+  --text-on-accent: #ffffff;
+
+  /* Semantic */
+  --success: #34d399;
+  --success-dim: rgba(52, 211, 153, 0.15);
+  --warning: #fbbf24;
+  --warning-dim: rgba(251, 191, 36, 0.15);
+  --danger: #f87171;
+  --danger-dim: rgba(248, 113, 113, 0.15);
+
+  /* Course colors */
+  --course-pd: #a78bfa;
+  --course-ap: #f472b6;
+  --course-ld: #34d399;
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(135deg, #16121e 0%, #1e1530 50%, #16121e 100%);
+  --gradient-card: linear-gradient(145deg, #1e1829, #261f33);
+  --gradient-accent: linear-gradient(135deg, var(--accent), var(--accent2));
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-accent: 0 4px 20px rgba(167, 139, 250, 0.25);
+  --shadow-accent2: 0 4px 20px rgba(244, 114, 182, 0.25);
+
+  /* Misc (inherited, same across themes) */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+[data-theme="forest"] {
+  /* Backgrounds */
+  --bg: #0c1410;
+  --surface: #121d17;
+  --surface2: #18261e;
+  --surface3: #1e3027;
+  --border: #233d2d;
+  --border-subtle: #192e22;
+
+  /* Accents */
+  --accent: #10b981;
+  --accent2: #34d399;
+  --accent-hover: #34d399;
+  --accent2-hover: #6ee7b7;
+  --accent-dim: rgba(16, 185, 129, 0.15);
+  --accent2-dim: rgba(52, 211, 153, 0.15);
+
+  /* Text */
+  --text: #e0f2e9;
+  --text-muted: #5f8a72;
+  --text-subtle: #2d5040;
+  --text-on-accent: #ffffff;
+
+  /* Semantic */
+  --success: #34d399;
+  --success-dim: rgba(52, 211, 153, 0.15);
+  --warning: #fbbf24;
+  --warning-dim: rgba(251, 191, 36, 0.15);
+  --danger: #f87171;
+  --danger-dim: rgba(248, 113, 113, 0.15);
+
+  /* Course colors */
+  --course-pd: #10b981;
+  --course-ap: #38bdf8;
+  --course-ld: #a3e635;
+
+  /* Gradients */
+  --gradient-hero: linear-gradient(135deg, #0c1410 0%, #0f1e16 50%, #0c1410 100%);
+  --gradient-card: linear-gradient(145deg, #121d17, #18261e);
+  --gradient-accent: linear-gradient(135deg, var(--accent), var(--accent2));
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
+  --shadow-accent: 0 4px 20px rgba(16, 185, 129, 0.25);
+  --shadow-accent2: 0 4px 20px rgba(52, 211, 153, 0.25);
+
+  /* Misc */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
