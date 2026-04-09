@@ -38,7 +38,7 @@ function recordToProgress(r: ProgressRecord, totalCards?: number): LectureProgre
   // Mastery is got_it count / total cards in lecture (passed in when known)
   // Falls back to got_it / (got_it + missed) if total not known
   const missed = r.flashcardProgress.missed_ids ?? [];
-  const denominator = totalCards ?? (gotItIds.length + missed.length) || 1;
+  const denominator = totalCards ?? ((gotItIds.length + missed.length) || 1);
   const mastery_pct = Math.round((gotItIds.length / denominator) * 100);
 
   return {
