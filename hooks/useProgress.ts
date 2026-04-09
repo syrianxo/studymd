@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase';
 
 export interface LectureProgress {
   lecture_id: string;
@@ -78,7 +78,7 @@ function deriveGlobalStats(byLecture: Record<string, LectureProgress>): GlobalSt
 }
 
 export function useProgress() {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const [state, setState] = useState<ProgressState>({
     byLecture: {},

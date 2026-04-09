@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase';
 import FlashcardView, { type FlashCard } from '@/components/study/FlashcardView';
 import { useProgress } from '@/hooks/useProgress';
 import '@/styles/study.css';
@@ -24,7 +24,7 @@ interface LectureData {
 export default function FlashPage() {
   const router = useRouter();
   const params = useSearchParams();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const { recordSession } = useProgress();
 
   const lectureId = params.get('lecture') ?? '';

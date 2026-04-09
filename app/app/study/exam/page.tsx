@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase';
 import ExamView, { type ExamQuestion } from '@/components/study/ExamView';
 import { useProgress } from '@/hooks/useProgress';
 import '@/styles/study.css';
@@ -22,7 +22,7 @@ interface LectureData {
 export default function ExamPage() {
   const router = useRouter();
   const params = useSearchParams();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const { recordSession } = useProgress();
 
   const lectureId = params.get('lecture') ?? '';

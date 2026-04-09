@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase';
 import FlashcardView, { type FlashCard } from '@/components/study/FlashcardView';
 import ExamView, { type ExamQuestion } from '@/components/study/ExamView';
 import { useProgress } from '@/hooks/useProgress';
@@ -25,7 +25,7 @@ interface LectureData {
 export default function CustomPage() {
   const router = useRouter();
   const params = useSearchParams();
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
   const { recordSession } = useProgress();
 
   const mode = (params.get('mode') ?? 'flash') as 'flash' | 'exam';

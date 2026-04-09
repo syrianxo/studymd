@@ -4,7 +4,7 @@
 // Auth check runs server-side; unauthenticated users are redirected to /login.
 // ──────────────────────────────────────────────────────────────────────────────
 import { redirect } from 'next/navigation';
-import { createServerComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import Dashboard from '@/components/Dashboard';
 
@@ -12,7 +12,16 @@ import Dashboard from '@/components/Dashboard';
 export const dynamic = 'force-dynamic';
 
 export default async function AppPage() {
-  const supabase = createServerComponentClient({ cookies });
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() { return cookieStore.getAll() },
+      },
+    }
+  );
 
   // ── Auth guard ────────────────────────────────────────────────────────────
   const {

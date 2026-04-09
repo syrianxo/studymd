@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { createClient } from '@/lib/supabase';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -55,7 +55,7 @@ interface UseUserLecturesResult {
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useUserLectures(): UseUserLecturesResult {
-  const supabase = createClientComponentClient();
+  const supabase = createClient();
 
   const [lectures, setLectures] = useState<Lecture[]>([]);
   const [courses, setCourses] = useState<string[]>([]);
