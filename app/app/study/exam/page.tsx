@@ -91,8 +91,7 @@ function ExamPageInner() {
       lectureId={lecture.internal_id}
       questions={questions}
       onExit={() => router.push('/app')}
-      onSessionComplete={async (score) => {
-        // Record immediately on submit — don't wait for user to click anything
+      onSessionComplete={(score) => {
         recordSession(lecture.internal_id, 'exam', { score });
       }}
     />

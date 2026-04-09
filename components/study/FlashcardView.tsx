@@ -26,12 +26,15 @@ export interface FlashcardSessionConfig {
   slidesStoragePath: string | null;
   slideCount: number;
   onExit: () => void;
-  onSessionComplete?: (gotIt: number, missed: number, pct: number) => void;
-  // Called every time a card is marked so progress syncs mid-session
-  onProgressUpdate?: (gotItCount: number, totalCards: number) => void;
+  // Previously saved card states from other sessions/devices
+  initialGotItIds?: string[];
+  initialMissedIds?: string[];
+  // Called on every card mark with full current ID sets
+  onProgressUpdate?: (gotItIds: string[], missedIds: string[], totalCards: number) => void;
+  // Called at session end — same signature, used to increment session counter
+  onSessionComplete?: (gotItIds: string[], missedIds: string[], totalCards: number) => void;
 }
 
-// ── Font size helpers ────────────────────────────────────────────────────────
 const FONT_SIZES = [11, 12, 13, 14, 16, 18] as const;
 const FONT_LABELS = ['XS', 'S', 'M', 'L', 'XL', '2X'] as const;
 
@@ -39,27 +42,27 @@ const FONT_LABELS = ['XS', 'S', 'M', 'L', 'XL', '2X'] as const;
 
 export default function FlashcardView({
   lectureTitle,
-  lectureId,
   cards: allCards,
   slidesStoragePath,
   slideCount,
   onExit,
-  onSessionComplete,
+  initialGotItIds = [],
+  initialMissedIds = [],
   onProgressUpdate,
+  onSessionComplete,
 }: FlashcardSessionConfig) {
-  // Deck state
   const [deck, setDeck] = useState<FlashCard[]>(() => shuffle([...allCards]));
   const [currentIndex, setCurrentIndex] = useState(0);
   const [flipped, setFlipped] = useState(false);
-  const [gotItIds, setGotItIds] = useState<Set<string>>(new Set());
-  const [missedIds, setMissedIds] = useState<Set<string>>(new Set());
   const [complete, setComplete] = useState(false);
   const [focusMissed, setFocusMissed] = useState(false);
 
-  // Font size
-  const [fontSizeIdx, setFontSizeIdx] = useState(2); // default 'M'
+  // Seed got_it / missed from previously saved progress
+  const [gotItIds, setGotItIds] = useState<Set<string>>(() => new Set(initialGotItIds));
+  const [missedIds, setMissedIds] = useState<Set<string>>(() => new Set(initialMissedIds));
 
-  // Lightbox
+  const [fontSizeIdx, setFontSizeIdx] = useState(2);
+
   const [lightboxIndex, setLightboxIndex] = useState(-1);
   const allSlideUrls = slidesStoragePath
     ? Array.from({ length: slideCount }, (_, i) =>
@@ -71,43 +74,20 @@ export default function FlashcardView({
   const cardRef = useRef<HTMLDivElement>(null);
 
   const currentCard = deck[currentIndex];
-  const progress = deck.length > 0 ? ((currentIndex) / deck.length) * 100 : 0;
+  const progress = deck.length > 0 ? (currentIndex / deck.length) * 100 : 0;
+  const totalAllCards = allCards.length;
 
   // ── Keyboard controls ──────────────────────────────────────────────────
   const handleKey = useCallback(
     (e: KeyboardEvent) => {
-      if (complete) return;
-      if (lightboxIndex >= 0) return;
+      if (complete || lightboxIndex >= 0) return;
       switch (e.key) {
-        case ' ':
-        case 'Enter':
-          e.preventDefault();
-          setFlipped((f) => !f);
-          break;
-        case 'ArrowRight':
-        case 'ArrowDown':
-          e.preventDefault();
-          advanceCard();
-          break;
-        case 'ArrowLeft':
-        case 'ArrowUp':
-          e.preventDefault();
-          goBack();
-          break;
-        case '1':
-        case 'm':
-        case 'M':
-          if (flipped) markCard(false);
-          break;
-        case '2':
-        case 'g':
-        case 'G':
-          if (flipped) markCard(true);
-          break;
-        case 's':
-        case 'S':
-          skipCard();
-          break;
+        case ' ': case 'Enter': e.preventDefault(); setFlipped((f) => !f); break;
+        case 'ArrowRight': case 'ArrowDown': e.preventDefault(); advanceCard(); break;
+        case 'ArrowLeft': case 'ArrowUp': e.preventDefault(); goBack(); break;
+        case '1': case 'm': case 'M': if (flipped) markCard(false); break;
+        case '2': case 'g': case 'G': if (flipped) markCard(true); break;
+        case 's': case 'S': skipCard(); break;
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -121,20 +101,13 @@ export default function FlashcardView({
 
   // ── Navigation ─────────────────────────────────────────────────────────
   function advanceCard() {
-    if (currentIndex < deck.length - 1) {
-      setCurrentIndex((i) => i + 1);
-      setFlipped(false);
-    }
+    if (currentIndex < deck.length - 1) { setCurrentIndex((i) => i + 1); setFlipped(false); }
   }
 
   function goBack() {
-    if (currentIndex > 0) {
-      setCurrentIndex((i) => i - 1);
-      setFlipped(false);
-    }
+    if (currentIndex > 0) { setCurrentIndex((i) => i - 1); setFlipped(false); }
   }
 
-  // ── Skip card (advance without marking) ─────────────────────────────
   function skipCard() {
     if (currentIndex < deck.length - 1) {
       setCurrentIndex((i) => i + 1);
@@ -150,43 +123,39 @@ export default function FlashcardView({
     if (!currentCard) return;
     const id = currentCard.id;
 
+    let newGotIt: Set<string>;
+    let newMissed: Set<string>;
+
     if (knew) {
-      const newGotIt = new Set([...gotItIds, id]);
+      newGotIt = new Set([...gotItIds, id]);
+      newMissed = new Set(missedIds);
+      newMissed.delete(id);
       setGotItIds(newGotIt);
-      setMissedIds((s) => { const n = new Set(s); n.delete(id); return n; });
+      setMissedIds(newMissed);
       addToast('✓ Got it', 'success');
-      // Save mid-session progress immediately
-      onProgressUpdate?.(newGotIt.size, deck.length);
     } else {
-      setMissedIds((s) => new Set([...s, id]));
-      setGotItIds((s) => { const n = new Set(s); n.delete(id); return n; });
+      newGotIt = new Set(gotItIds);
+      newGotIt.delete(id); // un-mark if previously got it this session
+      newMissed = new Set([...missedIds, id]);
+      setGotItIds(newGotIt);
+      setMissedIds(newMissed);
       addToast('— Still learning', 'default');
-      // Still update so last_studied gets written
-      onProgressUpdate?.(gotItIds.size, deck.length);
     }
+
+    // Save progress after every mark
+    onProgressUpdate?.(Array.from(newGotIt), Array.from(newMissed), totalAllCards);
 
     if (currentIndex < deck.length - 1) {
       setCurrentIndex((i) => i + 1);
       setFlipped(false);
     } else {
-      finishSession(
-        knew
-          ? new Set([...gotItIds, id])
-          : gotItIds,
-        !knew
-          ? new Set([...missedIds, id])
-          : missedIds
-      );
+      finishSession(newGotIt, newMissed);
     }
   }
 
-  function finishSession(
-    finalGotIt: Set<string>,
-    finalMissed: Set<string>
-  ) {
-    const pct = deck.length > 0 ? Math.round((finalGotIt.size / deck.length) * 100) : 0;
+  function finishSession(finalGotIt: Set<string>, finalMissed: Set<string>) {
     setComplete(true);
-    onSessionComplete?.(finalGotIt.size, finalMissed.size, pct);
+    onSessionComplete?.(Array.from(finalGotIt), Array.from(finalMissed), totalAllCards);
   }
 
   // ── Restart / study missed ──────────────────────────────────────────────
@@ -194,8 +163,7 @@ export default function FlashcardView({
     setDeck(shuffle([...allCards]));
     setCurrentIndex(0);
     setFlipped(false);
-    setGotItIds(new Set());
-    setMissedIds(new Set());
+    // Keep got_it/missed from history so they persist across restarts
     setComplete(false);
     setFocusMissed(false);
   }
@@ -206,26 +174,23 @@ export default function FlashcardView({
     setDeck(shuffle(missedCards));
     setCurrentIndex(0);
     setFlipped(false);
-    setGotItIds(new Set());
-    setMissedIds(new Set());
     setComplete(false);
     setFocusMissed(true);
   }
 
-  // ── Slide lightbox trigger ─────────────────────────────────────────────
   function openSlide(slideNumber: number) {
-    // slide_number is 1-based
     const idx = Math.max(0, slideNumber - 1);
     if (idx < allSlideUrls.length) setLightboxIndex(idx);
   }
 
   // ── Completion screen ─────────────────────────────────────────────────
   if (complete) {
-    const gotItCount = gotItIds.size;
-    const missedCount = missedIds.size;
-    const totalDeck = deck.length;
-    const pct = totalDeck > 0 ? Math.round((gotItCount / totalDeck) * 100) : 0;
-    const skippedCount = totalDeck - gotItCount - missedCount;
+    // Show stats relative to the full lecture (all cards), not just this deck
+    const totalGotIt = Array.from(gotItIds).filter(id => allCards.some(c => c.id === id)).length;
+    const totalMissed = Array.from(missedIds).filter(id => allCards.some(c => c.id === id)).length;
+    const pct = Math.round((totalGotIt / totalAllCards) * 100);
+    const skippedCount = deck.length - Array.from(gotItIds).filter(id => deck.some(c => c.id === id)).length
+      - Array.from(missedIds).filter(id => deck.some(c => c.id === id)).length;
 
     return (
       <div className="smd-study-view">
@@ -239,46 +204,41 @@ export default function FlashcardView({
             ✕ Exit
           </button>
         </div>
-
         <div className="smd-study-body">
           <div className="smd-session-complete">
             <div className="smd-complete-icon">🎉</div>
             <div className="smd-complete-title">Session Complete!</div>
-            <p style={{ color: 'var(--text-muted)', marginBottom: 18 }}>Here's how you did:</p>
+            <p style={{ color: 'var(--text-muted)', marginBottom: 18 }}>Cumulative mastery across all sessions:</p>
             <div className="smd-complete-stats">
               <div>
-                <span className="smd-c-stat-value success">{gotItCount}</span>
+                <span className="smd-c-stat-value success">{totalGotIt}</span>
                 <span className="smd-c-stat-label">Got it</span>
               </div>
               <div>
-                <span className="smd-c-stat-value danger">{missedCount}</span>
+                <span className="smd-c-stat-value danger">{totalMissed}</span>
                 <span className="smd-c-stat-label">Still learning</span>
               </div>
               <div>
                 <span className="smd-c-stat-value gold">{pct}%</span>
-                <span className="smd-c-stat-label">Score</span>
+                <span className="smd-c-stat-label">Mastery</span>
               </div>
             </div>
             {skippedCount > 0 && (
               <p style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 8 }}>
-                {skippedCount} card{skippedCount !== 1 ? 's' : ''} skipped (not marked)
+                {skippedCount} card{skippedCount !== 1 ? 's' : ''} skipped this session
               </p>
             )}
             <p style={{ fontSize: 11, color: 'var(--text-muted)', marginTop: 4 }}>
-              Score = cards marked "Got it" ÷ total cards in deck
+              Mastery = cards ever marked "Got it" ÷ total cards in lecture
             </p>
             <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap', marginTop: 24 }}>
-              <button className="btn btn-primary btn-lg" onClick={restart}>
-                ↻ Study Again
-              </button>
-              {missedCount > 0 && (
+              <button className="btn btn-primary btn-lg" onClick={restart}>↻ Study Again</button>
+              {totalMissed > 0 && (
                 <button className="btn btn-ghost btn-lg" onClick={studyMissed}>
-                  Focus on Missed ({missedCount})
+                  Focus on Missed ({totalMissed})
                 </button>
               )}
-              <button className="btn btn-ghost btn-lg" onClick={onExit}>
-                Dashboard
-              </button>
+              <button className="btn btn-ghost btn-lg" onClick={onExit}>Dashboard</button>
             </div>
           </div>
         </div>
@@ -288,6 +248,12 @@ export default function FlashcardView({
 
   if (!currentCard) return null;
 
+  // Visual hint: has this card been marked in a previous session?
+  const prevGotIt = initialGotItIds.includes(currentCard.id);
+  const prevMissed = initialMissedIds.includes(currentCard.id);
+  const thisSessionGotIt = gotItIds.has(currentCard.id) && !initialGotItIds.includes(currentCard.id);
+  const thisSessionMissed = missedIds.has(currentCard.id) && !initialMissedIds.includes(currentCard.id);
+
   const slideUrl =
     currentCard.slide_number && slidesStoragePath
       ? getSlideThumbUrl(SUPABASE_URL, slidesStoragePath, currentCard.slide_number - 1)
@@ -295,7 +261,6 @@ export default function FlashcardView({
 
   return (
     <div className="smd-study-view">
-      {/* Header */}
       <div className="smd-study-header">
         <div style={{ minWidth: 0 }}>
           <div className="smd-study-title">Flashcards — {lectureTitle}</div>
@@ -304,27 +269,38 @@ export default function FlashcardView({
           </div>
         </div>
         <div className="smd-study-progress-info">
-          <div className="smd-card-counter">
-            {currentIndex + 1} / {deck.length}
-          </div>
-          <button
-            className="btn btn-ghost"
-            onClick={onExit}
-            style={{ padding: '8px 13px', fontSize: 13 }}
-          >
+          <div className="smd-card-counter">{currentIndex + 1} / {deck.length}</div>
+          <button className="btn btn-ghost" onClick={onExit} style={{ padding: '8px 13px', fontSize: 13 }}>
             ✕ Exit
           </button>
         </div>
       </div>
 
-      {/* Body */}
       <div className="smd-study-body">
-        {/* Progress bar */}
         <div className="smd-study-progress-bar">
           <div className="smd-study-progress-fill" style={{ width: `${progress}%` }} />
         </div>
 
-        {/* Flashcard scene */}
+        {/* Previous-session status badge */}
+        {(prevGotIt || prevMissed || thisSessionGotIt || thisSessionMissed) && (
+          <div style={{
+            textAlign: 'center',
+            marginBottom: 8,
+            fontSize: 11,
+            color: gotItIds.has(currentCard.id)
+              ? 'var(--success)'
+              : missedIds.has(currentCard.id)
+              ? 'var(--danger)'
+              : 'var(--text-muted)',
+          }}>
+            {gotItIds.has(currentCard.id)
+              ? '✓ Previously marked: Got it'
+              : missedIds.has(currentCard.id)
+              ? '✗ Previously marked: Still learning'
+              : ''}
+          </div>
+        )}
+
         <div
           className="smd-flashcard-scene"
           onClick={() => setFlipped((f) => !f)}
@@ -332,7 +308,6 @@ export default function FlashcardView({
           aria-label={flipped ? 'Card back — click to flip' : 'Card front — click to flip'}
         >
           <div ref={cardRef} className={`smd-flashcard${flipped ? ' flipped' : ''}`}>
-            {/* Front */}
             <div className="smd-card-face smd-card-front">
               <div className="smd-card-topic-tag">{currentCard.topic}</div>
               <div className="smd-card-front-label">QUESTION</div>
@@ -340,45 +315,21 @@ export default function FlashcardView({
               <div className="smd-card-flip-hint">Tap to reveal ↕</div>
             </div>
 
-            {/* Back */}
             <div className="smd-card-face smd-card-back">
               <div className="smd-card-answer-text">
-                {/* Answer label + font size controls */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                   <div className="smd-card-answer-label">ANSWER</div>
-                  <div
-                    className="smd-font-size-bar"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <button
-                      className="smd-font-size-btn"
-                      onClick={() => setFontSizeIdx((i) => Math.max(0, i - 1))}
-                      aria-label="Decrease font size"
-                    >
-                      A−
-                    </button>
-                    <span className="smd-font-size-indicator">
-                      {FONT_LABELS[fontSizeIdx]}
-                    </span>
-                    <button
-                      className="smd-font-size-btn"
-                      onClick={() => setFontSizeIdx((i) => Math.min(FONT_SIZES.length - 1, i + 1))}
-                      aria-label="Increase font size"
-                    >
-                      A+
-                    </button>
+                  <div className="smd-font-size-bar" onClick={(e) => e.stopPropagation()}>
+                    <button className="smd-font-size-btn" onClick={() => setFontSizeIdx((i) => Math.max(0, i - 1))} aria-label="Decrease font size">A−</button>
+                    <span className="smd-font-size-indicator">{FONT_LABELS[fontSizeIdx]}</span>
+                    <button className="smd-font-size-btn" onClick={() => setFontSizeIdx((i) => Math.min(FONT_SIZES.length - 1, i + 1))} aria-label="Increase font size">A+</button>
                   </div>
                 </div>
-
-                <div
-                  className="smd-card-answer-content"
-                  style={{ fontSize: FONT_SIZES[fontSizeIdx] }}
-                >
+                <div className="smd-card-answer-content" style={{ fontSize: FONT_SIZES[fontSizeIdx] }}>
                   {currentCard.answer}
                 </div>
               </div>
 
-              {/* Slide preview */}
               <div className="smd-card-slide-preview" onClick={(e) => e.stopPropagation()}>
                 {slideUrl ? (
                   <>
@@ -390,15 +341,8 @@ export default function FlashcardView({
                       loading="lazy"
                       onClick={() => openSlide(currentCard.slide_number!)}
                     />
-                    <button
-                      className="smd-slide-expand-btn"
-                      onClick={() => openSlide(currentCard.slide_number!)}
-                    >
-                      ⤢ Expand
-                    </button>
-                    <div className="smd-slide-number-tag">
-                      Slide {currentCard.slide_number}
-                    </div>
+                    <button className="smd-slide-expand-btn" onClick={() => openSlide(currentCard.slide_number!)}>⤢ Expand</button>
+                    <div className="smd-slide-number-tag">Slide {currentCard.slide_number}</div>
                   </>
                 ) : (
                   <div className="smd-slide-preview-placeholder">
@@ -411,16 +355,8 @@ export default function FlashcardView({
           </div>
         </div>
 
-        {/* Nav row */}
         <div className="smd-flashcard-nav">
-          <button
-            className="smd-nav-btn"
-            onClick={goBack}
-            disabled={currentIndex === 0}
-            aria-label="Previous card"
-          >
-            ←
-          </button>
+          <button className="smd-nav-btn" onClick={goBack} disabled={currentIndex === 0} aria-label="Previous card">←</button>
 
           <div className="smd-know-btns">
             <button
@@ -431,13 +367,7 @@ export default function FlashcardView({
             >
               ✗ Still learning
             </button>
-            <button
-              className="btn btn-ghost"
-              onClick={skipCard}
-              style={{ opacity: 0.7 }}
-            >
-              → Skip
-            </button>
+            <button className="btn btn-ghost" onClick={skipCard} style={{ opacity: 0.7 }}>→ Skip</button>
             <button
               className="btn btn-success"
               onClick={() => markCard(true)}
@@ -448,17 +378,9 @@ export default function FlashcardView({
             </button>
           </div>
 
-          <button
-            className="smd-nav-btn"
-            onClick={advanceCard}
-            disabled={currentIndex === deck.length - 1}
-            aria-label="Next card"
-          >
-            →
-          </button>
+          <button className="smd-nav-btn" onClick={advanceCard} disabled={currentIndex === deck.length - 1} aria-label="Next card">→</button>
         </div>
 
-        {/* Keyboard hints */}
         <div className="smd-keyboard-hint">
           <div className="smd-key-combo"><kbd>Space</kbd> Flip</div>
           <div className="smd-key-combo"><kbd>←</kbd><kbd>→</kbd> Navigate</div>
@@ -466,7 +388,6 @@ export default function FlashcardView({
         </div>
       </div>
 
-      {/* Lightbox */}
       <Lightbox
         images={allSlideUrls}
         currentIndex={lightboxIndex}
@@ -480,7 +401,6 @@ export default function FlashcardView({
   );
 }
 
-// ── Helpers ──────────────────────────────────────────────────────────────────
 function shuffle<T>(arr: T[]): T[] {
   for (let i = arr.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));

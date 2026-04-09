@@ -30,7 +30,7 @@ function FlashPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const supabase = createClient();
-  const { recordSession, saveProgress } = useProgress();
+  const { progressByLecture, recordFlashcard } = useProgress();
 
   const lectureId = params.get('lecture') ?? '';
   const topicsFilter = params.get('topics')?.split(',').filter(Boolean) ?? [];
@@ -63,19 +63,31 @@ function FlashPageInner() {
       });
   }, [lectureId, supabase]);
 
-  // Save mid-session mastery as cards are marked, so progress
-  // reaches Supabase even if the user exits before finishing the deck.
+  // Called on every card mark — saves incremental progress to Supabase
   const handleProgressUpdate = useCallback(
-    (gotItCount: number, totalCards: number) => {
+    (gotItIds: string[], missedIds: string[], totalCards: number) => {
       if (!lecture) return;
-      const pct = totalCards > 0 ? Math.round((gotItCount / totalCards) * 100) : 0;
-      saveProgress(lecture.internal_id, pct);
+      recordFlashcard(lecture.internal_id, gotItIds, missedIds, totalCards, false);
     },
-    [lecture, saveProgress]
+    [lecture, recordFlashcard]
+  );
+
+  // Called at session end — same as above but increments session counter
+  const handleSessionComplete = useCallback(
+    (gotItIds: string[], missedIds: string[], totalCards: number) => {
+      if (!lecture) return;
+      recordFlashcard(lecture.internal_id, gotItIds, missedIds, totalCards, true);
+    },
+    [lecture, recordFlashcard]
   );
 
   if (loading) return <LoadingScreen />;
   if (error || !lecture) return <ErrorScreen message={error ?? 'Unknown error'} onBack={() => router.push('/app')} />;
+
+  // Pass previously known/missed card IDs so the view can pre-mark them
+  const existing = progressByLecture[lecture.internal_id];
+  const knownGotItIds = existing?.got_it_ids ?? [];
+  const knownMissedIds = existing?.missed_ids ?? [];
 
   let cards: FlashCard[] = lecture.json_data?.flashcards ?? [];
 
@@ -98,12 +110,11 @@ function FlashPageInner() {
       cards={cards}
       slidesStoragePath={null}
       slideCount={lecture.slide_count}
+      initialGotItIds={knownGotItIds}
+      initialMissedIds={knownMissedIds}
       onExit={() => router.push('/app')}
       onProgressUpdate={handleProgressUpdate}
-      onSessionComplete={async (_gotIt, _missed, pct) => {
-        // Session complete: record a full session with final mastery %
-        recordSession(lecture.internal_id, 'flash', { masteryPct: pct });
-      }}
+      onSessionComplete={handleSessionComplete}
     />
   );
 }

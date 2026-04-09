@@ -20,6 +20,9 @@ export interface LectureProgress {
   avg_exam_score: number | null;
   last_studied_at: string | null;
   mastery_pct: number;
+  // Individual card IDs known/missed — used to pre-mark cards on session open
+  got_it_ids: string[];
+  missed_ids: string[];
 }
 
 export interface GlobalStats {
@@ -30,15 +33,24 @@ export interface GlobalStats {
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
-function recordToProgress(r: ProgressRecord): LectureProgress {
+function recordToProgress(r: ProgressRecord, totalCards?: number): LectureProgress {
+  const gotItIds = r.flashcardProgress.got_it_ids ?? [];
+  // Mastery is got_it count / total cards in lecture (passed in when known)
+  // Falls back to got_it / (got_it + missed) if total not known
+  const missed = r.flashcardProgress.missed_ids ?? [];
+  const denominator = totalCards ?? (gotItIds.length + missed.length) || 1;
+  const mastery_pct = Math.round((gotItIds.length / denominator) * 100);
+
   return {
     lecture_id: r.internalId,
-    flash_sessions: r.flashcardProgress.sessions,
-    exam_sessions: r.examProgress.sessions,
+    flash_sessions: r.flashcardProgress.sessions ?? 0,
+    exam_sessions: r.examProgress.sessions ?? 0,
     best_exam_score: r.examProgress.best_score,
     avg_exam_score: r.examProgress.avg_score,
     last_studied_at: r.lastStudied,
-    mastery_pct: r.flashcardProgress.mastery_pct,
+    mastery_pct,
+    got_it_ids: gotItIds,
+    missed_ids: missed,
   };
 }
 
@@ -49,17 +61,11 @@ function deriveGlobalStats(byLecture: Record<string, LectureProgress>): GlobalSt
   }
 
   const totalSessions = entries.reduce(
-    (acc, e) => acc + e.flash_sessions + e.exam_sessions,
-    0
+    (acc, e) => acc + e.flash_sessions + e.exam_sessions, 0
   );
 
-  const scores = entries
-    .map((e) => e.best_exam_score)
-    .filter((s): s is number => s !== null);
-
-  const avgScores = entries
-    .map((e) => e.avg_exam_score)
-    .filter((s): s is number => s !== null);
+  const scores = entries.map((e) => e.best_exam_score).filter((s): s is number => s !== null);
+  const avgScores = entries.map((e) => e.avg_exam_score).filter((s): s is number => s !== null);
 
   return {
     totalSessions,
@@ -71,9 +77,7 @@ function deriveGlobalStats(byLecture: Record<string, LectureProgress>): GlobalSt
   };
 }
 
-function syncMapToUI(
-  syncMap: Record<string, ProgressRecord>
-): Record<string, LectureProgress> {
+function syncMapToUI(syncMap: Record<string, ProgressRecord>): Record<string, LectureProgress> {
   const result: Record<string, LectureProgress> = {};
   for (const [id, r] of Object.entries(syncMap)) {
     result[id] = recordToProgress(r);
@@ -84,9 +88,6 @@ function syncMapToUI(
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
 export function useProgress() {
-  // FIX: Don't read localStorage during SSR — start empty and populate in useEffect.
-  // Reading localStorage in useState initializer runs on the server where it doesn't
-  // exist, causing a React hydration mismatch (error #418).
   const [byLecture, setByLecture] = useState<Record<string, LectureProgress>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -94,20 +95,16 @@ export function useProgress() {
   const byLectureRef = useRef(byLecture);
   byLectureRef.current = byLecture;
 
-  // ── Load on mount ──────────────────────────────────────────────────────
-  // Runs client-side only. First seeds from localStorage (instant),
-  // then fetches server state and merges (async).
   const fetchProgress = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
-      // Seed from localStorage immediately so the UI isn't empty while we wait
+      // Seed from localStorage immediately
       const localData = readLocalProgress();
       if (Object.keys(localData).length > 0) {
         setByLecture(syncMapToUI(localData));
       }
-
-      // Then fetch server state and merge
+      // Then fetch + merge from server
       const merged = await loadAll();
       setByLecture(syncMapToUI(merged));
     } catch (err) {
@@ -122,27 +119,67 @@ export function useProgress() {
     setupOnlineListener();
   }, [fetchProgress]);
 
-  // ── recordSession ──────────────────────────────────────────────────────
-  // Call this whenever meaningful progress happens — don't wait for session end.
-  // It's idempotent and cheap (localStorage write + background fetch).
-  const recordSession = useCallback(
+  // ── recordFlashcard ────────────────────────────────────────────────────
+  // Called per-card as cards are marked. Tracks individual card IDs.
+  // This is the primary way flashcard progress is saved.
+  const recordFlashcard = useCallback(
     (
       lectureId: string,
-      type: 'flash' | 'exam',
-      opts?: { score?: number; masteryPct?: number }
+      gotItIds: string[],   // full current set of got-it card IDs this session
+      missedIds: string[],  // full current set of missed card IDs this session
+      totalCards: number,
+      isSessionEnd = false
     ) => {
       const now = new Date().toISOString();
       const current = byLectureRef.current[lectureId];
 
-      const flashSessions =
-        type === 'flash'
-          ? (current?.flash_sessions ?? 0) + 1
-          : (current?.flash_sessions ?? 0);
+      // Merge with existing got_it_ids from previous sessions (union)
+      const existingGotIt = new Set(current?.got_it_ids ?? []);
+      const newGotIt = new Set(gotItIds);
+      const mergedGotIt = Array.from(new Set([...existingGotIt, ...newGotIt]));
 
-      const examSessions =
-        type === 'exam'
-          ? (current?.exam_sessions ?? 0) + 1
-          : (current?.exam_sessions ?? 0);
+      // missed_ids: use current session's missed, minus anything in mergedGotIt
+      const finalMissed = missedIds.filter((id) => !mergedGotIt.includes(id));
+
+      const mastery_pct = Math.round((mergedGotIt.length / totalCards) * 100);
+
+      const record: ProgressRecord = {
+        internalId: lectureId,
+        flashcardProgress: {
+          sessions: isSessionEnd
+            ? (current?.flash_sessions ?? 0) + 1
+            : (current?.flash_sessions ?? 0),
+          got_it_ids: mergedGotIt,
+          missed_ids: finalMissed,
+        },
+        examProgress: {
+          sessions: current?.exam_sessions ?? 0,
+          best_score: current?.best_exam_score ?? null,
+          avg_score: current?.avg_exam_score ?? null,
+        },
+        lastStudied: now,
+        updatedAt: now,
+      };
+
+      setByLecture((prev) => ({
+        ...prev,
+        [lectureId]: recordToProgress(record, totalCards),
+      }));
+
+      save(record);
+    },
+    []
+  );
+
+  // ── recordSession (exam) ───────────────────────────────────────────────
+  const recordSession = useCallback(
+    (
+      lectureId: string,
+      type: 'exam',
+      opts?: { score?: number }
+    ) => {
+      const now = new Date().toISOString();
+      const current = byLectureRef.current[lectureId];
 
       const bestScore =
         opts?.score !== undefined
@@ -152,56 +189,23 @@ export function useProgress() {
           : current?.best_exam_score ?? null;
 
       const avgScore =
-        type === 'exam' && opts?.score !== undefined
+        opts?.score !== undefined
           ? current?.avg_exam_score == null
             ? opts.score
             : Math.round((current.avg_exam_score + opts.score) / 2)
           : current?.avg_exam_score ?? null;
 
-      const masteryPct =
-        opts?.masteryPct !== undefined ? opts.masteryPct : current?.mastery_pct ?? 0;
-
-      const record: ProgressRecord = {
-        internalId: lectureId,
-        flashcardProgress: { sessions: flashSessions, mastery_pct: masteryPct },
-        examProgress: { sessions: examSessions, best_score: bestScore, avg_score: avgScore },
-        lastStudied: now,
-        updatedAt: now,
-      };
-
-      // 1. Optimistic React state update
-      setByLecture((prev) => ({
-        ...prev,
-        [lectureId]: recordToProgress(record),
-      }));
-
-      // 2. Persist to localStorage + server (with offline queue fallback)
-      save(record);
-    },
-    []
-  );
-
-  // ── saveProgress ───────────────────────────────────────────────────────
-  // Lower-level save for mid-session progress (mastery % as cards are marked).
-  // Does NOT increment session count — use recordSession for that.
-  const saveProgress = useCallback(
-    (
-      lectureId: string,
-      masteryPct: number
-    ) => {
-      const now = new Date().toISOString();
-      const current = byLectureRef.current[lectureId];
-
       const record: ProgressRecord = {
         internalId: lectureId,
         flashcardProgress: {
           sessions: current?.flash_sessions ?? 0,
-          mastery_pct: masteryPct,
+          got_it_ids: current?.got_it_ids ?? [],
+          missed_ids: current?.missed_ids ?? [],
         },
         examProgress: {
-          sessions: current?.exam_sessions ?? 0,
-          best_score: current?.best_exam_score ?? null,
-          avg_score: current?.avg_exam_score ?? null,
+          sessions: (current?.exam_sessions ?? 0) + 1,
+          best_score: bestScore,
+          avg_score: avgScore,
         },
         lastStudied: now,
         updatedAt: now,
@@ -222,8 +226,8 @@ export function useProgress() {
     globalStats: deriveGlobalStats(byLecture),
     loading,
     error,
+    recordFlashcard,
     recordSession,
-    saveProgress,
     refetch: fetchProgress,
   };
 }

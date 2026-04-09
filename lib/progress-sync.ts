@@ -1,6 +1,9 @@
 // lib/progress-sync.ts
 // Low-level sync layer: localStorage-first writes + server upserts + offline queue.
-// Used by hooks/useProgress.ts. Never import directly into components.
+//
+// KEY DESIGN: flashcard_progress stores the SET of individual card IDs marked
+// "got it", not just an aggregate %. This enables true cross-device merge:
+// union of got_it sets = mastery across all devices combined.
 
 const LS_PROGRESS_KEY = 'studymd_progress_v2';
 const LS_QUEUE_KEY = 'studymd_sync_queue_v2';
@@ -11,7 +14,12 @@ export interface ProgressRecord {
   internalId: string;
   flashcardProgress: {
     sessions: number;
-    mastery_pct: number;
+    // Card IDs marked "got it" at least once, ever, across all devices.
+    // Mastery % = got_it_ids.length / total_cards_in_lecture
+    got_it_ids: string[];
+    // Card IDs marked "still learning" in the most recent session.
+    // Used to pre-mark cards on next session open.
+    missed_ids: string[];
   };
   examProgress: {
     sessions: number;
@@ -23,7 +31,7 @@ export interface ProgressRecord {
 }
 
 interface QueueItem {
-  id: string;           // random id for dedup
+  id: string;
   internalId: string;
   flashcardProgress?: ProgressRecord['flashcardProgress'];
   examProgress?: ProgressRecord['examProgress'];
@@ -46,12 +54,10 @@ function readLS<T>(key: string, fallback: T): T {
 function writeLS<T>(key: string, value: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    // Storage full — silently ignore
-  }
+  } catch { /* Storage full — ignore */ }
 }
 
-// ── Progress store (localStorage) ────────────────────────────────────────────
+// ── Progress store ────────────────────────────────────────────────────────────
 
 export function readLocalProgress(): Record<string, ProgressRecord> {
   return readLS<Record<string, ProgressRecord>>(LS_PROGRESS_KEY, {});
@@ -61,6 +67,57 @@ function writeLocalProgress(data: Record<string, ProgressRecord>): void {
   writeLS(LS_PROGRESS_KEY, data);
 }
 
+// ── Merge two ProgressRecords ─────────────────────────────────────────────────
+// The key insight: got_it_ids is a UNION across devices (additive).
+// A card stays "got it" until explicitly marked "still learning" on any device.
+// missed_ids uses the more recent session's data.
+
+function mergeRecords(a: ProgressRecord, b: ProgressRecord): ProgressRecord {
+  const aIsNewer = a.updatedAt >= b.updatedAt;
+  const newer = aIsNewer ? a : b;
+  const older = aIsNewer ? b : a;
+
+  // Union of all got_it_ids ever seen across both records
+  const mergedGotIt = Array.from(
+    new Set([
+      ...(a.flashcardProgress.got_it_ids ?? []),
+      ...(b.flashcardProgress.got_it_ids ?? []),
+    ])
+  );
+
+  // missed_ids: use the newer session's data (more recent study state)
+  const mergedMissed = newer.flashcardProgress.missed_ids ?? [];
+
+  // Remove any card from missed if it's in the merged got_it set
+  // (a card marked "got it" on one device overrides "still learning" on another)
+  const finalMissed = mergedMissed.filter((id) => !mergedGotIt.includes(id));
+
+  return {
+    internalId: newer.internalId,
+    flashcardProgress: {
+      sessions: Math.max(
+        a.flashcardProgress.sessions ?? 0,
+        b.flashcardProgress.sessions ?? 0
+      ),
+      got_it_ids: mergedGotIt,
+      missed_ids: finalMissed,
+    },
+    examProgress: {
+      sessions: Math.max(
+        a.examProgress.sessions ?? 0,
+        b.examProgress.sessions ?? 0
+      ),
+      best_score:
+        a.examProgress.best_score !== null && b.examProgress.best_score !== null
+          ? Math.max(a.examProgress.best_score, b.examProgress.best_score)
+          : a.examProgress.best_score ?? b.examProgress.best_score,
+      avg_score: newer.examProgress.avg_score,
+    },
+    lastStudied: newer.lastStudied,
+    updatedAt: newer.updatedAt,
+  };
+}
+
 // ── Offline queue ─────────────────────────────────────────────────────────────
 
 function readQueue(): QueueItem[] {
@@ -68,7 +125,6 @@ function readQueue(): QueueItem[] {
 }
 
 function writeQueue(queue: QueueItem[]): void {
-  // Keep only the 50 most recent items to cap storage use
   writeLS(LS_QUEUE_KEY, queue.slice(-50));
 }
 
@@ -83,62 +139,50 @@ function enqueue(item: Omit<QueueItem, 'id' | 'enqueuedAt' | 'attempts'>): void 
   writeQueue(queue);
 }
 
-// ── save() ───────────────────────────────────────────────────────────────────
-// Write to localStorage immediately, then fire-and-forget to the API.
-// If offline, enqueue for later retry.
+// ── save() ────────────────────────────────────────────────────────────────────
 
 export function save(record: ProgressRecord): void {
-  // 1. Write to localStorage immediately (last-write-wins by updatedAt)
   const local = readLocalProgress();
   const existing = local[record.internalId];
 
-  if (existing && existing.updatedAt > record.updatedAt) {
-    return; // existing is newer — don't overwrite
-  }
-
-  local[record.internalId] = record;
+  // Merge with existing local record (union of got_it_ids) rather than overwrite
+  const merged = existing ? mergeRecords(existing, record) : record;
+  local[record.internalId] = merged;
   writeLocalProgress(local);
 
-  // 2. Try server; fall back to queue if offline
   if (typeof navigator !== 'undefined' && !navigator.onLine) {
     enqueue({
-      internalId: record.internalId,
-      flashcardProgress: record.flashcardProgress,
-      examProgress: record.examProgress,
-      lastStudied: record.lastStudied ?? record.updatedAt,
+      internalId: merged.internalId,
+      flashcardProgress: merged.flashcardProgress,
+      examProgress: merged.examProgress,
+      lastStudied: merged.lastStudied ?? merged.updatedAt,
     });
     return;
   }
 
-  // Fire-and-forget — queue on failure
   void pushToServer({
-    internalId: record.internalId,
-    flashcardProgress: record.flashcardProgress,
-    examProgress: record.examProgress,
-    lastStudied: record.lastStudied ?? record.updatedAt,
+    internalId: merged.internalId,
+    flashcardProgress: merged.flashcardProgress,
+    examProgress: merged.examProgress,
+    lastStudied: merged.lastStudied ?? merged.updatedAt,
   }).catch(() => {
     enqueue({
-      internalId: record.internalId,
-      flashcardProgress: record.flashcardProgress,
-      examProgress: record.examProgress,
-      lastStudied: record.lastStudied ?? record.updatedAt,
+      internalId: merged.internalId,
+      flashcardProgress: merged.flashcardProgress,
+      examProgress: merged.examProgress,
+      lastStudied: merged.lastStudied ?? merged.updatedAt,
     });
   });
 }
 
 // ── loadAll() ────────────────────────────────────────────────────────────────
-// Fetch from server, merge with local (newer wins by updatedAt), update localStorage.
-// Returns the merged map for React state.
 
 export async function loadAll(): Promise<Record<string, ProgressRecord>> {
   const local = readLocalProgress();
 
   try {
     const res = await fetch('/api/progress/load', { credentials: 'include' });
-    if (!res.ok) {
-      // Not authenticated or server error — return local only
-      return local;
-    }
+    if (!res.ok) return local;
 
     const json = await res.json() as {
       progress: Array<{
@@ -153,52 +197,54 @@ export async function loadAll(): Promise<Record<string, ProgressRecord>> {
     const merged: Record<string, ProgressRecord> = { ...local };
 
     for (const row of json.progress ?? []) {
+      const serverRecord: ProgressRecord = {
+        internalId: row.internalId,
+        flashcardProgress: {
+          sessions: row.flashcardProgress?.sessions ?? 0,
+          got_it_ids: row.flashcardProgress?.got_it_ids ?? [],
+          missed_ids: row.flashcardProgress?.missed_ids ?? [],
+        },
+        examProgress: {
+          sessions: row.examProgress?.sessions ?? 0,
+          best_score: row.examProgress?.best_score ?? null,
+          avg_score: row.examProgress?.avg_score ?? null,
+        },
+        lastStudied: row.lastStudied,
+        updatedAt: row.updatedAt,
+      };
+
       const localRow = local[row.internalId];
-      // Server wins if it's newer than local (or no local row exists)
-      if (!localRow || row.updatedAt > localRow.updatedAt) {
-        merged[row.internalId] = {
-          internalId: row.internalId,
-          flashcardProgress: row.flashcardProgress,
-          examProgress: row.examProgress,
-          lastStudied: row.lastStudied,
-          updatedAt: row.updatedAt,
-        };
-      }
+      // Merge (union of got_it_ids) rather than just picking the newer one
+      merged[row.internalId] = localRow
+        ? mergeRecords(localRow, serverRecord)
+        : serverRecord;
     }
 
-    // Persist merged result back to localStorage
     writeLocalProgress(merged);
     return merged;
   } catch {
-    // Network unavailable — return local cache
     return local;
   }
 }
 
 // ── flushQueue() ──────────────────────────────────────────────────────────────
-// Retry all queued writes. Called when navigator.onLine fires true.
 
 export async function flushQueue(): Promise<void> {
   const queue = readQueue();
   if (queue.length === 0) return;
 
   const remaining: QueueItem[] = [];
-
   for (const item of queue) {
     try {
       await pushToServer(item);
-      // Success — don't keep in queue
     } catch {
-      // Failed again — keep, bump attempt count
       remaining.push({ ...item, attempts: item.attempts + 1 });
     }
   }
-
   writeQueue(remaining);
 }
 
 // ── pushToServer() ────────────────────────────────────────────────────────────
-// Internal: POST to the API route. Throws on non-OK response.
 
 async function pushToServer(payload: {
   internalId: string;
@@ -214,7 +260,6 @@ async function pushToServer(payload: {
   });
 
   if (!res.ok) {
-    // Log the full error body so we can debug in the console
     let errBody = '';
     try { errBody = await res.text(); } catch { /* ignore */ }
     console.error(`[progress-sync] save failed ${res.status}:`, errBody);
@@ -223,14 +268,11 @@ async function pushToServer(payload: {
 }
 
 // ── setupOnlineListener() ─────────────────────────────────────────────────────
-// Call once at app startup. Flushes the queue when the browser comes back online.
 
 let listenerAttached = false;
 
 export function setupOnlineListener(): void {
   if (typeof window === 'undefined' || listenerAttached) return;
   listenerAttached = true;
-  window.addEventListener('online', () => {
-    void flushQueue();
-  });
+  window.addEventListener('online', () => { void flushQueue(); });
 }
