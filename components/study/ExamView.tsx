@@ -264,9 +264,20 @@ export default function ExamView({
               {!reviewing && (
                 <button
                   className="btn btn-primary btn-lg"
-                  onClick={() => setReviewing(true)}
+                  onClick={() => {
+                    setReviewing(true);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
                 >
                   Review Answers
+                </button>
+              )}
+              {reviewing && (
+                <button
+                  className="btn btn-ghost btn-lg"
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                >
+                  ↑ Back to Top
                 </button>
               )}
               <button className="btn btn-ghost btn-lg" onClick={onExit}>

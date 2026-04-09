@@ -92,10 +92,18 @@ export default function FlashcardView({
           goBack();
           break;
         case '1':
+        case 'm':
+        case 'M':
           if (flipped) markCard(false);
           break;
         case '2':
+        case 'g':
+        case 'G':
           if (flipped) markCard(true);
+          break;
+        case 's':
+        case 'S':
+          skipCard();
           break;
       }
     },
@@ -120,6 +128,17 @@ export default function FlashcardView({
     if (currentIndex > 0) {
       setCurrentIndex((i) => i - 1);
       setFlipped(false);
+    }
+  }
+
+  // ── Skip card (advance without marking) ─────────────────────────────
+  function skipCard() {
+    if (currentIndex < deck.length - 1) {
+      setCurrentIndex((i) => i + 1);
+      setFlipped(false);
+      addToast('→ Skipped', 'default');
+    } else {
+      finishSession(gotItIds, missedIds);
     }
   }
 
@@ -405,6 +424,13 @@ export default function FlashcardView({
               ✗ Still learning
             </button>
             <button
+              className="btn btn-ghost"
+              onClick={skipCard}
+              style={{ opacity: 0.7 }}
+            >
+              → Skip
+            </button>
+            <button
               className="btn btn-success"
               onClick={() => markCard(true)}
               disabled={!flipped}
@@ -428,9 +454,7 @@ export default function FlashcardView({
         <div className="smd-keyboard-hint">
           <div className="smd-key-combo"><kbd>Space</kbd> Flip</div>
           <div className="smd-key-combo"><kbd>←</kbd><kbd>→</kbd> Navigate</div>
-          <div className="smd-key-combo">
-            <kbd>1</kbd> Still learning&nbsp;&nbsp;<kbd>2</kbd> Got it
-          </div>
+          <div className="smd-key-combo"><kbd>M</kbd> Missed &nbsp;<kbd>G</kbd> Got it &nbsp;<kbd>S</kbd> Skip</div>
         </div>
       </div>
 

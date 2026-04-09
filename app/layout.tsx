@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import "../styles/themes.css";
 import "./globals.css";
+import AppBootstrap from '@/components/AppBootstrap';
+import '@/styles/dashboard.css';
+import '@/styles/study.css';
 
 export const metadata: Metadata = {
   title: "StudyMD — Your Lectures, Mastered",
@@ -37,7 +40,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body>{children}</body>
+      <body>
+        <AppBootstrap />
+        {children}
+      </body>
     </html>
   );
 }

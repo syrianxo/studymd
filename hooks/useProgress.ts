@@ -1,9 +1,21 @@
 // hooks/useProgress.ts
+// React hook wrapping lib/progress-sync.
+// Loads all progress on mount, exposes save/recordSession/load,
+// and handles loading + error state.
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { createClient } from '@/lib/supabase';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import {
+  save,
+  loadAll,
+  setupOnlineListener,
+  readLocalProgress,
+  type ProgressRecord,
+} from '@/lib/progress-sync';
 
+// ── Public types ──────────────────────────────────────────────────────────────
+
+/** Flattened view of a lecture's progress used throughout the UI. */
 export interface LectureProgress {
   lecture_id: string;
   flash_sessions: number;
@@ -11,7 +23,6 @@ export interface LectureProgress {
   best_exam_score: number | null;
   avg_exam_score: number | null;
   last_studied_at: string | null;
-  // percent of flashcards marked "got it" at least once
   mastery_pct: number;
 }
 
@@ -21,31 +32,18 @@ export interface GlobalStats {
   avgExamScore: number | null;
 }
 
-interface ProgressState {
-  byLecture: Record<string, LectureProgress>;
-  global: GlobalStats;
-  loading: boolean;
-  error: string | null;
-}
+// ── Helpers ───────────────────────────────────────────────────────────────────
 
-const LS_KEY = 'studymd_progress_v2';
-
-function loadFromLocalStorage(): Record<string, LectureProgress> {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return {};
-    return JSON.parse(raw) as Record<string, LectureProgress>;
-  } catch {
-    return {};
-  }
-}
-
-function saveToLocalStorage(data: Record<string, LectureProgress>) {
-  try {
-    localStorage.setItem(LS_KEY, JSON.stringify(data));
-  } catch {
-    // storage full — ignore
-  }
+function recordToProgress(r: ProgressRecord): LectureProgress {
+  return {
+    lecture_id: r.internalId,
+    flash_sessions: r.flashcardProgress.sessions,
+    exam_sessions: r.examProgress.sessions,
+    best_exam_score: r.examProgress.best_score,
+    avg_exam_score: r.examProgress.avg_score,
+    last_studied_at: r.lastStudied,
+    mastery_pct: r.flashcardProgress.mastery_pct,
+  };
 }
 
 function deriveGlobalStats(byLecture: Record<string, LectureProgress>): GlobalStats {
@@ -59,7 +57,7 @@ function deriveGlobalStats(byLecture: Record<string, LectureProgress>): GlobalSt
     0
   );
 
-  const examScores = entries
+  const scores = entries
     .map((e) => e.best_exam_score)
     .filter((s): s is number => s !== null);
 
@@ -69,7 +67,7 @@ function deriveGlobalStats(byLecture: Record<string, LectureProgress>): GlobalSt
 
   return {
     totalSessions,
-    bestExamScore: examScores.length > 0 ? Math.max(...examScores) : null,
+    bestExamScore: scores.length > 0 ? Math.max(...scores) : null,
     avgExamScore:
       avgScores.length > 0
         ? Math.round(avgScores.reduce((a, b) => a + b, 0) / avgScores.length)
@@ -77,192 +75,115 @@ function deriveGlobalStats(byLecture: Record<string, LectureProgress>): GlobalSt
   };
 }
 
+function syncMapToUI(
+  syncMap: Record<string, ProgressRecord>
+): Record<string, LectureProgress> {
+  const result: Record<string, LectureProgress> = {};
+  for (const [id, r] of Object.entries(syncMap)) {
+    result[id] = recordToProgress(r);
+  }
+  return result;
+}
+
+// ── Hook ──────────────────────────────────────────────────────────────────────
+
 export function useProgress() {
-  const supabase = createClient();
+  const [byLecture, setByLecture] = useState<Record<string, LectureProgress>>(
+    // Seed from localStorage immediately so UI doesn't flash empty on mount
+    () => syncMapToUI(readLocalProgress())
+  );
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  const [state, setState] = useState<ProgressState>({
-    byLecture: {},
-    global: { totalSessions: 0, bestExamScore: null, avgExamScore: null },
-    loading: true,
-    error: null,
-  });
+  // Keep a ref to byLecture for use inside recordSession without stale closure
+  const byLectureRef = useRef(byLecture);
+  byLectureRef.current = byLecture;
 
-  // ── Fetch from Supabase, fall back to localStorage ──────────────────────
+  // ── Load on mount ──────────────────────────────────────────────────────
   const fetchProgress = useCallback(async () => {
-    setState((s) => ({ ...s, loading: true, error: null }));
-
+    setLoading(true);
+    setError(null);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        // Not logged in — use localStorage only
-        const local = loadFromLocalStorage();
-        setState({
-          byLecture: local,
-          global: deriveGlobalStats(local),
-          loading: false,
-          error: null,
-        });
-        return;
-      }
-
-      const { data, error } = await supabase
-        .from('user_progress')
-        .select(
-          'internal_id, flashcard_progress, exam_progress, last_studied'
-        )
-        .eq('user_id', user.id);
-
-      if (error) throw error;
-
-      const byLecture: Record<string, LectureProgress> = {};
-      for (const row of data ?? []) {
-        // Map DB columns to our internal shape
-        byLecture[row.internal_id] = {
-          lecture_id: row.internal_id,
-          flash_sessions: (row.flashcard_progress as any)?.sessions ?? 0,
-          exam_sessions: (row.exam_progress as any)?.sessions ?? 0,
-          best_exam_score: (row.exam_progress as any)?.best_score ?? null,
-          avg_exam_score: (row.exam_progress as any)?.avg_score ?? null,
-          last_studied_at: row.last_studied ?? null,
-          mastery_pct: (row.flashcard_progress as any)?.mastery_pct ?? 0,
-        };
-      }
-
-      // Merge with localStorage in case of offline edits
-      const local = loadFromLocalStorage();
-      for (const [id, lp] of Object.entries(local)) {
-        if (!byLecture[id]) {
-          byLecture[id] = lp;
-        }
-      }
-
-      // Persist merged state back to localStorage
-      saveToLocalStorage(byLecture);
-
-      setState({
-        byLecture,
-        global: deriveGlobalStats(byLecture),
-        loading: false,
-        error: null,
-      });
+      const merged = await loadAll();
+      setByLecture(syncMapToUI(merged));
     } catch (err) {
-      console.warn('[useProgress] Supabase fetch failed, using localStorage:', err);
-      const local = loadFromLocalStorage();
-      setState({
-        byLecture: local,
-        global: deriveGlobalStats(local),
-        loading: false,
-        error: (err as Error).message,
-      });
+      setError((err as Error).message);
+      // Keep whatever was loaded from localStorage
+    } finally {
+      setLoading(false);
     }
-  }, [supabase]);
+  }, []);
 
   useEffect(() => {
-    fetchProgress();
+    void fetchProgress();
+    setupOnlineListener(); // idempotent — safe to call multiple times
   }, [fetchProgress]);
 
-  // ── Optimistic update helper used by study views ──────────────────────────
+  // ── recordSession ──────────────────────────────────────────────────────
+  // Optimistically updates React state, then persists via progress-sync.
   const recordSession = useCallback(
-    async (
+    (
       lectureId: string,
       type: 'flash' | 'exam',
       opts?: { score?: number; masteryPct?: number }
     ) => {
-      setState((prev) => {
-        const existing = prev.byLecture[lectureId] ?? {
-          lecture_id: lectureId,
-          flash_sessions: 0,
-          exam_sessions: 0,
-          best_exam_score: null,
-          avg_exam_score: null,
-          last_studied_at: null,
-          mastery_pct: 0,
-        };
+      const now = new Date().toISOString();
+      const current = byLectureRef.current[lectureId];
 
-        const updated: LectureProgress = {
-          ...existing,
-          last_studied_at: new Date().toISOString(),
-          flash_sessions:
-            type === 'flash' ? existing.flash_sessions + 1 : existing.flash_sessions,
-          exam_sessions:
-            type === 'exam' ? existing.exam_sessions + 1 : existing.exam_sessions,
-          mastery_pct:
-            opts?.masteryPct !== undefined ? opts.masteryPct : existing.mastery_pct,
-          best_exam_score:
-            opts?.score !== undefined
-              ? existing.best_exam_score === null
-                ? opts.score
-                : Math.max(existing.best_exam_score, opts.score)
-              : existing.best_exam_score,
-          avg_exam_score:
-            type === 'exam' && opts?.score !== undefined
-              ? existing.avg_exam_score === null
-                ? opts.score
-                : Math.round((existing.avg_exam_score + opts.score) / 2)
-              : existing.avg_exam_score,
-        };
-
-        const byLecture = { ...prev.byLecture, [lectureId]: updated };
-        saveToLocalStorage(byLecture);
-
-        return {
-          ...prev,
-          byLecture,
-          global: deriveGlobalStats(byLecture),
-        };
-      });
-
-      // Fire-and-forget upsert to Supabase
-      try {
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) return;
-
-        const current = state.byLecture[lectureId];
-        const newFlashSessions = type === 'flash'
+      const flashSessions =
+        type === 'flash'
           ? (current?.flash_sessions ?? 0) + 1
           : (current?.flash_sessions ?? 0);
-        const newExamSessions = type === 'exam'
+
+      const examSessions =
+        type === 'exam'
           ? (current?.exam_sessions ?? 0) + 1
           : (current?.exam_sessions ?? 0);
-        const newBestScore = opts?.score !== undefined
-          ? current?.best_exam_score === null
-            ? opts.score
-            : Math.max(current.best_exam_score!, opts.score)
-          : current?.best_exam_score ?? null;
-        const newAvgScore = type === 'exam' && opts?.score !== undefined
-          ? current?.avg_exam_score === null
-            ? opts.score
-            : Math.round((current.avg_exam_score! + opts.score) / 2)
-          : current?.avg_exam_score ?? null;
-        const newMastery = opts?.masteryPct ?? current?.mastery_pct ?? 0;
 
-        await supabase.from('user_progress').upsert(
-          {
-            user_id: user.id,
-            internal_id: lectureId,
-            flashcard_progress: { sessions: newFlashSessions, mastery_pct: newMastery },
-            exam_progress: { sessions: newExamSessions, best_score: newBestScore, avg_score: newAvgScore },
-            last_studied: new Date().toISOString(),
-          },
-          { onConflict: 'user_id,internal_id' }
-        );
-      } catch (err) {
-        console.warn('[useProgress] Failed to sync session to Supabase:', err);
-      }
+      const bestScore =
+        opts?.score !== undefined
+          ? current?.best_exam_score === null || current?.best_exam_score === undefined
+            ? opts.score
+            : Math.max(current.best_exam_score, opts.score)
+          : current?.best_exam_score ?? null;
+
+      const avgScore =
+        type === 'exam' && opts?.score !== undefined
+          ? current?.avg_exam_score === null || current?.avg_exam_score === undefined
+            ? opts.score
+            : Math.round((current.avg_exam_score + opts.score) / 2)
+          : current?.avg_exam_score ?? null;
+
+      const masteryPct =
+        opts?.masteryPct !== undefined
+          ? opts.masteryPct
+          : current?.mastery_pct ?? 0;
+
+      const record: ProgressRecord = {
+        internalId: lectureId,
+        flashcardProgress: { sessions: flashSessions, mastery_pct: masteryPct },
+        examProgress: { sessions: examSessions, best_score: bestScore, avg_score: avgScore },
+        lastStudied: now,
+        updatedAt: now,
+      };
+
+      // 1. Optimistic React state update
+      setByLecture((prev) => {
+        const updated = { ...prev, [lectureId]: recordToProgress(record) };
+        return updated;
+      });
+
+      // 2. Persist (localStorage + server, with offline queue fallback)
+      save(record);
     },
-    [supabase, state.byLecture]
+    []
   );
 
   return {
-    progressByLecture: state.byLecture,
-    globalStats: state.global,
-    loading: state.loading,
-    error: state.error,
+    progressByLecture: byLecture,
+    globalStats: deriveGlobalStats(byLecture),
+    loading,
+    error,
     recordSession,
     refetch: fetchProgress,
   };
