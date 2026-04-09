@@ -47,7 +47,7 @@ export default function CustomSessionModal({
   const availableTopics = Array.from(
     new Set(
       lectures
-        .filter((l) => selectedLectureIds.has(l.id))
+        .filter((l) => selectedLectureIds.has(l.internal_id))
         .flatMap((l) => l.topics)
     )
   ).sort();
@@ -86,7 +86,7 @@ export default function CustomSessionModal({
     if (selectedLectureIds.size === lectures.length) {
       setSelectedLectureIds(new Set());
     } else {
-      setSelectedLectureIds(new Set(lectures.map((l) => l.id)));
+      setSelectedLectureIds(new Set(lectures.map((l) => l.internal_id)));
     }
   }
 
@@ -143,9 +143,9 @@ export default function CustomSessionModal({
           <div className="smd-lecture-select-grid">
             {lectures.map((l) => (
               <div
-                key={l.id}
-                className={`smd-lecture-select-item${selectedLectureIds.has(l.id) ? ' selected' : ''}`}
-                onClick={() => toggleLecture(l.id)}
+              key={l.internal_id}
+                className={`smd-lecture-select-item${selectedLectureIds.has(l.internal_id) ? ' selected' : ''}`}
+                onClick={() => toggleLecture(l.internal_id)}
               >
                 <span>{l.icon}</span>
                 <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
