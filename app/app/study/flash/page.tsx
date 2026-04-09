@@ -11,9 +11,8 @@ import { useProgress } from '@/hooks/useProgress';
 import '@/styles/study.css';
 
 interface LectureData {
-  id: string;
+  internal_id: string;
   title: string;
-  slides_storage_path: string | null;
   slide_count: number;
   json_data: {
     flashcards?: FlashCard[];
@@ -53,8 +52,8 @@ function FlashPageInner() {
 
     supabase
       .from('lectures')
-      .select('id, title, slides_storage_path, slide_count, json_data')
-      .eq('id', lectureId)
+      .select('internal_id, title, slides_storage_path, slide_count, json_data')
+      .eq('internal_id', lectureId)
       .single()
       .then(({ data, error: err }) => {
         if (err || !data) {
@@ -89,13 +88,13 @@ function FlashPageInner() {
   return (
     <FlashcardView
       lectureTitle={lecture.title}
-      lectureId={lecture.id}
+      lectureId={lecture.internal_id}
       cards={cards}
-      slidesStoragePath={lecture.slides_storage_path}
+      slidesStoragePath={null}
       slideCount={lecture.slide_count}
       onExit={() => router.push('/app')}
       onSessionComplete={async (gotIt, missed, pct) => {
-        await recordSession(lecture.id, 'flash', { masteryPct: pct });
+        await recordSession(lecture.internal_id, 'flash', { masteryPct: pct });
       }}
     />
   );

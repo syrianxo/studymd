@@ -11,7 +11,7 @@ import { useProgress } from '@/hooks/useProgress';
 import '@/styles/study.css';
 
 interface LectureData {
-  id: string;
+  internal_id: string;
   title: string;
   json_data: {
     questions?: ExamQuestion[];
@@ -51,8 +51,8 @@ function ExamPageInner() {
 
     supabase
       .from('lectures')
-      .select('id, title, json_data')
-      .eq('id', lectureId)
+      .select('internal_id, title, json_data')
+      .eq('internal_id', lectureId)
       .single()
       .then(({ data, error: err }) => {
         if (err || !data) {
@@ -88,11 +88,11 @@ function ExamPageInner() {
   return (
     <ExamView
       lectureTitle={lecture.title}
-      lectureId={lecture.id}
+      lectureId={lecture.internal_id}
       questions={questions}
       onExit={() => router.push('/app')}
       onSessionComplete={async (score) => {
-        await recordSession(lecture.id, 'exam', { score });
+        await recordSession(lecture.internal_id, 'exam', { score });
       }}
     />
   );

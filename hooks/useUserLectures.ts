@@ -24,24 +24,23 @@ export interface ExamQuestion {
 }
 
 export interface Lecture {
-  id: string;
-  slug: string;
+  internal_id: string;
   title: string;
-  subtitle: string;
+  subtitle: string | null;
   icon: string;
-  course: string;           // e.g. "Physical Diagnosis I"
-  color: string;            // CSS color value for card accent stripe
+  course: string;
+  color: string;
   display_order: number;
   topics: string[];
-  flashcard_count: number;
-  question_count: number;
   slide_count: number;
-  // Supabase Storage base URL for slide thumbnails
-  slides_storage_path: string | null;
+  json_data: {
+    flashcards?: FlashCard[];
+    questions?: ExamQuestion[];
+  };
   // Per-user settings from user_lecture_settings
-  is_pinned: boolean;
-  is_hidden: boolean;
-  custom_label: string | null;
+  visible: boolean;
+  archived: boolean;
+  custom_title: string | null;
 }
 
 interface UseUserLecturesResult {
@@ -74,62 +73,43 @@ export function useUserLectures(): UseUserLecturesResult {
       // ── 1. Fetch base lecture rows ──────────────────────────────────────
       const { data: lectureRows, error: lectureErr } = await supabase
         .from('lectures')
-        .select(
-          `
-          id,
-          slug,
-          title,
-          subtitle,
-          icon,
-          course,
-          color,
-          display_order,
-          topics,
-          flashcard_count,
-          question_count,
-          slide_count,
-          slides_storage_path
-        `
-        )
-        .order('display_order', { ascending: true });
+        .select('internal_id, title, subtitle, icon, course, color, topics, slide_count, json_data')
+        .order('internal_id', { ascending: true });
 
       if (lectureErr) throw lectureErr;
 
       let settingsMap: Record<
         string,
-        { is_pinned: boolean; is_hidden: boolean; custom_label: string | null }
+        { display_order: number; visible: boolean; archived: boolean; custom_title: string | null }
       > = {};
 
       // ── 2. Fetch per-user overrides if logged in ────────────────────────
       if (user) {
         const { data: settingsRows } = await supabase
           .from('user_lecture_settings')
-          .select('lecture_id, is_pinned, is_hidden, custom_label')
+          .select('internal_id, display_order, visible, archived, custom_title')
           .eq('user_id', user.id);
 
         for (const s of settingsRows ?? []) {
-          settingsMap[s.lecture_id] = {
-            is_pinned: s.is_pinned ?? false,
-            is_hidden: s.is_hidden ?? false,
-            custom_label: s.custom_label ?? null,
+          settingsMap[s.internal_id] = {
+            display_order: s.display_order ?? 999,
+            visible: s.visible ?? true,
+            archived: s.archived ?? false,
+            custom_title: s.custom_title ?? null,
           };
         }
       }
 
       // ── 3. Merge ────────────────────────────────────────────────────────
-      const merged: Lecture[] = (lectureRows ?? []).map((row) => ({
-        ...(row as Omit<Lecture, 'is_pinned' | 'is_hidden' | 'custom_label'>),
-        is_pinned: settingsMap[row.id]?.is_pinned ?? false,
-        is_hidden: settingsMap[row.id]?.is_hidden ?? false,
-        custom_label: settingsMap[row.id]?.custom_label ?? null,
+      const merged: Lecture[] = (lectureRows ?? []).map((row, idx) => ({
+        ...(row as any),
+        display_order: settingsMap[row.internal_id]?.display_order ?? idx,
+        visible: settingsMap[row.internal_id]?.visible ?? true,
+        archived: settingsMap[row.internal_id]?.archived ?? false,
+        custom_title: settingsMap[row.internal_id]?.custom_title ?? null,
       }));
 
-      // Pinned lectures float to the top within their sort order
-      merged.sort((a, b) => {
-        if (a.is_pinned && !b.is_pinned) return -1;
-        if (!a.is_pinned && b.is_pinned) return 1;
-        return a.display_order - b.display_order;
-      });
+      merged.sort((a, b) => a.display_order - b.display_order);
 
       const uniqueCourses = Array.from(new Set(merged.map((l) => l.course))).sort();
 
@@ -151,13 +131,12 @@ export function useUserLectures(): UseUserLecturesResult {
 }
 
 // ── Helper: resolve Supabase Storage URL for a slide thumbnail ───────────────
+// Slides are stored at: slides/{internal_id}/slide_001.webp
 export function getSlideThumbUrl(
   supabaseUrl: string,
-  storagePath: string,
+  internalId: string,
   slideIndex: number
 ): string {
-  // Convention: slides_storage_path = "lectures/{slug}/slides"
-  // Each thumbnail is stored as "slide_{padded_index}.webp"
   const padded = String(slideIndex + 1).padStart(3, '0');
-  return `${supabaseUrl}/storage/v1/object/public/${storagePath}/slide_${padded}.webp`;
+  return `${supabaseUrl}/storage/v1/object/public/slides/${internalId}/slide_${padded}.webp`;
 }

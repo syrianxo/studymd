@@ -39,7 +39,7 @@ export default function Dashboard({ userName = 'Haley' }: DashboardProps) {
   const visibleLectures = useMemo(
     () =>
       lectures.filter((l) => {
-        if (l.is_hidden) return false;
+        if (!l.visible || l.archived) return false;
         if (activeCourse && l.course !== activeCourse) return false;
         return true;
       }),
@@ -48,9 +48,6 @@ export default function Dashboard({ userName = 'Haley' }: DashboardProps) {
 
   // ── Study launch handlers ─────────────────────────────────────────────
   function handleStartFlash(lectureId: string) {
-    // Navigate to the flashcard study view.
-    // The actual flashcard view lives in its own route; we pass the lectureId
-    // as a query param so it can fetch its data independently.
     window.location.href = `/app/study/flash?lecture=${lectureId}`;
   }
 

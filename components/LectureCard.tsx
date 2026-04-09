@@ -29,11 +29,9 @@ export default function LectureCard({
   const sessionsCount = (progress?.flash_sessions ?? 0) + (progress?.exam_sessions ?? 0);
 
   // ── Slide thumbnails from Supabase Storage ──────────────────────────────
-  const slideThumbUrls: string[] = lecture.slides_storage_path
-    ? Array.from({ length: lecture.slide_count }, (_, i) =>
-        getSlideThumbUrl(SUPABASE_URL, lecture.slides_storage_path!, i)
-      )
-    : [];
+  const slideThumbUrls: string[] = Array.from({ length: lecture.slide_count }, (_, i) =>
+    getSlideThumbUrl(SUPABASE_URL, lecture.internal_id, i)
+  );
 
   function handleCardClick(e: React.MouseEvent) {
     // Don't toggle expand if a button was clicked
@@ -68,14 +66,14 @@ export default function LectureCard({
           <span className="smd-card-icon">{lecture.icon}</span>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <div className="smd-card-badges">
-              {lecture.flashcard_count > 0 && (
+              {lecture.json_data?.flashcards && lecture.json_data.flashcards.length > 0 && (
                 <span className="smd-badge smd-badge-cards">
-                  {lecture.flashcard_count} cards
+                  {lecture.json_data.flashcards.length} cards
                 </span>
               )}
-              {lecture.question_count > 0 && (
+              {lecture.json_data?.questions && lecture.json_data.questions.length > 0 && (
                 <span className="smd-badge smd-badge-exam">
-                  {lecture.question_count} Q
+                  {lecture.json_data.questions.length} Q
                 </span>
               )}
             </div>
@@ -86,7 +84,7 @@ export default function LectureCard({
         </div>
 
         <div className="smd-card-title">
-          {lecture.custom_label ?? lecture.title}
+          {lecture.custom_title ?? lecture.title}
         </div>
         <div className="smd-card-subtitle">{lecture.subtitle}</div>
 
@@ -148,12 +146,12 @@ export default function LectureCard({
             <button className="smd-expand-mode-btn flash-btn" onClick={handleFlash}>
               <div className="mode-icon">📇</div>
               <div className="mode-label">Flashcards</div>
-              <div className="mode-sub">{lecture.flashcard_count} cards</div>
+              <div className="mode-sub">{lecture.json_data?.flashcards?.length ?? 0} cards</div>
             </button>
             <button className="smd-expand-mode-btn exam-btn" onClick={handleExam}>
               <div className="mode-icon">📝</div>
               <div className="mode-label">Practice Exam</div>
-              <div className="mode-sub">{lecture.question_count} questions</div>
+              <div className="mode-sub">{lecture.json_data?.questions?.length ?? 0} questions</div>
             </button>
           </div>
 

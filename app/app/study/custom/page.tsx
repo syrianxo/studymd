@@ -12,9 +12,8 @@ import { useProgress } from '@/hooks/useProgress';
 import '@/styles/study.css';
 
 interface LectureData {
-  id: string;
+  internal_id: string;
   title: string;
-  slides_storage_path: string | null;
   slide_count: number;
   json_data: {
     flashcards?: FlashCard[];
@@ -55,8 +54,8 @@ function CustomPageInner() {
 
     supabase
       .from('lectures')
-      .select('id, title, slides_storage_path, slide_count, json_data')
-      .in('id', lectureIds)
+      .select('internal_id, title, slide_count, json_data')
+      .in('internal_id', lectureIds)
       .then(({ data, error: err }) => {
         if (err) {
           setError(err.message);
@@ -93,15 +92,14 @@ function CustomPageInner() {
     return (
       <FlashcardView
         lectureTitle={sessionTitle}
-        lectureId={lectures.map((l) => l.id).join(',')}
+        lectureId={lectures.map((l) => l.internal_id).join(',')}
         cards={cards}
-        slidesStoragePath={primaryLecture.slides_storage_path}
+        slidesStoragePath={null}
         slideCount={primaryLecture.slide_count}
         onExit={() => router.push('/app')}
         onSessionComplete={async (_gotIt, _missed, pct) => {
-          // Record for each lecture in the session
           await Promise.all(
-            lectures.map((l) => recordSession(l.id, 'flash', { masteryPct: pct }))
+            lectures.map((l) => recordSession(l.internal_id, 'flash', { masteryPct: pct }))
           );
         }}
       />
@@ -124,12 +122,12 @@ function CustomPageInner() {
   return (
     <ExamView
       lectureTitle={sessionTitle}
-      lectureId={lectures.map((l) => l.id).join(',')}
+      lectureId={lectures.map((l) => l.internal_id).join(',')}
       questions={questions}
       onExit={() => router.push('/app')}
       onSessionComplete={async (score) => {
         await Promise.all(
-          lectures.map((l) => recordSession(l.id, 'exam', { score }))
+          lectures.map((l) => recordSession(l.internal_id, 'exam', { score }))
         );
       }}
     />

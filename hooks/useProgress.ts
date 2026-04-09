@@ -111,7 +111,7 @@ export function useProgress() {
       const { data, error } = await supabase
         .from('user_progress')
         .select(
-          'lecture_id, flash_sessions, exam_sessions, best_exam_score, avg_exam_score, last_studied_at, mastery_pct'
+          'internal_id, flashcard_progress, exam_progress, last_studied'
         )
         .eq('user_id', user.id);
 
@@ -119,7 +119,16 @@ export function useProgress() {
 
       const byLecture: Record<string, LectureProgress> = {};
       for (const row of data ?? []) {
-        byLecture[row.lecture_id] = row as LectureProgress;
+        // Map DB columns to our internal shape
+        byLecture[row.internal_id] = {
+          lecture_id: row.internal_id,
+          flash_sessions: (row.flashcard_progress as any)?.sessions ?? 0,
+          exam_sessions: (row.exam_progress as any)?.sessions ?? 0,
+          best_exam_score: (row.exam_progress as any)?.best_score ?? null,
+          avg_exam_score: (row.exam_progress as any)?.avg_score ?? null,
+          last_studied_at: row.last_studied ?? null,
+          mastery_pct: (row.flashcard_progress as any)?.mastery_pct ?? 0,
+        };
       }
 
       // Merge with localStorage in case of offline edits
@@ -214,34 +223,33 @@ export function useProgress() {
         if (!user) return;
 
         const current = state.byLecture[lectureId];
+        const newFlashSessions = type === 'flash'
+          ? (current?.flash_sessions ?? 0) + 1
+          : (current?.flash_sessions ?? 0);
+        const newExamSessions = type === 'exam'
+          ? (current?.exam_sessions ?? 0) + 1
+          : (current?.exam_sessions ?? 0);
+        const newBestScore = opts?.score !== undefined
+          ? current?.best_exam_score === null
+            ? opts.score
+            : Math.max(current.best_exam_score!, opts.score)
+          : current?.best_exam_score ?? null;
+        const newAvgScore = type === 'exam' && opts?.score !== undefined
+          ? current?.avg_exam_score === null
+            ? opts.score
+            : Math.round((current.avg_exam_score! + opts.score) / 2)
+          : current?.avg_exam_score ?? null;
+        const newMastery = opts?.masteryPct ?? current?.mastery_pct ?? 0;
+
         await supabase.from('user_progress').upsert(
           {
             user_id: user.id,
-            lecture_id: lectureId,
-            flash_sessions:
-              type === 'flash'
-                ? (current?.flash_sessions ?? 0) + 1
-                : (current?.flash_sessions ?? 0),
-            exam_sessions:
-              type === 'exam'
-                ? (current?.exam_sessions ?? 0) + 1
-                : (current?.exam_sessions ?? 0),
-            best_exam_score:
-              opts?.score !== undefined
-                ? current?.best_exam_score === null
-                  ? opts.score
-                  : Math.max(current.best_exam_score!, opts.score)
-                : current?.best_exam_score ?? null,
-            avg_exam_score:
-              type === 'exam' && opts?.score !== undefined
-                ? current?.avg_exam_score === null
-                  ? opts.score
-                  : Math.round((current.avg_exam_score! + opts.score) / 2)
-                : current?.avg_exam_score ?? null,
-            mastery_pct: opts?.masteryPct ?? current?.mastery_pct ?? 0,
-            last_studied_at: new Date().toISOString(),
+            internal_id: lectureId,
+            flashcard_progress: { sessions: newFlashSessions, mastery_pct: newMastery },
+            exam_progress: { sessions: newExamSessions, best_score: newBestScore, avg_score: newAvgScore },
+            last_studied: new Date().toISOString(),
           },
-          { onConflict: 'user_id,lecture_id' }
+          { onConflict: 'user_id,internal_id' }
         );
       } catch (err) {
         console.warn('[useProgress] Failed to sync session to Supabase:', err);

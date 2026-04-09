@@ -49,9 +49,9 @@ export default function LectureGrid({
     <div className="smd-lecture-grid">
       {lectures.map((lecture) => (
         <LectureCard
-          key={lecture.id}
+          key={lecture.internal_id}
           lecture={lecture}
-          progress={progressByLecture[lecture.id] ?? null}
+          progress={progressByLecture[lecture.internal_id] ?? null}
           onStartFlash={onStartFlash}
           onStartExam={onStartExam}
         />
