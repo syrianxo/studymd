@@ -27,6 +27,8 @@ export interface FlashcardSessionConfig {
   slideCount: number;
   onExit: () => void;
   onSessionComplete?: (gotIt: number, missed: number, pct: number) => void;
+  // Called every time a card is marked so progress syncs mid-session
+  onProgressUpdate?: (gotItCount: number, totalCards: number) => void;
 }
 
 // ── Font size helpers ────────────────────────────────────────────────────────
@@ -43,6 +45,7 @@ export default function FlashcardView({
   slideCount,
   onExit,
   onSessionComplete,
+  onProgressUpdate,
 }: FlashcardSessionConfig) {
   // Deck state
   const [deck, setDeck] = useState<FlashCard[]>(() => shuffle([...allCards]));
@@ -148,13 +151,18 @@ export default function FlashcardView({
     const id = currentCard.id;
 
     if (knew) {
-      setGotItIds((s) => new Set([...s, id]));
+      const newGotIt = new Set([...gotItIds, id]);
+      setGotItIds(newGotIt);
       setMissedIds((s) => { const n = new Set(s); n.delete(id); return n; });
       addToast('✓ Got it', 'success');
+      // Save mid-session progress immediately
+      onProgressUpdate?.(newGotIt.size, deck.length);
     } else {
       setMissedIds((s) => new Set([...s, id]));
       setGotItIds((s) => { const n = new Set(s); n.delete(id); return n; });
       addToast('— Still learning', 'default');
+      // Still update so last_studied gets written
+      onProgressUpdate?.(gotItIds.size, deck.length);
     }
 
     if (currentIndex < deck.length - 1) {

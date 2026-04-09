@@ -214,7 +214,11 @@ async function pushToServer(payload: {
   });
 
   if (!res.ok) {
-    throw new Error(`progress/save returned ${res.status}`);
+    // Log the full error body so we can debug in the console
+    let errBody = '';
+    try { errBody = await res.text(); } catch { /* ignore */ }
+    console.error(`[progress-sync] save failed ${res.status}:`, errBody);
+    throw new Error(`progress/save ${res.status}: ${errBody}`);
   }
 }
 

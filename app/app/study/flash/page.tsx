@@ -1,9 +1,7 @@
 // app/app/study/flash/page.tsx
-// Fetches lecture flashcards and renders the FlashcardView.
-// URL: /app/study/flash?lecture=<lectureId>[&topics=t1,t2&count=20&order=random]
 'use client';
 
-import { useEffect, useState, Suspense } from 'react';
+import { useEffect, useState, useCallback, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import FlashcardView, { type FlashCard } from '@/components/study/FlashcardView';
@@ -32,7 +30,7 @@ function FlashPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const supabase = createClient();
-  const { recordSession } = useProgress();
+  const { recordSession, saveProgress } = useProgress();
 
   const lectureId = params.get('lecture') ?? '';
   const topicsFilter = params.get('topics')?.split(',').filter(Boolean) ?? [];
@@ -65,19 +63,27 @@ function FlashPageInner() {
       });
   }, [lectureId, supabase]);
 
+  // Save mid-session mastery as cards are marked, so progress
+  // reaches Supabase even if the user exits before finishing the deck.
+  const handleProgressUpdate = useCallback(
+    (gotItCount: number, totalCards: number) => {
+      if (!lecture) return;
+      const pct = totalCards > 0 ? Math.round((gotItCount / totalCards) * 100) : 0;
+      saveProgress(lecture.internal_id, pct);
+    },
+    [lecture, saveProgress]
+  );
+
   if (loading) return <LoadingScreen />;
   if (error || !lecture) return <ErrorScreen message={error ?? 'Unknown error'} onBack={() => router.push('/app')} />;
 
-  // ── Build deck ──────────────────────────────────────────────────────────
   let cards: FlashCard[] = lecture.json_data?.flashcards ?? [];
 
   if (topicsFilter.length > 0) {
     cards = cards.filter((c) => topicsFilter.includes(c.topic));
   }
 
-  if (order === 'sequential') {
-    // keep as-is
-  } else {
+  if (order !== 'sequential') {
     cards = shuffle(cards);
   }
 
@@ -93,8 +99,10 @@ function FlashPageInner() {
       slidesStoragePath={null}
       slideCount={lecture.slide_count}
       onExit={() => router.push('/app')}
-      onSessionComplete={async (gotIt, missed, pct) => {
-        await recordSession(lecture.internal_id, 'flash', { masteryPct: pct });
+      onProgressUpdate={handleProgressUpdate}
+      onSessionComplete={async (_gotIt, _missed, pct) => {
+        // Session complete: record a full session with final mastery %
+        recordSession(lecture.internal_id, 'flash', { masteryPct: pct });
       }}
     />
   );
@@ -114,7 +122,7 @@ function LoadingScreen() {
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center',
       justifyContent: 'center', flexDirection: 'column', gap: 16,
-      background: 'var(--bg)', color: 'var(--text-muted)', fontFamily: 'Outfit, sans-serif'
+      background: 'var(--bg)', color: 'var(--text-muted)', fontFamily: 'Outfit, sans-serif',
     }}>
       <div style={{ fontSize: 36 }}>📇</div>
       <p>Loading flashcards…</p>
@@ -127,7 +135,7 @@ function ErrorScreen({ message, onBack }: { message: string; onBack: () => void 
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center',
       justifyContent: 'center', flexDirection: 'column', gap: 14, padding: 32,
-      background: 'var(--bg)', color: 'var(--text)', fontFamily: 'Outfit, sans-serif', textAlign: 'center'
+      background: 'var(--bg)', color: 'var(--text)', fontFamily: 'Outfit, sans-serif', textAlign: 'center',
     }}>
       <div style={{ fontSize: 40 }}>⚠️</div>
       <p style={{ color: 'var(--text-muted)', maxWidth: 340 }}>{message}</p>

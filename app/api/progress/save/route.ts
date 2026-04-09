@@ -2,10 +2,10 @@
 // POST /api/progress/save
 // Upserts a single lecture's progress for the authenticated user.
 import { NextRequest, NextResponse } from 'next/server';
-import { createServerComponentClient } from '@/lib/supabase-server-component';
+import { createRouteHandlerClient } from '@/lib/supabase-server-component';
 
 export async function POST(request: NextRequest) {
-  const supabase = await createServerComponentClient();
+  const supabase = await createRouteHandlerClient();
 
   // ── Auth check ────────────────────────────────────────────────────────────
   const { data: { user }, error: authError } = await supabase.auth.getUser();

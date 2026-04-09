@@ -1,7 +1,4 @@
 // hooks/useProgress.ts
-// React hook wrapping lib/progress-sync.
-// Loads all progress on mount, exposes save/recordSession/load,
-// and handles loading + error state.
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -15,7 +12,6 @@ import {
 
 // ── Public types ──────────────────────────────────────────────────────────────
 
-/** Flattened view of a lecture's progress used throughout the UI. */
 export interface LectureProgress {
   lecture_id: string;
   flash_sessions: number;
@@ -88,27 +84,34 @@ function syncMapToUI(
 // ── Hook ──────────────────────────────────────────────────────────────────────
 
 export function useProgress() {
-  const [byLecture, setByLecture] = useState<Record<string, LectureProgress>>(
-    // Seed from localStorage immediately so UI doesn't flash empty on mount
-    () => syncMapToUI(readLocalProgress())
-  );
+  // FIX: Don't read localStorage during SSR — start empty and populate in useEffect.
+  // Reading localStorage in useState initializer runs on the server where it doesn't
+  // exist, causing a React hydration mismatch (error #418).
+  const [byLecture, setByLecture] = useState<Record<string, LectureProgress>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Keep a ref to byLecture for use inside recordSession without stale closure
   const byLectureRef = useRef(byLecture);
   byLectureRef.current = byLecture;
 
   // ── Load on mount ──────────────────────────────────────────────────────
+  // Runs client-side only. First seeds from localStorage (instant),
+  // then fetches server state and merges (async).
   const fetchProgress = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
+      // Seed from localStorage immediately so the UI isn't empty while we wait
+      const localData = readLocalProgress();
+      if (Object.keys(localData).length > 0) {
+        setByLecture(syncMapToUI(localData));
+      }
+
+      // Then fetch server state and merge
       const merged = await loadAll();
       setByLecture(syncMapToUI(merged));
     } catch (err) {
       setError((err as Error).message);
-      // Keep whatever was loaded from localStorage
     } finally {
       setLoading(false);
     }
@@ -116,11 +119,12 @@ export function useProgress() {
 
   useEffect(() => {
     void fetchProgress();
-    setupOnlineListener(); // idempotent — safe to call multiple times
+    setupOnlineListener();
   }, [fetchProgress]);
 
   // ── recordSession ──────────────────────────────────────────────────────
-  // Optimistically updates React state, then persists via progress-sync.
+  // Call this whenever meaningful progress happens — don't wait for session end.
+  // It's idempotent and cheap (localStorage write + background fetch).
   const recordSession = useCallback(
     (
       lectureId: string,
@@ -142,22 +146,20 @@ export function useProgress() {
 
       const bestScore =
         opts?.score !== undefined
-          ? current?.best_exam_score === null || current?.best_exam_score === undefined
+          ? current?.best_exam_score == null
             ? opts.score
             : Math.max(current.best_exam_score, opts.score)
           : current?.best_exam_score ?? null;
 
       const avgScore =
         type === 'exam' && opts?.score !== undefined
-          ? current?.avg_exam_score === null || current?.avg_exam_score === undefined
+          ? current?.avg_exam_score == null
             ? opts.score
             : Math.round((current.avg_exam_score + opts.score) / 2)
           : current?.avg_exam_score ?? null;
 
       const masteryPct =
-        opts?.masteryPct !== undefined
-          ? opts.masteryPct
-          : current?.mastery_pct ?? 0;
+        opts?.masteryPct !== undefined ? opts.masteryPct : current?.mastery_pct ?? 0;
 
       const record: ProgressRecord = {
         internalId: lectureId,
@@ -168,12 +170,48 @@ export function useProgress() {
       };
 
       // 1. Optimistic React state update
-      setByLecture((prev) => {
-        const updated = { ...prev, [lectureId]: recordToProgress(record) };
-        return updated;
-      });
+      setByLecture((prev) => ({
+        ...prev,
+        [lectureId]: recordToProgress(record),
+      }));
 
-      // 2. Persist (localStorage + server, with offline queue fallback)
+      // 2. Persist to localStorage + server (with offline queue fallback)
+      save(record);
+    },
+    []
+  );
+
+  // ── saveProgress ───────────────────────────────────────────────────────
+  // Lower-level save for mid-session progress (mastery % as cards are marked).
+  // Does NOT increment session count — use recordSession for that.
+  const saveProgress = useCallback(
+    (
+      lectureId: string,
+      masteryPct: number
+    ) => {
+      const now = new Date().toISOString();
+      const current = byLectureRef.current[lectureId];
+
+      const record: ProgressRecord = {
+        internalId: lectureId,
+        flashcardProgress: {
+          sessions: current?.flash_sessions ?? 0,
+          mastery_pct: masteryPct,
+        },
+        examProgress: {
+          sessions: current?.exam_sessions ?? 0,
+          best_score: current?.best_exam_score ?? null,
+          avg_score: current?.avg_exam_score ?? null,
+        },
+        lastStudied: now,
+        updatedAt: now,
+      };
+
+      setByLecture((prev) => ({
+        ...prev,
+        [lectureId]: recordToProgress(record),
+      }));
+
       save(record);
     },
     []
@@ -185,6 +223,7 @@ export function useProgress() {
     loading,
     error,
     recordSession,
+    saveProgress,
     refetch: fetchProgress,
   };
 }
