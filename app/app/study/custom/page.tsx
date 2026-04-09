@@ -33,7 +33,7 @@ function CustomPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const supabase = createClient();
-  const { recordSession } = useProgress();
+  const { recordFlashcard, recordSession } = useProgress();
 
   const mode = (params.get('mode') ?? 'flash') as 'flash' | 'exam';
   const lectureIds = params.get('lectures')?.split(',').filter(Boolean) ?? [];
@@ -97,10 +97,11 @@ function CustomPageInner() {
         slidesStoragePath={null}
         slideCount={primaryLecture.slide_count}
         onExit={() => router.push('/app')}
-        onSessionComplete={async (_gotIt, _missed, pct) => {
-          await Promise.all(
-            lectures.map((l) => recordSession(l.internal_id, 'flash', { masteryPct: pct }))
-          );
+        onProgressUpdate={(gotItIds, missedIds, totalCards) => {
+          lectures.forEach((l) => recordFlashcard(l.internal_id, gotItIds, missedIds, totalCards, false));
+        }}
+        onSessionComplete={(gotItIds, missedIds, totalCards) => {
+          lectures.forEach((l) => recordFlashcard(l.internal_id, gotItIds, missedIds, totalCards, true));
         }}
       />
     );
