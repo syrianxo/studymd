@@ -41,12 +41,12 @@ export default function LectureCard({
 
   function handleFlash(e: React.MouseEvent) {
     e.stopPropagation();
-    onStartFlash(lecture.id);
+    onStartFlash(lecture.internal_id);
   }
 
   function handleExam(e: React.MouseEvent) {
     e.stopPropagation();
-    onStartExam(lecture.id);
+    onStartExam(lecture.internal_id);
   }
 
   // Progress bar color mirrors card accent color
