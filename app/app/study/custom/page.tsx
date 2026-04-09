@@ -3,7 +3,7 @@
 // URL: /app/study/custom?mode=flash|exam&lectures=id1,id2&topics=t1,t2&count=20&types=mcq,tf
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import FlashcardView, { type FlashCard } from '@/components/study/FlashcardView';
@@ -23,6 +23,14 @@ interface LectureData {
 }
 
 export default function CustomPage() {
+  return (
+    <Suspense fallback={<LoadingScreen mode="flash" />}>
+      <CustomPageInner />
+    </Suspense>
+  );
+}
+
+function CustomPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const supabase = createClient();

@@ -3,7 +3,7 @@
 // URL: /app/study/flash?lecture=<lectureId>[&topics=t1,t2&count=20&order=random]
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import FlashcardView, { type FlashCard } from '@/components/study/FlashcardView';
@@ -22,6 +22,14 @@ interface LectureData {
 }
 
 export default function FlashPage() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <FlashPageInner />
+    </Suspense>
+  );
+}
+
+function FlashPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const supabase = createClient();

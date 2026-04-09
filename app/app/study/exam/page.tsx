@@ -3,7 +3,7 @@
 // URL: /app/study/exam?lecture=<lectureId>[&topics=t1,t2&count=15&types=mcq,tf]
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import ExamView, { type ExamQuestion } from '@/components/study/ExamView';
@@ -20,6 +20,14 @@ interface LectureData {
 }
 
 export default function ExamPage() {
+  return (
+    <Suspense fallback={<LoadingScreen />}>
+      <ExamPageInner />
+    </Suspense>
+  );
+}
+
+function ExamPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const supabase = createClient();
