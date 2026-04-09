@@ -52,7 +52,7 @@ function FlashPageInner() {
 
     supabase
       .from('lectures')
-      .select('internal_id, title, slides_storage_path, slide_count, json_data')
+      .select('internal_id, title, slide_count, json_data')
       .eq('internal_id', lectureId)
       .single()
       .then(({ data, error: err }) => {
