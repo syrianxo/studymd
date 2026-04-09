@@ -1,18 +1,56 @@
-import { createBrowserClient } from "@supabase/ssr";
+import { createBrowserClient, createServerClient } from '@supabase/ssr'
+import type { NextRequest, NextResponse } from 'next/server'
+
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type Database = any // Replace with your generated Supabase types
+
+// ─── Browser / Client Component ──────────────────────────────────────────────
 
 /**
- * Supabase browser client — use in Client Components and browser-side logic.
- * Reads NEXT_PUBLIC_ env vars, safe to call anywhere on the client.
+ * Use in Client Components ("use client").
+ * Auth tokens are managed via httpOnly cookies by @supabase/ssr.
  */
 export function createClient() {
-  return createBrowserClient(
+  return createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  )
 }
 
+// ─── Middleware / Proxy ───────────────────────────────────────────────────────
+
 /**
- * Typed helper re-exported for convenience so imports stay short:
- *   import { createClient } from '@/lib/supabase'
+ * Use exclusively in proxy.ts.
+ * Needs both req and res so it can read AND write auth cookies (token refresh).
+ * Does NOT import next/headers — safe to use in the proxy/middleware context.
  */
-export type SupabaseClient = ReturnType<typeof createClient>;
+export function createMiddlewareClient(
+  request: NextRequest,
+  response: NextResponse
+) {
+  return createServerClient<Database>(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll()
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, {
+              ...options,
+              httpOnly: true,
+              sameSite: 'lax',
+              secure: process.env.NODE_ENV === 'production',
+            })
+          )
+        },
+      },
+    }
+  )
+}

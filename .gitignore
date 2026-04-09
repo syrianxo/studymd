@@ -44,3 +44,4 @@ next-env.d.ts
 .env.local
 .env.*.local
 # .env.local.example is safe to commit (no real keys inside)
+.env*.local
