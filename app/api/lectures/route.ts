@@ -37,8 +37,8 @@ interface JoinedRow extends LectureRow {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function buildSupabaseClient() {
-  const cookieStore = cookies();
+async function buildSupabaseClient() {
+  const cookieStore = await cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -92,7 +92,7 @@ function applyOverrides(row: JoinedRow) {
 // ---------------------------------------------------------------------------
 
 export async function GET(_req: NextRequest) {
-  const supabase = buildSupabaseClient();
+  const supabase = await buildSupabaseClient();
 
   // Auth check
   const {

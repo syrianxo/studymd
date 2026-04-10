@@ -20,8 +20,8 @@ const DEFAULT_PREFERENCES = {
 // Helpers
 // ---------------------------------------------------------------------------
 
-function buildSupabaseClient() {
-  const cookieStore = cookies();
+async function buildSupabaseClient() {
+  const cookieStore = await cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -35,7 +35,7 @@ function buildSupabaseClient() {
   );
 }
 
-async function requireSession(supabase: ReturnType<typeof buildSupabaseClient>) {
+async function requireSession(supabase: Awaited<ReturnType<typeof buildSupabaseClient>>) {
   const {
     data: { session },
     error,
@@ -49,7 +49,7 @@ async function requireSession(supabase: ReturnType<typeof buildSupabaseClient>) 
 // ---------------------------------------------------------------------------
 
 export async function GET(_req: NextRequest) {
-  const supabase = buildSupabaseClient();
+  const supabase = await buildSupabaseClient();
   const session = await requireSession(supabase);
 
   if (!session) {
@@ -91,7 +91,7 @@ interface PutBody {
 }
 
 export async function PUT(req: NextRequest) {
-  const supabase = buildSupabaseClient();
+  const supabase = await buildSupabaseClient();
   const session = await requireSession(supabase);
 
   if (!session) {
