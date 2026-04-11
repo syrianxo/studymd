@@ -1,134 +1,71 @@
-import { createClient } from '@supabase/supabase-js';
-import type {
-  UserLectureSettings,
-  LectureWithSettings,
-  UserPreferences,
-  Theme,
-  Course,
-} from '@/types';
-
-// ─── Supabase Client ────────────────────────────────────────────────────────
+import { createBrowserClient, createServerClient } from '@supabase/ssr';
+import { createClient as createSupabaseClient } from '@supabase/supabase-js';
+import { cookies } from 'next/headers';
+import { NextRequest, NextResponse } from 'next/server';
 
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
-
-// ─── Lecture Settings API ───────────────────────────────────────────────────
-
-/**
- * Fetch all lectures with user settings, ordered by display_order.
- */
-export async function fetchLecturesWithSettings(
-  userId: string
-): Promise<LectureWithSettings[]> {
-  const { data, error } = await supabase
-    .from('lectures')
-    .select(
-      `
-      *,
-      settings:user_lecture_settings!inner(*)
-    `
-    )
-    .eq('user_lecture_settings.user_id', userId)
-    .order('display_order', {
-      foreignTable: 'user_lecture_settings',
-      ascending: true,
-    });
-
-  if (error) throw error;
-
-  return (data ?? []).map((row: any) => ({
-    ...row,
-    settings: row.settings,
-    display_title: row.settings.custom_title ?? row.title,
-    display_course: (row.settings.course_override ?? row.course) as Course,
-    display_color: row.settings.color_override ?? row.color,
-  }));
+// ─── Browser / Client Components ──────────────────────────────────────────
+// Used in 'use client' components: login page, study pages, hooks
+export function createClient() {
+  return createBrowserClient(supabaseUrl, supabaseAnonKey);
 }
 
-/**
- * Update settings for a single lecture (optimistic-UI friendly).
- */
+// ─── Server Components ─────────────────────────────────────────────────────
+// Used in server components and API routes that need cookie-based auth
+export async function createServerComponentClient() {
+  const cookieStore = await cookies();
+  return createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() { return cookieStore.getAll(); },
+      setAll(cookiesToSet) {
+        try {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set(name, value, options)
+          );
+        } catch {
+          // Server Component — mutations are expected to be no-ops here
+        }
+      },
+    },
+  });
+}
+
+// ─── Middleware ────────────────────────────────────────────────────────────
+// Used in proxy.ts / middleware.ts for session refresh on every request
+export function createMiddlewareClient(request: NextRequest, response: NextResponse) {
+  return createServerClient(supabaseUrl, supabaseAnonKey, {
+    cookies: {
+      getAll() { return request.cookies.getAll(); },
+      setAll(cookiesToSet) {
+        cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+        cookiesToSet.forEach(({ name, value, options }) =>
+          response.cookies.set(name, value, options)
+        );
+      },
+    },
+  });
+}
+
+// ─── Service Role (API routes only — never client-side) ───────────────────
+// Uses service role key to bypass RLS. Only call from server-side routes.
+export function createServiceClient() {
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+  return createSupabaseClient(supabaseUrl, serviceKey);
+}
+
+// ─── updateLectureSettings ────────────────────────────────────────────────
+// Kept here so existing imports from '@/lib/supabase' continue to resolve.
 export async function updateLectureSettings(
   userId: string,
   internalId: string,
-  patch: Partial<Omit<UserLectureSettings, 'user_id' | 'internal_id'>>
+  settings: Record<string, unknown>
 ): Promise<void> {
-  const { error } = await supabase.from('user_lecture_settings').upsert(
-    {
-      user_id: userId,
-      internal_id: internalId,
-      ...patch,
-    },
-    { onConflict: 'user_id,internal_id' }
-  );
-  if (error) throw error;
-}
-
-/**
- * Batch-update display_order for a list of lecture IDs.
- * @param orderedIds - Array of internal_ids in their new order
- */
-export async function reorderLectures(
-  userId: string,
-  orderedIds: string[]
-): Promise<void> {
-  const updates = orderedIds.map((id, index) => ({
-    user_id: userId,
-    internal_id: id,
-    display_order: index,
-  }));
-
-  const { error } = await supabase
+  const supabase = createServiceClient();
+  await supabase
     .from('user_lecture_settings')
-    .upsert(updates, { onConflict: 'user_id,internal_id' });
-
-  if (error) throw error;
-}
-
-// ─── Tag Helpers ────────────────────────────────────────────────────────────
-
-/**
- * Collect all unique tags across all user's lecture settings.
- */
-export async function fetchAllTags(userId: string): Promise<string[]> {
-  const { data, error } = await supabase
-    .from('user_lecture_settings')
-    .select('tags')
-    .eq('user_id', userId);
-
-  if (error) throw error;
-
-  const tagSet = new Set<string>();
-  (data ?? []).forEach((row: { tags: string[] }) => {
-    (row.tags ?? []).forEach((t) => tagSet.add(t));
-  });
-  return Array.from(tagSet).sort();
-}
-
-// ─── User Preferences ───────────────────────────────────────────────────────
-
-export async function fetchUserPreferences(
-  userId: string
-): Promise<UserPreferences | null> {
-  const { data, error } = await supabase
-    .from('user_preferences')
-    .select('*')
+    .update(settings)
     .eq('user_id', userId)
-    .single();
-
-  if (error && error.code !== 'PGRST116') throw error; // PGRST116 = no rows
-  return data ?? null;
-}
-
-export async function saveUserTheme(
-  userId: string,
-  theme: Theme
-): Promise<void> {
-  const { error } = await supabase.from('user_preferences').upsert(
-    { user_id: userId, theme },
-    { onConflict: 'user_id' }
-  );
-  if (error) throw error;
+    .eq('internal_id', internalId);
 }
