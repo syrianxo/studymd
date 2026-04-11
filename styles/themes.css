@@ -1,171 +1,138 @@
-/* ============================================================
-   StudyMD Theme System
-   Three palettes: midnight (default), lavender, forest
-   Apply via data-theme attribute on <html> or <body>
-   ============================================================ */
+/*
+ * StudyMD v2 — Theme System
+ * Three palettes controlled by [data-theme] on <html>.
+ * Applied BEFORE first paint via the THEME_INIT_SCRIPT in ThemePicker.tsx.
+ *
+ * Import in your global CSS:
+ *   @import './themes.css';
+ */
 
+/* ── Base: Midnight (default) ─────────────────────────────────────────────── */
 :root,
 [data-theme="midnight"] {
-  /* Backgrounds */
-  --bg: #0d0f14;
-  --surface: #13161d;
-  --surface2: #1a1e27;
-  --surface3: #212638;
-  --border: #252a36;
-  --border-subtle: #1e2330;
+  --bg:          #0d0f14;
+  --surface:     #13161d;
+  --surface2:    #1a1e27;
+  --surface3:    #212633;
 
-  /* Accents */
-  --accent: #5b8dee;
-  --accent2: #8b5cf6;
-  --accent-hover: #7aa3f5;
-  --accent2-hover: #a37af9;
-  --accent-dim: rgba(91, 141, 238, 0.15);
-  --accent2-dim: rgba(139, 92, 246, 0.15);
+  --accent:      #5b8dee;
+  --accent2:     #8b5cf6;
+  --accent-muted: rgba(91, 141, 238, 0.15);
 
-  /* Text */
-  --text: #e8eaf0;
-  --text-muted: #6b7280;
-  --text-subtle: #3d4455;
-  --text-on-accent: #ffffff;
+  --text:        #e8eaf0;
+  --text-muted:  #6b7280;
+  --text-faint:  #3d4252;
 
-  /* Semantic */
-  --success: #10b981;
-  --success-dim: rgba(16, 185, 129, 0.15);
-  --warning: #f59e0b;
-  --warning-dim: rgba(245, 158, 11, 0.15);
-  --danger: #ef4444;
-  --danger-dim: rgba(239, 68, 68, 0.15);
+  --border:      rgba(255, 255, 255, 0.07);
+  --border-focus: rgba(91, 141, 238, 0.5);
 
-  /* Course colors */
-  --course-pd: #5b8dee;
-  --course-ap: #8b5cf6;
-  --course-ld: #10b981;
+  --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md:   0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg:   0 24px 64px rgba(0, 0, 0, 0.6);
 
-  /* Gradients */
-  --gradient-hero: linear-gradient(135deg, #0d0f14 0%, #131829 50%, #0d0f14 100%);
-  --gradient-card: linear-gradient(145deg, #13161d, #1a1e27);
-  --gradient-accent: linear-gradient(135deg, var(--accent), var(--accent2));
-
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
-  --shadow-accent: 0 4px 20px rgba(91, 141, 238, 0.25);
-  --shadow-accent2: 0 4px 20px rgba(139, 92, 246, 0.25);
-
-  /* Misc */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  /* Course accent colors (consistent across themes) */
+  --course-pd:   #5b8dee;   /* Physical Diagnosis I */
+  --course-ap:   #10b981;   /* Anatomy & Physiology */
+  --course-ld:   #f59e0b;   /* Laboratory Diagnosis */
 }
 
+/* ── Lavender ─────────────────────────────────────────────────────────────── */
 [data-theme="lavender"] {
-  /* Backgrounds */
-  --bg: #16121e;
-  --surface: #1e1829;
-  --surface2: #261f33;
-  --surface3: #2e2640;
-  --border: #352c45;
-  --border-subtle: #2a2238;
+  --bg:          #16121e;
+  --surface:     #1e1829;
+  --surface2:    #261f33;
+  --surface3:    #2e263d;
 
-  /* Accents */
-  --accent: #a78bfa;
-  --accent2: #f472b6;
-  --accent-hover: #bba3fc;
-  --accent2-hover: #f78dc7;
-  --accent-dim: rgba(167, 139, 250, 0.15);
-  --accent2-dim: rgba(244, 114, 182, 0.15);
+  --accent:      #a78bfa;
+  --accent2:     #f472b6;
+  --accent-muted: rgba(167, 139, 250, 0.15);
 
-  /* Text */
-  --text: #ede9fe;
-  --text-muted: #7c6f99;
-  --text-subtle: #4a3f60;
-  --text-on-accent: #ffffff;
+  --text:        #ede9fe;
+  --text-muted:  #7c6f99;
+  --text-faint:  #3d344f;
 
-  /* Semantic */
-  --success: #34d399;
-  --success-dim: rgba(52, 211, 153, 0.15);
-  --warning: #fbbf24;
-  --warning-dim: rgba(251, 191, 36, 0.15);
-  --danger: #f87171;
-  --danger-dim: rgba(248, 113, 113, 0.15);
+  --border:      rgba(255, 255, 255, 0.07);
+  --border-focus: rgba(167, 139, 250, 0.5);
 
-  /* Course colors */
-  --course-pd: #a78bfa;
-  --course-ap: #f472b6;
-  --course-ld: #34d399;
+  --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.35);
+  --shadow-md:   0 8px 24px rgba(0, 0, 0, 0.45);
+  --shadow-lg:   0 24px 64px rgba(0, 0, 0, 0.65);
 
-  /* Gradients */
-  --gradient-hero: linear-gradient(135deg, #16121e 0%, #1e1530 50%, #16121e 100%);
-  --gradient-card: linear-gradient(145deg, #1e1829, #261f33);
-  --gradient-accent: linear-gradient(135deg, var(--accent), var(--accent2));
-
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
-  --shadow-accent: 0 4px 20px rgba(167, 139, 250, 0.25);
-  --shadow-accent2: 0 4px 20px rgba(244, 114, 182, 0.25);
-
-  /* Misc (inherited, same across themes) */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --course-pd:   #a78bfa;
+  --course-ap:   #34d399;
+  --course-ld:   #fb923c;
 }
 
+/* ── Forest ───────────────────────────────────────────────────────────────── */
 [data-theme="forest"] {
-  /* Backgrounds */
-  --bg: #0c1410;
-  --surface: #121d17;
-  --surface2: #18261e;
-  --surface3: #1e3027;
-  --border: #233d2d;
-  --border-subtle: #192e22;
+  --bg:          #0c1410;
+  --surface:     #121d17;
+  --surface2:    #18261e;
+  --surface3:    #1e3027;
 
-  /* Accents */
-  --accent: #10b981;
-  --accent2: #34d399;
-  --accent-hover: #34d399;
-  --accent2-hover: #6ee7b7;
-  --accent-dim: rgba(16, 185, 129, 0.15);
-  --accent2-dim: rgba(52, 211, 153, 0.15);
+  --accent:      #10b981;
+  --accent2:     #34d399;
+  --accent-muted: rgba(16, 185, 129, 0.15);
 
-  /* Text */
-  --text: #e0f2e9;
-  --text-muted: #5f8a72;
-  --text-subtle: #2d5040;
-  --text-on-accent: #ffffff;
+  --text:        #e0f2e9;
+  --text-muted:  #5f8a72;
+  --text-faint:  #2d4a3a;
 
-  /* Semantic */
-  --success: #34d399;
-  --success-dim: rgba(52, 211, 153, 0.15);
-  --warning: #fbbf24;
-  --warning-dim: rgba(251, 191, 36, 0.15);
-  --danger: #f87171;
-  --danger-dim: rgba(248, 113, 113, 0.15);
+  --border:      rgba(255, 255, 255, 0.06);
+  --border-focus: rgba(16, 185, 129, 0.5);
 
-  /* Course colors */
-  --course-pd: #10b981;
-  --course-ap: #38bdf8;
-  --course-ld: #a3e635;
+  --shadow-sm:   0 2px 8px rgba(0, 0, 0, 0.3);
+  --shadow-md:   0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-lg:   0 24px 64px rgba(0, 0, 0, 0.55);
 
-  /* Gradients */
-  --gradient-hero: linear-gradient(135deg, #0c1410 0%, #0f1e16 50%, #0c1410 100%);
-  --gradient-card: linear-gradient(145deg, #121d17, #18261e);
-  --gradient-accent: linear-gradient(135deg, var(--accent), var(--accent2));
+  --course-pd:   #38bdf8;
+  --course-ap:   #10b981;
+  --course-ld:   #fbbf24;
+}
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.5);
-  --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.6);
-  --shadow-accent: 0 4px 20px rgba(16, 185, 129, 0.25);
-  --shadow-accent2: 0 4px 20px rgba(52, 211, 153, 0.25);
+/* ── Smooth theme transition (applied to all elements) ─────────────────────── */
+*,
+*::before,
+*::after {
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.15s ease,
+    box-shadow 0.2s ease;
+}
 
-  /* Misc */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+/* Exception: disable transitions for drag-and-drop performance */
+.lc-dragging *,
+.lc-dragging {
+  transition: none !important;
+}
+
+/* ── Base global styles ────────────────────────────────────────────────────── */
+html {
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  margin: 0;
+  min-height: 100vh;
+}
+
+/* Scrollbar theming */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--text-faint);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
