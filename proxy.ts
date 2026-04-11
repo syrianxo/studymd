@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server'
-import { createMiddlewareClient } from '@/lib/supabase'
+import { createMiddlewareClient } from '@/lib/supabase-middleware'
 
 /**
  * StudyMD Auth Proxy (Next.js 16+)
