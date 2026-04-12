@@ -41,6 +41,10 @@ export interface Lecture {
   visible: boolean;
   archived: boolean;
   custom_title: string | null;
+  tags: string[];
+  group_id: string | null;
+  course_override: string | null;
+  color_override: string | null;
 }
 
 interface UseUserLecturesResult {
@@ -80,22 +84,26 @@ export function useUserLectures(): UseUserLecturesResult {
 
       let settingsMap: Record<
         string,
-        { display_order: number; visible: boolean; archived: boolean; custom_title: string | null }
+        { display_order: number; visible: boolean; archived: boolean; custom_title: string | null; tags: string[]; group_id: string | null; course_override: string | null; color_override: string | null; }
       > = {};
 
       // ── 2. Fetch per-user overrides if logged in ────────────────────────
       if (user) {
         const { data: settingsRows } = await supabase
           .from('user_lecture_settings')
-          .select('internal_id, display_order, visible, archived, custom_title')
+          .select('internal_id, display_order, visible, archived, custom_title, tags, group_id, course_override, color_override')
           .eq('user_id', user.id);
 
         for (const s of settingsRows ?? []) {
           settingsMap[s.internal_id] = {
-            display_order: s.display_order ?? 999,
-            visible: s.visible ?? true,
-            archived: s.archived ?? false,
-            custom_title: s.custom_title ?? null,
+            display_order:   s.display_order   ?? 999,
+            visible:         s.visible         ?? true,
+            archived:        s.archived        ?? false,
+            custom_title:    s.custom_title    ?? null,
+            tags:            s.tags            ?? [],
+            group_id:        s.group_id        ?? null,
+            course_override: s.course_override ?? null,
+            color_override:  s.color_override  ?? null,
           };
         }
       }
@@ -103,10 +111,14 @@ export function useUserLectures(): UseUserLecturesResult {
       // ── 3. Merge ────────────────────────────────────────────────────────
       const merged: Lecture[] = (lectureRows ?? []).map((row, idx) => ({
         ...(row as any),
-        display_order: settingsMap[row.internal_id]?.display_order ?? idx,
-        visible: settingsMap[row.internal_id]?.visible ?? true,
-        archived: settingsMap[row.internal_id]?.archived ?? false,
-        custom_title: settingsMap[row.internal_id]?.custom_title ?? null,
+        display_order:   settingsMap[row.internal_id]?.display_order   ?? idx,
+        visible:         settingsMap[row.internal_id]?.visible         ?? true,
+        archived:        settingsMap[row.internal_id]?.archived        ?? false,
+        custom_title:    settingsMap[row.internal_id]?.custom_title    ?? null,
+        tags:            settingsMap[row.internal_id]?.tags            ?? [],
+        group_id:        settingsMap[row.internal_id]?.group_id        ?? null,
+        course_override: settingsMap[row.internal_id]?.course_override ?? null,
+        color_override:  settingsMap[row.internal_id]?.color_override  ?? null,
       }));
 
       merged.sort((a, b) => a.display_order - b.display_order);

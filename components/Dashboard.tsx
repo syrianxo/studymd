@@ -1,14 +1,16 @@
 // components/Dashboard.tsx
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Header from './Header';
 import StatsRow from './StatsRow';
 import { FilterBar, type FilterState } from './FilterBar';
 import LectureGrid from './LectureGrid';
+import { ManageMode } from './ManageMode';
 import CustomSessionModal, { type CustomSessionConfig } from './CustomSessionModal';
 import { useUserLectures } from '@/hooks/useUserLectures';
 import { useProgress } from '@/hooks/useProgress';
+import { createClient } from '@/lib/supabase';
 import type { Course } from '@/types';
 
 interface DashboardProps {
@@ -19,7 +21,7 @@ interface DashboardProps {
   userName?: string;
 }
 
-export default function Dashboard({ userName = 'Haley' }: DashboardProps) {
+export default function Dashboard({ userName = 'there' }: DashboardProps) {
   const {
     lectures,
     courses,
@@ -39,6 +41,15 @@ export default function Dashboard({ userName = 'Haley' }: DashboardProps) {
     showArchived: false,
   });
   const [customModalOpen, setCustomModalOpen] = useState(false);
+  const [manageOpen, setManageOpen] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+
+  // Fetch userId once on mount for ManageMode
+  useEffect(() => {
+    createClient().auth.getUser().then(({ data }) => {
+      if (data.user) setUserId(data.user.id);
+    });
+  }, []);
 
   // ── Filtered lectures ──────────────────────────────────────────────────
   const visibleLectures = useMemo(
@@ -149,31 +160,73 @@ export default function Dashboard({ userName = 'Haley' }: DashboardProps) {
         {/* Section header */}
         <div className="smd-section-header">
           <div className="smd-section-title">Your Lectures</div>
-          <button
-            className="btn btn-primary"
-            style={{ fontSize: 12, padding: '9px 16px' }}
-            onClick={() => setCustomModalOpen(true)}
-          >
-            ✦ Custom Study Session
-          </button>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button
+              className="btn btn-ghost"
+              style={{ fontSize: 12, padding: '9px 16px' }}
+              onClick={() => setManageOpen((v) => !v)}
+            >
+              {manageOpen ? '✓ Done Managing' : '✏️ Manage'}
+            </button>
+            <button
+              className="btn btn-primary"
+              style={{ fontSize: 12, padding: '9px 16px' }}
+              onClick={() => setCustomModalOpen(true)}
+            >
+              ✦ Custom Study Session
+            </button>
+          </div>
         </div>
 
-        {/* Course filter bar */}
-        <FilterBar
-          allCourses={courses as Course[]}
-          allTags={[]}
-          filter={filter}
-          onChange={setFilter}
-        />
+        {/* Course filter bar — hidden when manage mode is open */}
+        {!manageOpen && (
+          <FilterBar
+            allCourses={courses as Course[]}
+            allTags={[]}
+            filter={filter}
+            onChange={setFilter}
+          />
+        )}
 
-        {/* Lecture grid */}
-        <LectureGrid
-          lectures={visibleLectures}
-          progressByLecture={progressByLecture}
-          loading={lecturesLoading}
-          onStartFlash={handleStartFlash}
-          onStartExam={handleStartExam}
-        />
+        {/* Manage mode — replaces the grid when open */}
+        {manageOpen && userId && (
+          <ManageMode
+            userId={userId}
+            initialLectures={lectures.map((l) => ({
+              ...l,
+              settings: {
+                user_id:         userId,
+                internal_id:     l.internal_id,
+                display_order:   l.display_order,
+                visible:         l.visible,
+                archived:        l.archived,
+                group_id:        l.group_id,
+                tags:            l.tags,
+                course_override: l.course_override,
+                color_override:  l.color_override,
+                custom_title:    l.custom_title,
+              },
+              display_title:  l.custom_title   ?? l.title,
+              display_course: (l.course_override ?? l.course) as Course,
+              display_color:  l.color_override  ?? l.color,
+            }))}
+            onOpenLecture={(id) => {
+              setManageOpen(false);
+              handleStartFlash(id);
+            }}
+          />
+        )}
+
+        {/* Lecture grid — hidden when manage mode is open */}
+        {!manageOpen && (
+          <LectureGrid
+            lectures={visibleLectures}
+            progressByLecture={progressByLecture}
+            loading={lecturesLoading}
+            onStartFlash={handleStartFlash}
+            onStartExam={handleStartExam}
+          />
+        )}
       </main>
 
       {/* ── Custom Session Modal ──────────────────────────────────────── */}
