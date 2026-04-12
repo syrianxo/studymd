@@ -1,14 +1,12 @@
-import { createServerComponentClient } from '@/lib/supabase';
-import { cookies } from 'next/headers';
+import { createServerComponentClient, fetchLecturesWithSettings, fetchUserPreferences } from '@/lib/supabase-server';
 import { redirect } from 'next/navigation';
 import { DashboardClient } from './DashboardClient';
-import { fetchLecturesWithSettings, fetchUserPreferences } from '@/lib/supabase';
 
 /**
  * Server component — fetches data, enforces auth, passes to client component.
  */
 export default async function DashboardPage() {
-  const supabase = createServerComponentClient({ cookies });
+  const supabase = await createServerComponentClient();
 
   // Auth check
   const {

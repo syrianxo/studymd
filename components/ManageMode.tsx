@@ -20,11 +20,37 @@ import {
   sortableKeyboardCoordinates,
   rectSortingStrategy,
 } from '@dnd-kit/sortable';
-import {
-  updateLectureSettings,
-  reorderLectures,
-  fetchAllTags,
-} from '@/lib/supabase';
+// Lecture mutation helpers — call API routes, never supabase-server directly
+// (client components cannot import next/headers)
+async function updateLectureSettings(
+  userId: string,
+  internalId: string,
+  settings: Record<string, unknown>
+): Promise<void> {
+  await fetch('/api/lectures/settings', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, internalId, settings }),
+  });
+}
+
+async function reorderLectures(
+  userId: string,
+  orderedIds: string[]
+): Promise<void> {
+  await fetch('/api/lectures/reorder', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, orderedIds }),
+  });
+}
+
+async function fetchAllTags(userId: string): Promise<string[]> {
+  const res = await fetch(`/api/lectures/tags?userId=${userId}`);
+  if (!res.ok) return [];
+  const data = await res.json();
+  return data.tags ?? [];
+}
 import { LectureCard } from './LectureCard';
 import { TagEditor } from './TagEditor';
 import { FilterBar, applyFilters, type FilterState } from './FilterBar';

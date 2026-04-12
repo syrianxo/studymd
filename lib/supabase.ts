@@ -1,27 +1,16 @@
 /**
- * lib/supabase.ts — re-export barrel.
+ * lib/supabase.ts
+ *
+ * BROWSER-SAFE ONLY. This file is imported by client components.
+ * It must never re-export anything from supabase-server.ts because
+ * that module imports next/headers (server-only) and Turbopack will
+ * break any client bundle that transitively reaches it.
  *
  * Import rules:
- *   Client components / hooks → import { createClient } from '@/lib/supabase'
- *   Server components         → import { createServerComponentClient, fetchLecturesWithSettings, ... } from '@/lib/supabase'
- *   API routes (server-only)  → import { createServiceClient, updateLectureSettings, ... } from '@/lib/supabase'
- *   Middleware / proxy.ts     → import { createMiddlewareClient } from '@/lib/supabase-middleware'
- *
- * NOTE: proxy.ts must import directly from '@/lib/supabase-middleware', not here,
- * because the middleware runtime cannot bundle next/headers even lazily.
+ *   Client components / hooks  → import { createClient } from '@/lib/supabase'
+ *   Server components          → import directly from '@/lib/supabase-server'
+ *   API routes                 → import directly from '@/lib/supabase-server'
+ *   Middleware / proxy.ts      → import directly from '@/lib/supabase-middleware'
  */
 
-// Browser client — safe for client components
 export { createClient } from './supabase-browser';
-
-// Server-only exports
-export {
-  createServerComponentClient,
-  createServiceClient,
-  fetchLecturesWithSettings,
-  fetchUserPreferences,
-  updateLectureSettings,
-  reorderLectures,
-  fetchAllTags,
-  saveUserTheme,
-} from './supabase-server';
