@@ -58,11 +58,11 @@ export async function fetchUserPreferences(userId: string) {
   const supabase = await createServerComponentClient();
   const { data } = await supabase
     .from('user_preferences')
-    .select('*')
+    .select('theme, settings, display_name')
     .eq('user_id', userId)
     .single();
 
-  return data ?? { theme: 'midnight', settings: {} };
+  return data ?? { theme: 'midnight', settings: {}, display_name: null };
 }
 
 // ─── Lecture settings mutations (called client-side via API routes) ─────────

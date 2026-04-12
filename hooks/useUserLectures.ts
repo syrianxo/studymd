@@ -33,6 +33,7 @@ export interface Lecture {
   display_order: number;
   topics: string[];
   slide_count: number;
+  created_at: string;
   json_data: {
     flashcards?: FlashCard[];
     questions?: ExamQuestion[];
@@ -77,7 +78,7 @@ export function useUserLectures(): UseUserLecturesResult {
       // ── 1. Fetch base lecture rows ──────────────────────────────────────
       const { data: lectureRows, error: lectureErr } = await supabase
         .from('lectures')
-        .select('internal_id, title, subtitle, icon, course, color, topics, slide_count, json_data')
+        .select('internal_id, title, subtitle, icon, course, color, topics, slide_count, created_at, json_data')
         .order('internal_id', { ascending: true });
 
       if (lectureErr) throw lectureErr;
