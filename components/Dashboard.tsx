@@ -4,11 +4,12 @@
 import { useState, useMemo } from 'react';
 import Header from './Header';
 import StatsRow from './StatsRow';
-import { FilterBar } from './FilterBar';
+import { FilterBar, type FilterState } from './FilterBar';
 import LectureGrid from './LectureGrid';
 import CustomSessionModal, { type CustomSessionConfig } from './CustomSessionModal';
 import { useUserLectures } from '@/hooks/useUserLectures';
 import { useProgress } from '@/hooks/useProgress';
+import type { Course } from '@/types';
 
 interface DashboardProps {
   /**
@@ -32,7 +33,11 @@ export default function Dashboard({ userName = 'Haley' }: DashboardProps) {
     loading: progressLoading,
   } = useProgress();
 
-  const [activeCourse, setActiveCourse] = useState<string | null>(null);
+  const [filter, setFilter] = useState<FilterState>({
+    courses: new Set<Course>(),
+    tags: new Set<string>(),
+    showArchived: false,
+  });
   const [customModalOpen, setCustomModalOpen] = useState(false);
 
   // ── Filtered lectures ──────────────────────────────────────────────────
@@ -40,10 +45,10 @@ export default function Dashboard({ userName = 'Haley' }: DashboardProps) {
     () =>
       lectures.filter((l) => {
         if (!l.visible || l.archived) return false;
-        if (activeCourse && l.course !== activeCourse) return false;
+        if (filter.courses.size > 0 && !filter.courses.has(l.course as Course)) return false;
         return true;
       }),
-    [lectures, activeCourse]
+    [lectures, filter.courses]
   );
 
   // ── Study launch handlers ─────────────────────────────────────────────
@@ -155,9 +160,10 @@ export default function Dashboard({ userName = 'Haley' }: DashboardProps) {
 
         {/* Course filter bar */}
         <FilterBar
-          courses={courses}
-          activeCourse={activeCourse}
-          onSelect={setActiveCourse}
+          allCourses={courses as Course[]}
+          allTags={[]}
+          filter={filter}
+          onChange={setFilter}
         />
 
         {/* Lecture grid */}
