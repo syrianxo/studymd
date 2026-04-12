@@ -4,7 +4,7 @@
 import { useState, useMemo } from 'react';
 import Header from './Header';
 import StatsRow from './StatsRow';
-import FilterBar from './FilterBar';
+import { FilterBar } from './FilterBar';
 import LectureGrid from './LectureGrid';
 import CustomSessionModal, { type CustomSessionConfig } from './CustomSessionModal';
 import { useUserLectures } from '@/hooks/useUserLectures';
