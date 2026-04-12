@@ -87,11 +87,9 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
     window.location.href = `/app/study/custom?${params.toString()}`;
   }
 
-  function handleLectureCreated(internalId: string) {
-    // Refresh the lecture list — however your data layer works.
-    // e.g. refetch from Supabase, invalidate a React Query cache, etc.
+  function handleLectureCreated(_internalId: string) {
     setShowUploadModal(false);
-    refreshLectures();
+    refetch();
   }
 
   // ── Error state ────────────────────────────────────────────────────────
@@ -175,7 +173,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
             <button
               className="btn btn-ghost"
               style={{ fontSize: 12, padding: '9px 16px' }}
-              onClick={() => setUploadModalOpen(true)}
+              onClick={() => setShowUploadModal(true)}
             >
               ⬆ Upload Lecture
             </button>
@@ -260,15 +258,9 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
         }}
       />
       <UploadModal
-        isOpen={uploadModalOpen}
-        onClose={() => setUploadModalOpen(false)}
-        onLectureCreated={(_id) => {
-          setUploadModalOpen(false);
-          refetch();
-          // useUserLectures will need a refresh here — however your hook exposes it.
-          // e.g. if it returns a `refetch` function: refetch()
-          // For now, a full reload works: window.location.reload()
-        }}
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        onLectureCreated={handleLectureCreated}
       />
     </>
   );
