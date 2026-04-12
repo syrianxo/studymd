@@ -217,9 +217,10 @@ export default function UploadModal({
       const fileUrl = urlData.publicUrl;
 
       // Get the current user ID — required by the generate route.
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Not authenticated. Please log in and try again.");
-
+      const { data: { session } } = await supabase.auth.getSession();
+        if (!session) throw new Error("Not authenticated. Please log in and try again.");
+        const user = session.user;
+        
       // Create a processing_jobs row so the server can track status.
       const { data: jobRow, error: jobError } = await supabase
         .from("processing_jobs")
@@ -248,7 +249,7 @@ export default function UploadModal({
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-internal-secret": process.env.NEXT_PUBLIC_INTERNAL_API_SECRET ?? "",
+          "Authorization": `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
           fileUrl,

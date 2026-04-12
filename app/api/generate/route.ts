@@ -265,8 +265,14 @@ async function callClaudeAPI(
 // ─── Route handler ────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
-  const internalSecret = request.headers.get('x-internal-secret');
-  if (internalSecret !== process.env.INTERNAL_API_SECRET) {
+  const supabaseAuth = getSupabaseAdmin();
+  const authHeader = request.headers.get('authorization');
+  const token = authHeader?.replace('Bearer ', '');
+  if (!token) {
+    return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+  }
+  const { data: { user }, error: authError } = await supabaseAuth.auth.getUser(token);
+  if (authError || !user) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
   }
 
