@@ -1,7 +1,6 @@
 // components/LectureGrid.tsx
 'use client';
 
-import LectureCard from './LectureCard';
 import type { Lecture } from '@/hooks/useUserLectures';
 import type { LectureProgress } from '@/hooks/useProgress';
 
@@ -48,19 +47,118 @@ export default function LectureGrid({
   return (
     <div className="smd-lecture-grid">
       {lectures.map((lecture) => (
-        <LectureCard
+        <SimpleLectureCard
           key={lecture.internal_id}
           lecture={lecture}
           progress={progressByLecture[lecture.internal_id] ?? null}
-          onStartFlash={onStartFlash}
-          onStartExam={onStartExam}
+          onStartFlash={() => onStartFlash(lecture.internal_id)}
+          onStartExam={() => onStartExam(lecture.internal_id)}
         />
       ))}
     </div>
   );
 }
 
+// ── Simple card for the main dashboard grid ───────────────────────────────────
+
+interface SimpleCardProps {
+  lecture: Lecture;
+  progress: LectureProgress | null;
+  onStartFlash: () => void;
+  onStartExam: () => void;
+}
+
+function SimpleLectureCard({ lecture, progress, onStartFlash, onStartExam }: SimpleCardProps) {
+  const fcPct = progress?.mastery_pct ?? 0;
+  const examPct = progress?.best_exam_score ?? 0;
+  const color = lecture.color ?? '#5b8dee';
+
+  return (
+    <div className="smd-lecture-card" style={{ position: 'relative' }}>
+      {/* Accent bar */}
+      <div
+        style={{
+          position: 'absolute', top: 0, left: 20, right: 20,
+          height: 3, borderRadius: '0 0 4px 4px', background: color,
+        }}
+      />
+
+      <div className="smd-card-summary">
+        <div className="smd-card-top">
+          <span style={{ fontSize: 28 }}>{lecture.icon}</span>
+          <span
+            style={{
+              fontFamily: "'DM Mono', monospace", fontSize: 10,
+              padding: '2px 8px', borderRadius: 100,
+              background: `${color}22`, color,
+            }}
+          >
+            {lecture.course}
+          </span>
+        </div>
+
+        <div
+          style={{
+            fontFamily: "'Fraunces', serif", fontSize: 16, fontWeight: 600,
+            color: 'var(--text)', lineHeight: 1.3, margin: '10px 0 4px',
+          }}
+        >
+          {lecture.custom_title ?? lecture.title}
+        </div>
+
+        {lecture.subtitle && (
+          <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>
+            {lecture.subtitle}
+          </div>
+        )}
+
+        {/* Progress bars */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+          {[
+            { label: 'Flashcards', pct: fcPct },
+            { label: 'Exam', pct: examPct },
+          ].map(({ label, pct }) => (
+            <div
+              key={label}
+              style={{
+                flex: 1, fontFamily: "'DM Mono', monospace",
+                fontSize: 10, color: 'var(--text-muted)',
+              }}
+            >
+              {label}
+              <div
+                style={{
+                  height: 4, background: 'rgba(255,255,255,0.07)',
+                  borderRadius: 2, marginTop: 3, overflow: 'hidden',
+                }}
+              >
+                <div
+                  style={{
+                    height: '100%', width: `${pct}%`,
+                    background: color, opacity: 0.75,
+                    borderRadius: 2, transition: 'width 0.4s',
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+          <button className="btn btn-secondary" onClick={onStartFlash}>
+            📇 Flashcards
+          </button>
+          <button className="btn btn-secondary" onClick={onStartExam}>
+            📝 Exam
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Loading skeleton ──────────────────────────────────────────────────────────
+
 function SkeletonCard() {
   return (
     <div
