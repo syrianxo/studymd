@@ -390,7 +390,7 @@ export async function POST(request: NextRequest) {
     color: '#5b8dee',
     icon: '🩺',
     topics: lecture.topics,
-    slide_count: null,
+    slide_count: body.slideCount ?? 0,
     json_data: lecture,
     created_at: new Date().toISOString(),
   });
