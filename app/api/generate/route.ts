@@ -54,6 +54,7 @@ interface GenerateRequestBody {
   jobId: string;
   userId: string;
   fileSizeBytes?: number;
+  slideCount?: number;
 }
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────

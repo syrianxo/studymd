@@ -220,7 +220,7 @@ export default function UploadModal({
       const { data: { session } } = await supabase.auth.getSession();
         if (!session) throw new Error("Not authenticated. Please log in and try again.");
         const user = session.user;
-        
+
       // Create a processing_jobs row so the server can track status.
       const { data: jobRow, error: jobError } = await supabase
         .from("processing_jobs")
@@ -255,6 +255,7 @@ export default function UploadModal({
           fileUrl,
           course,
           title: title.trim() || file.name.replace(/\.[^.]+$/, ""),
+          slideCount: blobs.length,
           internalId: tempId,
           jobId: jobRow.job_id,
           userId: user.id,
