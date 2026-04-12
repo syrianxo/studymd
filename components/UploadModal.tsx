@@ -227,10 +227,15 @@ export default function UploadModal({
           internal_id: tempId,
           user_id: user.id,
           status: "pending",
+          storage_path: pdfStoragePath,
+          original_file: file.name,
+          course,
+          title: title.trim() || file.name.replace(/\.[^.]+$/, ""),
+          slide_count: blobs.length,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
-        .select("id")
+        .select("job_id")
         .single();
 
       if (jobError) throw new Error(`Failed to create processing job: ${jobError.message}`);
@@ -251,7 +256,7 @@ export default function UploadModal({
           course,
           title: title.trim() || file.name.replace(/\.[^.]+$/, ""),
           internalId: tempId,
-          jobId: jobRow.id,
+          jobId: jobRow.job_id,
           userId: user.id,
           fileSizeBytes: file.size,
         }),
