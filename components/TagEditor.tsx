@@ -7,7 +7,18 @@ import React, {
   useCallback,
   KeyboardEvent,
 } from 'react';
-import { updateLectureSettings } from '@/lib/supabase';
+// Call API route — cannot import supabase-server in a client component
+async function updateLectureSettings(
+  userId: string,
+  internalId: string,
+  settings: Record<string, unknown>
+): Promise<void> {
+  await fetch('/api/lectures/settings', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, internalId, settings }),
+  });
+}
 
 // ─── Types ──────────────────────────────────────────────────────────────────
 
