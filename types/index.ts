@@ -9,9 +9,9 @@ export type Theme = 'midnight' | 'lavender' | 'forest';
 
 export interface Lecture {
   internal_id: string;
-  original_file?: string;
+  original_file?: string | null;
   title: string;
-  subtitle?: string;
+  subtitle: string | null;
   course: Course;
   color: string;
   icon: string;
