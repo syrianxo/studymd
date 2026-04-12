@@ -23,7 +23,7 @@ import { createClient } from "@supabase/supabase-js";
 // Make sure pdfjs-dist version in package.json matches the CDN URL below.
 // e.g. pdfjs-dist@4.x → cdn.jsdelivr.net/npm/pdfjs-dist@4.x/build/pdf.worker.min.mjs
 // If you copy the worker to /public, replace this with "/pdf.worker.min.mjs".
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjsLib.version}/build/pdf.worker.min.mjs`;
+pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
 
 // ---------------------------------------------------------------------------
 // Types
