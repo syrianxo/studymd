@@ -6,7 +6,9 @@ export const API_LIMITS = {
   MAX_DAILY_INPUT_TOKENS: 500_000,
   MAX_MONTHLY_COST_USD: 5.00,
   MODEL_DEFAULT: 'claude-haiku-4-5-20251001' as const,
+  MODEL_FALLBACK: 'claude-sonnet-4-20250514' as const,
   BATCH_API_ENABLED: true,
+  PROMPT_CACHING_ENABLED: true,
 
   // Haiku pricing (per million tokens, as of 2025)
   INPUT_COST_PER_MILLION: 0.80,   // $0.80 / 1M input tokens
