@@ -241,7 +241,7 @@ export function ManageMode({
 }: ManageModeProps) {
   // ── State ──────────────────────────────────────────────────────────────────
   const [lectures, setLectures] = useState<LectureWithSettings[]>(initialLectures);
-  const [isManageMode, setIsManageMode] = useState(false);
+  const [isManageMode, setIsManageMode] = useState(true);
   const [allTags, setAllTags] = useState<string[]>(() => {
     const s = new Set<string>();
     initialLectures.forEach((l) => l.settings.tags.forEach((t) => s.add(t)));
@@ -446,14 +446,7 @@ export function ManageMode({
       {/* Header */}
       <div className="mm-header">
         <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <button
-            className={`mm-toggle-btn${isManageMode ? ' active' : ''}`}
-            onClick={() => setIsManageMode((v) => !v)}
-            aria-pressed={isManageMode}
-          >
-            <span>{isManageMode ? '✓' : '✏️'}</span>
-            {isManageMode ? 'Managing…' : 'Manage Lectures'}
-          </button>
+          {/* Manage mode is always active when this component renders */}
         </div>
         {renderHeaderRight && (
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -463,16 +456,11 @@ export function ManageMode({
       </div>
 
       {/* Manage mode banner */}
-      {isManageMode && (
-        <div className="mm-banner">
-          <span className="mm-banner-text">
-            🖱 Drag cards to reorder · Use ⋮ menus to hide, archive, tag, or customize
-          </span>
-          <button className="mm-banner-done" onClick={() => setIsManageMode(false)}>
-            Done
-          </button>
-        </div>
-      )}
+      <div className="mm-banner">
+        <span className="mm-banner-text">
+          🖱 Drag cards to reorder · Use ⋮ menus to hide, archive, tag, or customize
+        </span>
+      </div>
 
       {/* Filter bar */}
       <FilterBar
@@ -480,6 +468,7 @@ export function ManageMode({
         allTags={allTags}
         filter={filter}
         onChange={setFilter}
+        showHiddenToggle
       />
 
       {/* DnD Context + lecture grid */}

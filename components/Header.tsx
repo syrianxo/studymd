@@ -7,14 +7,14 @@ import PomodoroTimer from './PomodoroTimer';
 interface HeaderProps {
   globalStats: GlobalStats;
   lectureCount: number;
+  loading?: boolean;
 }
 
-export default function Header({ globalStats, lectureCount }: HeaderProps) {
+export default function Header({ globalStats, lectureCount, loading = false }: HeaderProps) {
   const completedSessions = globalStats.totalSessions;
-  const pillText =
-    lectureCount > 0
-      ? `${lectureCount} lecture${lectureCount !== 1 ? 's' : ''} · ${completedSessions} session${completedSessions !== 1 ? 's' : ''}`
-      : 'Loading…';
+  const pillText = loading
+    ? 'Loading…'
+    : `${lectureCount} lecture${lectureCount !== 1 ? 's' : ''} · ${completedSessions} session${completedSessions !== 1 ? 's' : ''}`;
 
   return (
     <header className="smd-header">

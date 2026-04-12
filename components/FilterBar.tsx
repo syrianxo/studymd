@@ -17,6 +17,7 @@ interface FilterBarProps {
   allTags: string[];
   filter: FilterState;
   onChange: (next: FilterState) => void;
+  showHiddenToggle?: boolean;
 }
 
 // ─── CSS ─────────────────────────────────────────────────────────────────────
@@ -145,7 +146,7 @@ const COURSE_COLORS: Record<Course, string> = {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function FilterBar({ allCourses, allTags, filter, onChange }: FilterBarProps) {
+export function FilterBar({ allCourses, allTags, filter, onChange, showHiddenToggle = false }: FilterBarProps) {
   const hasActiveFilters =
     filter.courses.size > 0 || filter.tags.size > 0 || filter.showArchived || filter.showHidden;
 
@@ -242,14 +243,16 @@ export function FilterBar({ allCourses, allTags, filter, onChange }: FilterBarPr
           📦 Archived
         </button>
 
-        {/* Hidden toggle */}
-        <button
-          className={`fb-archived-toggle${filter.showHidden ? ' active' : ''}`}
-          onClick={toggleHidden}
-          aria-pressed={filter.showHidden}
-        >
-          👁 Hidden
-        </button>
+        {/* Hidden toggle — only in manage mode */}
+        {showHiddenToggle && (
+          <button
+            className={`fb-archived-toggle${filter.showHidden ? ' active' : ''}`}
+            onClick={toggleHidden}
+            aria-pressed={filter.showHidden}
+          >
+            👁 Hidden
+          </button>
+        )}
       </div>
     </>
   );

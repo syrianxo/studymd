@@ -332,6 +332,7 @@ function KebabMenu({
       <div style={{ position: 'relative' }}>
         <button
           className="lc-menu-item"
+          onClick={() => { setShowCourse((v) => !v); setShowColor(false); }}
           onMouseEnter={() => { setShowCourse(true); setShowColor(false); }}
           role="menuitem"
           aria-haspopup="true"
@@ -360,6 +361,7 @@ function KebabMenu({
       <div style={{ position: 'relative' }}>
         <button
           className="lc-menu-item"
+          onClick={() => { setShowColor((v) => !v); setShowCourse(false); }}
           onMouseEnter={() => { setShowColor(true); setShowCourse(false); }}
           role="menuitem"
           aria-haspopup="true"
@@ -391,13 +393,15 @@ function KebabMenu({
         <button className="lc-menu-item" onClick={() => { onRestore(); onClose(); }} role="menuitem">
           <span>↩️</span> Restore
         </button>
+      ) : !settings.visible ? (
+        <button className="lc-menu-item" onClick={() => { onRestore(); onClose(); }} role="menuitem">
+          <span>👁</span> Unhide
+        </button>
       ) : (
         <>
-          {settings.visible && (
-            <button className="lc-menu-item" onClick={() => { onHide(); onClose(); }} role="menuitem">
-              <span>👁</span> Hide
-            </button>
-          )}
+          <button className="lc-menu-item" onClick={() => { onHide(); onClose(); }} role="menuitem">
+            <span>👁</span> Hide
+          </button>
           <button className="lc-menu-item danger" onClick={() => { onArchive(); onClose(); }} role="menuitem">
             <span>📦</span> Archive
           </button>
@@ -582,6 +586,13 @@ export function LectureCard({
         {lecture.settings.archived && (
           <button className="lc-restore-btn" onClick={(e) => { e.stopPropagation(); onRestore(); }}>
             ↩ Restore
+          </button>
+        )}
+
+        {/* Unhide button for hidden (non-archived) cards */}
+        {!lecture.settings.visible && !lecture.settings.archived && (
+          <button className="lc-restore-btn" onClick={(e) => { e.stopPropagation(); onRestore(); }}>
+            👁 Unhide
           </button>
         )}
       </div>

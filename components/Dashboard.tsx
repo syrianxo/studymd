@@ -87,7 +87,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
   if (lecturesError) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Header globalStats={globalStats} lectureCount={0} />
+        <Header globalStats={globalStats} lectureCount={0} loading />
         <div
           style={{
             flex: 1,
@@ -131,6 +131,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
       <Header
         globalStats={globalStats}
         lectureCount={visibleLectures.length}
+        loading={lecturesLoading}
       />
 
       {/* ── Main dashboard ───────────────────────────────────────────── */}
