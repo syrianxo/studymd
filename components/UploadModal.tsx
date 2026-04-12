@@ -17,6 +17,8 @@ import {
   isPdf,
   isPptx,
 } from "@/lib/slide-converter";
+import { createClient } from "@/lib/supabase";
+
 
 // ---------------------------------------------------------------------------
 // Types
@@ -112,6 +114,7 @@ export default function UploadModal({
   // ---------------------------------------------------------------------------
   // Upload flow
   // ---------------------------------------------------------------------------
+  const supabase = createClient();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -176,7 +179,7 @@ export default function UploadModal({
         createdInternalId: null,
       });
 
-      await uploadSlides(tempId, blobs, {
+      await uploadSlides(tempId, blobs, supabase, {
         onUploadProgress: (uploaded, total) => {
           setUploadState((prev) => ({
             ...prev,

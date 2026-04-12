@@ -14,7 +14,7 @@
 
 import * as pdfjsLib from "pdfjs-dist";
 import type { PDFDocumentProxy } from "pdfjs-dist";
-import { createClient } from "@supabase/supabase-js";
+import type { SupabaseClient } from "@supabase/supabase-js";
 
 // ---------------------------------------------------------------------------
 // pdf.js worker setup
@@ -136,14 +136,10 @@ export async function convertPdfToSlides(
 export async function uploadSlides(
   internalId: string,
   blobs: Blob[],
+  supabase: SupabaseClient,
   opts: Pick<SlideConverterOptions, "onUploadProgress"> = {}
 ): Promise<void> {
   const { onUploadProgress } = opts;
-
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
 
   let uploadedCount = 0;
   const total = blobs.length;
