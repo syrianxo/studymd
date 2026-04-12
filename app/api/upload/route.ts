@@ -1,51 +1,133 @@
-/**
- * POST /api/upload
- *
- * Lecture upload entry point. Accepts multipart/form-data with:
- *   - file:   PDF or PPTX (max 50MB, see API_LIMITS)
- *   - course: one of the three valid course strings
- *   - title:  optional override title
- *
- * Workstream 1 will implement the full handler:
- *   1. Validate auth (must be logged in)
- *   2. Validate file type and size against API_LIMITS
- *   3. Check daily API limits (API_LIMITS.MAX_DAILY_CALLS)
- *   4. Save file to Supabase Storage: uploads/{timestamp}_{filename}
- *   5. Create a processing_jobs row with status "pending"
- *   6. Trigger processing (Supabase Edge Function or background job)
- *   7. Return { jobId, estimatedCost, estimatedTokens }
- *
- * The client then polls GET /api/upload/status?jobId=X every 5 seconds.
- *
- * Note on Vercel 60s timeout:
- *   The actual Claude API call and slide conversion happen in a
- *   background job (Supabase Edge Function, 150s timeout on free tier),
- *   not in this route. This route only queues the job and returns fast.
- */
-import { NextResponse } from "next/server";
-import { API_LIMITS } from "@/lib/api-limits";
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+import { checkLimits, estimateCost, estimateTokens, TOKEN_PREFLIGHT_LIMIT } from '@/lib/api-limits';
 
-export async function POST(request: Request) {
-  // Validate content type
-  const contentType = request.headers.get("content-type") ?? "";
-  if (!contentType.includes("multipart/form-data")) {
-    return NextResponse.json(
-      { error: "Expected multipart/form-data" },
-      { status: 400 }
-    );
+// ─── Config ────────────────────────────────────────────────────────────────
+const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
+const ALLOWED_MIME_TYPES = new Set([
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  'application/vnd.ms-powerpoint',
+]);
+const ALLOWED_EXTENSIONS = new Set(['.pdf', '.pptx', '.ppt']);
+
+function getFileExtension(filename: string): string {
+  return filename.slice(filename.lastIndexOf('.')).toLowerCase();
+}
+
+function getSupabaseClient() {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!url || !key) throw new Error('Supabase environment variables are not configured.');
+  return createClient(url, key);
+}
+
+async function getUserFromRequest(request: NextRequest): Promise<{ id: string; email: string } | null> {
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader?.startsWith('Bearer ')) return null;
+  const token = authHeader.slice(7);
+  const supabase = getSupabaseClient();
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data.user) return null;
+  return { id: data.user.id, email: data.user.email ?? '' };
+}
+
+// ─── POST /api/upload ──────────────────────────────────────────────────────
+export async function POST(request: NextRequest) {
+  try {
+    const user = await getUserFromRequest(request);
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized. Please sign in.' }, { status: 401 });
+    }
+
+    let formData: FormData;
+    try {
+      formData = await request.formData();
+    } catch {
+      return NextResponse.json({ error: 'Invalid multipart form data.' }, { status: 400 });
+    }
+
+    const file = formData.get('file') as File | null;
+    const course = formData.get('course') as string | null;
+    const titleOverride = formData.get('title') as string | null;
+
+    if (!file) return NextResponse.json({ error: 'No file provided.' }, { status: 400 });
+    if (!course) return NextResponse.json({ error: 'Course is required.' }, { status: 400 });
+
+    const ext = getFileExtension(file.name);
+    if (!ALLOWED_MIME_TYPES.has(file.type) && !ALLOWED_EXTENSIONS.has(ext)) {
+      return NextResponse.json(
+        { error: `Unsupported file type. Only PDF and PPTX files are accepted.` },
+        { status: 415 }
+      );
+    }
+
+    if (file.size > MAX_FILE_SIZE_BYTES) {
+      return NextResponse.json(
+        { error: `File too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum is 50 MB.` },
+        { status: 413 }
+      );
+    }
+
+    const limitsCheck = await checkLimits(user.id);
+    if (!limitsCheck.allowed) {
+      return NextResponse.json({ error: limitsCheck.reason ?? 'Usage limit reached.' }, { status: 429 });
+    }
+
+    const estimatedTokens = estimateTokens(file.size / 4);
+    const tokenWarning = estimatedTokens > TOKEN_PREFLIGHT_LIMIT
+      ? `This file may contain ~${(estimatedTokens / 1000).toFixed(0)}K tokens, exceeding the 200K recommended limit. Consider splitting it.`
+      : undefined;
+
+    const supabase = getSupabaseClient();
+    const timestamp = Date.now();
+    const safeFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const storagePath = `${user.id}/${timestamp}_${safeFilename}`;
+
+    const fileBuffer = await file.arrayBuffer();
+    const { error: uploadError } = await supabase.storage
+      .from('uploads')
+      .upload(storagePath, fileBuffer, {
+        contentType: file.type || 'application/octet-stream',
+        upsert: false,
+      });
+
+    if (uploadError) {
+      console.error('Storage upload error:', uploadError);
+      return NextResponse.json({ error: 'Failed to store file. Please try again.' }, { status: 500 });
+    }
+
+    const estimatedCost = estimateCost(file.size);
+    const lectureTitle = titleOverride?.trim() || file.name.replace(/\.[^.]+$/, '');
+
+    const { data: job, error: jobError } = await supabase
+      .from('processing_jobs')
+      .insert({
+        user_id: user.id,
+        storage_path: storagePath,
+        original_filename: file.name,
+        file_size_bytes: file.size,
+        file_type: ext.slice(1),
+        course,
+        title: lectureTitle,
+        status: 'pending',
+        estimated_cost_usd: estimatedCost,
+        estimated_tokens: estimatedTokens,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      })
+      .select('id')
+      .single();
+
+    if (jobError || !job) {
+      console.error('Job creation error:', jobError);
+      await supabase.storage.from('uploads').remove([storagePath]);
+      return NextResponse.json({ error: 'Failed to create processing job. Please try again.' }, { status: 500 });
+    }
+
+    return NextResponse.json({ jobId: job.id, estimatedCost, estimatedTokens, tokenWarning });
+  } catch (err) {
+    console.error('Upload route error:', err);
+    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
   }
-
-  // TODO (Workstream 1): full implementation
-  // For now, surface the configured limits so the UI can show them
-  return NextResponse.json(
-    {
-      error: "Not yet implemented — see Workstream 1",
-      limits: {
-        maxFileSizeBytes: API_LIMITS.MAX_FILE_SIZE_BYTES,
-        allowedMimeTypes: API_LIMITS.ALLOWED_MIME_TYPES,
-        maxDailyCalls: API_LIMITS.MAX_DAILY_CALLS,
-      },
-    },
-    { status: 501 }
-  );
 }
