@@ -28,6 +28,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
     courses,
     loading: lecturesLoading,
     error: lecturesError,
+    refetch,
   } = useUserLectures();
 
   const {
@@ -263,6 +264,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
         onClose={() => setUploadModalOpen(false)}
         onLectureCreated={(_id) => {
           setUploadModalOpen(false);
+          refetch();
           // useUserLectures will need a refresh here — however your hook exposes it.
           // e.g. if it returns a `refetch` function: refetch()
           // For now, a full reload works: window.location.reload()
