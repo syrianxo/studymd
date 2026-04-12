@@ -11,6 +11,7 @@ import CustomSessionModal, { type CustomSessionConfig } from './CustomSessionMod
 import { useUserLectures } from '@/hooks/useUserLectures';
 import { useProgress } from '@/hooks/useProgress';
 import { createClient } from '@/lib/supabase';
+import UploadModal from "@/components/UploadModal";
 import type { Course } from '@/types';
 
 interface DashboardProps {
@@ -44,6 +45,8 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
   const [customModalOpen, setCustomModalOpen] = useState(false);
   const [manageOpen, setManageOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+
 
   // Fetch userId once on mount for ManageMode
   useEffect(() => {
@@ -81,6 +84,13 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
       types: config.questionTypes.join(','),
     });
     window.location.href = `/app/study/custom?${params.toString()}`;
+  }
+
+  function handleLectureCreated(internalId: string) {
+    // Refresh the lecture list — however your data layer works.
+    // e.g. refetch from Supabase, invalidate a React Query cache, etc.
+    setShowUploadModal(false);
+    refreshLectures();
   }
 
   // ── Error state ────────────────────────────────────────────────────────
@@ -161,6 +171,13 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
 
         {/* Section header */}
         <div className="smd-section-header">
+            <button
+              className="btn btn-ghost"
+              style={{ fontSize: 12, padding: '9px 16px' }}
+              onClick={() => setUploadModalOpen(true)}
+            >
+              ⬆ Upload Lecture
+            </button>
           <div className="smd-section-title">Your Lectures</div>
           <div style={{ display: 'flex', gap: 8 }}>
             <button
@@ -239,6 +256,16 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
         onStart={(config) => {
           setCustomModalOpen(false);
           handleCustomSession(config);
+        }}
+      />
+      <UploadModal
+        isOpen={uploadModalOpen}
+        onClose={() => setUploadModalOpen(false)}
+        onLectureCreated={(_id) => {
+          setUploadModalOpen(false);
+          // useUserLectures will need a refresh here — however your hook exposes it.
+          // e.g. if it returns a `refetch` function: refetch()
+          // For now, a full reload works: window.location.reload()
         }}
       />
     </>
