@@ -96,7 +96,8 @@ export async function convertPdfToSlides(
     if (!ctx) throw new Error("Could not get 2D canvas context");
 
     // Render the PDF page onto the canvas.
-    await page.render({ canvasContext: ctx, viewport }).promise;
+    // pdfjs-dist v4+ requires `canvas` alongside `canvasContext` in RenderParameters.
+    await page.render({ canvas, canvasContext: ctx, viewport }).promise;
 
     // Export the canvas as a JPEG blob.
     const blob = await canvasToBlob(canvas, "image/jpeg", quality);
