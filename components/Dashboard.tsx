@@ -56,7 +56,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
     () =>
       lectures.filter((l) => {
         if (!l.visible || l.archived) return false;
-        if (filter.courses.size > 0 && !filter.courses.has(l.course as Course)) return false;
+        if (filter.courses.size > 0 && !filter.courses.has(l.course)) return false;
         return true;
       }),
     [lectures, filter.courses]
@@ -181,7 +181,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
         {/* Course filter bar — hidden when manage mode is open */}
         {!manageOpen && (
           <FilterBar
-            allCourses={courses as Course[]}
+            allCourses={courses}
             allTags={[]}
             filter={filter}
             onChange={setFilter}
@@ -207,7 +207,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
                 custom_title:    l.custom_title,
               },
               display_title:  l.custom_title   ?? l.title,
-              display_course: (l.course_override ?? l.course) as Course,
+              display_course: l.course_override ?? l.course,
               display_color:  l.color_override  ?? l.color,
             }))}
             onOpenLecture={(id) => {

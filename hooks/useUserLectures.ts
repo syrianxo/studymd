@@ -3,6 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
+import type { Course } from '@/types';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -28,7 +29,7 @@ export interface Lecture {
   title: string;
   subtitle: string | null;
   icon: string;
-  course: string;
+  course: Course;
   color: string;
   display_order: number;
   topics: string[];
@@ -44,13 +45,13 @@ export interface Lecture {
   custom_title: string | null;
   tags: string[];
   group_id: string | null;
-  course_override: string | null;
+  course_override: Course | null;
   color_override: string | null;
 }
 
 interface UseUserLecturesResult {
   lectures: Lecture[];
-  courses: string[];          // distinct course names for filter bar
+  courses: Course[];          // distinct course names for filter bar
   loading: boolean;
   error: string | null;
   refetch: () => void;
@@ -62,7 +63,7 @@ export function useUserLectures(): UseUserLecturesResult {
   const supabase = createClient();
 
   const [lectures, setLectures] = useState<Lecture[]>([]);
-  const [courses, setCourses] = useState<string[]>([]);
+  const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -85,7 +86,7 @@ export function useUserLectures(): UseUserLecturesResult {
 
       let settingsMap: Record<
         string,
-        { display_order: number; visible: boolean; archived: boolean; custom_title: string | null; tags: string[]; group_id: string | null; course_override: string | null; color_override: string | null; }
+        { display_order: number; visible: boolean; archived: boolean; custom_title: string | null; tags: string[]; group_id: string | null; course_override: Course | null; color_override: string | null; }
       > = {};
 
       // ── 2. Fetch per-user overrides if logged in ────────────────────────

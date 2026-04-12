@@ -22,23 +22,26 @@ export interface Lecture {
 }
 
 export interface LectureData {
-  flashcards: Flashcard[];
-  questions: Question[];
+  flashcards?: Flashcard[];
+  questions?: Question[];
 }
 
 export interface Flashcard {
   id: string;
-  front: string;
-  back: string;
-  slide_ref?: number;
+  question: string;
+  answer: string;
+  topic: string;
+  slide_number?: number | null;
 }
 
 export interface Question {
   id: string;
-  type: 'mcq' | 'truefalse' | 'matching' | 'fillin';
-  prompt: string;
+  type: 'mcq' | 'tf' | 'matching' | 'fillin';
+  question: string;
   options?: string[];
-  answer: string | string[];
+  correct_answer: string;
+  topic: string;
+  explanation?: string;
 }
 
 export interface UserLectureSettings {
