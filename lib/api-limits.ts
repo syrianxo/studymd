@@ -64,7 +64,7 @@ export const API_LIMITS = {
   // ── Token pre-flight ────────────────────────────────────────────────────────
   /**
    * If estimated input tokens exceed this value, warn the user before processing.
-   * Rough heuristic: file bytes / 4 ≈ tokens.
+   * Rough heuristic: see estimateTokensFromBytes() for PDF-aware logic.
    */
   TOKEN_WARNING_THRESHOLD: 200_000,
 
@@ -96,10 +96,19 @@ export const MODEL_PRICING: Record<string, { inputPerToken: number; outputPerTok
 
 /**
  * Estimates input token count from a file's byte size.
- * Rule of thumb: 1 token ≈ 4 bytes of text. Conservative (actual may be lower).
+ *
+ * PDFs contain compressed images, fonts, and binary metadata — the vast
+ * majority of bytes are NOT text and don't become tokens. Claude's document
+ * API extracts only the text layer. Empirically, a dense 50-slide lecture PDF
+ * at ~5 MB produces ~20,000–40,000 input tokens, not the ~1.25M that bytes/4
+ * would suggest.
+ *
+ * We use bytes / 150 as a conservative PDF estimate, with a floor of 5,000
+ * tokens (tiny files) and a ceiling of 180,000 (very large decks).
  */
 export function estimateTokensFromBytes(bytes: number): number {
-  return Math.ceil(bytes / 4);
+  const raw = Math.ceil(bytes / 150);
+  return Math.min(Math.max(raw, 5_000), 180_000);
 }
 
 /**
