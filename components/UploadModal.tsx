@@ -189,25 +189,72 @@ export default function UploadModal({
         },
       });
 
-      // ── Stage 3: Trigger Claude API content generation ───────────────────
+      // ── Stage 3: Upload PDF to storage, create job, call generate route ───
       setUploadState({
         stage: "generating",
         stageProgress: 0,
-        progressLabel: "Generating flashcards and questions with Claude…",
+        progressLabel: "Uploading PDF for processing…",
         errorMessage: null,
         createdInternalId: null,
       });
 
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("course", course);
-      formData.append("title", title.trim() || file.name.replace(/\.[^.]+$/, ""));
-      formData.append("internalId", tempId);
-      formData.append("slideCount", String(blobs.length));
+      // Upload the original PDF to Supabase Storage so the server can fetch it.
+      // The generate route expects a fileUrl, not the raw file — sending the
+      // raw file as FormData caused the 413 Request Entity Too Large error.
+      const pdfStoragePath = `uploads/${tempId}/source.pdf`;
+      const { error: pdfUploadError } = await supabase.storage
+        .from("slides")
+        .upload(pdfStoragePath, file, { contentType: "application/pdf", upsert: true });
+
+      if (pdfUploadError) {
+        throw new Error(`Failed to upload PDF: ${pdfUploadError.message}`);
+      }
+
+      const { data: urlData } = supabase.storage
+        .from("slides")
+        .getPublicUrl(pdfStoragePath);
+
+      const fileUrl = urlData.publicUrl;
+
+      // Get the current user ID — required by the generate route.
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not authenticated. Please log in and try again.");
+
+      // Create a processing_jobs row so the server can track status.
+      const { data: jobRow, error: jobError } = await supabase
+        .from("processing_jobs")
+        .insert({
+          internal_id: tempId,
+          user_id: user.id,
+          status: "pending",
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString(),
+        })
+        .select("id")
+        .single();
+
+      if (jobError) throw new Error(`Failed to create processing job: ${jobError.message}`);
+
+      setUploadState((prev) => ({
+        ...prev,
+        progressLabel: "Generating flashcards and questions with Claude…",
+      }));
 
       const response = await fetch("/api/generate", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+          "x-internal-secret": process.env.NEXT_PUBLIC_INTERNAL_API_SECRET ?? "",
+        },
+        body: JSON.stringify({
+          fileUrl,
+          course,
+          title: title.trim() || file.name.replace(/\.[^.]+$/, ""),
+          internalId: tempId,
+          jobId: jobRow.id,
+          userId: user.id,
+          fileSizeBytes: file.size,
+        }),
       });
 
       if (!response.ok) {
