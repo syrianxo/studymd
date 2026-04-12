@@ -3,10 +3,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 // Call API route — cannot import supabase-server in a client component
 async function saveUserTheme(userId: string, theme: string): Promise<void> {
-  await fetch('/api/preferences/theme', {
+  await fetch('/api/preferences', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, theme }),
+    body: JSON.stringify({ theme }),
   });
 }
 import type { Theme } from '@/types';

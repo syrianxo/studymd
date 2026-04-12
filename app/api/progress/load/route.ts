@@ -2,11 +2,11 @@
 // GET /api/progress/load
 // Returns all progress rows for the authenticated user.
 import { NextResponse } from 'next/server';
-import { createRouteHandlerClient } from '@/lib/supabase-server-component';
+import { createServerComponentClient } from '@/lib/supabase-server';
 
 export async function GET() {
-  const supabase = await createRouteHandlerClient();
-
+  const supabase = await createServerComponentClient();
+  
   // ── Auth check ────────────────────────────────────────────────────────────
   const { data: { user }, error: authError } = await supabase.auth.getUser();
   if (authError || !user) {

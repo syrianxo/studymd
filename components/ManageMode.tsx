@@ -22,31 +22,35 @@ import {
 } from '@dnd-kit/sortable';
 // Lecture mutation helpers — call API routes, never supabase-server directly
 // (client components cannot import next/headers)
-async function updateLectureSettings(
-  userId: string,
-  internalId: string,
-  settings: Record<string, unknown>
-): Promise<void> {
+async function updateLectureSettings(_userId: string, internalId: string, settings: Record<string, unknown>): Promise<void> {
+  // Map snake_case patch keys → camelCase updates for the API
+  const camelMap: Record<string, string> = {
+    visible: 'visible', archived: 'archived', tags: 'tags',
+    course_override: 'courseOverride', color_override: 'colorOverride',
+    custom_title: 'customTitle', display_order: 'displayOrder',
+  };
+  const updates: Record<string, unknown> = {};
+  for (const [k, v] of Object.entries(settings)) {
+    updates[camelMap[k] ?? k] = v;
+  }
   await fetch('/api/lectures/settings', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, internalId, settings }),
+    body: JSON.stringify({ internalId, updates }),
   });
 }
 
-async function reorderLectures(
-  userId: string,
-  orderedIds: string[]
-): Promise<void> {
+async function reorderLectures(_userId: string, orderedIds: string[]): Promise<void> {
+  const order = orderedIds.map((internalId, i) => ({ internalId, displayOrder: i + 1 }));
   await fetch('/api/lectures/reorder', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ userId, orderedIds }),
+    body: JSON.stringify({ order }),
   });
 }
 
-async function fetchAllTags(userId: string): Promise<string[]> {
-  const res = await fetch(`/api/lectures/tags?userId=${userId}`);
+async function fetchAllTags(_userId: string): Promise<string[]> {
+  const res = await fetch('/api/lectures/tags');
   if (!res.ok) return [];
   const data = await res.json();
   return data.tags ?? [];
