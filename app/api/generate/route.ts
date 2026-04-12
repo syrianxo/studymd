@@ -14,7 +14,12 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-import { createClient } from '@supabase/supabase-js';
+// Use the untyped client to avoid strict schema inference on table names.
+// This project does not have a generated supabase types file (types/supabase.ts),
+// so using SupabaseClient<any> is correct here — it avoids the "never" error on
+// .update() that occurs when TypeScript can't infer the table's row shape.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import {
   API_LIMITS,
   estimateCost,
@@ -23,12 +28,14 @@ import {
 import { buildSystemWithCache } from '@/lib/lecture-processor-prompt';
 import { validateLecture, type LectureJSON } from '@/lib/validate-lecture';
 
-// ─── Supabase admin client (service role — bypasses RLS for server writes) ────
-function getSupabaseAdmin() {
+// ─── Supabase admin client ────────────────────────────────────────────────────
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function getSupabaseAdmin(): SupabaseClient<any, 'public', any> {
   const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY env vars.');
-  return createClient(url, key);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return createClient<any, 'public', any>(url, key);
 }
 
 // ─── Anthropic client ─────────────────────────────────────────────────────────
@@ -51,18 +58,22 @@ interface GenerateRequestBody {
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 async function updateJobStatus(
-  supabase: ReturnType<typeof createClient>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: SupabaseClient<any, 'public', any>,
   jobId: string,
   status: 'converting' | 'generating' | 'complete' | 'error',
   errorMessage?: string
 ) {
-  const update: Record<string, unknown> = { status, updated_at: new Date().toISOString() };
-  if (errorMessage) update.error_message = errorMessage;
+  // Build the payload as a plain object — SupabaseClient<any> accepts this fine.
+  const payload = errorMessage
+    ? { status, updated_at: new Date().toISOString(), error_message: errorMessage }
+    : { status, updated_at: new Date().toISOString() };
 
   const { error } = await supabase
     .from('processing_jobs')
-    .update(update)
+    .update(payload)
     .eq('id', jobId);
 
   if (error) {
@@ -85,7 +96,9 @@ function arrayBufferToBase64(buffer: ArrayBuffer): string {
   return btoa(binary);
 }
 
-function getMimeType(fileUrl: string): 'application/pdf' | 'application/vnd.openxmlformats-officedocument.presentationml.presentation' {
+function getMimeType(
+  fileUrl: string
+): 'application/pdf' | 'application/vnd.openxmlformats-officedocument.presentationml.presentation' {
   return fileUrl.toLowerCase().includes('.pptx')
     ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
     : 'application/pdf';
@@ -94,7 +107,8 @@ function getMimeType(fileUrl: string): 'application/pdf' | 'application/vnd.open
 // ─── Usage tracking ───────────────────────────────────────────────────────────
 
 async function recordApiUsage(
-  supabase: ReturnType<typeof createClient>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: SupabaseClient<any, 'public', any>,
   model: string,
   inputTokens: number,
   outputTokens: number,
@@ -114,7 +128,13 @@ async function recordApiUsage(
   if (error) {
     console.error('[generate] increment_api_usage RPC failed, using fallback upsert:', error.message);
     await supabase.from('api_usage').upsert(
-      { date: today, calls_count: 1, input_tokens: inputTokens, output_tokens: outputTokens, estimated_cost: cost },
+      {
+        date: today,
+        calls_count: 1,
+        input_tokens: inputTokens,
+        output_tokens: outputTokens,
+        estimated_cost: cost,
+      },
       { onConflict: 'date', ignoreDuplicates: false }
     );
   }
@@ -123,7 +143,8 @@ async function recordApiUsage(
 // ─── Rate limit checks ────────────────────────────────────────────────────────
 
 async function checkRateLimits(
-  supabase: ReturnType<typeof createClient>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: SupabaseClient<any, 'public', any>,
   estimatedInputTokens: number
 ): Promise<{ allowed: boolean; reason?: string }> {
   const today = new Date().toISOString().split('T')[0];
@@ -136,7 +157,10 @@ async function checkRateLimits(
 
   if (todayUsage) {
     if (todayUsage.calls_count >= API_LIMITS.MAX_DAILY_CALLS) {
-      return { allowed: false, reason: `Daily limit reached (${API_LIMITS.MAX_DAILY_CALLS} lectures/day). Try again tomorrow.` };
+      return {
+        allowed: false,
+        reason: `Daily limit reached (${API_LIMITS.MAX_DAILY_CALLS} lectures/day). Try again tomorrow.`,
+      };
     }
     if (todayUsage.input_tokens + estimatedInputTokens > API_LIMITS.MAX_DAILY_INPUT_TOKENS) {
       return { allowed: false, reason: `Daily token limit would be exceeded. Try again tomorrow.` };
@@ -153,9 +177,15 @@ async function checkRateLimits(
     .gte('date', monthStart.toISOString().split('T')[0]);
 
   if (monthRows && monthRows.length > 0) {
-    const monthTotal = monthRows.reduce((sum, r) => sum + (r.estimated_cost ?? 0), 0);
+    const monthTotal = monthRows.reduce(
+      (sum: number, r: { estimated_cost?: number }) => sum + (r.estimated_cost ?? 0),
+      0
+    );
     if (monthTotal >= API_LIMITS.MAX_MONTHLY_COST_USD) {
-      return { allowed: false, reason: `Monthly budget of $${API_LIMITS.MAX_MONTHLY_COST_USD.toFixed(2)} reached. Contact Khalid.` };
+      return {
+        allowed: false,
+        reason: `Monthly budget of $${API_LIMITS.MAX_MONTHLY_COST_USD.toFixed(2)} reached. Contact Khalid.`,
+      };
     }
   }
 
@@ -183,8 +213,6 @@ async function callClaudeAPI(
   const response = await client.messages.create({
     model,
     max_tokens: API_LIMITS.MAX_OUTPUT_TOKENS,
-    // buildSystemWithCache() returns the prompt wrapped in cache_control: ephemeral
-    // so Anthropic caches this ~2,500-token block across calls (90% cost savings).
     system: buildSystemWithCache(),
     messages: [
       {
@@ -215,7 +243,6 @@ async function callClaudeAPI(
     throw new Error('Claude returned no text content.');
   }
 
-  // Strip accidental markdown fencing (prompt forbids it, but be defensive)
   const rawText = textBlock.text
     .replace(/^```json\s*/i, '')
     .replace(/^```\s*/i, '')
@@ -228,7 +255,7 @@ async function callClaudeAPI(
   } catch (e) {
     throw new Error(
       `Response was not valid JSON. Error: ${(e as Error).message}. ` +
-      `First 500 chars: ${rawText.slice(0, 500)}`
+        `First 500 chars: ${rawText.slice(0, 500)}`
     );
   }
 
@@ -238,7 +265,6 @@ async function callClaudeAPI(
 // ─── Route handler ────────────────────────────────────────────────────────────
 
 export async function POST(request: NextRequest) {
-  // Server-to-server only — browser cannot call this directly
   const internalSecret = request.headers.get('x-internal-secret');
   if (internalSecret !== process.env.INTERNAL_API_SECRET) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
@@ -306,23 +332,35 @@ export async function POST(request: NextRequest) {
   let usedFallback = false;
 
   try {
-    result = await callClaudeAPI(anthropic, fileBase64, mimeType, internalId, course, title, API_LIMITS.MODEL_DEFAULT);
+    result = await callClaudeAPI(
+      anthropic, fileBase64, mimeType, internalId, course, title, API_LIMITS.MODEL_DEFAULT
+    );
 
     const validation = validateLecture(result.lectureJson);
     if (!validation.valid) {
       firstAttemptErrors = validation.errors;
-      console.warn(`[generate] ${API_LIMITS.MODEL_DEFAULT} validation failed (${validation.errors.length} errors). Retrying with ${API_LIMITS.MODEL_FALLBACK}...`);
+      console.warn(
+        `[generate] ${API_LIMITS.MODEL_DEFAULT} validation failed ` +
+          `(${validation.errors.length} errors). Retrying with ${API_LIMITS.MODEL_FALLBACK}...`
+      );
 
-      // Track the failed call's tokens before retrying
-      await recordApiUsage(supabase, result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED);
+      await recordApiUsage(
+        supabase, result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED
+      );
 
       usedFallback = true;
-      const fallback = await callClaudeAPI(anthropic, fileBase64, mimeType, internalId, course, title, API_LIMITS.MODEL_FALLBACK);
+      const fallback = await callClaudeAPI(
+        anthropic, fileBase64, mimeType, internalId, course, title, API_LIMITS.MODEL_FALLBACK
+      );
       const fallbackValidation = validateLecture(fallback.lectureJson);
 
       if (!fallbackValidation.valid) {
-        const msg = `Both models produced invalid output. ${API_LIMITS.MODEL_FALLBACK} errors: ${fallbackValidation.errors.slice(0, 5).join('; ')}`;
-        await recordApiUsage(supabase, fallback.model, fallback.inputTokens, fallback.outputTokens, API_LIMITS.BATCH_API_ENABLED);
+        const msg =
+          `Both models produced invalid output. ${API_LIMITS.MODEL_FALLBACK} errors: ` +
+          fallbackValidation.errors.slice(0, 5).join('; ');
+        await recordApiUsage(
+          supabase, fallback.model, fallback.inputTokens, fallback.outputTokens, API_LIMITS.BATCH_API_ENABLED
+        );
         await updateJobStatus(supabase, jobId, 'error', msg);
         return NextResponse.json({ error: msg }, { status: 422 });
       }
@@ -343,10 +381,10 @@ export async function POST(request: NextRequest) {
     title: lecture.title || title,
     subtitle: '',
     course: lecture.course,
-    color: '#5b8dee',    // default; can be updated via lecture management UI
-    icon: '🩺',          // default
+    color: '#5b8dee',
+    icon: '🩺',
     topics: lecture.topics,
-    slide_count: null,   // not available in this schema
+    slide_count: null,
     json_data: lecture,
     created_at: new Date().toISOString(),
   });
@@ -388,10 +426,14 @@ export async function POST(request: NextRequest) {
   }
 
   // ── Step 5: Record API usage ───────────────────────────────────────────────
-  await recordApiUsage(supabase, result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED);
+  await recordApiUsage(
+    supabase, result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED
+  );
 
   // ── Step 6: Mark job complete ──────────────────────────────────────────────
-  const finalCost = estimateCost(result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED);
+  const finalCost = estimateCost(
+    result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED
+  );
 
   await supabase.from('processing_jobs').update({
     status: 'complete',
