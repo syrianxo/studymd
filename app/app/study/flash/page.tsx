@@ -89,8 +89,9 @@ function FlashPageInner() {
   const knownGotItIds = existing?.got_it_ids ?? [];
   const knownMissedIds = existing?.missed_ids ?? [];
 
-  let cards: FlashCard[] = lecture.json_data?.flashcards ?? [];
-
+  let cards: FlashCard[] = normalizeCards(
+    (lecture.json_data?.flashcards as Record<string, unknown>[] | undefined) ?? []
+  );
   if (topicsFilter.length > 0) {
     cards = cards.filter((c) => topicsFilter.includes(c.topic));
   }
@@ -117,6 +118,16 @@ function FlashPageInner() {
       onSessionComplete={handleSessionComplete}
     />
   );
+}
+
+function normalizeCards(raw: Record<string, unknown>[]): FlashCard[] {
+  return raw.map((c) => ({
+    id:           String(c.id ?? ''),
+    question:     String(c.question ?? c.front ?? ''),
+    answer:       String(c.answer  ?? c.back  ?? ''),
+    topic:        String(c.topic   ?? ''),
+    slide_number: (c.slide_number ?? c.slideNumber ?? null) as number | null,
+  }));
 }
 
 function shuffle<T>(arr: T[]): T[] {

@@ -68,8 +68,9 @@ function ExamPageInner() {
   if (error || !lecture) return <ErrorScreen message={error ?? 'Unknown error'} onBack={() => router.push('/app')} />;
 
   // ── Build question set ──────────────────────────────────────────────────
-  let questions: ExamQuestion[] = lecture.json_data?.questions ?? [];
-
+  let questions: ExamQuestion[] = normalizeQuestions(
+    (lecture.json_data?.questions as Record<string, unknown>[] | undefined) ?? []
+  );
   if (topicsFilter.length > 0) {
     questions = questions.filter((q) => topicsFilter.includes(q.topic));
   }
@@ -96,6 +97,18 @@ function ExamPageInner() {
       }}
     />
   );
+}
+
+function normalizeQuestions(raw: Record<string, unknown>[]): ExamQuestion[] {
+  return raw.map((q) => ({
+    id:             String(q.id ?? ''),
+    type:           (q.type ?? 'mcq') as ExamQuestion['type'],
+    question:       String(q.question ?? q.stem ?? ''),
+    topic:          String(q.topic ?? ''),
+    options:        (q.options as string[] | undefined),
+    correct_answer: String(q.correct_answer ?? q.answer ?? ''),
+    explanation:    q.explanation ? String(q.explanation) : undefined,
+  }));
 }
 
 function shuffle<T>(arr: T[]): T[] {
