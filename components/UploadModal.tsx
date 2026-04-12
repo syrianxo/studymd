@@ -224,7 +224,6 @@ export default function UploadModal({
       const { data: jobRow, error: jobError } = await supabase
         .from("processing_jobs")
         .insert({
-          internal_id: tempId,
           user_id: user.id,
           status: "pending",
           storage_path: pdfStoragePath,
