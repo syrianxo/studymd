@@ -75,6 +75,10 @@ export const API_LIMITS = {
   TOKEN_HARD_LIMIT: 400_000,
 } as const;
 
+// ─── Alias consumed by upload/route.ts ────────────────────────────────────────
+/** @alias API_LIMITS.TOKEN_WARNING_THRESHOLD — used by upload route pre-flight check */
+export const TOKEN_PREFLIGHT_LIMIT = API_LIMITS.TOKEN_WARNING_THRESHOLD;
+
 // ─── Per-model pricing (USD per token) ───────────────────────────────────────
 
 export const MODEL_PRICING: Record<string, { inputPerToken: number; outputPerToken: number }> = {
@@ -99,19 +103,104 @@ export function estimateTokensFromBytes(bytes: number): number {
 }
 
 /**
- * Calculates the estimated cost of a single API call.
+ * @alias estimateTokensFromBytes — used by upload/route.ts
  */
+export function estimateTokens(bytes: number): number {
+  return estimateTokensFromBytes(bytes);
+}
+
+/**
+ * Calculates the estimated cost of a single API call.
+ *
+ * Overload 1 (generate route): estimateCost(model, inputTokens, outputTokens, isBatch?)
+ * Overload 2 (upload route):   estimateCost(fileSizeBytes) — rough pre-upload estimate
+ */
+export function estimateCost(model: string, inputTokens: number, outputTokens: number, isBatch?: boolean): number;
+export function estimateCost(fileSizeBytes: number): number;
 export function estimateCost(
-  model: string,
-  inputTokens: number,
-  outputTokens: number,
+  modelOrBytes: string | number,
+  inputTokens?: number,
+  outputTokens?: number,
   isBatch = false
 ): number {
-  const pricing = MODEL_PRICING[model];
+  // Overload 2: called with a single number (file size bytes) by upload/route.ts
+  if (typeof modelOrBytes === 'number') {
+    const estInput = estimateTokensFromBytes(modelOrBytes);
+    const estOutput = 15_000; // conservative output estimate
+    const pricing = MODEL_PRICING[API_LIMITS.MODEL_DEFAULT];
+    return estInput * pricing.inputPerToken + estOutput * pricing.outputPerToken;
+  }
+
+  // Overload 1: full cost calculation with known token counts
+  const pricing = MODEL_PRICING[modelOrBytes];
   if (!pricing) return 0;
 
   const batchMultiplier = isBatch ? 0.5 : 1.0;
-  const inputCost = inputTokens * pricing.inputPerToken * batchMultiplier;
-  const outputCost = outputTokens * pricing.outputPerToken * batchMultiplier;
-  return inputCost + outputCost;
+  return (
+    (inputTokens ?? 0) * pricing.inputPerToken * batchMultiplier +
+    (outputTokens ?? 0) * pricing.outputPerToken * batchMultiplier
+  );
+}
+
+// ─── Rate limit checker (used by upload/route.ts) ────────────────────────────
+
+import { createClient } from '@supabase/supabase-js';
+
+function getSupabaseAdmin() {
+  const url = process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
+  return createClient(url, key);
+}
+
+export interface LimitsCheckResult {
+  allowed: boolean;
+  reason?: string;
+}
+
+/**
+ * Checks daily call count and monthly cost caps before allowing a new processing job.
+ * Called by upload/route.ts before creating a processing_jobs row.
+ */
+export async function checkLimits(_userId: string): Promise<LimitsCheckResult> {
+  const supabase = getSupabaseAdmin();
+  const today = new Date().toISOString().split('T')[0];
+
+  // Daily call cap
+  const { data: todayUsage } = await supabase
+    .from('api_usage')
+    .select('calls_count, input_tokens')
+    .eq('date', today)
+    .maybeSingle();
+
+  if (todayUsage) {
+    if (todayUsage.calls_count >= API_LIMITS.MAX_DAILY_CALLS) {
+      return {
+        allowed: false,
+        reason: `Daily processing limit reached (${API_LIMITS.MAX_DAILY_CALLS} lectures/day). Try again tomorrow.`,
+      };
+    }
+  }
+
+  // Monthly cost cap
+  const monthStart = new Date();
+  monthStart.setDate(1);
+  monthStart.setHours(0, 0, 0, 0);
+  const monthStartStr = monthStart.toISOString().split('T')[0];
+
+  const { data: monthRows } = await supabase
+    .from('api_usage')
+    .select('estimated_cost')
+    .gte('date', monthStartStr);
+
+  if (monthRows && monthRows.length > 0) {
+    const monthTotal = monthRows.reduce((sum, row) => sum + (row.estimated_cost ?? 0), 0);
+    if (monthTotal >= API_LIMITS.MAX_MONTHLY_COST_USD) {
+      return {
+        allowed: false,
+        reason: `Monthly API budget of $${API_LIMITS.MAX_MONTHLY_COST_USD.toFixed(2)} has been reached. Contact Khalid.`,
+      };
+    }
+  }
+
+  return { allowed: true };
 }
