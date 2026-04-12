@@ -251,6 +251,7 @@ export function ManageMode({
     courses: new Set(),
     tags: new Set(),
     showArchived: false,
+    showHidden: false,
   });
 
   const [tagEditorLecture, setTagEditorLecture] = useState<LectureWithSettings | null>(null);
@@ -357,6 +358,15 @@ export function ManageMode({
     [patchLecture]
   );
 
+  const handleUnhide = useCallback(
+    (id: string) => {
+      patchLecture(id, { visible: true }, () =>
+        patchLecture(id, { visible: false }, () => {})
+      );
+    },
+    [patchLecture]
+  );
+
   const handleChangeCourse = useCallback(
     (id: string, course: Course) => {
       const prev = lectures.find((l) => l.internal_id === id);
@@ -422,7 +432,7 @@ export function ManageMode({
   ) as Course[];
 
   // ── Apply filters ─────────────────────────────────────────────────────────
-  const { visible: visibleLectures, archived: archivedLectures } = applyFilters(
+  const { visible: visibleLectures, archived: archivedLectures, hidden: hiddenLectures } = applyFilters(
     lectures,
     filter
   );
@@ -526,6 +536,35 @@ export function ManageMode({
                 onHide={() => {}}
                 onArchive={() => {}}
                 onRestore={() => handleRestore(lecture.internal_id)}
+                onEditTags={() => setTagEditorLecture(lecture)}
+                onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
+                onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Hidden section */}
+      {filter.showHidden && hiddenLectures.length > 0 && (
+        <div className="mm-archived-section">
+          <div className="mm-archived-header">
+            <span className="mm-archived-title">Hidden</span>
+            <span className="mm-archived-count">{hiddenLectures.length}</span>
+            <div className="mm-archived-divider" />
+          </div>
+          <div className="mm-grid">
+            {hiddenLectures.map((lecture) => (
+              <LectureCard
+                key={lecture.internal_id}
+                lecture={lecture}
+                isManageMode={isManageMode}
+                flashcardProgress={flashcardProgress[lecture.internal_id]}
+                examProgress={examProgress[lecture.internal_id]}
+                onOpen={undefined}
+                onHide={() => {}}
+                onArchive={() => {}}
+                onRestore={() => handleUnhide(lecture.internal_id)}
                 onEditTags={() => setTagEditorLecture(lecture)}
                 onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
                 onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}

@@ -9,6 +9,7 @@ export interface FilterState {
   courses: Set<Course>;
   tags: Set<string>;
   showArchived: boolean;
+  showHidden: boolean;
 }
 
 interface FilterBarProps {
@@ -146,7 +147,7 @@ const COURSE_COLORS: Record<Course, string> = {
 
 export function FilterBar({ allCourses, allTags, filter, onChange }: FilterBarProps) {
   const hasActiveFilters =
-    filter.courses.size > 0 || filter.tags.size > 0 || filter.showArchived;
+    filter.courses.size > 0 || filter.tags.size > 0 || filter.showArchived || filter.showHidden;
 
   const toggleCourse = (course: Course) => {
     const next = new Set(filter.courses);
@@ -164,8 +165,12 @@ export function FilterBar({ allCourses, allTags, filter, onChange }: FilterBarPr
     onChange({ ...filter, showArchived: !filter.showArchived });
   };
 
+  const toggleHidden = () => {
+    onChange({ ...filter, showHidden: !filter.showHidden });
+  };
+
   const clearAll = () => {
-    onChange({ courses: new Set(), tags: new Set(), showArchived: false });
+    onChange({ courses: new Set(), tags: new Set(), showArchived: false, showHidden: false });
   };
 
   return (
@@ -236,6 +241,15 @@ export function FilterBar({ allCourses, allTags, filter, onChange }: FilterBarPr
         >
           📦 Archived
         </button>
+
+        {/* Hidden toggle */}
+        <button
+          className={`fb-archived-toggle${filter.showHidden ? ' active' : ''}`}
+          onClick={toggleHidden}
+          aria-pressed={filter.showHidden}
+        >
+          👁 Hidden
+        </button>
       </div>
     </>
   );
@@ -251,6 +265,7 @@ export function applyFilters(
 ): {
   visible: LectureWithSettings[];
   archived: LectureWithSettings[];
+  hidden: LectureWithSettings[];
 } {
   const matchesCourse = (l: LectureWithSettings) =>
     filter.courses.size === 0 || filter.courses.has(l.display_course);
@@ -261,9 +276,16 @@ export function applyFilters(
 
   const active: LectureWithSettings[] = [];
   const archived: LectureWithSettings[] = [];
+  const hidden: LectureWithSettings[] = [];
 
   for (const l of lectures) {
-    if (!l.settings.visible && !l.settings.archived) continue; // hidden
+    if (!l.settings.visible && !l.settings.archived) {
+      // Hidden (not archived)
+      if (filter.showHidden && matchesCourse(l) && matchesTags(l)) {
+        hidden.push(l);
+      }
+      continue;
+    }
 
     if (l.settings.archived) {
       if (filter.showArchived && matchesCourse(l) && matchesTags(l)) {
@@ -276,5 +298,5 @@ export function applyFilters(
     }
   }
 
-  return { visible: active, archived };
+  return { visible: active, archived, hidden };
 }

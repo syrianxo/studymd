@@ -39,6 +39,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
     courses: new Set<Course>(),
     tags: new Set<string>(),
     showArchived: false,
+    showHidden: false,
   });
   const [customModalOpen, setCustomModalOpen] = useState(false);
   const [manageOpen, setManageOpen] = useState(false);
