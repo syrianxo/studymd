@@ -40,6 +40,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# ── StudyMD local-only directories — not for deployment ─────
+migration-data/
+scripts/
+
 # ── StudyMD secrets — NEVER commit ───────────────────────────
 .env.local
 .env.*.local
