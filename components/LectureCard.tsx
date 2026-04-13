@@ -245,18 +245,22 @@ function ContextMenu({
       if (!active) return;
       if (ref.current && !ref.current.contains(e.target as Node)) onClose();
     };
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
-    const onCtx = (e: MouseEvent) => {
+    const onKey    = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const onCtx    = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) onClose();
     };
+    // Close on any scroll so the fixed menu doesn't visually drift from the card
+    const onScroll = () => onClose();
     document.addEventListener('mousedown', onDown);
     document.addEventListener('keydown', onKey);
     document.addEventListener('contextmenu', onCtx);
+    window.addEventListener('scroll', onScroll, { passive: true, capture: true });
     return () => {
       clearTimeout(timer);
       document.removeEventListener('mousedown', onDown);
       document.removeEventListener('keydown', onKey);
       document.removeEventListener('contextmenu', onCtx);
+      window.removeEventListener('scroll', onScroll, { capture: true } as EventListenerOptions);
     };
   }, [onClose]);
 
