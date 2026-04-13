@@ -31,6 +31,94 @@ interface LectureGridProps {
   onChangeColor?: (lectureId: string, color: string) => void;
 }
 
+// ─── ContextMenu ─────────────────────────────────────────────────────────────
+// Flat right-click menu: colors inline, course options, hide/archive.
+// Used by SimpleLectureCard (normal grid mode).
+
+interface CtxMenuProps {
+  x: number;
+  y: number;
+  currentColor: string;
+  currentCourse: Course;
+  onChangeCourse?: (c: Course) => void;
+  onChangeColor?: (c: string) => void;
+  onClose: () => void;
+}
+
+function ContextMenu({ x, y, currentColor, currentCourse, onChangeCourse, onChangeColor, onClose }: CtxMenuProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  // Viewport-aware positioning
+  const [pos, setPos] = useState({ x, y });
+  useEffect(() => {
+    if (!ref.current) return;
+    const { offsetWidth: w, offsetHeight: h } = ref.current;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    setPos({
+      x: x + w > vw ? Math.max(4, vw - w - 8) : x,
+      y: y + h > vh ? Math.max(4, vh - h - 8) : y,
+    });
+  }, [x, y]);
+
+  useEffect(() => {
+    const onDown = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) onClose();
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    document.addEventListener('mousedown', onDown);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [onClose]);
+
+  return (
+    <div
+      ref={ref}
+      className="slc-ctx"
+      style={{ left: pos.x, top: pos.y }}
+      role="menu"
+      onContextMenu={(e) => e.preventDefault()}
+    >
+      {onChangeColor && (
+        <>
+          <div className="slc-ctx-label">Color</div>
+          <div className="slc-ctx-colors">
+            {PRESET_COLORS.map((c) => (
+              <button
+                key={c}
+                className={`slc-ctx-swatch${currentColor === c ? ' selected' : ''}`}
+                style={{ background: c }}
+                aria-label={`Color ${c}`}
+                onClick={() => { onChangeColor(c); onClose(); }}
+              />
+            ))}
+          </div>
+          <div className="slc-ctx-divider" />
+        </>
+      )}
+
+      {onChangeCourse && (
+        <>
+          <div className="slc-ctx-label">Course</div>
+          {COURSES.map((c) => (
+            <button
+              key={c}
+              className="slc-ctx-item"
+              role="menuitem"
+              onClick={() => { onChangeCourse(c); onClose(); }}
+            >
+              <span style={{ opacity: c === currentCourse ? 1 : 0, width: 14, flexShrink: 0 }}>✓</span>
+              {c}
+            </button>
+          ))}
+        </>
+      )}
+    </div>
+  );
+}
+
 // ─── Grid ────────────────────────────────────────────────────────────────────
 
 export default function LectureGrid({
@@ -45,9 +133,7 @@ export default function LectureGrid({
   if (loading) {
     return (
       <div className="smd-lecture-grid">
-        {Array.from({ length: 6 }).map((_, i) => (
-          <SkeletonCard key={i} />
-        ))}
+        {Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
       </div>
     );
   }
@@ -99,12 +185,7 @@ interface SimpleCardProps {
 }
 
 function SimpleLectureCard({
-  lecture,
-  progress,
-  onStartFlash,
-  onStartExam,
-  onChangeCourse,
-  onChangeColor,
+  lecture, progress, onStartFlash, onStartExam, onChangeCourse, onChangeColor,
 }: SimpleCardProps) {
   const fcPct = progress?.mastery_pct ?? 0;
   const examPct = progress?.best_exam_score ?? 0;
@@ -112,152 +193,67 @@ function SimpleLectureCard({
   const displayCourse = (lecture.course_override ?? lecture.course) as Course;
   const displayTitle = lecture.custom_title ?? lecture.title;
 
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [showCourse, setShowCourse] = useState(false);
-  const [showColor, setShowColor] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(null);
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-        setShowCourse(false);
-        setShowColor(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, [menuOpen]);
+  function openCtx(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setCtxMenu({ x: e.clientX, y: e.clientY });
+  }
 
-  const hasKebab = !!(onChangeCourse || onChangeColor);
+  const hasActions = !!(onChangeCourse || onChangeColor);
 
   return (
     <div
       className="smd-lecture-card"
       style={{
         position: 'relative',
-        // Elevate above siblings when menu is open — prevents other cards from covering the dropdown
-        zIndex: menuOpen ? 200 : undefined,
+        zIndex: ctxMenu ? 200 : undefined,
       }}
+      onContextMenu={hasActions ? openCtx : undefined}
     >
       {/* Accent bar */}
-      <div
-        style={{
-          position: 'absolute', top: 0, left: 20, right: 20,
-          height: 3, borderRadius: '0 0 4px 4px', background: color,
-        }}
-      />
+      <div style={{
+        position: 'absolute', top: 0, left: 20, right: 20,
+        height: 3, borderRadius: '0 0 4px 4px', background: color,
+      }} />
 
-      {/* Kebab button */}
-      {hasKebab && (
-        <button
-          className="slc-kebab-btn"
-          onClick={(e) => {
-            e.stopPropagation();
-            setMenuOpen((v) => !v);
-            setShowCourse(false);
-            setShowColor(false);
-          }}
-          aria-label="Lecture options"
-          aria-haspopup="true"
-          aria-expanded={menuOpen}
-        >
-          ⋮
-        </button>
-      )}
-
-      {/* Dropdown */}
-      {menuOpen && hasKebab && (
-        <div className="slc-menu" ref={menuRef} role="menu">
-
-          {/* Change Course */}
-          {onChangeCourse && (
-            <div className="slc-menu-row">
-              <div className="slc-menu-row-inner">
-                <button
-                  className={`slc-menu-item${showCourse ? ' active' : ''}`}
-                  onClick={() => { setShowCourse((v) => !v); setShowColor(false); }}
-                  role="menuitem"
-                  aria-haspopup="true"
-                  aria-expanded={showCourse}
-                >
-                  <span>📚</span> Change Course
-                  <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showCourse ? '▾' : '›'}</span>
-                </button>
-              </div>
-              {showCourse && (
-                <div className="slc-submenu">
-                  {COURSES.map((c) => (
-                    <button
-                      key={c}
-                      className="slc-menu-item"
-                      onClick={() => { onChangeCourse(c); setMenuOpen(false); setShowCourse(false); }}
-                      role="menuitem"
-                    >
-                      <span style={{ opacity: c === displayCourse ? 1 : 0 }}>✓</span> {c}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Change Color */}
-          {onChangeColor && (
-            <div className="slc-menu-row">
-              <div className="slc-menu-row-inner">
-                <button
-                  className={`slc-menu-item${showColor ? ' active' : ''}`}
-                  onClick={() => { setShowColor((v) => !v); setShowCourse(false); }}
-                  role="menuitem"
-                  aria-haspopup="true"
-                  aria-expanded={showColor}
-                >
-                  <span>🎨</span> Change Color
-                  <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showColor ? '▾' : '›'}</span>
-                </button>
-              </div>
-              {showColor && (
-                <div className="slc-submenu">
-                  <div className="slc-color-row">
-                    {PRESET_COLORS.map((c) => (
-                      <button
-                        key={c}
-                        className={`slc-color-swatch${color === c ? ' selected' : ''}`}
-                        style={{ background: c }}
-                        aria-label={`Color ${c}`}
-                        onClick={() => { onChangeColor(c); setMenuOpen(false); setShowColor(false); }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
+      {/* Context menu */}
+      {ctxMenu && hasActions && (
+        <ContextMenu
+          x={ctxMenu.x} y={ctxMenu.y}
+          currentColor={color}
+          currentCourse={displayCourse}
+          onChangeCourse={onChangeCourse}
+          onChangeColor={onChangeColor}
+          onClose={() => setCtxMenu(null)}
+        />
       )}
 
       <div className="smd-card-summary">
         <div className="smd-card-top">
           <span style={{ fontSize: 28 }}>{lecture.icon}</span>
+          {/* Course badge — right-click triggers context menu */}
           <span
+            className="slc-course-badge"
             style={{
               fontFamily: "'DM Mono', monospace", fontSize: 10,
               padding: '2px 8px', borderRadius: 100,
               background: `${color}22`, color,
+              cursor: hasActions ? 'context-menu' : 'default',
+              transition: 'box-shadow 0.15s',
             }}
+            onContextMenu={hasActions ? openCtx : undefined}
+            title={hasActions ? 'Right-click to change course or color' : undefined}
           >
             {displayCourse}
           </span>
         </div>
 
-        <div
-          style={{
-            fontFamily: "'Fraunces', serif", fontSize: 16, fontWeight: 600,
-            color: 'var(--text)', lineHeight: 1.3, margin: '10px 0 4px',
-          }}
-        >
+        <div style={{
+          fontFamily: "'Fraunces', serif", fontSize: 16, fontWeight: 600,
+          color: 'var(--text)', lineHeight: 1.3, margin: '10px 0 4px',
+        }}>
           {displayTitle}
         </div>
 
@@ -269,43 +265,19 @@ function SimpleLectureCard({
 
         {/* Progress bars */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
-          {[
-            { label: 'Flashcards', pct: fcPct },
-            { label: 'Exam', pct: examPct },
-          ].map(({ label, pct }) => (
-            <div
-              key={label}
-              style={{
-                flex: 1, fontFamily: "'DM Mono', monospace",
-                fontSize: 10, color: 'var(--text-muted)',
-              }}
-            >
+          {[{ label: 'Flashcards', pct: fcPct }, { label: 'Exam', pct: examPct }].map(({ label, pct }) => (
+            <div key={label} style={{ flex: 1, fontFamily: "'DM Mono', monospace", fontSize: 10, color: 'var(--text-muted)' }}>
               {label}
-              <div
-                style={{
-                  height: 4, background: 'rgba(255,255,255,0.07)',
-                  borderRadius: 2, marginTop: 3, overflow: 'hidden',
-                }}
-              >
-                <div
-                  style={{
-                    height: '100%', width: `${pct}%`,
-                    background: color, opacity: 0.75,
-                    borderRadius: 2, transition: 'width 0.4s',
-                  }}
-                />
+              <div style={{ height: 4, background: 'rgba(255,255,255,0.07)', borderRadius: 2, marginTop: 3, overflow: 'hidden' }}>
+                <div style={{ height: '100%', width: `${pct}%`, background: color, opacity: 0.75, borderRadius: 2, transition: 'width 0.4s' }} />
               </div>
             </div>
           ))}
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-          <button className="btn btn-secondary" onClick={onStartFlash}>
-            📇 Flashcards
-          </button>
-          <button className="btn btn-secondary" onClick={onStartExam}>
-            📝 Exam
-          </button>
+          <button className="btn btn-secondary" onClick={onStartFlash}>📇 Flashcards</button>
+          <button className="btn btn-secondary" onClick={onStartExam}>📝 Exam</button>
         </div>
       </div>
     </div>
@@ -316,10 +288,7 @@ function SimpleLectureCard({
 
 function SkeletonCard() {
   return (
-    <div
-      className="smd-lecture-card"
-      style={{ cursor: 'default', animation: 'smd-skeleton-pulse 1.6s ease infinite' }}
-    >
+    <div className="smd-lecture-card" style={{ cursor: 'default', animation: 'smd-skeleton-pulse 1.6s ease infinite' }}>
       <div className="smd-card-summary">
         <div className="smd-card-top" style={{ marginBottom: 16 }}>
           <div style={{ width: 36, height: 36, borderRadius: 8, background: 'var(--surface2)' }} />
@@ -333,12 +302,7 @@ function SkeletonCard() {
           <div style={{ height: 38, borderRadius: 8, background: 'var(--surface2)' }} />
         </div>
       </div>
-      <style>{`
-        @keyframes smd-skeleton-pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.5; }
-        }
-      `}</style>
+      <style>{`@keyframes smd-skeleton-pulse { 0%,100%{opacity:1} 50%{opacity:.5} }`}</style>
     </div>
   );
 }
@@ -346,150 +310,72 @@ function SkeletonCard() {
 // ─── CSS ─────────────────────────────────────────────────────────────────────
 
 const gridCss = `
-/* Kebab button */
-.slc-kebab-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: none;
-  border: none;
+/* Course badge on simple cards */
+.slc-course-badge:hover {
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.15);
+}
+
+/* Right-click context menu — fixed position at cursor */
+.slc-ctx {
+  position: fixed;
+  background: var(--surface2, #1a1e27);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 12px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.55), 0 2px 8px rgba(0,0,0,0.3);
+  z-index: 9999;
+  min-width: 220px;
+  overflow: hidden;
+  animation: slc-ctx-in 0.1s ease;
+  padding-bottom: 4px;
+}
+@keyframes slc-ctx-in {
+  from { opacity: 0; transform: scale(0.96) translateY(-4px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.slc-ctx-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; letter-spacing: 0.08em;
   color: var(--text-muted, #6b7280);
-  font-size: 18px;
-  cursor: pointer;
-  padding: 4px 6px;
-  border-radius: 6px;
-  opacity: 0;
-  transition: opacity 0.15s, background 0.15s;
-  z-index: 6;
-  min-width: 32px;
-  min-height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.smd-lecture-card:hover .slc-kebab-btn { opacity: 0.7; }
-.slc-kebab-btn:hover { opacity: 1 !important; background: rgba(255,255,255,0.07); }
-@media (max-width: 639px) {
-  .slc-kebab-btn {
-    opacity: 0.6;
-    min-width: 44px;
-    min-height: 44px;
-    top: 6px;
-    right: 6px;
-    font-size: 20px;
-  }
+  padding: 10px 14px 4px;
+  text-transform: uppercase;
 }
 
-/* ── Dropdown shell ────────────────────────────────────────────────────────
-   overflow: visible is REQUIRED — hidden would clip the submenu.        */
-.slc-menu {
-  position: absolute;
-  top: 48px;
-  right: 8px;
-  background: var(--surface2, #1a1e27);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
-  z-index: 300;
-  min-width: 190px;
-  overflow: visible;
-  animation: slc-menu-in 0.12s ease;
+/* Inline color swatches — no submenu */
+.slc-ctx-colors {
+  display: flex; gap: 7px; flex-wrap: wrap;
+  padding: 6px 14px 10px;
 }
-@keyframes slc-menu-in {
-  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
+.slc-ctx-swatch {
+  width: 28px; height: 28px; border-radius: 50%;
+  cursor: pointer; border: 2px solid transparent;
+  transition: transform 0.12s, border-color 0.12s; flex-shrink: 0;
 }
-
-/* Row = relative wrapper that allows the submenu to fly out */
-.slc-menu-row {
-  position: relative;
-}
-/* Inner clip = contains the hover background without clipping the submenu */
-.slc-menu-row-inner {
-  overflow: hidden;
-}
-.slc-menu > .slc-menu-row:first-child .slc-menu-row-inner { border-radius: 9px 9px 0 0; }
-.slc-menu > .slc-menu-row:last-child  .slc-menu-row-inner { border-radius: 0 0 9px 9px; }
-
-.slc-menu-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 16px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 13px;
-  color: var(--text, #e8eaf0);
-  cursor: pointer;
-  transition: background 0.1s;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: left;
-  min-height: 40px;
-  white-space: nowrap;
-}
-.slc-menu-item:hover { background: rgba(255,255,255,0.06); }
-.slc-menu-item.active { background: rgba(255,255,255,0.04); }
-@media (max-width: 639px) {
-  .slc-menu-item { min-height: 44px; font-size: 14px; padding: 10px 18px; }
-}
-
-/* ── Submenu — flies LEFT on desktop, expands inline on mobile ── */
-.slc-submenu {
-  position: absolute;
-  top: 0;
-  right: calc(100% + 4px);
-  background: var(--surface2, #1a1e27);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
-  z-index: 400;
-  min-width: 210px;
-  overflow: hidden;
-  animation: slc-menu-in 0.1s ease;
-}
-@media (max-width: 639px) {
-  .slc-submenu {
-    position: static;
-    right: auto;
-    top: auto;
-    box-shadow: none;
-    border: none;
-    border-left: 2px solid rgba(255,255,255,0.1);
-    border-radius: 0;
-    min-width: 0;
-    width: 100%;
-    animation: none;
-    background: rgba(255,255,255,0.02);
-  }
-  .slc-submenu .slc-menu-item {
-    padding-left: 32px;
-  }
-}
-
-/* Color swatches */
-.slc-color-row {
-  display: flex;
-  gap: 8px;
-  padding: 10px 16px;
-  flex-wrap: wrap;
-}
-.slc-color-swatch {
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.12s, border-color 0.12s;
-  flex-shrink: 0;
-}
-.slc-color-swatch:hover { transform: scale(1.18); }
-.slc-color-swatch.selected {
-  border-color: rgba(255,255,255,0.7);
+.slc-ctx-swatch:hover { transform: scale(1.2); }
+.slc-ctx-swatch.selected {
+  border-color: rgba(255,255,255,0.75);
   box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
 }
 @media (max-width: 639px) {
-  .slc-color-swatch { width: 36px; height: 36px; }
-  .slc-color-row { gap: 10px; padding: 12px 18px; }
+  .slc-ctx-swatch { width: 36px; height: 36px; }
+  .slc-ctx-colors { gap: 9px; }
+}
+
+/* Course option rows */
+.slc-ctx-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 14px;
+  font-family: 'Outfit', sans-serif; font-size: 13px;
+  color: var(--text, #e8eaf0); cursor: pointer;
+  transition: background 0.1s; border: none; background: none;
+  width: 100%; text-align: left; min-height: 40px; white-space: nowrap;
+}
+.slc-ctx-item:hover { background: rgba(255,255,255,0.06); }
+@media (max-width: 639px) {
+  .slc-ctx-item { min-height: 44px; font-size: 14px; }
+}
+
+.slc-ctx-divider {
+  height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0;
 }
 `;
