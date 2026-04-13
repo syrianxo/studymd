@@ -105,11 +105,13 @@ export function StudyConfigManager({
   // Extract cards and questions from json_data
   const jsonData = lecture.json_data as {
     flashcards?: FlashCard[];
-    exam_questions?: ExamQuestion[];
+    questions?: ExamQuestion[];      // actual DB key
+    exam_questions?: ExamQuestion[]; // normalised key set by buildLectureWithSettings
   } | null;
 
   const allCards: FlashCard[] = jsonData?.flashcards ?? [];
-  const allQuestions: ExamQuestion[] = jsonData?.exam_questions ?? [];
+  const allQuestions: ExamQuestion[] =
+    jsonData?.exam_questions ?? jsonData?.questions ?? [];
 
   if (mode === 'flashcards') {
     if (allCards.length === 0) {
