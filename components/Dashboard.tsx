@@ -2,8 +2,8 @@
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
+import Link from 'next/link';
 import Header from './Header';
-import StatsRow from './StatsRow';
 import { FilterBar, type FilterState } from './FilterBar';
 import LectureGrid from './LectureGrid';
 import { ManageMode } from './ManageMode';
@@ -16,10 +16,15 @@ import type { Course, Theme } from '@/types';
 
 interface DashboardProps {
   userName?: string;
+  isPrimary?: boolean;           // true = Haley, gets personalized greeting
   initialTheme?: Theme;
 }
 
-export default function Dashboard({ userName = 'there', initialTheme: initialThemeProp = 'midnight' }: DashboardProps) {
+export default function Dashboard({
+  userName = 'there',
+  isPrimary = false,
+  initialTheme: initialThemeProp = 'midnight',
+}: DashboardProps) {
   const {
     lectures,
     courses,
@@ -55,7 +60,7 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
   useEffect(() => {
     try {
       const stored = localStorage.getItem('studymd_theme') as Theme | null;
-      if (stored === 'midnight' || stored === 'pink' || stored === 'forest') {
+      if (stored === 'midnight' || stored === 'lavender' || stored === 'forest') {
         setTheme(stored);
       }
     } catch {}
@@ -70,6 +75,26 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
       }),
     [lectures, filter.courses]
   );
+
+  // ── Last-activity "Continue Studying" ──────────────────────────────────────
+  const [lastActivity, setLastActivity] = useState<{ type: string; id: string } | null>(null);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem('studymd_last_activity');
+      if (raw) setLastActivity(JSON.parse(raw));
+    } catch {}
+  }, []);
+
+  const continueHref = lastActivity
+    ? `/app/study/${lastActivity.type}?lecture=${lastActivity.id}`
+    : visibleLectures[0]
+      ? `/app/study/flash?lecture=${visibleLectures[0].internal_id}`
+      : null;
+
+  // ── Stats ─────────────────────────────────────────────────────────────────
+  const avgScore = progressLoading || globalStats.avgExamScore === null
+    ? null
+    : globalStats.avgExamScore;
 
   function handleStartFlash(lectureId: string) {
     window.location.href = `/app/study/flash?lecture=${lectureId}`;
@@ -95,9 +120,6 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
     refetch();
   }
 
-  // ── Settings callbacks ─────────────────────────────────────────────────────
-  // Color and course fire-and-forget: card holds optimistic local state so
-  // the grid never re-renders/flashes. refetch() is NOT called.
   function handleChangeCourse(internalId: string, course: Course) {
     fetch('/api/lectures/settings', {
       method: 'PUT',
@@ -114,7 +136,6 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
     }).catch(console.error);
   }
 
-  // Hide and archive DO refetch — the card needs to disappear from the grid.
   async function handleHide(internalId: string) {
     await fetch('/api/lectures/settings', {
       method: 'PUT',
@@ -137,7 +158,6 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Header
-          globalStats={globalStats}
           lectureCount={0}
           loading
           userId={userId ?? ''}
@@ -156,12 +176,13 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
     );
   }
 
+  const greeting = isPrimary ? `Hey Haley 👋` : `Hey ${userName} 👋`;
+
   return (
     <>
-      <style>{dashboardMobileCss}</style>
+      <style>{dashboardCss}</style>
 
       <Header
-        globalStats={globalStats}
         lectureCount={visibleLectures.length}
         loading={lecturesLoading}
         userId={userId ?? ''}
@@ -170,19 +191,56 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
       />
 
       <main className="smd-dashboard" id="mainDashboard">
-        <div className="smd-hero">
-          <div className="smd-hero-text">
-            <h1>{userName}, master your<br /><em>lectures</em> with ease.</h1>
-            <p>Select a lecture below to study with adaptive flashcards or challenge yourself with a custom practice exam.</p>
+
+        {/* ── HERO ─────────────────────────────────────────────────────────── */}
+        <section className="smd-hero">
+          <div className="smd-hero-left">
+            <h1 className="smd-hero-heading">
+              {greeting}, master your<br />
+              <em>lectures</em> with ease.
+            </h1>
+            <p className="smd-hero-sub">
+              {isPrimary
+                ? 'Your personalized lecture mastery platform, designed just for you. ✨'
+                : 'Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.'}
+            </p>
+
+            {continueHref && (
+              <Link href={continueHref} className="smd-continue-btn">
+                Continue Studying
+                <span className="smd-continue-arrow">→</span>
+              </Link>
+            )}
           </div>
-        </div>
 
-        <StatsRow
-          lectureCount={lectures.length}
-          globalStats={globalStats}
-          loading={progressLoading || lecturesLoading}
-        />
+          <div className="smd-hero-right">
+            {/* Compact inline stats */}
+            <div className="smd-hero-stats">
+              <div className="smd-hero-stat">
+                <span className="smd-hero-stat-value accent">
+                  {avgScore !== null ? `${avgScore}%` : '—'}
+                </span>
+                <span className="smd-hero-stat-label">avg score</span>
+              </div>
+              <div className="smd-hero-stat-divider" />
+              <div className="smd-hero-stat">
+                <span className="smd-hero-stat-value dim">
+                  {lecturesLoading ? '—' : visibleLectures.length}
+                </span>
+                <span className="smd-hero-stat-label">lectures</span>
+              </div>
+              <div className="smd-hero-stat-divider" />
+              <div className="smd-hero-stat">
+                <span className="smd-hero-stat-value warning">
+                  🔥 {globalStats.studyStreak ?? 0}
+                </span>
+                <span className="smd-hero-stat-label">day streak</span>
+              </div>
+            </div>
+          </div>
+        </section>
 
+        {/* ── SECTION HEADER ──────────────────────────────────────────────── */}
         <div className="smd-section-header">
           <div className="smd-section-title">
             Your Lectures
@@ -194,21 +252,18 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
           <div className="smd-section-actions">
             <button
               className="btn btn-ghost smd-upload-section-btn"
-              style={{ fontSize: 12, padding: '9px 16px' }}
               onClick={() => setShowUploadModal(true)}
             >
-              ⬆ Upload Lecture
+              ⬆ Upload
             </button>
             <button
               className="btn btn-ghost"
-              style={{ fontSize: 12, padding: '9px 16px' }}
               onClick={() => setManageOpen((v) => !v)}
             >
               {manageOpen ? '✓ Done' : '✏️ Manage'}
             </button>
             <button
               className="btn btn-primary smd-custom-session-btn"
-              style={{ fontSize: 12, padding: '9px 16px' }}
               onClick={() => setCustomModalOpen(true)}
             >
               ✦ Custom Study
@@ -268,6 +323,75 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
         )}
       </main>
 
+      {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
+      <footer className="smd-footer">
+        <div className="smd-footer-inner">
+          <div className="smd-footer-top">
+            <div className="smd-footer-brand">
+              <div className="smd-logo">
+                <span className="smd-logo-study">Study</span>
+                <span className="smd-logo-md">MD</span>
+              </div>
+              <p className="smd-footer-dedication">
+                A personalized lecture mastery platform designed for the one and only{' '}
+                <em>Haley Lange</em>
+              </p>
+              <div className="smd-footer-status">
+                <span className="smd-footer-dot" />
+                Platform active
+              </div>
+            </div>
+
+            <div className="smd-footer-links">
+              <div className="smd-footer-col">
+                <div className="smd-footer-col-label">Navigate</div>
+                <a href="#mainDashboard" className="smd-footer-link">Back to top</a>
+                <a href="/app" className="smd-footer-link">Dashboard</a>
+                <a href="/app/upload" className="smd-footer-link">Upload Lecture</a>
+              </div>
+              <div className="smd-footer-col">
+                <div className="smd-footer-col-label">Your Data</div>
+                <button
+                  className="smd-footer-link smd-footer-btn"
+                  onClick={() => {
+                    if (confirm('Reset all progress? This cannot be undone.')) {
+                      localStorage.clear();
+                      window.location.reload();
+                    }
+                  }}
+                >
+                  Reset Progress
+                </button>
+                <button
+                  className="smd-footer-link smd-footer-btn"
+                  onClick={() => {
+                    localStorage.clear();
+                    alert('Cache cleared.');
+                  }}
+                >
+                  Clear Cache
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="smd-footer-bottom">
+            <span>© 2026 StudyMD. All rights reserved.</span>
+            <span className="smd-footer-credit">
+              Built with{' '}
+              <a href="https://anthropic.com" target="_blank" rel="noopener noreferrer" className="smd-footer-link-inline">
+                Anthropic Claude
+              </a>{' '}
+              — a{' '}
+              <a href="https://tutormd.com" target="_blank" rel="noopener noreferrer" className="smd-footer-link-inline">
+                TutorMD
+              </a>{' '}
+              product
+            </span>
+          </div>
+        </div>
+      </footer>
+
       <CustomSessionModal
         isOpen={customModalOpen}
         lectures={lectures}
@@ -286,19 +410,349 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
   );
 }
 
-const dashboardMobileCss = `
-.smd-lecture-count-badge {
-  display: inline-flex; align-items: center; justify-content: center;
-  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400;
-  color: var(--text-muted, #6b7280); background: rgba(255,255,255,0.07);
-  border-radius: 100px; padding: 1px 8px; margin-left: 8px; vertical-align: middle;
+// ── Scoped CSS injected into <head> of this component tree ───────────────────
+const dashboardCss = `
+/* ── Hero redesign ─────────────────────────────────────────────────────────── */
+.smd-hero {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
 }
-.smd-section-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+.smd-hero-left {
+  flex: 1 1 340px;
+  min-width: 0;
+}
+
+.smd-hero-heading {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(28px, 4.5vw, 52px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -1px;
+  color: var(--text);
+  margin-bottom: 10px;
+}
+
+.smd-hero-heading em {
+  font-style: italic;
+  font-weight: 300;
+  color: var(--accent);
+}
+
+.smd-hero-sub {
+  font-size: 14px;
+  color: var(--text-muted);
+  max-width: 460px;
+  line-height: 1.65;
+  margin-bottom: 20px;
+}
+
+/* Continue Studying button */
+.smd-continue-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 11px 22px;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
+  box-shadow: 0 4px 18px rgba(91,141,238,0.3);
+  min-height: 44px;
+}
+
+.smd-continue-btn:hover {
+  background: color-mix(in srgb, var(--accent) 82%, black);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 24px rgba(91,141,238,0.4);
+}
+
+.smd-continue-arrow {
+  display: inline-block;
+  transition: transform 0.18s;
+}
+
+.smd-continue-btn:hover .smd-continue-arrow {
+  transform: translateX(3px);
+}
+
+/* Hero right: compact stats */
+.smd-hero-right {
+  display: flex;
+  align-items: flex-start;
+  padding-top: 8px;
+  flex-shrink: 0;
+}
+
+.smd-hero-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 20px;
+}
+
+.smd-hero-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.smd-hero-stat-value {
+  font-family: 'DM Mono', monospace;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.smd-hero-stat-value.accent { color: var(--accent); }
+.smd-hero-stat-value.dim    { color: var(--text); }
+.smd-hero-stat-value.warning { color: var(--warning, #f59e0b); }
+
+.smd-hero-stat-label {
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.smd-hero-stat-divider {
+  width: 1px;
+  height: 28px;
+  background: var(--border);
+  flex-shrink: 0;
+}
+
+/* ── Section header ─────────────────────────────────────────────────────────── */
+.smd-lecture-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted);
+  background: rgba(255,255,255,0.07);
+  border-radius: 100px;
+  padding: 1px 8px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.smd-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.smd-section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.smd-section-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.smd-section-actions .btn {
+  font-size: 12px;
+  padding: 8px 15px;
+  min-height: 36px;
+}
+
+/* ── Footer ─────────────────────────────────────────────────────────────────── */
+.smd-footer {
+  border-top: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 60%, var(--bg));
+  margin-top: 80px;
+}
+
+.smd-footer-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 40px 32px;
+}
+
+.smd-footer-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 48px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+
+.smd-footer-brand {
+  flex: 1 1 260px;
+  min-width: 0;
+}
+
+.smd-footer-dedication {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin-top: 10px;
+  max-width: 320px;
+}
+
+.smd-footer-dedication em {
+  color: var(--accent);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.smd-footer-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 14px;
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+.smd-footer-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success, #10b981);
+  box-shadow: 0 0 8px var(--success, #10b981);
+  animation: smd-pulse 2s infinite;
+  flex-shrink: 0;
+}
+
+.smd-footer-links {
+  display: flex;
+  gap: 48px;
+  flex-shrink: 0;
+}
+
+.smd-footer-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.smd-footer-col-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.smd-footer-link {
+  font-size: 13px;
+  color: var(--text-dim, #9ca3af);
+  text-decoration: none;
+  transition: color 0.15s;
+  font-family: 'Outfit', sans-serif;
+  line-height: 1.4;
+}
+
+.smd-footer-link:hover {
+  color: var(--text);
+}
+
+.smd-footer-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  min-height: 44px;   /* touch target */
+  display: flex;
+  align-items: center;
+}
+
+.smd-footer-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.smd-footer-link-inline {
+  color: var(--accent);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.smd-footer-link-inline:hover { opacity: 0.8; }
+
+/* ── Mobile overrides ────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  .smd-upload-section-btn { display: none; }
-  .smd-section-header { flex-wrap: wrap; gap: 8px; }
-  @media (max-width: 479px) {
-    .smd-section-actions { width: 100%; justify-content: flex-end; }
+  /* Hero stacks vertically */
+  .smd-hero {
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 28px;
   }
+
+  .smd-hero-right {
+    width: 100%;
+    padding-top: 0;
+  }
+
+  .smd-hero-stats {
+    width: 100%;
+    justify-content: center;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .smd-hero-stat-value { font-size: 17px; }
+
+  /* Section actions collapse on very small screens */
+  .smd-upload-section-btn { display: none; }
+
+  @media (max-width: 479px) {
+    .smd-section-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+
+  /* Footer */
+  .smd-footer-inner { padding: 36px 16px 24px; }
+  .smd-footer-top   { flex-direction: column; gap: 32px; }
+  .smd-footer-links { flex-wrap: wrap; gap: 28px; }
+  .smd-footer-bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .smd-hero-stats { gap: 12px; }
 }
 `;

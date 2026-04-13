@@ -1,4 +1,8 @@
 // components/StatsRow.tsx
+// NOTE: This component is kept for potential fallback/admin use.
+// The main Dashboard now renders compact inline stats in the hero section.
+// If you want to re-enable the card grid, import this and render it
+// between the hero and the section header in Dashboard.tsx.
 'use client';
 
 import type { GlobalStats } from '@/hooks/useProgress';
@@ -10,7 +14,8 @@ interface StatsRowProps {
 }
 
 export default function StatsRow({ lectureCount, globalStats, loading }: StatsRowProps) {
-  const { totalSessions, bestExamScore, avgExamScore } = globalStats;
+  const { avgExamScore } = globalStats;
+  const streak = globalStats.studyStreak ?? 0;
 
   return (
     <div className="smd-stats-row">
@@ -22,16 +27,9 @@ export default function StatsRow({ lectureCount, globalStats, loading }: StatsRo
       </div>
 
       <div className="smd-stat-card">
-        <div className="smd-stat-label">Sessions Completed</div>
-        <div className="smd-stat-value">
-          {loading ? '—' : totalSessions}
-        </div>
-      </div>
-
-      <div className="smd-stat-card">
-        <div className="smd-stat-label">Best Exam Score</div>
-        <div className="smd-stat-value gold">
-          {loading ? '—' : bestExamScore !== null ? `${bestExamScore}%` : '—'}
+        <div className="smd-stat-label">Study Streak</div>
+        <div className="smd-stat-value warning">
+          {loading ? '—' : `🔥 ${streak}`}
         </div>
       </div>
 
