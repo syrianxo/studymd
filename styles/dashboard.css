@@ -1,24 +1,9 @@
 /* ─── StudyMD Dashboard — Global Styles (ported from index.html) ─── */
-
-:root {
-  --bg: #0d0f14;
-  --surface: #13161d;
-  --surface2: #1a1e27;
-  --border: rgba(255, 255, 255, 0.07);
-  --border-bright: rgba(255, 255, 255, 0.15);
-  --text: #e8eaf0;
-  --text-muted: #6b7280;
-  --text-dim: #9ca3af;
-  --accent: #5b8dee;
-  --accent2: #8b5cf6;
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --gold: #f0c040;
-  --radius: 14px;
-  --radius-sm: 8px;
-  --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
+/*
+ * NOTE: All CSS variables are defined in themes.css and controlled by
+ * [data-theme] on <html>. Do NOT redefine :root variables here — it
+ * breaks theme switching by pinning midnight values permanently.
+ */
 
 *,
 *::before,
