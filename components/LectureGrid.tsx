@@ -18,6 +18,11 @@ const PRESET_COLORS = [
   '#ef4444', '#ec4899', '#06b6d4', '#84cc16',
 ];
 
+// Shared sizing — must match LectureCard.tsx constants
+const MENU_ITEM_PADDING = '10px 16px';
+const MENU_ITEM_MIN_HEIGHT = '42px';
+const MENU_FONT_SIZE = '13px';
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface LectureGridProps {
@@ -33,14 +38,13 @@ interface LectureGridProps {
 }
 
 // ─── ContextMenu via Portal ───────────────────────────────────────────────────
-// showColor / showCourse control which sections are shown so the course badge
-// click can show ONLY course options (no color section).
 
 interface CtxMenuProps {
   x: number; y: number;
   currentColor: string; currentCourse: Course;
-  showColor: boolean;   // show the color swatches section
-  showCourse: boolean;  // show the course options section
+  showColor: boolean;
+  showCourse: boolean;
+  showVisibility: boolean;  // false for badge click, true for card right-click
   onChangeCourse?: (c: Course) => void;
   onChangeColor?: (c: string) => void;
   onHide?: () => void;
@@ -50,7 +54,7 @@ interface CtxMenuProps {
 
 function ContextMenu({
   x, y, currentColor, currentCourse,
-  showColor, showCourse,
+  showColor, showCourse, showVisibility,
   onChangeCourse, onChangeColor,
   onHide, onArchive,
   onClose,
@@ -98,47 +102,37 @@ function ContextMenu({
       role="menu"
       onContextMenu={(e) => e.preventDefault()}
     >
-      {/* Color swatches — only when showColor is true */}
       {showColor && onChangeColor && (
         <>
           <div className="slc-ctx-label">Color</div>
           <div className="slc-ctx-colors">
             {PRESET_COLORS.map(c => (
-              <button
-                key={c}
+              <button key={c}
                 className={`slc-ctx-swatch${currentColor === c ? ' selected' : ''}`}
-                style={{ background: c }}
-                aria-label={`Color ${c}`}
-                onClick={() => { onChangeColor(c); onClose(); }}
-              />
+                style={{ background: c }} aria-label={`Color ${c}`}
+                onClick={() => { onChangeColor(c); onClose(); }} />
             ))}
           </div>
-          {showCourse && <div className="slc-ctx-divider" />}
+          {(showCourse || showVisibility) && <div className="slc-ctx-divider" />}
         </>
       )}
 
-      {/* Course options — only when showCourse is true */}
       {showCourse && onChangeCourse && (
         <>
           <div className="slc-ctx-label">Course</div>
           {COURSES.map(c => (
-            <button
-              key={c}
-              className="slc-ctx-item"
-              role="menuitem"
-              onClick={() => { onChangeCourse(c); onClose(); }}
-            >
+            <button key={c} className="slc-ctx-item" role="menuitem"
+              onClick={() => { onChangeCourse(c); onClose(); }}>
               <span style={{ opacity: c === currentCourse ? 1 : 0, width: 16, flexShrink: 0 }}>✓</span>
               {c}
             </button>
           ))}
+          {showVisibility && <div className="slc-ctx-divider" />}
         </>
       )}
 
-      {/* Hide / Archive — always shown when handlers exist */}
-      {(onHide || onArchive) && (
+      {showVisibility && (
         <>
-          <div className="slc-ctx-divider" />
           {onHide && (
             <button className="slc-ctx-item" role="menuitem" onClick={() => { onHide(); onClose(); }}>
               <span>👁</span> Hide
@@ -231,11 +225,9 @@ function SimpleLectureCard({
   const fcPct = progress?.mastery_pct ?? 0;
   const examPct = progress?.best_exam_score ?? 0;
 
-  // ── Optimistic local state so color/course update instantly without grid re-render ──
+  // Optimistic local state — instant update without grid re-render
   const [localColor, setLocalColor] = useState<string | null>(null);
   const [localCourse, setLocalCourse] = useState<Course | null>(null);
-
-  // Reset local overrides if the lecture prop changes (e.g. after background refetch)
   useEffect(() => { setLocalColor(null); }, [lecture.color_override, lecture.color]);
   useEffect(() => { setLocalCourse(null); }, [lecture.course_override, lecture.course]);
 
@@ -243,33 +235,24 @@ function SimpleLectureCard({
   const displayCourse = localCourse ?? (lecture.course_override ?? lecture.course) as Course;
   const displayTitle = lecture.custom_title ?? lecture.title;
 
-  // Wrap callbacks with optimistic updates
-  const handleChangeColor = useCallback((c: string) => {
-    setLocalColor(c);
-    onChangeColor?.(c);
-  }, [onChangeColor]);
+  const handleChangeColor = useCallback((c: string) => { setLocalColor(c); onChangeColor?.(c); }, [onChangeColor]);
+  const handleChangeCourse = useCallback((c: Course) => { setLocalCourse(c); onChangeCourse?.(c); }, [onChangeCourse]);
 
-  const handleChangeCourse = useCallback((c: Course) => {
-    setLocalCourse(c);
-    onChangeCourse?.(c);
-  }, [onChangeCourse]);
-
-  // ── Context menu state ────────────────────────────────────────────────────
-  type CtxMode = { x: number; y: number; showColor: boolean; showCourse: boolean } | null;
+  type CtxMode = { x: number; y: number; showColor: boolean; showCourse: boolean; showVisibility: boolean } | null;
   const [ctxMenu, setCtxMenu] = useState<CtxMode>(null);
 
-  // Full right-click menu (color + course + hide/archive)
+  // Right-click on card: color + course + hide/archive
   function openFullCtx(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    setCtxMenu({ x: e.clientX, y: e.clientY, showColor: true, showCourse: true });
+    setCtxMenu({ x: e.clientX, y: e.clientY, showColor: true, showCourse: true, showVisibility: true });
   }
 
-  // Course badge click — course options only, no color
+  // Left-click on badge: course only, no color, no hide/archive
   function openCourseCtx(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    setCtxMenu({ x: e.clientX, y: e.clientY, showColor: false, showCourse: true });
+    setCtxMenu({ x: e.clientX, y: e.clientY, showColor: false, showCourse: true, showVisibility: false });
   }
 
   const hasActions = !!(onChangeCourse || onChangeColor || onHide || onArchive);
@@ -277,20 +260,29 @@ function SimpleLectureCard({
   return (
     <div
       className="smd-lecture-card"
-      style={{ position: 'relative', zIndex: ctxMenu ? 200 : undefined }}
+      style={{
+        position: 'relative',
+        zIndex: ctxMenu ? 200 : undefined,
+        // Set --card-color so .smd-lecture-card::before (hover accent bar) uses the correct color
+        ['--card-color' as string]: color,
+      }}
       onContextMenu={hasActions ? openFullCtx : undefined}
     >
-      {/* Accent bar — uses local optimistic color */}
-      <div style={{ position: 'absolute', top: 0, left: 20, right: 20, height: 3, borderRadius: '0 0 4px 4px', background: color }} />
+      {/* Static accent bar — always visible, uses optimistic color */}
+      <div style={{
+        position: 'absolute', top: 0, left: 20, right: 20,
+        height: 3, borderRadius: '0 0 4px 4px',
+        background: color,
+        transition: 'background 0.3s',
+      }} />
 
-      {/* Context menu via portal */}
       {ctxMenu && hasActions && (
         <ContextMenu
           x={ctxMenu.x} y={ctxMenu.y}
-          currentColor={color}
-          currentCourse={displayCourse}
+          currentColor={color} currentCourse={displayCourse}
           showColor={ctxMenu.showColor}
           showCourse={ctxMenu.showCourse}
+          showVisibility={ctxMenu.showVisibility}
           onChangeCourse={onChangeCourse ? handleChangeCourse : undefined}
           onChangeColor={onChangeColor ? handleChangeColor : undefined}
           onHide={onHide}
@@ -302,7 +294,7 @@ function SimpleLectureCard({
       <div className="smd-card-summary">
         <div className="smd-card-top">
           <span style={{ fontSize: 28 }}>{lecture.icon}</span>
-          {/* Course badge — left-click opens course-only menu; right-click opens full menu */}
+          {/* Badge: left-click = course only; right-click = full menu */}
           <span
             className="slc-course-badge"
             style={{
@@ -310,11 +302,11 @@ function SimpleLectureCard({
               padding: '2px 8px', borderRadius: 100,
               background: `${color}22`, color,
               cursor: hasActions ? 'pointer' : 'default',
-              transition: 'box-shadow 0.15s, background 0.15s, color 0.15s',
+              transition: 'box-shadow 0.15s, background 0.3s, color 0.3s',
             }}
             onClick={hasActions ? openCourseCtx : undefined}
             onContextMenu={hasActions ? openFullCtx : undefined}
-            title={hasActions ? 'Click to change course · Right-click for more options' : undefined}
+            title={hasActions ? 'Click to change course · Right-click for all options' : undefined}
           >
             {displayCourse}
           </span>
@@ -328,7 +320,6 @@ function SimpleLectureCard({
           <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>{lecture.subtitle}</div>
         )}
 
-        {/* Progress bars — use optimistic color */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
           {[{ label: 'Flashcards', pct: fcPct }, { label: 'Exam', pct: examPct }].map(({ label, pct }) => (
             <div key={label} style={{ flex: 1, fontFamily: "'DM Mono', monospace", fontSize: 10, color: 'var(--text-muted)' }}>
@@ -377,39 +368,42 @@ function SkeletonCard() {
 const gridCss = `
 .slc-course-badge:hover { box-shadow: 0 0 0 2px rgba(255,255,255,0.2); }
 
+/* Context menu — same visual language as kebab menu */
 .slc-ctx {
-  position: fixed;
-  background: var(--surface2, #1a1e27);
-  border: 1px solid rgba(255,255,255,0.12); border-radius: 12px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.3);
-  z-index: 99999; min-width: 224px; overflow: hidden;
-  padding-bottom: 4px;
+  position: fixed; background: var(--surface2, #1a1e27);
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+  z-index: 99999; min-width: 200px; overflow: hidden; padding-bottom: 4px;
   animation: slc-ctx-in 0.12s ease;
 }
 @keyframes slc-ctx-in {
-  from { opacity: 0; transform: scale(0.95) translateY(-4px); }
+  from { opacity: 0; transform: scale(0.97) translateY(-4px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 .slc-ctx-label {
   font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em;
-  color: var(--text-muted, #6b7280); padding: 10px 14px 4px; text-transform: uppercase;
+  color: var(--text-muted, #6b7280); padding: 10px 16px 4px; text-transform: uppercase;
 }
-.slc-ctx-colors { display: flex; gap: 7px; flex-wrap: wrap; padding: 6px 14px 10px; }
+.slc-ctx-colors { display: flex; gap: 7px; flex-wrap: wrap; padding: 6px 16px 10px; }
 .slc-ctx-swatch {
-  width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+  width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
   border: 2px solid transparent; transition: transform 0.12s, border-color 0.12s; flex-shrink: 0;
 }
-.slc-ctx-swatch:hover { transform: scale(1.22); }
+.slc-ctx-swatch:hover { transform: scale(1.2); }
 .slc-ctx-swatch.selected { border-color: rgba(255,255,255,0.75); box-shadow: 0 0 0 1px rgba(255,255,255,0.3); }
-@media (max-width: 639px) { .slc-ctx-swatch { width: 36px; height: 36px; } .slc-ctx-colors { gap: 9px; } }
+@media (max-width: 639px) { .slc-ctx-swatch { width: 32px; height: 32px; } .slc-ctx-colors { gap: 9px; } }
+
+/* Same padding/size as kebab menu items */
 .slc-ctx-item {
-  display: flex; align-items: center; gap: 10px; padding: 9px 14px;
-  font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text, #e8eaf0);
-  cursor: pointer; transition: background 0.1s; border: none; background: none;
-  width: 100%; text-align: left; min-height: 40px; white-space: nowrap;
+  display: flex; align-items: center; gap: 10px;
+  padding: ${MENU_ITEM_PADDING};
+  font-family: 'Outfit', sans-serif; font-size: ${MENU_FONT_SIZE};
+  color: var(--text, #e8eaf0); cursor: pointer;
+  transition: background 0.1s; border: none; background: none;
+  width: 100%; text-align: left; min-height: ${MENU_ITEM_MIN_HEIGHT}; white-space: nowrap;
 }
 .slc-ctx-item:hover { background: rgba(255,255,255,0.06); }
 .slc-ctx-item.danger { color: #f87171; }
 @media (max-width: 639px) { .slc-ctx-item { min-height: 44px; font-size: 14px; } }
-.slc-ctx-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0; }
+.slc-ctx-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 2px 0; }
 `;

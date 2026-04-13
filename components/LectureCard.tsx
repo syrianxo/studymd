@@ -17,6 +17,12 @@ const PRESET_COLORS = [
   '#ef4444', '#ec4899', '#06b6d4', '#84cc16',
 ];
 
+// ─── Shared menu sizing constants ─────────────────────────────────────────────
+// Both the kebab menu and right-click context menu use these so they match.
+const MENU_ITEM_PADDING = '10px 16px';
+const MENU_ITEM_MIN_HEIGHT = '42px';
+const MENU_FONT_SIZE = '13px';
+
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const cardCss = `
@@ -91,10 +97,11 @@ const cardCss = `
   .lc-manage-mode .lc-kebab-btn { min-width: 44px; min-height: 44px; top: 6px; right: 6px; font-size: 20px; }
 }
 
+/* ── Kebab dropdown ─────────────────────────────────────────────────────── */
 .lc-menu {
   position: absolute; top: 44px; right: 8px; background: var(--surface2, #1a1e27);
   border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.45); z-index: 300; min-width: 190px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45); z-index: 300; min-width: 200px;
   overflow: visible; animation: lc-menu-in 0.12s ease;
 }
 @keyframes lc-menu-in {
@@ -105,11 +112,15 @@ const cardCss = `
 .lc-menu-row-inner { overflow: hidden; border-radius: 0; }
 .lc-menu > .lc-menu-row:first-child .lc-menu-row-inner { border-radius: 9px 9px 0 0; }
 .lc-menu > .lc-menu-row:last-child  .lc-menu-row-inner { border-radius: 0 0 9px 9px; }
+
+/* ── Unified menu item sizing (matches context menu) ── */
 .lc-menu-item {
-  display: flex; align-items: center; gap: 10px; padding: 10px 16px;
-  font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text, #e8eaf0);
-  cursor: pointer; transition: background 0.1s; border: none; background: none;
-  width: 100%; text-align: left; min-height: 44px; white-space: nowrap;
+  display: flex; align-items: center; gap: 10px;
+  padding: ${MENU_ITEM_PADDING};
+  font-family: 'Outfit', sans-serif; font-size: ${MENU_FONT_SIZE};
+  color: var(--text, #e8eaf0); cursor: pointer;
+  transition: background 0.1s; border: none; background: none;
+  width: 100%; text-align: left; min-height: ${MENU_ITEM_MIN_HEIGHT}; white-space: nowrap;
 }
 .lc-menu-item:hover { background: rgba(255,255,255,0.06); }
 .lc-menu-item.active { background: rgba(255,255,255,0.04); }
@@ -117,6 +128,7 @@ const cardCss = `
 .lc-menu-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 2px 0; }
 @media (max-width: 639px) { .lc-menu-item { min-height: 44px; font-size: 14px; padding: 10px 18px; } }
 
+/* Submenu — overflow:visible on .lc-menu-row allows escape */
 .lc-submenu {
   position: absolute; top: 0; right: calc(100% + 4px); background: var(--surface2, #1a1e27);
   border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
@@ -135,7 +147,7 @@ const cardCss = `
 
 .lc-color-row { display: flex; gap: 8px; padding: 10px 16px; flex-wrap: wrap; }
 .lc-color-swatch {
-  width: 26px; height: 26px; border-radius: 50%; cursor: pointer;
+  width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
   border: 2px solid transparent; transition: transform 0.12s, border-color 0.12s; flex-shrink: 0;
 }
 .lc-color-swatch:hover { transform: scale(1.18); }
@@ -149,51 +161,56 @@ const cardCss = `
 }
 .lc-restore-btn:hover { background: rgba(91,141,238,0.18); }
 
-/* Portal context menu */
+/* ── Portal context menu — same visual weight as kebab menu ── */
 .lc-ctx {
   position: fixed; background: var(--surface2, #1a1e27);
-  border: 1px solid rgba(255,255,255,0.12); border-radius: 12px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.6), 0 2px 8px rgba(0,0,0,0.3);
-  z-index: 99999; min-width: 224px; overflow: hidden; padding-bottom: 4px;
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+  z-index: 99999; min-width: 200px; overflow: hidden; padding-bottom: 4px;
   animation: lc-ctx-in 0.12s ease;
 }
 @keyframes lc-ctx-in {
-  from { opacity: 0; transform: scale(0.95) translateY(-4px); }
+  from { opacity: 0; transform: scale(0.97) translateY(-4px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 .lc-ctx-label {
   font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em;
-  color: var(--text-muted, #6b7280); padding: 10px 14px 4px; text-transform: uppercase;
+  color: var(--text-muted, #6b7280); padding: 10px 16px 4px; text-transform: uppercase;
 }
-.lc-ctx-colors { display: flex; gap: 7px; flex-wrap: wrap; padding: 6px 14px 10px; }
+.lc-ctx-colors { display: flex; gap: 7px; flex-wrap: wrap; padding: 6px 16px 10px; }
 .lc-ctx-swatch {
-  width: 28px; height: 28px; border-radius: 50%; cursor: pointer;
+  width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
   border: 2px solid transparent; transition: transform 0.12s, border-color 0.12s; flex-shrink: 0;
 }
-.lc-ctx-swatch:hover { transform: scale(1.22); }
+.lc-ctx-swatch:hover { transform: scale(1.2); }
 .lc-ctx-swatch.selected { border-color: rgba(255,255,255,0.75); box-shadow: 0 0 0 1px rgba(255,255,255,0.3); }
-@media (max-width: 639px) { .lc-ctx-swatch { width: 36px; height: 36px; } .lc-ctx-colors { gap: 9px; } }
+@media (max-width: 639px) { .lc-ctx-swatch { width: 32px; height: 32px; } .lc-ctx-colors { gap: 9px; } }
+
+/* ── Context menu items — identical sizing to kebab menu items ── */
 .lc-ctx-item {
-  display: flex; align-items: center; gap: 10px; padding: 9px 14px;
-  font-family: 'Outfit', sans-serif; font-size: 13px; color: var(--text, #e8eaf0);
-  cursor: pointer; transition: background 0.1s; border: none; background: none;
-  width: 100%; text-align: left; min-height: 40px; white-space: nowrap;
+  display: flex; align-items: center; gap: 10px;
+  padding: ${MENU_ITEM_PADDING};
+  font-family: 'Outfit', sans-serif; font-size: ${MENU_FONT_SIZE};
+  color: var(--text, #e8eaf0); cursor: pointer;
+  transition: background 0.1s; border: none; background: none;
+  width: 100%; text-align: left; min-height: ${MENU_ITEM_MIN_HEIGHT}; white-space: nowrap;
 }
 .lc-ctx-item:hover { background: rgba(255,255,255,0.06); }
 .lc-ctx-item.danger { color: #f87171; }
-.lc-ctx-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0; }
-@media (max-width: 639px) { .lc-ctx-item { min-height: 44px; font-size: 14px; } }
+.lc-ctx-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 2px 0; }
+@media (max-width: 639px) { .lc-ctx-item { min-height: 44px; font-size: 14px; padding: 10px 18px; } }
 `;
 
 // ─── ContextMenu via Portal ────────────────────────────────────────────────
 // showColor / showCourse let the badge click show ONLY course options.
-// Hide/Archive always rendered (not gated on manage mode).
+// showVisibility controls whether Hide/Archive are shown (false for badge click).
 
 interface ContextMenuProps {
   x: number; y: number;
   currentColor: string; currentCourse: Course;
-  showColor: boolean;   // show color swatches section
-  showCourse: boolean;  // show course options section
+  showColor: boolean;
+  showCourse: boolean;
+  showVisibility: boolean;   // show Hide/Archive/Restore
   isArchived: boolean; isHidden: boolean;
   onChangeCourse: (c: Course) => void;
   onChangeColor: (c: string) => void;
@@ -203,7 +220,7 @@ interface ContextMenuProps {
 
 function ContextMenu({
   x, y, currentColor, currentCourse,
-  showColor, showCourse,
+  showColor, showCourse, showVisibility,
   isArchived, isHidden,
   onChangeCourse, onChangeColor,
   onHide, onArchive, onRestore, onClose,
@@ -247,7 +264,6 @@ function ContextMenu({
     <div ref={ref} className="lc-ctx" style={{ left: pos.x, top: pos.y }}
       role="menu" onContextMenu={(e) => e.preventDefault()}>
 
-      {/* Color swatches — only when showColor */}
       {showColor && (
         <>
           <div className="lc-ctx-label">Color</div>
@@ -259,11 +275,10 @@ function ContextMenu({
                 onClick={() => { onChangeColor(c); onClose(); }} />
             ))}
           </div>
-          {showCourse && <div className="lc-ctx-divider" />}
+          {(showCourse || showVisibility) && <div className="lc-ctx-divider" />}
         </>
       )}
 
-      {/* Course options — only when showCourse */}
       {showCourse && (
         <>
           <div className="lc-ctx-label">Course</div>
@@ -274,24 +289,25 @@ function ContextMenu({
               {c}
             </button>
           ))}
+          {showVisibility && <div className="lc-ctx-divider" />}
         </>
       )}
 
-      {/* Hide / Archive — always present */}
-      <div className="lc-ctx-divider" />
-      {isArchived || isHidden ? (
-        <button className="lc-ctx-item" role="menuitem" onClick={() => { onRestore(); onClose(); }}>
-          <span>↩️</span> {isArchived ? 'Restore' : 'Unhide'}
-        </button>
-      ) : (
-        <>
-          <button className="lc-ctx-item" role="menuitem" onClick={() => { onHide(); onClose(); }}>
-            <span>👁</span> Hide
+      {showVisibility && (
+        isArchived || isHidden ? (
+          <button className="lc-ctx-item" role="menuitem" onClick={() => { onRestore(); onClose(); }}>
+            <span>↩️</span> {isArchived ? 'Restore' : 'Unhide'}
           </button>
-          <button className="lc-ctx-item danger" role="menuitem" onClick={() => { onArchive(); onClose(); }}>
-            <span>📦</span> Archive
-          </button>
-        </>
+        ) : (
+          <>
+            <button className="lc-ctx-item" role="menuitem" onClick={() => { onHide(); onClose(); }}>
+              <span>👁</span> Hide
+            </button>
+            <button className="lc-ctx-item danger" role="menuitem" onClick={() => { onArchive(); onClose(); }}>
+              <span>📦</span> Archive
+            </button>
+          </>
+        )
       )}
     </div>
   );
@@ -333,13 +349,16 @@ function KebabMenu({ lecture, onHide, onArchive, onRestore, onEditTags, onChange
         <button className="lc-menu-item" onClick={onEditTags} role="menuitem"><span>🏷</span> Edit Tags</button>
       </div></div>
 
-      <div className="lc-menu-row">
+      {/* Change Course — opens on click OR hover */}
+      <div className="lc-menu-row"
+        onMouseEnter={() => { setShowCourse(true); setShowColor(false); }}
+        onMouseLeave={() => setShowCourse(false)}>
         <div className="lc-menu-row-inner">
           <button className={`lc-menu-item${showCourse ? ' active' : ''}`}
             onClick={() => { setShowCourse(v => !v); setShowColor(false); }}
             role="menuitem" aria-haspopup="true" aria-expanded={showCourse}>
             <span>📚</span> Change Course
-            <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showCourse ? '▾' : '›'}</span>
+            <span style={{ marginLeft: 'auto', opacity: 0.5 }}>›</span>
           </button>
         </div>
         {showCourse && (
@@ -347,20 +366,23 @@ function KebabMenu({ lecture, onHide, onArchive, onRestore, onEditTags, onChange
             {COURSES.map(c => (
               <button key={c} className="lc-menu-item"
                 onClick={() => { onChangeCourse(c); onClose(); }} role="menuitem">
-                <span style={{ opacity: c === lecture.display_course ? 1 : 0 }}>✓</span> {c}
+                <span style={{ opacity: c === lecture.display_course ? 1 : 0, width: 16, flexShrink: 0 }}>✓</span> {c}
               </button>
             ))}
           </div>
         )}
       </div>
 
-      <div className="lc-menu-row">
+      {/* Change Color — opens on click OR hover */}
+      <div className="lc-menu-row"
+        onMouseEnter={() => { setShowColor(true); setShowCourse(false); }}
+        onMouseLeave={() => setShowColor(false)}>
         <div className="lc-menu-row-inner">
           <button className={`lc-menu-item${showColor ? ' active' : ''}`}
             onClick={() => { setShowColor(v => !v); setShowCourse(false); }}
             role="menuitem" aria-haspopup="true" aria-expanded={showColor}>
             <span>🎨</span> Change Color
-            <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showColor ? '▾' : '›'}</span>
+            <span style={{ marginLeft: 'auto', opacity: 0.5 }}>›</span>
           </button>
         </div>
         {showColor && (
@@ -422,7 +444,6 @@ export function LectureCard({
 }: LectureCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // ── Optimistic local state — instant color/course update before refetch ──
   const [localColor, setLocalColor] = useState<string | null>(null);
   const [localCourse, setLocalCourse] = useState<Course | null>(null);
   useEffect(() => { setLocalColor(null); }, [lecture.display_color]);
@@ -431,18 +452,10 @@ export function LectureCard({
   const displayColor = localColor ?? lecture.display_color;
   const displayCourse = localCourse ?? lecture.display_course;
 
-  const handleChangeColor = useCallback((c: string) => {
-    setLocalColor(c);
-    onChangeColor(c);
-  }, [onChangeColor]);
+  const handleChangeColor = useCallback((c: string) => { setLocalColor(c); onChangeColor(c); }, [onChangeColor]);
+  const handleChangeCourse = useCallback((c: Course) => { setLocalCourse(c); onChangeCourse(c); }, [onChangeCourse]);
 
-  const handleChangeCourse = useCallback((c: Course) => {
-    setLocalCourse(c);
-    onChangeCourse(c);
-  }, [onChangeCourse]);
-
-  // ── Context menu state ──
-  type CtxMode = { x: number; y: number; showColor: boolean; showCourse: boolean } | null;
+  type CtxMode = { x: number; y: number; showColor: boolean; showCourse: boolean; showVisibility: boolean } | null;
   const [ctxMenu, setCtxMenu] = useState<CtxMode>(null);
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
@@ -464,20 +477,20 @@ export function LectureCard({
     isMenuActive ? 'lc-menu-open' : '',
   ].filter(Boolean).join(' ');
 
-  // Full right-click menu: color + course + hide/archive
+  // Right-click on card body: color + course + hide/archive
   function openFullCtx(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     setMenuOpen(false);
-    setCtxMenu({ x: e.clientX, y: e.clientY, showColor: true, showCourse: true });
+    setCtxMenu({ x: e.clientX, y: e.clientY, showColor: true, showCourse: true, showVisibility: true });
   }
 
-  // Course badge left-click: course only, no color section
+  // Left-click on course badge: course change only, no color, no hide/archive
   function openCourseCtx(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     setMenuOpen(false);
-    setCtxMenu({ x: e.clientX, y: e.clientY, showColor: false, showCourse: true });
+    setCtxMenu({ x: e.clientX, y: e.clientY, showColor: false, showCourse: true, showVisibility: false });
   }
 
   return (
@@ -491,7 +504,6 @@ export function LectureCard({
         tabIndex={isManageMode ? -1 : 0}
         onKeyDown={(e) => { if (!isManageMode && (e.key === 'Enter' || e.key === ' ')) onOpen?.(); }}
       >
-        {/* Accent bar — optimistic color */}
         <div className="lc-accent-bar" style={{ background: displayColor, left: isManageMode ? 32 : 20 }} />
 
         {isManageMode && (
@@ -517,6 +529,7 @@ export function LectureCard({
             x={ctxMenu.x} y={ctxMenu.y}
             currentColor={displayColor} currentCourse={displayCourse}
             showColor={ctxMenu.showColor} showCourse={ctxMenu.showCourse}
+            showVisibility={ctxMenu.showVisibility}
             isArchived={lecture.settings.archived}
             isHidden={!lecture.settings.visible}
             onChangeCourse={handleChangeCourse} onChangeColor={handleChangeColor}
@@ -525,18 +538,16 @@ export function LectureCard({
           />
         )}
 
-        {/* Card body */}
         <div className="lc-header" style={{ paddingLeft: isManageMode ? 20 : 0 }}>
           <div className="lc-icon">{lecture.icon}</div>
           <div className="lc-title-block">
             <div className="lc-title">{lecture.display_title}</div>
-            {/* Course badge: left-click = course only; right-click = full menu */}
             <span
               className="lc-course-badge"
               style={{ background: `${displayColor}22`, color: displayColor }}
               onClick={openCourseCtx}
               onContextMenu={openFullCtx}
-              title="Click to change course · Right-click for more options"
+              title="Click to change course · Right-click for all options"
             >
               {displayCourse}
             </span>
