@@ -29,7 +29,9 @@ export interface GlobalStats {
   totalSessions: number;
   bestExamScore: number | null;
   avgExamScore: number | null;
-  studyStreak: number;   // consecutive days studied — full impl in v2.5
+  /** Consecutive calendar days (ending today or yesterday) on which at least
+   *  one lecture was studied. Computed from lastStudied timestamps. */
+  studyStreak: number;
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -75,8 +77,53 @@ function deriveGlobalStats(byLecture: Record<string, LectureProgress>): GlobalSt
       avgScores.length > 0
         ? Math.round(avgScores.reduce((a, b) => a + b, 0) / avgScores.length)
         : null,
-    studyStreak: 0,  // placeholder — full streak tracking in v2.5 Phase 1
+    studyStreak: deriveStreak(entries),
   };
+}
+
+// ── Streak helper ────────────────────────────────────────────────────────────
+// A "streak" is the number of consecutive calendar days (in local time)
+// ending on today OR yesterday on which at least one lecture was studied.
+// We allow yesterday so a streak doesn't break at midnight before the user
+// has had a chance to study today.
+
+function toLocalDateStr(iso: string): string {
+  const d = new Date(iso);
+  // YYYY-MM-DD in local timezone
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function deriveStreak(entries: LectureProgress[]): number {
+  // Collect every unique local-date string on which any lecture was studied
+  const studiedDays = new Set<string>();
+  for (const e of entries) {
+    if (e.last_studied_at) {
+      studiedDays.add(toLocalDateStr(e.last_studied_at));
+    }
+  }
+  if (studiedDays.size === 0) return 0;
+
+  const today = new Date();
+  const todayStr = toLocalDateStr(today.toISOString());
+
+  // If neither today nor yesterday was studied, streak is broken
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = toLocalDateStr(yesterday.toISOString());
+
+  if (!studiedDays.has(todayStr) && !studiedDays.has(yesterdayStr)) return 0;
+
+  // Walk backwards from the most recent studied day, counting consecutive days
+  const anchor = studiedDays.has(todayStr) ? today : yesterday;
+  let streak = 0;
+  const cursor = new Date(anchor);
+  while (true) {
+    const dayStr = toLocalDateStr(cursor.toISOString());
+    if (!studiedDays.has(dayStr)) break;
+    streak++;
+    cursor.setDate(cursor.getDate() - 1);
+  }
+  return streak;
 }
 
 function syncMapToUI(syncMap: Record<string, ProgressRecord>): Record<string, LectureProgress> {
