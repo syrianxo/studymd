@@ -18,5 +18,7 @@ export function DashboardClient({
     applyTheme(initialTheme);
   }, [initialTheme]);
 
-  return <Dashboard userName={userName} />;
+  // Pass initialTheme so Dashboard can give it directly to Header/ThemePicker
+  // without waiting for a localStorage read on the next tick.
+  return <Dashboard userName={userName} initialTheme={initialTheme} />;
 }
