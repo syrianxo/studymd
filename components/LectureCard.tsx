@@ -241,6 +241,7 @@ const cardCss = `
 .lc-menu > .lc-menu-row:first-child .lc-menu-row-inner { border-radius: 9px 9px 0 0; }
 .lc-menu > .lc-menu-row:last-child .lc-menu-row-inner  { border-radius: 0 0 9px 9px; }
 
+/* Ensure all touch targets meet 44px minimum */
 .lc-menu-item {
   display: flex;
   align-items: center;
@@ -255,7 +256,7 @@ const cardCss = `
   background: none;
   width: 100%;
   text-align: left;
-  min-height: 40px;
+  min-height: 44px;
   white-space: nowrap;
 }
 .lc-menu-item:hover { background: rgba(255,255,255,0.06); }
@@ -289,20 +290,17 @@ const cardCss = `
   animation: lc-menu-in 0.1s ease;
 }
 
+/* Mobile: submenus drop inline instead of flying left */
 @media (max-width: 639px) {
   .lc-submenu {
-    /* Switch to inline below the trigger */
-    position: static;
-    right: auto;
-    top: auto;
+    position: static !important;
+    right: auto !important;
+    top: auto !important;
+    width: 100% !important;
+    margin-top: 4px;
     box-shadow: none;
-    border: none;
-    border-left: 2px solid rgba(255,255,255,0.1);
-    border-radius: 0;
-    min-width: 0;
-    width: 100%;
-    animation: none;
-    background: rgba(255,255,255,0.02);
+    border-top: 1px solid var(--border);
+    border-radius: 0 0 var(--radius-sm) var(--radius-sm);
   }
   /* Indent submenu items on mobile */
   .lc-submenu .lc-menu-item {
