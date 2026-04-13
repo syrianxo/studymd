@@ -52,9 +52,6 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
     });
   }, []);
 
-  // Sync theme from localStorage only — the SSR-provided initialThemeProp
-  // is the authoritative initial value. localStorage is kept in sync by
-  // applyTheme() in ThemePicker so it stays current after user changes.
   useEffect(() => {
     try {
       const stored = localStorage.getItem('studymd_theme') as Theme | null;
@@ -98,21 +95,40 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
     refetch();
   }
 
-  // Callbacks for course/color changes from the main grid
-  async function handleChangeCourse(internalId: string, course: Course) {
-    await fetch('/api/lectures/settings', {
+  // ── Settings callbacks ─────────────────────────────────────────────────────
+  // Color and course fire-and-forget: card holds optimistic local state so
+  // the grid never re-renders/flashes. refetch() is NOT called.
+  function handleChangeCourse(internalId: string, course: Course) {
+    fetch('/api/lectures/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ internalId, updates: { courseOverride: course } }),
+    }).catch(console.error);
+  }
+
+  function handleChangeColor(internalId: string, color: string) {
+    fetch('/api/lectures/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ internalId, updates: { colorOverride: color } }),
+    }).catch(console.error);
+  }
+
+  // Hide and archive DO refetch — the card needs to disappear from the grid.
+  async function handleHide(internalId: string) {
+    await fetch('/api/lectures/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ internalId, updates: { visible: false } }),
     });
     refetch();
   }
 
-  async function handleChangeColor(internalId: string, color: string) {
+  async function handleArchive(internalId: string) {
     await fetch('/api/lectures/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ internalId, updates: { colorOverride: color } }),
+      body: JSON.stringify({ internalId, updates: { archived: true } }),
     });
     refetch();
   }
@@ -128,26 +144,13 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
           initialTheme={theme}
           onUploadClick={() => setShowUploadModal(true)}
         />
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexDirection: 'column',
-            gap: 12,
-            padding: 40,
-            textAlign: 'center',
-          }}
-        >
+        <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, padding: 40, textAlign: 'center' }}>
           <div style={{ fontSize: 42 }}>⚠️</div>
           <div style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>
             Couldn't load lectures
           </div>
           <p style={{ color: 'var(--text-muted)', fontSize: 14, maxWidth: 360 }}>{lecturesError}</p>
-          <button className="btn btn-primary" onClick={() => window.location.reload()}>
-            Retry
-          </button>
+          <button className="btn btn-primary" onClick={() => window.location.reload()}>Retry</button>
         </div>
       </div>
     );
@@ -157,7 +160,6 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
     <>
       <style>{dashboardMobileCss}</style>
 
-      {/* ── Header (sticky) ──────────────────────────────────────────── */}
       <Header
         globalStats={globalStats}
         lectureCount={visibleLectures.length}
@@ -167,42 +169,28 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
         onUploadClick={() => setShowUploadModal(true)}
       />
 
-      {/* ── Main dashboard ───────────────────────────────────────────── */}
       <main className="smd-dashboard" id="mainDashboard">
-        {/* Hero */}
         <div className="smd-hero">
           <div className="smd-hero-text">
-            <h1>
-              {userName}, master your
-              <br />
-              <em>lectures</em> with ease.
-            </h1>
-            <p>
-              Select a lecture below to study with adaptive flashcards or challenge
-              yourself with a custom practice exam.
-            </p>
+            <h1>{userName}, master your<br /><em>lectures</em> with ease.</h1>
+            <p>Select a lecture below to study with adaptive flashcards or challenge yourself with a custom practice exam.</p>
           </div>
         </div>
 
-        {/* Stats row */}
         <StatsRow
           lectureCount={lectures.length}
           globalStats={globalStats}
           loading={progressLoading || lecturesLoading}
         />
 
-        {/* Section header */}
         <div className="smd-section-header">
           <div className="smd-section-title">
             Your Lectures
             {!lecturesLoading && (
-              <span className="smd-lecture-count-badge">
-                {visibleLectures.length}
-              </span>
+              <span className="smd-lecture-count-badge">{visibleLectures.length}</span>
             )}
           </div>
 
-          {/* Desktop: Upload in section header; Mobile: Upload is in Header */}
           <div className="smd-section-actions">
             <button
               className="btn btn-ghost smd-upload-section-btn"
@@ -228,7 +216,6 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
           </div>
         </div>
 
-        {/* Course filter bar — hidden when manage mode is open */}
         {!manageOpen && (
           <FilterBar
             allCourses={courses}
@@ -238,7 +225,6 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
           />
         )}
 
-        {/* Manage mode — replaces the grid when open */}
         {manageOpen && userId && (
           <ManageMode
             userId={userId}
@@ -267,7 +253,6 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
           />
         )}
 
-        {/* Lecture grid — hidden when manage mode is open */}
         {!manageOpen && (
           <LectureGrid
             lectures={visibleLectures}
@@ -277,11 +262,12 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
             onStartExam={handleStartExam}
             onChangeCourse={handleChangeCourse}
             onChangeColor={handleChangeColor}
+            onHide={handleHide}
+            onArchive={handleArchive}
           />
         )}
       </main>
 
-      {/* ── Modals ───────────────────────────────────────────────────── */}
       <CustomSessionModal
         isOpen={customModalOpen}
         lectures={lectures}
@@ -300,55 +286,19 @@ export default function Dashboard({ userName = 'there', initialTheme: initialThe
   );
 }
 
-// Mobile-specific dashboard layout overrides
 const dashboardMobileCss = `
-/* Lecture count badge in section title */
 .smd-lecture-count-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'DM Mono', monospace;
-  font-size: 11px;
-  font-weight: 400;
-  color: var(--text-muted, #6b7280);
-  background: rgba(255,255,255,0.07);
-  border-radius: 100px;
-  padding: 1px 8px;
-  margin-left: 8px;
-  vertical-align: middle;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400;
+  color: var(--text-muted, #6b7280); background: rgba(255,255,255,0.07);
+  border-radius: 100px; padding: 1px 8px; margin-left: 8px; vertical-align: middle;
 }
-
-/* Section actions container */
-.smd-section-actions {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-/* On mobile: Upload is in the Header, hide it from section bar */
+.smd-section-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 @media (max-width: 767px) {
-  .smd-upload-section-btn {
-    display: none;
-  }
-
-  /* Section header: title left, actions right but compressed */
-  .smd-section-header {
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  /* Shorten "Custom Study Session" label */
-  .smd-custom-session-btn::before {
-    content: '✦ Custom';
-  }
-
-  /* Stack the action buttons below the title if very narrow */
+  .smd-upload-section-btn { display: none; }
+  .smd-section-header { flex-wrap: wrap; gap: 8px; }
   @media (max-width: 479px) {
-    .smd-section-actions {
-      width: 100%;
-      justify-content: flex-end;
-    }
+    .smd-section-actions { width: 100%; justify-content: flex-end; }
   }
 }
 `;

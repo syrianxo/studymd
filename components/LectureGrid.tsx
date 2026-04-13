@@ -1,7 +1,7 @@
 // components/LectureGrid.tsx
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import type { Lecture } from '@/hooks/useUserLectures';
 import type { LectureProgress } from '@/hooks/useProgress';
@@ -28,26 +28,36 @@ interface LectureGridProps {
   onStartExam: (lectureId: string) => void;
   onChangeCourse?: (lectureId: string, course: Course) => void;
   onChangeColor?: (lectureId: string, color: string) => void;
+  onHide?: (lectureId: string) => void;
+  onArchive?: (lectureId: string) => void;
 }
 
-// ─── ContextMenu — rendered via Portal into document.body ─────────────────
-// Portal placement is the key fix: the menu lives outside the card's DOM
-// so the outside-click handler cannot be triggered by the same mousedown
-// event that opened the menu (no instant self-close race condition).
+// ─── ContextMenu via Portal ───────────────────────────────────────────────────
+// showColor / showCourse control which sections are shown so the course badge
+// click can show ONLY course options (no color section).
 
 interface CtxMenuProps {
   x: number; y: number;
   currentColor: string; currentCourse: Course;
+  showColor: boolean;   // show the color swatches section
+  showCourse: boolean;  // show the course options section
   onChangeCourse?: (c: Course) => void;
   onChangeColor?: (c: string) => void;
+  onHide?: () => void;
+  onArchive?: () => void;
   onClose: () => void;
 }
 
-function ContextMenu({ x, y, currentColor, currentCourse, onChangeCourse, onChangeColor, onClose }: CtxMenuProps) {
+function ContextMenu({
+  x, y, currentColor, currentCourse,
+  showColor, showCourse,
+  onChangeCourse, onChangeColor,
+  onHide, onArchive,
+  onClose,
+}: CtxMenuProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ x, y });
 
-  // Viewport-aware repositioning
   useEffect(() => {
     if (!ref.current) return;
     const { offsetWidth: w, offsetHeight: h } = ref.current;
@@ -58,7 +68,6 @@ function ContextMenu({ x, y, currentColor, currentCourse, onChangeCourse, onChan
     });
   }, [x, y]);
 
-  // Delayed outside-click so the portal is mounted before the listener fires
   useEffect(() => {
     let active = false;
     const timer = setTimeout(() => { active = true; }, 0);
@@ -89,7 +98,8 @@ function ContextMenu({ x, y, currentColor, currentCourse, onChangeCourse, onChan
       role="menu"
       onContextMenu={(e) => e.preventDefault()}
     >
-      {onChangeColor && (
+      {/* Color swatches — only when showColor is true */}
+      {showColor && onChangeColor && (
         <>
           <div className="slc-ctx-label">Color</div>
           <div className="slc-ctx-colors">
@@ -103,11 +113,12 @@ function ContextMenu({ x, y, currentColor, currentCourse, onChangeCourse, onChan
               />
             ))}
           </div>
-          <div className="slc-ctx-divider" />
+          {showCourse && <div className="slc-ctx-divider" />}
         </>
       )}
 
-      {onChangeCourse && (
+      {/* Course options — only when showCourse is true */}
+      {showCourse && onChangeCourse && (
         <>
           <div className="slc-ctx-label">Course</div>
           {COURSES.map(c => (
@@ -123,6 +134,23 @@ function ContextMenu({ x, y, currentColor, currentCourse, onChangeCourse, onChan
           ))}
         </>
       )}
+
+      {/* Hide / Archive — always shown when handlers exist */}
+      {(onHide || onArchive) && (
+        <>
+          <div className="slc-ctx-divider" />
+          {onHide && (
+            <button className="slc-ctx-item" role="menuitem" onClick={() => { onHide(); onClose(); }}>
+              <span>👁</span> Hide
+            </button>
+          )}
+          {onArchive && (
+            <button className="slc-ctx-item danger" role="menuitem" onClick={() => { onArchive(); onClose(); }}>
+              <span>📦</span> Archive
+            </button>
+          )}
+        </>
+      )}
     </div>
   );
 
@@ -134,7 +162,9 @@ function ContextMenu({ x, y, currentColor, currentCourse, onChangeCourse, onChan
 
 export default function LectureGrid({
   lectures, progressByLecture, loading,
-  onStartFlash, onStartExam, onChangeCourse, onChangeColor,
+  onStartFlash, onStartExam,
+  onChangeCourse, onChangeColor,
+  onHide, onArchive,
 }: LectureGridProps) {
   if (loading) {
     return (
@@ -172,6 +202,8 @@ export default function LectureGrid({
             onStartExam={() => onStartExam(lecture.internal_id)}
             onChangeCourse={onChangeCourse ? c => onChangeCourse(lecture.internal_id, c) : undefined}
             onChangeColor={onChangeColor ? c => onChangeColor(lecture.internal_id, c) : undefined}
+            onHide={onHide ? () => onHide(lecture.internal_id) : undefined}
+            onArchive={onArchive ? () => onArchive(lecture.internal_id) : undefined}
           />
         ))}
       </div>
@@ -188,40 +220,81 @@ interface SimpleCardProps {
   onStartExam: () => void;
   onChangeCourse?: (course: Course) => void;
   onChangeColor?: (color: string) => void;
+  onHide?: () => void;
+  onArchive?: () => void;
 }
 
-function SimpleLectureCard({ lecture, progress, onStartFlash, onStartExam, onChangeCourse, onChangeColor }: SimpleCardProps) {
+function SimpleLectureCard({
+  lecture, progress, onStartFlash, onStartExam,
+  onChangeCourse, onChangeColor, onHide, onArchive,
+}: SimpleCardProps) {
   const fcPct = progress?.mastery_pct ?? 0;
   const examPct = progress?.best_exam_score ?? 0;
-  const color = lecture.color_override ?? lecture.color ?? '#5b8dee';
-  const displayCourse = (lecture.course_override ?? lecture.course) as Course;
+
+  // ── Optimistic local state so color/course update instantly without grid re-render ──
+  const [localColor, setLocalColor] = useState<string | null>(null);
+  const [localCourse, setLocalCourse] = useState<Course | null>(null);
+
+  // Reset local overrides if the lecture prop changes (e.g. after background refetch)
+  useEffect(() => { setLocalColor(null); }, [lecture.color_override, lecture.color]);
+  useEffect(() => { setLocalCourse(null); }, [lecture.course_override, lecture.course]);
+
+  const color = localColor ?? lecture.color_override ?? lecture.color ?? '#5b8dee';
+  const displayCourse = localCourse ?? (lecture.course_override ?? lecture.course) as Course;
   const displayTitle = lecture.custom_title ?? lecture.title;
-  const hasActions = !!(onChangeCourse || onChangeColor);
 
-  const [ctxMenu, setCtxMenu] = useState<{ x: number; y: number } | null>(null);
+  // Wrap callbacks with optimistic updates
+  const handleChangeColor = useCallback((c: string) => {
+    setLocalColor(c);
+    onChangeColor?.(c);
+  }, [onChangeColor]);
 
-  function openCtx(e: React.MouseEvent) {
+  const handleChangeCourse = useCallback((c: Course) => {
+    setLocalCourse(c);
+    onChangeCourse?.(c);
+  }, [onChangeCourse]);
+
+  // ── Context menu state ────────────────────────────────────────────────────
+  type CtxMode = { x: number; y: number; showColor: boolean; showCourse: boolean } | null;
+  const [ctxMenu, setCtxMenu] = useState<CtxMode>(null);
+
+  // Full right-click menu (color + course + hide/archive)
+  function openFullCtx(e: React.MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
-    setCtxMenu({ x: e.clientX, y: e.clientY });
+    setCtxMenu({ x: e.clientX, y: e.clientY, showColor: true, showCourse: true });
   }
+
+  // Course badge click — course options only, no color
+  function openCourseCtx(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    setCtxMenu({ x: e.clientX, y: e.clientY, showColor: false, showCourse: true });
+  }
+
+  const hasActions = !!(onChangeCourse || onChangeColor || onHide || onArchive);
 
   return (
     <div
       className="smd-lecture-card"
       style={{ position: 'relative', zIndex: ctxMenu ? 200 : undefined }}
-      onContextMenu={hasActions ? openCtx : undefined}
+      onContextMenu={hasActions ? openFullCtx : undefined}
     >
-      {/* Accent bar */}
+      {/* Accent bar — uses local optimistic color */}
       <div style={{ position: 'absolute', top: 0, left: 20, right: 20, height: 3, borderRadius: '0 0 4px 4px', background: color }} />
 
       {/* Context menu via portal */}
       {ctxMenu && hasActions && (
         <ContextMenu
           x={ctxMenu.x} y={ctxMenu.y}
-          currentColor={color} currentCourse={displayCourse}
-          onChangeCourse={onChangeCourse}
-          onChangeColor={onChangeColor}
+          currentColor={color}
+          currentCourse={displayCourse}
+          showColor={ctxMenu.showColor}
+          showCourse={ctxMenu.showCourse}
+          onChangeCourse={onChangeCourse ? handleChangeCourse : undefined}
+          onChangeColor={onChangeColor ? handleChangeColor : undefined}
+          onHide={onHide}
+          onArchive={onArchive}
           onClose={() => setCtxMenu(null)}
         />
       )}
@@ -229,7 +302,7 @@ function SimpleLectureCard({ lecture, progress, onStartFlash, onStartExam, onCha
       <div className="smd-card-summary">
         <div className="smd-card-top">
           <span style={{ fontSize: 28 }}>{lecture.icon}</span>
-          {/* Course badge — click OR right-click opens context menu */}
+          {/* Course badge — left-click opens course-only menu; right-click opens full menu */}
           <span
             className="slc-course-badge"
             style={{
@@ -237,11 +310,11 @@ function SimpleLectureCard({ lecture, progress, onStartFlash, onStartExam, onCha
               padding: '2px 8px', borderRadius: 100,
               background: `${color}22`, color,
               cursor: hasActions ? 'pointer' : 'default',
-              transition: 'box-shadow 0.15s',
+              transition: 'box-shadow 0.15s, background 0.15s, color 0.15s',
             }}
-            onClick={hasActions ? openCtx : undefined}
-            onContextMenu={hasActions ? openCtx : undefined}
-            title={hasActions ? 'Click to change course or color' : undefined}
+            onClick={hasActions ? openCourseCtx : undefined}
+            onContextMenu={hasActions ? openFullCtx : undefined}
+            title={hasActions ? 'Click to change course · Right-click for more options' : undefined}
           >
             {displayCourse}
           </span>
@@ -255,12 +328,13 @@ function SimpleLectureCard({ lecture, progress, onStartFlash, onStartExam, onCha
           <div style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>{lecture.subtitle}</div>
         )}
 
+        {/* Progress bars — use optimistic color */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
           {[{ label: 'Flashcards', pct: fcPct }, { label: 'Exam', pct: examPct }].map(({ label, pct }) => (
             <div key={label} style={{ flex: 1, fontFamily: "'DM Mono', monospace", fontSize: 10, color: 'var(--text-muted)' }}>
               {label}
               <div style={{ height: 4, background: 'rgba(255,255,255,0.07)', borderRadius: 2, marginTop: 3, overflow: 'hidden' }}>
-                <div style={{ height: '100%', width: `${pct}%`, background: color, opacity: 0.75, borderRadius: 2, transition: 'width 0.4s' }} />
+                <div style={{ height: '100%', width: `${pct}%`, background: color, opacity: 0.75, borderRadius: 2, transition: 'width 0.4s, background 0.3s' }} />
               </div>
             </div>
           ))}
@@ -303,7 +377,6 @@ function SkeletonCard() {
 const gridCss = `
 .slc-course-badge:hover { box-shadow: 0 0 0 2px rgba(255,255,255,0.2); }
 
-/* Portal context menu */
 .slc-ctx {
   position: fixed;
   background: var(--surface2, #1a1e27);
@@ -336,6 +409,7 @@ const gridCss = `
   width: 100%; text-align: left; min-height: 40px; white-space: nowrap;
 }
 .slc-ctx-item:hover { background: rgba(255,255,255,0.06); }
+.slc-ctx-item.danger { color: #f87171; }
 @media (max-width: 639px) { .slc-ctx-item { min-height: 44px; font-size: 14px; } }
 .slc-ctx-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 4px 0; }
 `;
