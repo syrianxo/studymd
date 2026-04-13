@@ -24,7 +24,7 @@ interface ThemeDef {
 
 const THEMES: ThemeDef[] = [
   { id: 'midnight', label: 'Midnight', swatch: '#5b8dee', glow: '#5b8dee44' },
-  { id: 'lavender', label: 'Lavender', swatch: '#a78bfa', glow: '#a78bfa44' },
+  { id: 'pink',     label: 'Pink',     swatch: '#f472b6', glow: '#f472b644' },
   { id: 'forest',   label: 'Forest',   swatch: '#10b981', glow: '#10b98144' },
 ];
 
@@ -168,7 +168,7 @@ export const THEME_INIT_SCRIPT = `
 (function() {
   try {
     var t = localStorage.getItem('studymd_theme');
-    if (t === 'midnight' || t === 'lavender' || t === 'forest') {
+    if (t === 'midnight' || t === 'pink' || t === 'forest') {
       document.documentElement.dataset.theme = t;
     } else {
       document.documentElement.dataset.theme = 'midnight';

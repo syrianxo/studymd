@@ -30,7 +30,7 @@ export default function RootLayout({
               (function() {
                 try {
                   var theme = localStorage.getItem('studymd_theme');
-                  var valid = ['midnight', 'lavender', 'forest'];
+                  var valid = ['midnight', 'pink', 'forest'];
                   if (theme && valid.indexOf(theme) !== -1) {
                     document.documentElement.setAttribute('data-theme', theme);
                   }

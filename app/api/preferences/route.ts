@@ -7,7 +7,7 @@ import type { NextRequest } from "next/server";
 // Constants
 // ---------------------------------------------------------------------------
 
-const VALID_THEMES = ["midnight", "lavender", "forest"] as const;
+const VALID_THEMES = ["midnight", "pink", "forest"] as const;
 type Theme = (typeof VALID_THEMES)[number];
 
 // Default preferences returned when no row exists yet

@@ -47,30 +47,30 @@
   --course-ld:   #f59e0b;   /* Laboratory Diagnosis */
 }
 
-/* ── Lavender ─────────────────────────────────────────────────────────────── */
-[data-theme="lavender"] {
-  --bg:          #16121e;
-  --surface:     #1e1829;
-  --surface2:    #261f33;
-  --surface3:    #2e263d;
+/* ── Pink ─────────────────────────────────────────────────────────────────── */
+[data-theme="pink"] {
+  --bg:          #1a0e16;
+  --surface:     #231320;
+  --surface2:    #2e1a2b;
+  --surface3:    #3a2136;
 
-  --accent:      #a78bfa;
-  --accent2:     #f472b6;
-  --accent-muted: rgba(167, 139, 250, 0.15);
+  --accent:      #f472b6;
+  --accent2:     #fb7185;
+  --accent-muted: rgba(244, 114, 182, 0.15);
 
-  --text:        #ede9fe;
-  --text-muted:  #7c6f99;
-  --text-dim:    #a89fc0;
-  --text-faint:  #3d344f;
+  --text:        #fce7f3;
+  --text-muted:  #9d7090;
+  --text-dim:    #c49ab8;
+  --text-faint:  #4a2a40;
 
   --border:      rgba(255, 255, 255, 0.07);
-  --border-bright: rgba(255, 255, 255, 0.14);
-  --border-focus: rgba(167, 139, 250, 0.5);
+  --border-bright: rgba(255, 255, 255, 0.13);
+  --border-focus: rgba(244, 114, 182, 0.5);
 
   --success:     #34d399;
-  --warning:     #fb923c;
+  --warning:     #fbbf24;
   --danger:      #f87171;
-  --gold:        #fbbf24;
+  --gold:        #fde68a;
 
   --radius:      14px;
   --radius-sm:   8px;
@@ -80,9 +80,9 @@
   --shadow-md:   0 8px 24px rgba(0, 0, 0, 0.45);
   --shadow-lg:   0 24px 64px rgba(0, 0, 0, 0.65);
 
-  --course-pd:   #a78bfa;
+  --course-pd:   #f472b6;
   --course-ap:   #34d399;
-  --course-ld:   #fb923c;
+  --course-ld:   #fbbf24;
 }
 
 /* ── Forest ───────────────────────────────────────────────────────────────── */

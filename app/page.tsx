@@ -347,9 +347,9 @@ export default function HomePage() {
           transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
         }
         .nav-cta:hover {
-          background: #4a7de3;
+          background: color-mix(in srgb, var(--accent) 80%, black);
           transform: translateY(-1px);
-          box-shadow: 0 4px 20px #5b8dee44;
+          box-shadow: 0 4px 20px color-mix(in srgb, var(--accent) 27%, transparent);
         }
 
         /* ── Hero ───────────────────────────────────────────── */
@@ -479,9 +479,9 @@ export default function HomePage() {
           pointer-events: none;
         }
         .btn-primary:hover {
-          background: #4a7de3;
+          background: color-mix(in srgb, var(--accent) 80%, black);
           transform: translateY(-2px);
-          box-shadow: 0 8px 32px #5b8dee44;
+          box-shadow: 0 8px 32px color-mix(in srgb, var(--accent) 27%, transparent);
         }
         .btn-primary:active { transform: translateY(0); }
 

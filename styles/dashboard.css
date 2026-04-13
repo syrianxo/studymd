@@ -187,7 +187,7 @@ body::before {
 }
 
 .pomo-pill-toggle:hover {
-  background: #4a7de8;
+  background: color-mix(in srgb, var(--accent) 80%, black);
   transform: scale(1.08);
 }
 
@@ -740,13 +740,13 @@ body::before {
 
 .btn-exam {
   background: rgba(139, 92, 246, 0.15);
-  color: #a78bfa;
+  color: var(--accent2);
   border: 1px solid rgba(139, 92, 246, 0.25);
 }
 
 .btn-exam:hover {
   background: rgba(139, 92, 246, 0.25);
-  border-color: #a78bfa;
+  border-color: var(--accent2);
 }
 
 .btn-primary {
@@ -756,7 +756,7 @@ body::before {
 }
 
 .btn-primary:hover {
-  background: #4a7de8;
+  background: color-mix(in srgb, var(--accent) 80%, black);
   transform: translateY(-1px);
 }
 
