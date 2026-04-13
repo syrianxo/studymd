@@ -1,7 +1,7 @@
 // components/Dashboard.tsx
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Header from './Header';
 import { FilterBar, type FilterState } from './FilterBar';
@@ -9,11 +9,15 @@ import LectureGrid from './LectureGrid';
 import { ManageMode } from './ManageMode';
 import CustomSessionModal, { type CustomSessionConfig } from './CustomSessionModal';
 import { useUserLectures } from '@/hooks/useUserLectures';
+import type { Lecture } from '@/hooks/useUserLectures';
 import { useProgress } from '@/hooks/useProgress';
 import { createClient } from '@/lib/supabase';
 import UploadModal from '@/components/UploadModal';
 import PomodoroTimer from '@/components/PomodoroTimer';
+import { StudyConfigManager, useStudyConfig } from '@/components/StudyConfigManager';
 import type { Course, Theme } from '@/types';
+import type { FlashcardConfig } from '@/components/study/FlashcardConfigModal';
+import type { ExamConfig } from '@/components/study/ExamConfigModal';
 
 interface DashboardProps {
   userName?: string;
@@ -51,6 +55,7 @@ export default function Dashboard({
   const [userId, setUserId] = useState<string | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [theme, setTheme] = useState<Theme>(initialThemeProp);
+  const studyConfig = useStudyConfig();
 
   useEffect(() => {
     createClient().auth.getUser().then(({ data }) => {
@@ -97,12 +102,61 @@ export default function Dashboard({
     ? null
     : globalStats.avgExamScore;
 
+  // Build a minimal LectureWithSettings from a Lecture for the config modals
+  const buildLectureWithSettings = useCallback((lecture: Lecture) => ({
+    ...lecture,
+    json_data: {
+      ...lecture.json_data,
+      // Normalise: config modals read .flashcards and .exam_questions
+      flashcards: lecture.json_data?.flashcards ?? [],
+      exam_questions: (lecture.json_data as any)?.questions ?? [],
+    },
+    settings: {
+      user_id: userId ?? '',
+      internal_id: lecture.internal_id,
+      display_order: lecture.display_order,
+      visible: lecture.visible,
+      archived: lecture.archived,
+      group_id: lecture.group_id ?? null,
+      tags: lecture.tags ?? [],
+      course_override: lecture.course_override ?? null,
+      color_override: lecture.color_override ?? null,
+      custom_title: lecture.custom_title ?? null,
+    },
+    display_title: lecture.custom_title ?? lecture.title,
+    display_course: (lecture.course_override ?? lecture.course) as Course,
+    display_color: lecture.color_override ?? lecture.color,
+  }), [userId]);
+
   function handleStartFlash(lectureId: string) {
-    window.location.href = `/app/study/flash?lecture=${lectureId}`;
+    const lecture = lectures.find(l => l.internal_id === lectureId);
+    if (lecture) {
+      studyConfig.openFlashcards(buildLectureWithSettings(lecture));
+    } else {
+      window.location.href = `/app/study/flash?lecture=${lectureId}`;
+    }
   }
 
   function handleStartExam(lectureId: string) {
-    window.location.href = `/app/study/exam?lecture=${lectureId}`;
+    const lecture = lectures.find(l => l.internal_id === lectureId);
+    if (lecture) {
+      studyConfig.openExam(buildLectureWithSettings(lecture));
+    } else {
+      window.location.href = `/app/study/exam?lecture=${lectureId}`;
+    }
+  }
+
+  function handleStartFlashWithConfig(config: FlashcardConfig, lectureId: string) {
+    const topicsParam = config.topics.map(encodeURIComponent).join(',');
+    window.location.href =
+      `/app/study/flash?lecture=${lectureId}&count=${config.count}&topics=${topicsParam}&order=${config.order}`;
+  }
+
+  function handleStartExamWithConfig(config: ExamConfig, lectureId: string) {
+    const topicsParam = config.topics.map(encodeURIComponent).join(',');
+    const typesParam = config.types.join(',');
+    window.location.href =
+      `/app/study/exam?lecture=${lectureId}&count=${config.count}&topics=${topicsParam}&types=${typesParam}`;
   }
 
   function handleCustomSession(config: CustomSessionConfig) {
@@ -391,6 +445,15 @@ export default function Dashboard({
         </div>
       </footer>
 
+      <StudyConfigManager
+        {...studyConfig}
+        onStartFlashcards={(lecture, config) =>
+          handleStartFlashWithConfig(config, lecture.internal_id)
+        }
+        onStartExam={(lecture, config) =>
+          handleStartExamWithConfig(config, lecture.internal_id)
+        }
+      />
       <CustomSessionModal
         isOpen={customModalOpen}
         lectures={lectures}
