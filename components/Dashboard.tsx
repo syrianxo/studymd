@@ -12,7 +12,7 @@ import { useUserLectures } from '@/hooks/useUserLectures';
 import { useProgress } from '@/hooks/useProgress';
 import { createClient } from '@/lib/supabase';
 import UploadModal from "@/components/UploadModal";
-import type { Course } from '@/types';
+import type { Course, Theme } from '@/types';
 
 interface DashboardProps {
   /**
@@ -47,6 +47,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
   const [manageOpen, setManageOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
+  const [theme, setTheme] = useState<Theme>('midnight');
 
 
   // Fetch userId once on mount for ManageMode
@@ -54,6 +55,16 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
     createClient().auth.getUser().then(({ data }) => {
       if (data.user) setUserId(data.user.id);
     });
+  }, []);
+
+  // Read theme from localStorage on mount
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('studymd_theme') as Theme | null;
+      if (stored === 'midnight' || stored === 'lavender' || stored === 'forest') {
+        setTheme(stored);
+      }
+    } catch {}
   }, []);
 
   // ── Filtered lectures ──────────────────────────────────────────────────
@@ -96,7 +107,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
   if (lecturesError) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Header globalStats={globalStats} lectureCount={0} loading />
+        <Header globalStats={globalStats} lectureCount={0} loading userId={userId ?? ''} initialTheme={theme} />
         <div
           style={{
             flex: 1,
@@ -141,6 +152,8 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
         globalStats={globalStats}
         lectureCount={visibleLectures.length}
         loading={lecturesLoading}
+        userId={userId ?? ''}
+        initialTheme={theme}
       />
 
       {/* ── Main dashboard ───────────────────────────────────────────── */}

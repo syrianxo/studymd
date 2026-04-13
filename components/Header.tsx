@@ -3,19 +3,24 @@
 
 import type { GlobalStats } from '@/hooks/useProgress';
 import PomodoroTimer from './PomodoroTimer';
+import { ThemePicker } from './ThemePicker';
+import type { Theme } from '@/types';
 
 interface HeaderProps {
   globalStats: GlobalStats;
   lectureCount: number;
   loading?: boolean;
+  userId: string;
+  initialTheme: Theme;
 }
 
-export default function Header({ globalStats, lectureCount, loading = false }: HeaderProps) {
-  const completedSessions = globalStats.totalSessions;
-  const pillText = loading
-    ? 'Loading…'
-    : `${lectureCount} lecture${lectureCount !== 1 ? 's' : ''} · ${completedSessions} session${completedSessions !== 1 ? 's' : ''}`;
-
+export default function Header({
+  globalStats,
+  lectureCount,
+  loading = false,
+  userId,
+  initialTheme,
+}: HeaderProps) {
   return (
     <header className="smd-header">
       <div>
@@ -27,10 +32,7 @@ export default function Header({ globalStats, lectureCount, loading = false }: H
       </div>
 
       <div className="smd-header-right">
-        <div className="smd-progress-pill">
-          <span className="dot" />
-          <span>{pillText}</span>
-        </div>
+        <ThemePicker userId={userId} initialTheme={initialTheme} />
         <PomodoroTimer />
       </div>
     </header>
