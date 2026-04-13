@@ -1,5 +1,9 @@
 'use client';
 
+// components/LectureCard.tsx
+// v2.5: Added expand panel with Flashcards / Practice Exam buttons that
+//       open FlashcardConfigModal / ExamConfigModal before entering study views.
+
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useSortable } from '@dnd-kit/sortable';
@@ -18,7 +22,6 @@ const PRESET_COLORS = [
 ];
 
 // ─── Shared menu sizing constants ─────────────────────────────────────────────
-// Both the kebab menu and right-click context menu use these so they match.
 const MENU_ITEM_PADDING = '10px 16px';
 const MENU_ITEM_MIN_HEIGHT = '42px';
 const MENU_FONT_SIZE = '13px';
@@ -34,11 +37,12 @@ const cardCss = `
   transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
   overflow: visible; user-select: none;
 }
-.lc-card:hover:not(.lc-dragging) { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.35); }
+.lc-card:hover:not(.lc-dragging):not(.lc-expanded) { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,0,0,0.35); }
 .lc-card.lc-manage-mode { cursor: default; }
 .lc-card.lc-dragging { opacity: 0.5; box-shadow: 0 16px 48px rgba(0,0,0,0.6); z-index: 999; }
 .lc-card.lc-archived { opacity: 0.55; border-style: dashed; }
 .lc-card.lc-menu-open { z-index: 200; }
+.lc-card.lc-expanded { border-color: rgba(255,255,255,0.12); box-shadow: 0 12px 40px rgba(0,0,0,0.4); cursor: default; }
 
 .lc-accent-bar {
   position: absolute; top: 0; left: 20px; right: 20px;
@@ -97,6 +101,59 @@ const cardCss = `
   .lc-manage-mode .lc-kebab-btn { min-width: 44px; min-height: 44px; top: 6px; right: 6px; font-size: 20px; }
 }
 
+/* Expand chevron — non-manage mode */
+.lc-expand-indicator {
+  position: absolute; bottom: 14px; right: 14px;
+  font-size: 11px; color: var(--text-muted, #6b7280); opacity: 0.5;
+  transition: opacity 0.15s, transform 0.22s ease;
+  pointer-events: none;
+  display: block;
+}
+.lc-manage-mode .lc-expand-indicator { display: none; }
+.lc-card:hover:not(.lc-manage-mode) .lc-expand-indicator { opacity: 0.9; }
+.lc-expanded .lc-expand-indicator { transform: rotate(180deg); opacity: 0.9; }
+
+/* ── Expand panel ─────────────────────────────────────────────────────────── */
+.lc-expand-panel {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lc-expand-panel.open { max-height: 400px; }
+
+.lc-expand-inner {
+  padding-top: 14px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  margin-top: 14px;
+}
+
+.lc-expand-section-label {
+  font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--text-muted, #6b7280);
+  margin-bottom: 8px;
+}
+
+.lc-study-btns {
+  display: flex; gap: 8px; margin-bottom: 14px;
+}
+.lc-study-btn {
+  flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 10px 12px; border-radius: 10px; cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;
+  color: var(--text, #e8eaf0);
+  transition: all 0.15s; min-height: 44px;
+}
+.lc-study-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.22); }
+.lc-study-btn.primary {
+  background: rgba(91,141,238,0.12); border-color: rgba(91,141,238,0.3);
+  color: #7da8f0;
+}
+.lc-study-btn.primary:hover { background: rgba(91,141,238,0.2); border-color: rgba(91,141,238,0.5); }
+@media (max-width: 480px) {
+  .lc-study-btns { flex-direction: column; }
+}
+
 /* ── Kebab dropdown ─────────────────────────────────────────────────────── */
 .lc-menu {
   position: absolute; top: 44px; right: 8px; background: var(--surface2, #1a1e27);
@@ -113,7 +170,6 @@ const cardCss = `
 .lc-menu > .lc-menu-row:first-child .lc-menu-row-inner { border-radius: 9px 9px 0 0; }
 .lc-menu > .lc-menu-row:last-child  .lc-menu-row-inner { border-radius: 0 0 9px 9px; }
 
-/* ── Unified menu item sizing (matches context menu) ── */
 .lc-menu-item {
   display: flex; align-items: center; gap: 10px;
   padding: ${MENU_ITEM_PADDING};
@@ -128,7 +184,7 @@ const cardCss = `
 .lc-menu-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 2px 0; }
 @media (max-width: 639px) { .lc-menu-item { min-height: 44px; font-size: 14px; padding: 10px 18px; } }
 
-/* Submenu — overflow:visible on .lc-menu-row allows escape */
+/* Submenu */
 .lc-submenu {
   position: absolute; top: 0; right: calc(100% + 4px); background: var(--surface2, #1a1e27);
   border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
@@ -161,7 +217,7 @@ const cardCss = `
 }
 .lc-restore-btn:hover { background: rgba(91,141,238,0.18); }
 
-/* ── Portal context menu — same visual weight as kebab menu ── */
+/* ── Portal context menu ── */
 .lc-ctx {
   position: fixed; background: var(--surface2, #1a1e27);
   border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
@@ -186,7 +242,6 @@ const cardCss = `
 .lc-ctx-swatch.selected { border-color: rgba(255,255,255,0.75); box-shadow: 0 0 0 1px rgba(255,255,255,0.3); }
 @media (max-width: 639px) { .lc-ctx-swatch { width: 32px; height: 32px; } .lc-ctx-colors { gap: 9px; } }
 
-/* ── Context menu items — identical sizing to kebab menu items ── */
 .lc-ctx-item {
   display: flex; align-items: center; gap: 10px;
   padding: ${MENU_ITEM_PADDING};
@@ -202,18 +257,13 @@ const cardCss = `
 `;
 
 // ─── ContextMenu via Portal ────────────────────────────────────────────────
-// showColor / showCourse let the badge click show ONLY course options.
-// showVisibility controls whether Hide/Archive are shown (false for badge click).
 
 interface ContextMenuProps {
   x: number; y: number;
   currentColor: string; currentCourse: Course;
-  showColor: boolean;
-  showCourse: boolean;
-  showVisibility: boolean;   // show Hide/Archive/Restore
+  showColor: boolean; showCourse: boolean; showVisibility: boolean;
   isArchived: boolean; isHidden: boolean;
-  onChangeCourse: (c: Course) => void;
-  onChangeColor: (c: string) => void;
+  onChangeCourse: (c: Course) => void; onChangeColor: (c: string) => void;
   onHide: () => void; onArchive: () => void; onRestore: () => void;
   onClose: () => void;
 }
@@ -222,8 +272,7 @@ function ContextMenu({
   x, y, currentColor, currentCourse,
   showColor, showCourse, showVisibility,
   isArchived, isHidden,
-  onChangeCourse, onChangeColor,
-  onHide, onArchive, onRestore, onClose,
+  onChangeCourse, onChangeColor, onHide, onArchive, onRestore, onClose,
 }: ContextMenuProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ x, y });
@@ -249,7 +298,6 @@ function ContextMenu({
     const onCtx    = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) onClose();
     };
-    // Close on any scroll so the fixed menu doesn't visually drift from the card
     const onScroll = () => onClose();
     document.addEventListener('mousedown', onDown);
     document.addEventListener('keydown', onKey);
@@ -321,11 +369,9 @@ function ContextMenu({
 }
 
 // ─── KebabMenu (manage mode only) ────────────────────────────────────────────
-// Rendered via createPortal so it is fixed to the viewport and does NOT
-// scroll with the card when the user scrolls the page.
 
 interface KebabMenuProps {
-  anchorRect: DOMRect;            // bounding rect of the ⋮ button
+  anchorRect: DOMRect;
   lecture: LectureWithSettings;
   onHide: () => void; onArchive: () => void; onRestore: () => void;
   onEditTags: () => void;
@@ -339,31 +385,22 @@ function KebabMenu({ anchorRect, lecture, onHide, onArchive, onRestore, onEditTa
   const [showColor, setShowColor] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Position: open below the button, clamp to viewport edges
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   useEffect(() => {
     const menuEl = menuRef.current;
     if (!menuEl) {
-      // Initial position before we know menu height — right-align to button
-      setPos({
-        top: anchorRect.bottom + 6,
-        left: anchorRect.right - 200, // min-width of menu
-      });
+      setPos({ top: anchorRect.bottom + 6, left: anchorRect.right - 200 });
       return;
     }
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const mw = menuEl.offsetWidth || 200;
-    const mh = menuEl.offsetHeight || 160;
-    let left = anchorRect.right - mw;
-    let top  = anchorRect.bottom + 6;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const mw = menuEl.offsetWidth || 200, mh = menuEl.offsetHeight || 160;
+    let left = anchorRect.right - mw, top = anchorRect.bottom + 6;
     if (left < 8) left = 8;
     if (left + mw > vw - 8) left = vw - mw - 8;
     if (top + mh > vh - 8) top = anchorRect.top - mh - 6;
     setPos({ top, left });
   }, [anchorRect]);
 
-  // Close on outside click, scroll, or Escape
   useEffect(() => {
     const onDown = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) onClose();
@@ -380,37 +417,27 @@ function KebabMenu({ anchorRect, lecture, onHide, onArchive, onRestore, onEditTa
     };
   }, [onClose]);
 
-  // Recalculate position after first paint once we know the menu height
   useEffect(() => {
     if (!menuRef.current || !pos) return;
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const mw = menuRef.current.offsetWidth;
-    const mh = menuRef.current.offsetHeight;
-    let left = anchorRect.right - mw;
-    let top  = anchorRect.bottom + 6;
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const mw = menuRef.current.offsetWidth, mh = menuRef.current.offsetHeight;
+    let left = anchorRect.right - mw, top = anchorRect.bottom + 6;
     if (left < 8) left = 8;
     if (left + mw > vw - 8) left = vw - mw - 8;
     if (top + mh > vh - 8) top = anchorRect.top - mh - 6;
     setPos({ top, left });
-  // Only run after the ref is populated — dep array intentionally minimal
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuRef.current]);
 
   if (typeof document === 'undefined' || !pos) return null;
 
   const menu = (
-    <div
-      className="lc-menu"
-      ref={menuRef}
-      role="menu"
-      style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 99999 }}
-    >
+    <div className="lc-menu" ref={menuRef} role="menu"
+      style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 99999 }}>
       <div className="lc-menu-row"><div className="lc-menu-row-inner">
         <button className="lc-menu-item" onClick={onEditTags} role="menuitem"><span>🏷</span> Edit Tags</button>
       </div></div>
 
-      {/* Change Course */}
       <div className="lc-menu-row"
         onMouseEnter={() => { setShowCourse(true); setShowColor(false); }}
         onMouseLeave={() => setShowCourse(false)}>
@@ -434,7 +461,6 @@ function KebabMenu({ anchorRect, lecture, onHide, onArchive, onRestore, onEditTa
         )}
       </div>
 
-      {/* Change Color */}
       <div className="lc-menu-row"
         onMouseEnter={() => { setShowColor(true); setShowCourse(false); }}
         onMouseLeave={() => setShowColor(false)}>
@@ -491,9 +517,15 @@ function KebabMenu({ anchorRect, lecture, onHide, onArchive, onRestore, onEditTa
 interface LectureCardProps {
   lecture: LectureWithSettings;
   isManageMode: boolean;
-  flashcardProgress?: number; examProgress?: number;
+  flashcardProgress?: number;
+  examProgress?: number;
+  /** @deprecated use onFlashcards / onExam instead; kept for backward-compat */
   onOpen?: () => void;
-  onHide: () => void; onArchive: () => void; onRestore: () => void;
+  onFlashcards?: () => void;
+  onExam?: () => void;
+  onHide: () => void;
+  onArchive: () => void;
+  onRestore: () => void;
   onEditTags: () => void;
   onChangeCourse: (course: Course) => void;
   onChangeColor: (color: string) => void;
@@ -502,11 +534,13 @@ interface LectureCardProps {
 export function LectureCard({
   lecture, isManageMode,
   flashcardProgress = 0, examProgress = 0,
-  onOpen, onHide, onArchive, onRestore, onEditTags,
+  onOpen, onFlashcards, onExam,
+  onHide, onArchive, onRestore, onEditTags,
   onChangeCourse, onChangeColor,
 }: LectureCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [kebabRect, setKebabRect] = useState<DOMRect | null>(null);
+  const [expanded, setExpanded] = useState(false);
   const kebabRef = useRef<HTMLButtonElement>(null);
 
   const [localColor, setLocalColor] = useState<string | null>(null);
@@ -540,34 +574,58 @@ export function LectureCard({
     isDragging ? 'lc-dragging' : '',
     lecture.settings.archived ? 'lc-archived' : '',
     isMenuActive ? 'lc-menu-open' : '',
+    expanded && !isManageMode ? 'lc-expanded' : '',
   ].filter(Boolean).join(' ');
 
-  // Right-click on card body: color + course + hide/archive
   function openFullCtx(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     setMenuOpen(false);
     setCtxMenu({ x: e.clientX, y: e.clientY, showColor: true, showCourse: true, showVisibility: true });
   }
 
-  // Left-click on course badge: course change only, no color, no hide/archive
   function openCourseCtx(e: React.MouseEvent) {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault(); e.stopPropagation();
     setMenuOpen(false);
     setCtxMenu({ x: e.clientX, y: e.clientY, showColor: false, showCourse: true, showVisibility: false });
   }
+
+  // Card click: toggle expand (non-manage). Backward-compat: if no expand handlers provided, fall back to onOpen.
+  function handleCardClick() {
+    if (isManageMode || isMenuActive) return;
+    if (onFlashcards || onExam) {
+      setExpanded((v) => !v);
+    } else {
+      onOpen?.();
+    }
+  }
+
+  function handleFlashcardsClick(e: React.MouseEvent) {
+    e.stopPropagation();
+    onFlashcards?.();
+  }
+
+  function handleExamClick(e: React.MouseEvent) {
+    e.stopPropagation();
+    onExam?.();
+  }
+
+  const hasStudyActions = !!(onFlashcards || onExam);
 
   return (
     <>
       <style>{cardCss}</style>
       <div
         ref={setNodeRef} style={style} className={classNames}
-        onClick={() => !isManageMode && !isMenuActive && onOpen?.()}
+        onClick={handleCardClick}
         onContextMenu={openFullCtx}
         role={isManageMode ? 'listitem' : 'button'}
         tabIndex={isManageMode ? -1 : 0}
-        onKeyDown={(e) => { if (!isManageMode && (e.key === 'Enter' || e.key === ' ')) onOpen?.(); }}
+        onKeyDown={(e) => {
+          if (!isManageMode && (e.key === 'Enter' || e.key === ' ')) {
+            e.preventDefault();
+            handleCardClick();
+          }
+        }}
       >
         <div className="lc-accent-bar" style={{ background: displayColor, left: isManageMode ? 32 : 20 }} />
 
@@ -650,6 +708,38 @@ export function LectureCard({
         )}
 
         <div className="lc-slide-count">{lecture.slide_count} slides</div>
+
+        {/* ── Expand panel: Study Mode buttons ── */}
+        {hasStudyActions && !isManageMode && (
+          <div className={`lc-expand-panel${expanded ? ' open' : ''}`}>
+            <div className="lc-expand-inner">
+              <div className="lc-expand-section-label">Study Mode</div>
+              <div className="lc-study-btns">
+                <button
+                  className="lc-study-btn primary"
+                  onClick={handleFlashcardsClick}
+                  aria-label={`Study flashcards for ${lecture.display_title}`}
+                >
+                  📇 Flashcards
+                </button>
+                <button
+                  className="lc-study-btn"
+                  onClick={handleExamClick}
+                  aria-label={`Practice exam for ${lecture.display_title}`}
+                >
+                  📝 Practice Exam
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Expand chevron indicator */}
+        {hasStudyActions && !isManageMode && (
+          <div className="lc-expand-indicator" aria-hidden="true">
+            {expanded ? '▲' : '▼'}
+          </div>
+        )}
 
         {lecture.settings.archived && (
           <button className="lc-restore-btn" onClick={(e) => { e.stopPropagation(); onRestore(); }}>↩ Restore</button>
