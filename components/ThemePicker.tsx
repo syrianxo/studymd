@@ -46,7 +46,23 @@ export function ThemePicker({ userId, initialTheme, variant = 'compact' }: Theme
   const [saving, setSaving]     = useState(false);
   const wrapRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { applyTheme(initialTheme); }, [initialTheme]);
+  // Only apply initialTheme if the DOM has no saved theme already set.
+  // This prevents the server-default 'midnight' from overwriting the user's
+  // localStorage theme on every mount.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('studymd_theme') as Theme | null;
+      if (saved === 'midnight' || saved === 'pink' || saved === 'forest') {
+        setActive(saved);
+        applyTheme(saved);
+      } else {
+        applyTheme(initialTheme);
+      }
+    } catch {
+      applyTheme(initialTheme);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // compact-only: collapse on outside click
   useEffect(() => {
