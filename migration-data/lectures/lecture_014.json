@@ -1,0 +1,1147 @@
+{
+  "id": "lecture_014",
+  "title": "Sensory, Motor, and Integrative Systems",
+  "subtitle": "Chapter 16 – Sensation, Receptor Types, Adaptation, and Pain",
+  "course": "Anatomy & Physiology",
+  "color": "#7b4fa6",
+  "icon": "🧠",
+  "topics": [
+    "Sensory Receptors & Transduction",
+    "Properties of Receptors",
+    "Receptor Classification",
+    "Cutaneous & General Sense Receptors",
+    "Sensory Adaptation",
+    "Pain Pathways & Fiber Types",
+    "Pain Mediators & Modulators",
+    "Referred Pain"
+  ],
+  "slideImages": "slides/lecture_014/",
+  "flashcards": [
+    {
+      "id": "fc_001",
+      "topic": "Sensory Receptors & Transduction",
+      "question": "What is a sensory receptor?",
+      "answer": "Specialized structures that detect environmental stimuli. They may be bare nerve endings or complex sense organs (nerve tissue with supporting structures). Supporting tissues enhance detection of specific stimuli such as light, sound, and pressure.\nKey principle: No receptor → no stimulus detection.",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_002",
+      "topic": "Sensory Receptors & Transduction",
+      "question": "Define transduction in the context of sensory physiology.",
+      "answer": "Transduction is the conversion of stimulus energy into electrical nerve signals. Stimuli (light, heat, touch, sound, chemicals) generate receptor potentials, which then trigger action potentials that travel to the CNS.",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_003",
+      "topic": "Sensory Receptors & Transduction",
+      "question": "What is the difference between sensation and perception?",
+      "answer": "Sensation is the initial awareness of a stimulus — many sensory signals never reach conscious awareness (brainstem filtering prevents sensory overload).\nPerception is the conscious interpretation of sensory input, occurring primarily in the cerebral cortex.",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_004",
+      "topic": "Sensory Receptors & Transduction",
+      "question": "What is the conceptual flow from a stimulus to conscious experience?",
+      "answer": "Stimulus → Receptor Detection → Transduction → Nerve Signals to CNS → Sensation → Perception",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_005",
+      "topic": "Sensory Receptors & Transduction",
+      "question": "Why do some sensory signals never reach conscious awareness?",
+      "answer": "Brainstem filtering prevents sensory overload. Some signals regulate physiology without conscious awareness, such as pH and body temperature regulation.",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_006",
+      "topic": "Properties of Receptors",
+      "question": "What four kinds of information do sensory receptors transmit to the brain?",
+      "answer": "1. Modality – the type of stimulus or sensation produced (e.g., vision, hearing, taste)\n2. Location – encoded by which nerve fibers are firing; determined by receptive fields\n3. Intensity – distinguished by which fibers fire, how many fire, and how fast they fire\n4. Duration – how long the stimulus lasts; related to sensory adaptation",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_007",
+      "topic": "Properties of Receptors",
+      "question": "What is a receptive field?",
+      "answer": "The area within which a sensory neuron detects stimuli. Small receptive fields (e.g., fingertips) allow fine spatial discrimination. Large receptive fields (e.g., the back) provide less precise localization.",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_008",
+      "topic": "Properties of Receptors",
+      "question": "How does the brain distinguish stimulus intensity?",
+      "answer": "The brain distinguishes intensity by:\n1. Which fibers are sending signals\n2. How many fibers are firing (recruitment)\n3. How fast those fibers are firing (frequency coding)",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_009",
+      "topic": "Properties of Receptors",
+      "question": "How does receptive field size relate to spatial discrimination?",
+      "answer": "Smaller receptive fields allow finer spatial discrimination (e.g., fingertips can distinguish two closely spaced points). Larger receptive fields (e.g., the back) are less precise — a single neuron covers a broader area, making it harder to pinpoint the exact location of a stimulus.",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_010",
+      "topic": "Properties of Receptors",
+      "question": "What is sensory modality and give examples?",
+      "answer": "Modality is the type of stimulus or sensation a receptor produces. Examples include vision, hearing, taste, touch, pain, and temperature. Each receptor type is tuned to respond optimally to one specific stimulus type.",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_011",
+      "topic": "Receptor Classification",
+      "question": "What are the three ways to classify sensory receptors?",
+      "answer": "1. By receptor modality (type of stimulus detected)\n2. By origin of stimulus (exteroceptors, interoceptors, proprioceptors)\n3. By structural complexity (simple vs. complex receptors)",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_012",
+      "topic": "Receptor Classification",
+      "question": "Which senses are classified as 'special senses' versus 'general senses'?",
+      "answer": "Special senses: sight, sound (hearing), smell (olfaction), balance (equilibrium), and taste.\nGeneral senses: touch, pressure, stretch, vibration, temperature, pain, and proprioception.\nNote: Touch is NOT a special sense.",
+      "slideRef": "slide_09.jpg",
+      "slideNumber": 9
+    },
+    {
+      "id": "fc_013",
+      "topic": "Receptor Classification",
+      "question": "What distinguishes complex receptors from simple receptors?",
+      "answer": "Complex receptors are special sense organs (e.g., eye, ear, nose, tongue) for vision, hearing, equilibrium, smell, and taste.\nSimple receptors serve general senses such as tactile sensations (touch, pressure, stretch, vibration), temperature, pain, and muscle sense. They include free nerve endings and encapsulated dendritic endings.",
+      "slideRef": "slide_12.jpg",
+      "slideNumber": 12
+    },
+    {
+      "id": "fc_014",
+      "topic": "Receptor Classification",
+      "question": "What is the classification of receptors by origin of stimulus, and what does each detect?",
+      "answer": "Exteroceptors – detect stimuli from the external environment (touch, temperature, pain at body surface).\nInteroceptors (visceroceptors) – detect stimuli from internal organs and blood vessels.\nProprioceptors – detect stimuli from muscles, tendons, and joints (body position and movement).",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_015",
+      "topic": "Cutaneous & General Sense Receptors",
+      "question": "List the named receptors of the general senses found in the skin and body.",
+      "answer": "1. Free nerve endings\n2. Tactile Disc (Merkel disc)\n3. Hair receptor (peritrichial ending)\n4. End bulb (Krause end bulb)\n5. Tactile corpuscle (Meissner's corpuscle)\n6. Bulbous corpuscle (Ruffini ending)\n7. Lamellar corpuscle (Pacinian corpuscle)\n8. Muscle spindle\n9. Tendon organ (Golgi tendon organ)",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_016",
+      "topic": "Cutaneous & General Sense Receptors",
+      "question": "What stimuli do free nerve endings detect?",
+      "answer": "Free nerve endings are bare dendrites of 1st-order neurons that detect pain, temperature, tickle, and itch. They are the simplest and most widely distributed sensory receptors.",
+      "slideRef": "slide_15.jpg",
+      "slideNumber": 15
+    },
+    {
+      "id": "fc_017",
+      "topic": "Cutaneous & General Sense Receptors",
+      "question": "What stimuli do encapsulated nerve endings detect, and give a key example?",
+      "answer": "Encapsulated nerve endings are encapsulated dendrites of 1st-order neurons that detect pressure, vibration, and touch (somatic and visceral receptors).\nKey example: Pacinian corpuscles (lamellar corpuscles) — on cross-section they appear as concentric rings like an onion, and they detect deep pressure and vibration.",
+      "slideRef": "slide_15.jpg",
+      "slideNumber": 15
+    },
+    {
+      "id": "fc_018",
+      "topic": "Cutaneous & General Sense Receptors",
+      "question": "What is the microscopic appearance of a Pacinian (lamellar) corpuscle and what does it detect?",
+      "answer": "On cross-section, Pacinian corpuscles appear as concentric lamellae (rings) resembling a cut onion. They are encapsulated nerve endings that detect deep pressure and high-frequency vibration.",
+      "slideRef": "slide_15.jpg",
+      "slideNumber": 15
+    },
+    {
+      "id": "fc_019",
+      "topic": "Cutaneous & General Sense Receptors",
+      "question": "What are 'separate cells that synapse with 1st-order neurons' and give three examples?",
+      "answer": "These are specialized receptor cells (not neurons themselves) that transduce stimuli and synapse onto 1st-order sensory neurons. Examples:\n1. Hair cells – used for hearing (inner ear)\n2. Gustatory receptors – for taste\n3. Photoreceptors – for vision (rods and cones)",
+      "slideRef": "slide_15.jpg",
+      "slideNumber": 15
+    },
+    {
+      "id": "fc_020",
+      "topic": "Cutaneous & General Sense Receptors",
+      "question": "Compare the three microscopic categories of sensory receptors.",
+      "answer": "1. Free nerve endings – bare dendrites; detect pain, temperature, tickle, itch\n2. Encapsulated nerve endings – dendrites enclosed in connective tissue capsule; detect pressure, vibration, touch\n3. Separate receptor cells – specialized non-neuronal cells that synapse with 1st-order neurons; include hair cells, gustatory cells, photoreceptors",
+      "slideRef": "slide_16.jpg",
+      "slideNumber": 16
+    },
+    {
+      "id": "fc_021",
+      "topic": "Sensory Adaptation",
+      "question": "Define sensory adaptation.",
+      "answer": "Sensory adaptation is the decrease in the amplitude of the receptor potential during a maintained, constant stimulus. As a prolonged stimulus continues, firing of the sensory neuron slows over time, reducing the perceived intensity of the sensation.",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_022",
+      "topic": "Sensory Adaptation",
+      "question": "Distinguish between rapidly adapting and slowly adapting receptors.",
+      "answer": "Rapidly adapting receptors: signal changes in stimuli; they fire at the onset and offset of a stimulus but go silent during a sustained stimulus (e.g., Meissner's and Pacinian corpuscles — you stop feeling clothing after putting it on).\nSlowly adapting receptors: signal the persistence of a stimulus; they continue to fire as long as the stimulus is present (e.g., Merkel discs, Ruffini endings, nociceptors).",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_023",
+      "topic": "Sensory Adaptation",
+      "question": "Give a clinical or everyday example of rapidly adapting receptors.",
+      "answer": "When you put on clothing, Meissner's and Pacinian corpuscles initially fire but quickly adapt — you stop consciously feeling the fabric against your skin. Another example: the initial smell of a room fades quickly as olfactory receptors adapt.",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_024",
+      "topic": "Sensory Adaptation",
+      "question": "Which receptor types are slowly adapting, and why is this clinically important?",
+      "answer": "Slowly adapting receptors include Merkel discs, Ruffini endings, and nociceptors (pain receptors). Their continued firing signals persistent pressure, sustained stretch, or ongoing tissue damage. Nociceptors do NOT fully adapt — this is a protective mechanism ensuring ongoing pain from a harmful stimulus is not ignored.",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_025",
+      "topic": "Pain Pathways & Fiber Types",
+      "question": "Compare Aδ (A-delta) and C fibers in pain transmission.",
+      "answer": "Aδ fibers:\n• Myelinated\n• Conduct fast pain (also called first pain)\n• Sharp, well-localized sensation\n• Example: the immediate sharp pain when you stub your toe\n\nC fibers:\n• Unmyelinated\n• Conduct slow pain (second pain)\n• Dull, diffuse, burning, or aching sensation\n• Example: the throbbing ache that persists after initial injury",
+      "slideRef": "slide_21.jpg",
+      "slideNumber": 21
+    },
+    {
+      "id": "fc_026",
+      "topic": "Pain Pathways & Fiber Types",
+      "question": "What type of pain sensation does each nociceptor fiber type produce?",
+      "answer": "Aδ fibers → fast, sharp, well-localized pain (first pain)\nC fibers → slow, burning, diffuse, poorly localized pain (second pain)\nThe dual nature of pain (initial sharp bite followed by dull ache) reflects sequential activation of Aδ and then C fibers.",
+      "slideRef": "slide_21.jpg",
+      "slideNumber": 21
+    },
+    {
+      "id": "fc_027",
+      "topic": "Pain Pathways & Fiber Types",
+      "question": "What clinical condition causes loss of pain sensation, and what is the danger?",
+      "answer": "Diabetic neuropathy can cause loss of pain sensation (analgesia), particularly in the feet. This is dangerous because patients cannot detect tissue damage, ulcers, or injuries, which can progress unnoticed to serious infections, gangrene, and limb amputation.",
+      "slideRef": "slide_21.jpg",
+      "slideNumber": 21
+    },
+    {
+      "id": "fc_028",
+      "topic": "Pain Pathways & Fiber Types",
+      "question": "Describe the three-neuron relay of the pain projection pathway.",
+      "answer": "1st-order neuron: Conducts pain signal from peripheral nociceptor to the posterior (dorsal) horn of the spinal cord\n2nd-order neuron: Decussates and conducts the signal from the spinal cord to the thalamus\n3rd-order neuron: Conducts from the thalamus to the somatosensory cortex (conscious perception of pain)",
+      "slideRef": "slide_22.jpg",
+      "slideNumber": 22
+    },
+    {
+      "id": "fc_029",
+      "topic": "Pain Pathways & Fiber Types",
+      "question": "Where does the 1st-order pain neuron synapse in the CNS?",
+      "answer": "The 1st-order pain neuron synapses in the posterior (dorsal) horn of the spinal cord.",
+      "slideRef": "slide_22.jpg",
+      "slideNumber": 22
+    },
+    {
+      "id": "fc_030",
+      "topic": "Pain Pathways & Fiber Types",
+      "question": "What is the relay station for pain signals before they reach the cortex?",
+      "answer": "The thalamus. The 2nd-order neuron carries the signal from the spinal cord to the thalamus, and the 3rd-order neuron carries it from the thalamus to the cerebral cortex for conscious perception.",
+      "slideRef": "slide_22.jpg",
+      "slideNumber": 22
+    },
+    {
+      "id": "fc_031",
+      "topic": "Pain Mediators & Modulators",
+      "question": "What chemicals are released by injured tissues that activate nociceptors?",
+      "answer": "Injured tissues release pain mediators including:\n• Bradykinin\n• Prostaglandins\n• Histamine\n• Potassium ions (K⁺)\n• Substance P\nThese chemicals activate nociceptors, initiating protective responses and promoting healing.",
+      "slideRef": "slide_23.jpg",
+      "slideNumber": 23
+    },
+    {
+      "id": "fc_032",
+      "topic": "Pain Mediators & Modulators",
+      "question": "What are endogenous opioids and where are they produced?",
+      "answer": "Endogenous opioids are the body's natural pain-relieving substances. They are produced in the CNS, pituitary gland, digestive tract, and other tissues. Examples include endorphins, enkephalins, and dynorphins. They function by binding opioid receptors and inhibiting pain transmission.",
+      "slideRef": "slide_23.jpg",
+      "slideNumber": 23
+    },
+    {
+      "id": "fc_033",
+      "topic": "Pain Mediators & Modulators",
+      "question": "Name three endogenous opioids and their general function.",
+      "answer": "1. Endorphins – released during exercise, excitement, pain; produce analgesia and euphoria\n2. Enkephalins – inhibit pain signals in the spinal cord and brain\n3. Dynorphins – most potent endogenous opioids; found in spinal cord and brain; provide pain suppression\nAll bind to opioid receptors and reduce pain signal transmission.",
+      "slideRef": "slide_23.jpg",
+      "slideNumber": 23
+    },
+    {
+      "id": "fc_034",
+      "topic": "Pain Mediators & Modulators",
+      "question": "How do pain mediators differ from pain modulators?",
+      "answer": "Pain mediators (e.g., bradykinin, prostaglandins, histamine, substance P) are released by injured tissues and ACTIVATE nociceptors, amplifying pain signals.\nPain modulators (e.g., endogenous opioids: endorphins, enkephalins, dynorphins) are produced endogenously and INHIBIT pain transmission, reducing the perception of pain.",
+      "slideRef": "slide_23.jpg",
+      "slideNumber": 23
+    },
+    {
+      "id": "fc_035",
+      "topic": "Referred Pain",
+      "question": "Define referred pain.",
+      "answer": "Referred pain is visceral pain that is perceived as originating from a somatic (superficial) region rather than the actual visceral source. The brain 'assumes' visceral pain is coming from skin because it is better at localizing somatic pain than visceral pain.",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_036",
+      "topic": "Referred Pain",
+      "question": "What is the neural mechanism underlying referred pain?",
+      "answer": "Referred pain results from convergence of visceral and somatic afferent neurons onto the same 2nd-order neurons in the spinal cord. The brain cannot distinguish between visceral and somatic inputs arriving via the same pathway and 'assumes' the pain is somatic in origin.",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_037",
+      "topic": "Referred Pain",
+      "question": "Give the classic clinical example of referred pain and its spinal cord segments.",
+      "answer": "Cardiac ischemia (heart attack): Pain originating in the heart is often felt in the left shoulder and arm. Both the heart and the left arm send pain input to spinal cord segments T1–T5, so the brain misinterprets the cardiac pain as arm/shoulder pain.",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_038",
+      "topic": "Referred Pain",
+      "question": "Why is the brain less capable of localizing visceral pain compared to somatic pain?",
+      "answer": "Visceral afferents are sparse, poorly myelinated, and share spinal cord segments with somatic afferents. The brain has limited ability to pinpoint visceral pain sources because it has little 'experience' localizing them — most of its mapping is built from somatic stimulation. This leads to the phenomenon of referred pain.",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_039",
+      "topic": "Referred Pain",
+      "question": "Explain why visceral pain is 'referred' to somatic locations that share the same spinal cord segment.",
+      "answer": "Visceral and somatic pain signals from the same spinal cord level converge on the same 2nd-order neurons in the dorsal horn. Because the brain is accustomed to receiving somatic pain from those neurons, it interprets visceral pain as coming from the overlying body surface — a somatic region sharing spinal segments T1–T5 for cardiac pain.",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_040",
+      "topic": "Sensory Receptors & Transduction",
+      "question": "What is the role of supporting tissues in complex sense organs?",
+      "answer": "Supporting tissues in complex sense organs enhance the detection of specific stimuli. For example, the lens and vitreous of the eye focus light, the ossicles of the ear amplify and transmit sound vibration, and the nasal mucosa humidifies air to improve odorant delivery to olfactory receptors.",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_041",
+      "topic": "Receptor Classification",
+      "question": "Classify tactile sensations — are they general or special senses?",
+      "answer": "Tactile sensations (touch, pressure, stretch, vibration) are general senses, not special senses. Touch is specifically NOT classified as a special sense. Special senses include vision, hearing, taste, smell, and balance/equilibrium.",
+      "slideRef": "slide_09.jpg",
+      "slideNumber": 9
+    },
+    {
+      "id": "fc_042",
+      "topic": "Receptor Classification",
+      "question": "What does 'receptor modality' mean and why is it clinically relevant?",
+      "answer": "Receptor modality means each receptor type is optimally tuned to detect one type of stimulus and produces a specific sensory experience. For example, photoreceptors respond to light; mechanoreceptors respond to pressure. Clinically, understanding modality helps explain selective sensory deficits — a lesion affecting one pathway (e.g., spinothalamic tract) may eliminate pain and temperature while preserving touch.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_043",
+      "topic": "Cutaneous & General Sense Receptors",
+      "question": "What do muscle spindles and Golgi tendon organs detect, and how do they differ?",
+      "answer": "Muscle spindles detect muscle stretch (length changes) and are important for the stretch reflex. They are intrafusal fibers wrapped by sensory neurons.\nGolgi tendon organs (tendon organs) detect tension in tendons and respond to excessive muscle contraction force, triggering relaxation to prevent injury.\nBoth are proprioceptors.",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_044",
+      "topic": "Cutaneous & General Sense Receptors",
+      "question": "What are the major categories of simple (general sense) receptors and what does each detect?",
+      "answer": "Simple receptors for general senses:\n1. Free nerve endings (unencapsulated) – pain, temperature, tickle, itch\n2. Encapsulated dendritic endings – touch, pressure, vibration, stretch\nExamples of encapsulated receptors include tactile corpuscles (light touch), lamellar/Pacinian corpuscles (deep pressure/vibration), and Ruffini endings (sustained pressure/stretch).",
+      "slideRef": "slide_12.jpg",
+      "slideNumber": 12
+    },
+    {
+      "id": "fc_045",
+      "topic": "Pain Pathways & Fiber Types",
+      "question": "What determines whether pain is described as 'fast' or 'slow'?",
+      "answer": "The fiber type transmitting the signal determines pain speed:\n• Aδ fibers – myelinated, faster conduction → fast, sharp, localized pain (first pain)\n• C fibers – unmyelinated, slower conduction → slow, diffuse, burning pain (second pain)\nMyelination dramatically increases conduction velocity via saltatory conduction.",
+      "slideRef": "slide_21.jpg",
+      "slideNumber": 21
+    },
+    {
+      "id": "fc_046",
+      "topic": "Sensory Adaptation",
+      "question": "Do nociceptors (pain receptors) undergo sensory adaptation? What is the clinical implication?",
+      "answer": "Nociceptors show minimal adaptation — they continue to fire with sustained painful stimuli. This is a survival mechanism ensuring that ongoing tissue damage continues to produce pain and protective behavior. Clinically, this explains why chronic pain persists and why diseases causing nociceptor sensitization (hyperalgesia) produce disproportionate pain responses.",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_047",
+      "topic": "Pain Mediators & Modulators",
+      "question": "How do prostaglandins contribute to pain, and what is the clinical relevance?",
+      "answer": "Prostaglandins are released by injured tissues and sensitize nociceptors, lowering their threshold for activation and amplifying pain signals. NSAIDs (non-steroidal anti-inflammatory drugs) such as ibuprofen and aspirin work by inhibiting cyclooxygenase (COX) enzymes, reducing prostaglandin synthesis and thereby providing analgesia and anti-inflammatory effects.",
+      "slideRef": "slide_23.jpg",
+      "slideNumber": 23
+    },
+    {
+      "id": "fc_048",
+      "topic": "Properties of Receptors",
+      "question": "How does the brain encode the duration of a stimulus?",
+      "answer": "Duration is encoded by whether the receptor continues to fire during the stimulus. Slowly adapting receptors maintain firing throughout prolonged stimulation, signaling the persistence of the stimulus. Rapidly adapting receptors fire only at onset/offset, coding for change rather than duration.",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_049",
+      "topic": "Referred Pain",
+      "question": "What is the clinical significance of referred pain for diagnosis?",
+      "answer": "Referred pain can mislead clinicians if they are unaware of common referral patterns. For example:\n• Cardiac ischemia → left arm/shoulder/jaw pain\n• Diaphragm irritation → shoulder tip pain (phrenic nerve, C3-C5)\n• Appendicitis → initially periumbilical, then RLQ\nRecognizing referred pain patterns allows appropriate workup of visceral pathology even when symptoms appear superficial.",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_050",
+      "topic": "Sensory Receptors & Transduction",
+      "question": "Give an example of a sensory signal that regulates physiology without conscious awareness.",
+      "answer": "Examples include:\n• Chemoreceptors monitoring blood pH and CO₂ levels to regulate respiration\n• Baroreceptors monitoring blood pressure to regulate cardiovascular function\n• Thermoreceptors monitoring core body temperature to regulate sweating and shivering\nThese operate below the level of conscious awareness, regulated by brainstem and hypothalamus.",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_051",
+      "topic": "Receptor Classification",
+      "question": "What receptor class detects body position and movement, and give examples of these receptors?",
+      "answer": "Proprioceptors detect body position and movement. Examples include:\n• Muscle spindles – detect muscle stretch/length\n• Golgi tendon organs – detect tendon tension\n• Joint kinesthetic receptors – detect joint position and movement\nProprioception is essential for coordination, balance, and fine motor control.",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_052",
+      "topic": "Cutaneous & General Sense Receptors",
+      "question": "Why are hair receptors classified as sensory receptors?",
+      "answer": "Hair receptors (peritrichial endings) are free nerve endings wrapped around the base of hair follicles. When hair is deflected, the movement bends these nerve endings and generates receptor potentials. They detect light touch and movement across the skin surface.",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_053",
+      "topic": "Pain Pathways & Fiber Types",
+      "question": "At what spinal cord location does the 1st-order nociceptive neuron synapse, and what is the significance of this location?",
+      "answer": "The 1st-order nociceptive neuron synapses in the posterior (dorsal) horn of the spinal cord. This is a key site for pain modulation — interneurons here can be inhibited by endogenous opioids, descending inhibitory pathways (e.g., periaqueductal gray), and exogenous opioid drugs. Gate control theory of pain also operates at this level.",
+      "slideRef": "slide_22.jpg",
+      "slideNumber": 22
+    },
+    {
+      "id": "fc_054",
+      "topic": "Pain Mediators & Modulators",
+      "question": "What is substance P and what role does it play in pain?",
+      "answer": "Substance P is a neuropeptide released by nociceptors in the dorsal horn of the spinal cord. It acts as a neurotransmitter that activates 2nd-order pain neurons, facilitating transmission of pain signals to the thalamus. It also promotes vasodilation and neurogenic inflammation.",
+      "slideRef": "slide_23.jpg",
+      "slideNumber": 23
+    },
+    {
+      "id": "fc_055",
+      "topic": "Properties of Receptors",
+      "question": "What is the law of specific nerve energies as it relates to receptor modality?",
+      "answer": "Each sensory receptor is specifically tuned to one type of stimulus (its adequate stimulus). No matter how a receptor is activated — whether by its natural stimulus or artificially — it always produces the same sensation. For example, pressure on the eye (which has photoreceptors) produces a visual sensation (seeing spots), not a tactile one.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "q_001",
+      "topic": "Sensory Receptors & Transduction",
+      "type": "mcq",
+      "question": "A 45-year-old patient has a lesion of the brainstem reticular formation. Which of the following best explains why she is overwhelmed by sensory stimuli that most people ignore?",
+      "options": [
+        "Loss of receptor transduction",
+        "Impaired brainstem filtering that normally prevents sensory overload",
+        "Increased size of receptive fields",
+        "Overactivation of endogenous opioid pathways"
+      ],
+      "correct": 1,
+      "explanation": "The brainstem filters incoming sensory signals, preventing sensory overload and allowing only salient stimuli to reach conscious awareness. A brainstem lesion impairing this filtering function would allow an abnormal flood of sensory information to reach the cortex, producing sensory hypersensitivity. Loss of transduction would reduce sensation, not increase it."
+    },
+    {
+      "id": "q_002",
+      "topic": "Sensory Receptors & Transduction",
+      "type": "mcq",
+      "question": "Which of the following correctly sequences the steps from a stimulus to conscious experience?",
+      "options": [
+        "Stimulus → Perception → Transduction → Sensation → Nerve Signals to CNS",
+        "Stimulus → Receptor Detection → Transduction → Nerve Signals to CNS → Sensation → Perception",
+        "Stimulus → Transduction → Sensation → Receptor Detection → Perception",
+        "Stimulus → Nerve Signals to CNS → Transduction → Sensation → Perception"
+      ],
+      "correct": 1,
+      "explanation": "The correct conceptual flow is: Stimulus → Receptor Detection → Transduction (conversion to electrical signal) → Nerve Signals to CNS → Sensation (initial awareness) → Perception (conscious cortical interpretation). Transduction must occur before nerve signals are generated and sent to the CNS."
+    },
+    {
+      "id": "q_003",
+      "topic": "Sensory Receptors & Transduction",
+      "type": "true_false",
+      "question": "Perception of a stimulus occurs primarily in the brainstem, whereas sensation is a cortical phenomenon.",
+      "correct": false,
+      "explanation": "This is reversed. Sensation is the initial awareness of a stimulus, and many signals don't even reach full conscious awareness. Perception is the conscious interpretation of sensory input and occurs primarily in the cerebral cortex — not the brainstem. The brainstem is involved in filtering signals, not perception."
+    },
+    {
+      "id": "q_004",
+      "topic": "Properties of Receptors",
+      "type": "mcq",
+      "question": "A neurologist performs two-point discrimination testing on a patient's back and finds she requires points to be very far apart before perceiving them as separate. This is best explained by which property of sensory receptors?",
+      "options": [
+        "Rapidly adapting receptor density",
+        "Large receptive fields in the back",
+        "High concentration of Pacinian corpuscles",
+        "Increased frequency coding in dorsal column neurons"
+      ],
+      "correct": 1,
+      "explanation": "The back has large receptive fields — a single sensory neuron covers a broad area. When two stimuli fall within the same large receptive field, they are interpreted as a single stimulus. Small receptive fields (fingertips) allow fine spatial discrimination. This is why the back has poor two-point discrimination compared to the fingertips."
+    },
+    {
+      "id": "q_005",
+      "topic": "Properties of Receptors",
+      "type": "mcq",
+      "question": "How does the nervous system encode the INTENSITY of a sensory stimulus?",
+      "options": [
+        "By modality of the receptor activated",
+        "By the size of the receptive field",
+        "By which fibers fire, how many fire, and how fast they fire",
+        "By the number of sensory modalities activated simultaneously"
+      ],
+      "correct": 2,
+      "explanation": "Intensity is encoded by: (1) which fibers are sending signals, (2) how many fibers are firing (recruitment), and (3) how fast the fibers are firing (frequency coding). A stronger stimulus activates more fibers and causes higher firing rates, signaling greater intensity to the CNS."
+    },
+    {
+      "id": "q_006",
+      "topic": "Properties of Receptors",
+      "type": "fill_in_blank",
+      "question": "The area within which a sensory neuron detects stimuli is called the ________.",
+      "answer": "receptive field",
+      "acceptableAnswers": ["receptive field", "receptor field"]
+    },
+    {
+      "id": "q_007",
+      "topic": "Properties of Receptors",
+      "type": "true_false",
+      "question": "Regions of the body with small receptive fields provide better spatial discrimination than regions with large receptive fields.",
+      "correct": true,
+      "explanation": "Small receptive fields mean each neuron covers a small area, allowing the brain to precisely localize stimuli. The fingertips have small receptive fields and excellent two-point discrimination. The back has large receptive fields and poor spatial discrimination. This is the basis for two-point discrimination testing in neurological exams."
+    },
+    {
+      "id": "q_008",
+      "topic": "Receptor Classification",
+      "type": "mcq",
+      "question": "A student states: 'Touch is a special sense just like vision and hearing.' Which of the following correctly evaluates this statement?",
+      "options": [
+        "Correct — touch is classified as a special sense because it involves specialized skin receptors",
+        "Incorrect — touch is a general sense; special senses include sight, sound, smell, hearing, and balance",
+        "Correct — touch requires complex sensory organs similar to the eye and ear",
+        "Incorrect — touch is a visceral sense, not a general sense"
+      ],
+      "correct": 1,
+      "explanation": "Touch is explicitly classified as a GENERAL sense, not a special sense. Special senses are: sight, sound (hearing), smell, balance/equilibrium, and taste. Touch, along with temperature, pain, pressure, and proprioception, is a general sense mediated by relatively simple cutaneous receptors."
+    },
+    {
+      "id": "q_009",
+      "topic": "Receptor Classification",
+      "type": "matching",
+      "question": "Match each receptor classification criterion with its correct description.",
+      "pairs": [
+        {"term": "Modality", "definition": "Type of stimulus or sensation the receptor produces (e.g., vision, taste)"},
+        {"term": "Origin of stimulus", "definition": "Whether stimulus comes from external environment, internal organs, or body position"},
+        {"term": "Structural complexity", "definition": "Whether receptor is a simple nerve ending or complex special sense organ"},
+        {"term": "Exteroceptor", "definition": "Detects stimuli from the external environment such as touch and temperature"},
+        {"term": "Proprioceptor", "definition": "Detects stimuli from muscles, tendons, and joints for body position sense"}
+      ]
+    },
+    {
+      "id": "q_010",
+      "topic": "Receptor Classification",
+      "type": "mcq",
+      "question": "Which of the following is correctly classified as a COMPLEX receptor?",
+      "options": [
+        "Pacinian corpuscle",
+        "Free nerve ending",
+        "The organ of Corti in the inner ear",
+        "Golgi tendon organ"
+      ],
+      "correct": 2,
+      "explanation": "Complex receptors are special sense organs for vision, hearing, equilibrium, smell, and taste. The organ of Corti is the hearing receptor organ in the inner ear — a complex sense organ. Pacinian corpuscles, free nerve endings, and Golgi tendon organs are all simple receptors for general senses."
+    },
+    {
+      "id": "q_011",
+      "topic": "Receptor Classification",
+      "type": "fill_in_blank",
+      "question": "Receptors that detect stimuli from internal organs and blood vessels are called ________, while those detecting body position from muscles and tendons are called ________.",
+      "answer": "interoceptors (visceroceptors); proprioceptors",
+      "acceptableAnswers": ["interoceptors, proprioceptors", "visceroceptors, proprioceptors", "interoceptors; proprioceptors"]
+    },
+    {
+      "id": "q_012",
+      "topic": "Cutaneous & General Sense Receptors",
+      "type": "mcq",
+      "question": "A pathology sample shows a cross-section of skin with a receptor that appears as concentric rings of connective tissue lamellae surrounding a central axon — like a cross-section of an onion. This receptor is best identified as:",
+      "options": [
+        "Meissner's (tactile) corpuscle",
+        "Ruffini (bulbous) corpuscle",
+        "Pacinian (lamellar) corpuscle",
+        "Merkel (tactile) disc"
+      ],
+      "correct": 2,
+      "explanation": "Pacinian corpuscles (lamellar corpuscles) have a distinctive onion-like cross-sectional appearance with multiple concentric lamellae of connective tissue. They detect deep pressure and vibration. Meissner's corpuscles detect light touch, Ruffini endings detect sustained pressure/stretch, and Merkel discs detect fine touch and texture."
+    },
+    {
+      "id": "q_013",
+      "topic": "Cutaneous & General Sense Receptors",
+      "type": "matching",
+      "question": "Match each sensory receptor with the sensation it primarily detects.",
+      "pairs": [
+        {"term": "Free nerve endings", "definition": "Pain, temperature, tickle, itch"},
+        {"term": "Pacinian (lamellar) corpuscle", "definition": "Deep pressure and vibration"},
+        {"term": "Muscle spindle", "definition": "Muscle stretch and length"},
+        {"term": "Golgi tendon organ", "definition": "Tendon tension; prevents excessive contraction"},
+        {"term": "Hair receptor", "definition": "Light touch and hair deflection"}
+      ]
+    },
+    {
+      "id": "q_014",
+      "topic": "Cutaneous & General Sense Receptors",
+      "type": "mcq",
+      "question": "Which of the following correctly describes receptor cells that synapse with 1st-order neurons rather than being neurons themselves?",
+      "options": [
+        "Free nerve endings and encapsulated endings",
+        "Hair cells, gustatory cells, and photoreceptors",
+        "Muscle spindles and Golgi tendon organs",
+        "Tactile corpuscles and bulbous corpuscles"
+      ],
+      "correct": 1,
+      "explanation": "Separate receptor cells that synapse with 1st-order neurons include hair cells (hearing), gustatory receptor cells (taste), and photoreceptors (vision). These are specialized epithelial cells that transduce stimuli and release neurotransmitter onto sensory neurons. This is distinct from free nerve endings and encapsulated endings, which are the dendrites of 1st-order neurons themselves."
+    },
+    {
+      "id": "q_015",
+      "topic": "Cutaneous & General Sense Receptors",
+      "type": "true_false",
+      "question": "Encapsulated nerve endings are the dendrites of 1st-order neurons surrounded by connective tissue capsules that enhance detection of touch, pressure, and vibration.",
+      "correct": true,
+      "explanation": "Encapsulated nerve endings consist of the dendrites of 1st-order sensory neurons enclosed within connective tissue capsules. The capsule modifies the mechanical response and fine-tunes the receptor's sensitivity to specific stimuli like pressure, vibration, and touch. Classic examples include Pacinian corpuscles, Meissner's corpuscles, and Ruffini endings."
+    },
+    {
+      "id": "q_016",
+      "topic": "Cutaneous & General Sense Receptors",
+      "type": "fill_in_blank",
+      "question": "Free nerve endings are bare ________ of 1st-order neurons that detect pain, temperature, tickle, and itch.",
+      "answer": "dendrites",
+      "acceptableAnswers": ["dendrites", "dendritic endings", "bare dendrites"]
+    },
+    {
+      "id": "q_017",
+      "topic": "Sensory Adaptation",
+      "type": "mcq",
+      "question": "After putting on a wristwatch, a person initially feels it but quickly stops noticing it unless they focus attention on it. Which type of receptor best explains this phenomenon?",
+      "options": [
+        "Slowly adapting mechanoreceptors maintaining continuous signaling",
+        "Rapidly adapting mechanoreceptors that signal onset and then go silent",
+        "Nociceptors with low adaptation threshold",
+        "Proprioceptors signaling sustained joint position"
+      ],
+      "correct": 1,
+      "explanation": "This is an example of sensory adaptation by rapidly adapting mechanoreceptors (particularly Meissner's and Pacinian corpuscles). They fire at the onset of the stimulus but quickly reduce their firing rate during sustained contact, leading to the sensation fading. This is why we stop consciously feeling clothing, watches, and jewelry shortly after putting them on."
+    },
+    {
+      "id": "q_018",
+      "topic": "Sensory Adaptation",
+      "type": "true_false",
+      "question": "Slowly adapting receptors are well-suited for signaling the persistence and duration of a sustained stimulus.",
+      "correct": true,
+      "explanation": "Slowly adapting receptors (e.g., Merkel discs, Ruffini endings, nociceptors) continue firing as long as the stimulus is present. This is ideal for monitoring ongoing pressure, sustained stretch, or continuous pain. They are distinct from rapidly adapting receptors, which only signal change."
+    },
+    {
+      "id": "q_019",
+      "topic": "Sensory Adaptation",
+      "type": "mcq",
+      "question": "During sensory adaptation, what happens to the receptor potential when a constant stimulus is maintained?",
+      "options": [
+        "It increases in amplitude proportionally to stimulus duration",
+        "It remains constant as long as the stimulus is maintained",
+        "It decreases in amplitude over time",
+        "It reverses polarity and becomes inhibitory"
+      ],
+      "correct": 2,
+      "explanation": "Sensory adaptation is defined as the decrease in the amplitude of the receptor potential during a maintained, constant stimulus. As adaptation occurs, the receptor fires less frequently, and the perceived intensity of the sensation diminishes over time. This is the cellular basis of adaptation."
+    },
+    {
+      "id": "q_020",
+      "topic": "Sensory Adaptation",
+      "type": "fill_in_blank",
+      "question": "________ adapting receptors signal changes in a stimulus, while ________ adapting receptors signal the persistence of a stimulus.",
+      "answer": "Rapidly; slowly",
+      "acceptableAnswers": ["Rapidly; slowly", "rapidly; slowly", "Fast; slow"]
+    },
+    {
+      "id": "q_021",
+      "topic": "Pain Pathways & Fiber Types",
+      "type": "mcq",
+      "question": "A 55-year-old patient with poorly controlled diabetes reports that he stepped on a nail but didn't realize it for several hours. Which mechanism best explains this finding?",
+      "options": [
+        "Overactivation of Aδ fast pain fibers",
+        "Loss of C fiber slow pain due to diabetic neuropathy",
+        "Impaired central sensitization of the thalamus",
+        "Increased sensory adaptation of mechanoreceptors"
+      ],
+      "correct": 1,
+      "explanation": "Diabetic neuropathy causes progressive peripheral nerve damage, preferentially affecting small unmyelinated and thinly myelinated fibers including C fibers (pain) and Aδ fibers. Loss of these pain fibers results in painless neuropathy. This is dangerous because patients cannot detect injury, leading to unnoticed wounds that can progress to ulcers, infections, and amputation — a major cause of diabetic lower extremity complications."
+    },
+    {
+      "id": "q_022",
+      "topic": "Pain Pathways & Fiber Types",
+      "type": "mcq",
+      "question": "A patient stubs their toe and describes an immediate sharp, well-localized pain, followed seconds later by a dull, throbbing ache. Which fiber types are responsible for each phase?",
+      "options": [
+        "C fibers (first pain); Aδ fibers (second pain)",
+        "Aδ fibers (first pain); C fibers (second pain)",
+        "Both phases are conducted by C fibers at different rates",
+        "Aβ fibers (first pain); Aδ fibers (second pain)"
+      ],
+      "correct": 1,
+      "explanation": "The dual pain response reflects the properties of two nociceptor fiber types: Aδ (myelinated, faster conduction) produces the initial sharp, localized 'first pain' (fast pain). C fibers (unmyelinated, slower conduction) produce the subsequent dull, burning, diffuse 'second pain' (slow pain). This sequence — sharp bite followed by throbbing ache — is a classic clinical example of Aδ vs. C fiber conduction."
+    },
+    {
+      "id": "q_023",
+      "topic": "Pain Pathways & Fiber Types",
+      "type": "matching",
+      "question": "Match each element of the three-neuron pain projection pathway with its correct description.",
+      "pairs": [
+        {"term": "1st-order neuron", "definition": "Conducts pain signal from peripheral nociceptor to the dorsal horn of the spinal cord"},
+        {"term": "2nd-order neuron", "definition": "Decussates and conducts signal from spinal cord dorsal horn to the thalamus"},
+        {"term": "3rd-order neuron", "definition": "Conducts from thalamus to somatosensory cortex for conscious pain perception"},
+        {"term": "Thalamus", "definition": "Relay station for pain signals before reaching cortical awareness"},
+        {"term": "Posterior (dorsal) horn", "definition": "Spinal cord gray matter location where 1st-order pain neurons synapse"}
+      ]
+    },
+    {
+      "id": "q_024",
+      "topic": "Pain Pathways & Fiber Types",
+      "type": "true_false",
+      "question": "Aδ fibers are unmyelinated and therefore conduct pain signals slowly, producing diffuse burning pain.",
+      "correct": false,
+      "explanation": "This describes C fibers, not Aδ fibers. Aδ fibers are MYELINATED and conduct pain signals FASTER, producing sharp, well-localized, fast pain (first pain). C fibers are unmyelinated, conduct slowly, and produce slow, diffuse, burning pain (second pain). The myelination of Aδ fibers allows saltatory conduction and faster signal propagation."
+    },
+    {
+      "id": "q_025",
+      "topic": "Pain Pathways & Fiber Types",
+      "type": "fill_in_blank",
+      "question": "Fast pain conducted by Aδ fibers produces ________, ________ pain, while slow pain conducted by C fibers produces ________, ________ pain.",
+      "answer": "sharp, well-localized; dull (burning), diffuse",
+      "acceptableAnswers": ["sharp, localized; dull, diffuse", "sharp, well-localized; burning, diffuse", "sharp, localized pain; diffuse, burning pain"]
+    },
+    {
+      "id": "q_026",
+      "topic": "Pain Mediators & Modulators",
+      "type": "mcq",
+      "question": "A 28-year-old marathon runner reports feeling little pain near the end of a race despite developing a knee injury. Which of the following best explains this phenomenon?",
+      "options": [
+        "Increased prostaglandin synthesis suppressing nociceptors",
+        "Release of endogenous opioids (e.g., endorphins) inhibiting pain transmission",
+        "Rapid adaptation of Aδ pain fibers during sustained exercise",
+        "Selective conduction failure of C fibers due to ischemia"
+      ],
+      "correct": 1,
+      "explanation": "Intense exercise triggers release of endogenous opioids — particularly endorphins — from the CNS, pituitary, and other tissues. These bind opioid receptors and inhibit pain signal transmission, producing analgesia and euphoria (the 'runner's high'). This is an example of endogenous pain modulation and explains why athletes can continue despite significant injury."
+    },
+    {
+      "id": "q_027",
+      "topic": "Pain Mediators & Modulators",
+      "type": "mcq",
+      "question": "Ibuprofen relieves pain and inflammation by inhibiting cyclooxygenase (COX) enzymes, reducing synthesis of which pain mediator?",
+      "options": [
+        "Bradykinin",
+        "Substance P",
+        "Prostaglandins",
+        "Enkephalins"
+      ],
+      "correct": 2,
+      "explanation": "NSAIDs such as ibuprofen inhibit COX-1 and COX-2 enzymes, which catalyze prostaglandin synthesis. Prostaglandins are released by injured tissues and sensitize nociceptors, lowering their activation threshold and amplifying pain. By reducing prostaglandin production, NSAIDs decrease nociceptor sensitization and provide analgesia and anti-inflammatory effects. Bradykinin, substance P, and enkephalins are not the primary targets of NSAIDs."
+    },
+    {
+      "id": "q_028",
+      "topic": "Pain Mediators & Modulators",
+      "type": "matching",
+      "question": "Match each pain-related chemical with its correct role.",
+      "pairs": [
+        {"term": "Bradykinin", "definition": "Released by injured tissue; directly activates nociceptors"},
+        {"term": "Prostaglandins", "definition": "Released by injured tissue; sensitizes nociceptors and lowers pain threshold"},
+        {"term": "Endorphins", "definition": "Endogenous opioids produced in CNS and pituitary; inhibit pain transmission"},
+        {"term": "Enkephalins", "definition": "Endogenous opioids found in spinal cord and brain; suppress pain signal relay"},
+        {"term": "Substance P", "definition": "Neuropeptide released in dorsal horn; facilitates pain signal transmission to 2nd-order neurons"}
+      ]
+    },
+    {
+      "id": "q_029",
+      "topic": "Pain Mediators & Modulators",
+      "type": "true_false",
+      "question": "Endogenous opioids such as endorphins and enkephalins activate nociceptors and amplify pain signals.",
+      "correct": false,
+      "explanation": "Endogenous opioids (endorphins, enkephalins, dynorphins) INHIBIT pain transmission — they are modulators that reduce pain by binding opioid receptors and suppressing neuronal activity in pain pathways. Pain ACTIVATORS include bradykinin, prostaglandins, histamine, potassium, and substance P, which are released by injured tissue."
+    },
+    {
+      "id": "q_030",
+      "topic": "Pain Mediators & Modulators",
+      "type": "fill_in_blank",
+      "question": "The most potent endogenous opioids are ________, found in the spinal cord and brain, while ________ are endogenous opioids released during exercise that produce analgesia and euphoria.",
+      "answer": "dynorphins; endorphins",
+      "acceptableAnswers": ["dynorphins; endorphins", "dynorphins, endorphins"]
+    },
+    {
+      "id": "q_031",
+      "topic": "Referred Pain",
+      "type": "mcq",
+      "question": "A 62-year-old man presents to the ED with crushing left-sided chest pain radiating to his left arm and jaw. ECG shows ST elevation. Why does he feel pain in his arm when the source is cardiac?",
+      "options": [
+        "The heart directly innervates the left brachial plexus via the phrenic nerve",
+        "Cardiac and left arm pain signals converge onto the same spinal cord neurons at T1–T5, causing the brain to mislocalize the pain as somatic",
+        "Ischemia of the arm occurs simultaneously during cardiac events",
+        "The thalamus amplifies visceral pain and projects it to the somatosensory homunculus for the arm"
+      ],
+      "correct": 1,
+      "explanation": "This is classic referred pain. Both the heart and the left arm send pain input to spinal cord segments T1–T5. These afferents converge on the same 2nd-order neurons in the dorsal horn. Because the brain is accustomed to receiving somatic pain from those neurons (from the arm), it misinterprets cardiac visceral pain as originating from the arm/shoulder. The brain cannot distinguish the source."
+    },
+    {
+      "id": "q_032",
+      "topic": "Referred Pain",
+      "type": "mcq",
+      "question": "Which of the following best describes the neural basis of referred pain?",
+      "options": [
+        "Visceral pain travels faster than somatic pain and arrives at the cortex first",
+        "Convergence of visceral and somatic afferents onto the same 2nd-order neurons in the spinal cord dorsal horn",
+        "Visceral pain is amplified in the thalamus and projected to the homunculus for the skin",
+        "Loss of myelination in visceral afferents causes them to cross-activate somatic fibers"
+      ],
+      "correct": 1,
+      "explanation": "Referred pain occurs because visceral and somatic afferents from the same spinal cord level converge on the same 2nd-order neurons in the dorsal horn. When visceral pain arrives via these neurons, the brain interprets it as coming from the familiar somatic source — the skin or superficial structures — because it is better at localizing somatic than visceral pain."
+    },
+    {
+      "id": "q_033",
+      "topic": "Referred Pain",
+      "type": "true_false",
+      "question": "The brain is better at localizing visceral pain than somatic pain because visceral receptors are more densely distributed.",
+      "correct": false,
+      "explanation": "The opposite is true. The brain is BETTER at localizing somatic pain than visceral pain. Visceral afferents are sparse and poorly localized. Because visceral and somatic afferents from the same spinal cord segment converge on the same neurons, the brain 'assumes' visceral pain is somatic, leading to referred pain phenomena. Visceral pain is characteristically diffuse and poorly localized."
+    },
+    {
+      "id": "q_034",
+      "topic": "Referred Pain",
+      "type": "fill_in_blank",
+      "question": "Cardiac pain is referred to the left shoulder and arm because the heart and left arm both send pain input to spinal cord segments ________.",
+      "answer": "T1 to T5",
+      "acceptableAnswers": ["T1 to T5", "T1–T5", "T1-T5", "T1 through T5"]
+    },
+    {
+      "id": "q_035",
+      "topic": "Referred Pain",
+      "type": "mcq",
+      "question": "Referred pain arises because the brain 'assumes' visceral pain is coming from the skin. Which mechanism explains this assumption?",
+      "options": [
+        "Visceral afferents are faster than somatic afferents and override somatic signals",
+        "The cortex has no representation of internal organs, so all pain is mapped to the skin",
+        "Visceral and somatic pain signals converge on shared 2nd-order neurons; the brain cannot distinguish the source and defaults to somatic localization",
+        "Visceral nociceptors release substance P in peripheral tissues, causing somatic pain"
+      ],
+      "correct": 2,
+      "explanation": "Referred pain is explained by convergence theory: visceral afferents and somatic afferents from the same spinal segment synapse on the same 2nd-order neurons. When visceral signals arrive, the brain interprets them as somatic because most prior inputs via those neurons have been somatic. The brain cannot distinguish the source and defaults to somatic localization."
+    },
+    {
+      "id": "q_036",
+      "topic": "Sensory Receptors & Transduction",
+      "type": "mcq",
+      "question": "Which of the following is the FIRST event in the sequence of sensory signal processing after a stimulus is applied?",
+      "options": [
+        "Generation of an action potential in the afferent neuron",
+        "Receptor detection of the stimulus",
+        "Conscious perception in the cerebral cortex",
+        "Filtration by the brainstem reticular activating system"
+      ],
+      "correct": 1,
+      "explanation": "The first event is receptor detection of the stimulus. Following detection, transduction converts the stimulus energy into a receptor potential, which then triggers action potentials in the afferent neuron. These travel to the CNS where brainstem filtering may occur before conscious sensation and then perception arise."
+    },
+    {
+      "id": "q_037",
+      "topic": "Receptor Classification",
+      "type": "mcq",
+      "question": "Which of the following receptor categories detects stimuli from the body's internal environment including organs and blood vessels?",
+      "options": [
+        "Exteroceptors",
+        "Proprioceptors",
+        "Interoceptors (visceroceptors)",
+        "Mechanoreceptors"
+      ],
+      "correct": 2,
+      "explanation": "Interoceptors (also called visceroceptors) detect stimuli from internal organs and blood vessels, including stretch, pressure, and chemical changes. Exteroceptors detect external environmental stimuli (touch, temperature, pain at the body surface). Proprioceptors detect body position from muscles, tendons, and joints. Mechanoreceptors are classified by modality (response to mechanical deformation), not stimulus origin."
+    },
+    {
+      "id": "q_038",
+      "topic": "Cutaneous & General Sense Receptors",
+      "type": "true_false",
+      "question": "Hair cells in the inner ear are classified as separate receptor cells that synapse with 1st-order neurons rather than being neurons themselves.",
+      "correct": true,
+      "explanation": "Hair cells are specialized mechanoreceptor epithelial cells, not neurons. They transduce mechanical vibration into chemical signals (neurotransmitter release) that activate 1st-order auditory neurons. This same 'separate receptor cell' category also includes gustatory receptor cells and photoreceptors (rods and cones), all of which synapse with 1st-order sensory neurons."
+    },
+    {
+      "id": "q_039",
+      "topic": "Sensory Adaptation",
+      "type": "mcq",
+      "question": "Which of the following receptors would be LEAST expected to show significant sensory adaptation to a continuous stimulus?",
+      "options": [
+        "Pacinian corpuscle (lamellar corpuscle)",
+        "Meissner's corpuscle (tactile corpuscle)",
+        "Nociceptors (free nerve endings for pain)",
+        "Olfactory receptors"
+      ],
+      "correct": 2,
+      "explanation": "Nociceptors show minimal to no adaptation — they continue to fire during sustained painful stimuli. This is protective because ongoing tissue damage should continue to produce pain. In contrast, Pacinian and Meissner's corpuscles are rapidly adapting mechanoreceptors, and olfactory receptors also adapt quickly (why smells fade)."
+    },
+    {
+      "id": "q_040",
+      "topic": "Pain Pathways & Fiber Types",
+      "type": "mcq",
+      "question": "In the three-neuron pain relay, where does the 2nd-order neuron decussate (cross the midline)?",
+      "options": [
+        "In the thalamus",
+        "In the posterior limb of the internal capsule",
+        "In the spinal cord, near the level of entry",
+        "In the brainstem at the level of the medulla"
+      ],
+      "correct": 2,
+      "explanation": "In the spinothalamic pathway for pain and temperature, 2nd-order neurons decussate in the spinal cord (anterior commissure) near the level at which they receive input from the 1st-order neuron. This is clinically important: a hemisection of the spinal cord (Brown-Séquard syndrome) causes ipsilateral loss of proprioception/vibration but contralateral loss of pain and temperature, because pain fibers cross early in the spinal cord."
+    },
+    {
+      "id": "q_041",
+      "topic": "Pain Mediators & Modulators",
+      "type": "mcq",
+      "question": "Where are endogenous opioids produced in the body?",
+      "options": [
+        "Only in the CNS and peripheral nociceptors",
+        "Only in the pituitary gland",
+        "In the CNS, pituitary gland, digestive tract, and other tissues",
+        "Exclusively in the dorsal horn of the spinal cord"
+      ],
+      "correct": 2,
+      "explanation": "Endogenous opioids (endorphins, enkephalins, dynorphins) are produced in multiple sites including the CNS (brain and spinal cord), pituitary gland, digestive tract, adrenal medulla, and other tissues. This widespread production allows them to function in diverse roles — pain modulation, stress response, digestion, and mood regulation."
+    },
+    {
+      "id": "q_042",
+      "topic": "Sensory Receptors & Transduction",
+      "type": "true_false",
+      "question": "Without a sensory receptor, a stimulus cannot be detected, regardless of how strong it is.",
+      "correct": true,
+      "explanation": "This is the key principle of sensory receptor function: No receptor → no stimulus detection. Receptors are required for transduction — without the appropriate receptor type, stimulus energy cannot be converted to nerve signals. For example, the human eye cannot detect radio waves, not because they aren't present, but because we have no photoreceptors tuned to that wavelength."
+    },
+    {
+      "id": "q_043",
+      "topic": "Properties of Receptors",
+      "type": "mcq",
+      "question": "A clinician applies two-point discrimination testing to a patient's fingertips and back. Which finding is expected?",
+      "options": [
+        "Better two-point discrimination on the back due to larger skin surface area",
+        "Equal discrimination in both locations due to the same receptor types",
+        "Better two-point discrimination on the fingertips due to smaller receptive fields",
+        "Better discrimination on the back due to higher receptor density"
+      ],
+      "correct": 2,
+      "explanation": "Fingertips have much smaller receptive fields than the back, allowing finer spatial discrimination. Two closely-spaced stimuli on the fingertips activate different sensory neurons (distinguishable as two points), whereas the same stimuli on the back may fall within a single large receptive field (perceived as one point). This is why two-point discrimination thresholds are ~2–3 mm at fingertips but ~40–60 mm on the back."
+    },
+    {
+      "id": "q_044",
+      "topic": "Receptor Classification",
+      "type": "true_false",
+      "question": "Olfaction (smell) is classified as a special sense, while pain is classified as a general sense.",
+      "correct": true,
+      "explanation": "Special senses include olfaction (smell), vision, gustation (taste), audition (hearing), and equilibrium/balance — they require complex sense organs. Pain (along with temperature, touch, pressure, proprioception) is a general sense mediated by relatively simple free nerve endings and encapsulated receptors distributed throughout the body."
+    },
+    {
+      "id": "q_045",
+      "topic": "Cutaneous & General Sense Receptors",
+      "type": "mcq",
+      "question": "During a neurological exam, a patient cannot identify objects placed in her hand while her eyes are closed. Her vibration and light touch sensation are intact. Which receptor type is most likely dysfunctional?",
+      "options": [
+        "Pacinian corpuscles — detect vibration",
+        "Merkel discs — detect fine touch and texture",
+        "Free nerve endings — detect temperature",
+        "Golgi tendon organs — detect tendon tension"
+      ],
+      "correct": 1,
+      "explanation": "Stereognosis (object identification by touch) requires fine tactile discrimination including texture and shape recognition, functions primarily mediated by Merkel discs (slowly adapting, detect fine touch and texture) and Meissner's corpuscles. Since vibration (Pacinian) and light touch are intact, the deficit is in fine discriminative touch. Merkel disc dysfunction or loss of their cortical processing would impair stereognosis."
+    },
+    {
+      "id": "q_046",
+      "topic": "Sensory Adaptation",
+      "type": "fill_in_blank",
+      "question": "Sensory adaptation is defined as the decrease in amplitude of the ________ during a maintained, constant stimulus.",
+      "answer": "receptor potential",
+      "acceptableAnswers": ["receptor potential", "receptor potential amplitude", "generator potential"]
+    },
+    {
+      "id": "q_047",
+      "topic": "Pain Pathways & Fiber Types",
+      "type": "fill_in_blank",
+      "question": "Fast pain is transmitted by myelinated ________ fibers, while slow pain is transmitted by unmyelinated ________ fibers.",
+      "answer": "Aδ; C",
+      "acceptableAnswers": ["A-delta; C", "Aδ; C", "A delta; C fibers"]
+    },
+    {
+      "id": "q_048",
+      "topic": "Referred Pain",
+      "type": "mcq",
+      "question": "A patient presents with right shoulder pain but is found to have free air under the diaphragm on abdominal X-ray (indicating a ruptured viscus). The shoulder pain is BEST explained by:",
+      "options": [
+        "Direct trauma to the shoulder from the injury",
+        "Referred pain via the phrenic nerve (C3–C5), which also innervates the shoulder",
+        "C fiber activation in the thoracic dermatomes projecting to the shoulder",
+        "Loss of proprioception in the shoulder joint due to intraabdominal bleeding"
+      ],
+      "correct": 1,
+      "explanation": "This is classic diaphragmatic referred pain. The phrenic nerve (C3–C5) innervates the diaphragm; sensory afferents from the diaphragm travel via the phrenic nerve and enter the spinal cord at C3–C5. The brain misinterprets this visceral pain as somatic shoulder pain (C4–C5 dermatome = shoulder tip). Free air under the diaphragm irritates it, causing referred right shoulder tip pain — an important surgical sign of visceral perforation."
+    },
+    {
+      "id": "q_049",
+      "topic": "Pain Mediators & Modulators",
+      "type": "true_false",
+      "question": "Bradykinin and prostaglandins are classified as pain mediators because they are released by injured tissues and activate or sensitize nociceptors.",
+      "correct": true,
+      "explanation": "Pain mediators are chemicals released from injured/inflamed tissues that activate or sensitize nociceptors. Bradykinin directly activates nociceptors; prostaglandins lower nociceptor thresholds (sensitization). Both contribute to hyperalgesia (increased pain sensitivity) at injury sites. This is the basis for the anti-inflammatory and analgesic effects of NSAIDs (which block prostaglandin synthesis)."
+    },
+    {
+      "id": "q_050",
+      "topic": "Sensory Receptors & Transduction",
+      "type": "mcq",
+      "question": "Which of the following best distinguishes sensation from perception?",
+      "options": [
+        "Sensation occurs in the cortex; perception occurs in the brainstem",
+        "Sensation requires complex sense organs; perception uses simple receptors",
+        "Sensation is the initial awareness of a stimulus; perception is the conscious cortical interpretation of that input",
+        "Sensation involves only somatic stimuli; perception involves visceral stimuli"
+      ],
+      "correct": 2,
+      "explanation": "Sensation is the initial awareness of a stimulus — it may not even reach conscious awareness, as brainstem filtering may prevent it. Perception is the conscious interpretation of sensory input, which occurs primarily in the cerebral cortex. Sensation can occur without full cortical perception (e.g., reflexive withdrawal from a hot object before conscious awareness of pain)."
+    },
+    {
+      "id": "q_051",
+      "topic": "Receptor Classification",
+      "type": "fill_in_blank",
+      "question": "The three ways to classify sensory receptors are by ________, by origin of stimulus, and by structural ________.",
+      "answer": "receptor modality; complexity",
+      "acceptableAnswers": ["modality; complexity", "receptor modality; complexity", "modality, origin of stimulus, structural complexity"]
+    },
+    {
+      "id": "q_052",
+      "topic": "Cutaneous & General Sense Receptors",
+      "type": "matching",
+      "question": "Match each receptor microscopic category with its correct structural description.",
+      "pairs": [
+        {"term": "Free nerve endings", "definition": "Bare, unencapsulated dendrites of 1st-order neurons; detect pain, temperature, tickle, itch"},
+        {"term": "Encapsulated nerve endings", "definition": "Dendrites of 1st-order neurons surrounded by connective tissue capsule; detect touch, pressure, vibration"},
+        {"term": "Separate receptor cells", "definition": "Specialized non-neuronal cells that synapse with 1st-order neurons (e.g., hair cells, photoreceptors)"},
+        {"term": "Pacinian corpuscle", "definition": "Encapsulated receptor with onion-ring cross-section; detects deep pressure and vibration"}
+      ]
+    },
+    {
+      "id": "q_053",
+      "topic": "Pain Pathways & Fiber Types",
+      "type": "true_false",
+      "question": "The thalamus is the final destination for pain signals, where conscious pain perception occurs.",
+      "correct": false,
+      "explanation": "The thalamus is a relay station, not the final destination. Pain signals travel from the thalamus via 3rd-order neurons to the somatosensory cortex, where conscious perception of pain occurs. The thalamus processes and relays sensory information but does not generate conscious perception — that is a cortical function."
+    },
+    {
+      "id": "q_054",
+      "topic": "Sensory Adaptation",
+      "type": "true_false",
+      "question": "The sensation of a persistent, aching low back injury continuing to be felt throughout the day is best explained by slowly adapting pain receptors that do not fully habituate.",
+      "correct": true,
+      "explanation": "Nociceptors are slowly adapting or non-adapting receptors. They continue to fire during sustained tissue damage or inflammation, ensuring that chronic or ongoing injury continues to produce pain signals. This serves a protective function by preventing the organism from ignoring harmful stimuli. The persistence of low back pain throughout the day is consistent with slowly adapting nociceptor firing."
+    },
+    {
+      "id": "q_055",
+      "topic": "Referred Pain",
+      "type": "true_false",
+      "question": "Referred pain results from direct nerve branching between a visceral organ and a somatic dermatome.",
+      "correct": false,
+      "explanation": "Referred pain is NOT caused by direct nerve branching between organs and skin. It results from convergence of visceral and somatic afferents onto the same 2nd-order neurons in the spinal cord dorsal horn. The brain cannot distinguish which input source (visceral vs. somatic) activated these shared neurons, so it interprets visceral pain as somatic — a phenomenon called the convergence-projection theory of referred pain."
+    },
+    {
+      "id": "q_056",
+      "topic": "Pain Mediators & Modulators",
+      "type": "mcq",
+      "question": "A patient with chronic pain is prescribed an opioid medication that mimics endogenous opioids. What is the mechanism of this class of drugs?",
+      "options": [
+        "Block prostaglandin synthesis in injured tissue",
+        "Bind opioid receptors and inhibit pain transmission pathways",
+        "Block Aδ fiber conduction in peripheral nerves",
+        "Stimulate the release of substance P in the dorsal horn"
+      ],
+      "correct": 1,
+      "explanation": "Exogenous opioids (e.g., morphine, oxycodone) mimic endogenous opioids (endorphins, enkephalins, dynorphins) by binding to opioid receptors (μ, κ, δ) in the CNS and peripheral nervous system, inhibiting pain signal transmission. This is analogous to how endogenous opioids naturally modulate pain. NSAIDs block prostaglandin synthesis (different mechanism)."
+    },
+    {
+      "id": "q_057",
+      "topic": "Properties of Receptors",
+      "type": "mcq",
+      "question": "The four kinds of information encoded by sensory receptors are modality, location, intensity, and duration. Which of the following correctly describes how LOCATION is encoded?",
+      "options": [
+        "By the speed of action potential conduction",
+        "By which specific nerve fibers are firing — determined by receptive field mapping",
+        "By the frequency of action potentials in a single fiber",
+        "By the amplitude of the receptor potential"
+      ],
+      "correct": 1,
+      "explanation": "Location is encoded by which specific nerve fibers are firing. Each sensory neuron has a defined receptive field — a specific area of the body. When that neuron fires, the brain maps the signal to the corresponding body location (labeled line coding). The somatosensory homunculus represents the cortical map of body location. Intensity is encoded by frequency and number of firing fibers; duration by whether firing is maintained."
+    },
+    {
+      "id": "q_058",
+      "topic": "Cutaneous & General Sense Receptors",
+      "type": "mcq",
+      "question": "Which of the following lists ONLY simple receptors for general senses?",
+      "options": [
+        "The eye, ear, and nasal epithelium",
+        "Free nerve endings, Pacinian corpuscles, and muscle spindles",
+        "Olfactory receptors, hair cells, and photoreceptors",
+        "The organ of Corti, taste buds, and vestibular apparatus"
+      ],
+      "correct": 1,
+      "explanation": "Simple receptors for general senses include free nerve endings, encapsulated endings (Pacinian corpuscles, Meissner's corpuscles, Ruffini endings), and proprioceptors (muscle spindles, Golgi tendon organs). The eye, ear, nasal epithelium, organ of Corti, taste buds, and vestibular apparatus are all complex special sense organs. Photoreceptors and hair cells are technically separate receptor cells (not bare dendrites), but serve special senses."
+    },
+    {
+      "id": "q_059",
+      "topic": "Sensory Receptors & Transduction",
+      "type": "fill_in_blank",
+      "question": "Transduction is the conversion of ________ energy into ________ nerve signals.",
+      "answer": "stimulus; electrical",
+      "acceptableAnswers": ["stimulus; electrical", "mechanical/light/chemical; electrical", "stimulus energy; electrical"]
+    },
+    {
+      "id": "q_060",
+      "topic": "Pain Pathways & Fiber Types",
+      "type": "mcq",
+      "question": "A medical student explains that 'all pain signals go directly from peripheral receptors to the brain.' Which part of this statement requires correction?",
+      "options": [
+        "Pain signals do not originate at peripheral receptors",
+        "Pain signals relay through a three-neuron pathway: periphery → dorsal horn → thalamus → cortex — not directly to the brain",
+        "All pain signals bypass the thalamus and go directly to the cortex",
+        "The statement is correct as stated"
+      ],
+      "correct": 1,
+      "explanation": "Pain signals do NOT travel directly from peripheral receptors to the brain. They relay through a three-neuron pathway: 1st-order neuron (periphery to dorsal horn), 2nd-order neuron (dorsal horn to thalamus, crossing midline), and 3rd-order neuron (thalamus to cortex). The thalamus is an essential relay station. Saying pain goes 'directly' to the brain ignores this crucial multi-synaptic relay."
+    }
+  ]
+}

@@ -1,0 +1,974 @@
+{
+  "id": "lecture_001",
+  "title": "Homeostasis",
+  "subtitle": "Chapters 1–2: Homeostasis and Control Mechanisms",
+  "course": "Anatomy & Physiology",
+  "color": "#2E8B57",
+  "icon": "⚖️",
+  "topics": [
+    "Homeostasis Fundamentals",
+    "Feedback Control Mechanisms",
+    "Sensor-Control Center-Effector Pathway",
+    "Regulated Variables and Set Points",
+    "Body Fluid Compartments",
+    "Homeostatic Failure and Disease",
+    "Aging and Physiologic Decline"
+  ],
+  "slideImages": "slides/lecture_001/",
+  "flashcards": [
+    {
+      "id": "fc_001",
+      "topic": "Homeostasis Fundamentals",
+      "question": "What is the definition of homeostasis?",
+      "answer": "The ability to maintain a relative consistency in the chemical and physical environment surrounding the cells of the body, in the face of a variable external environment.\n\nAlternate phrasing: 'The maintenance of a relatively stable internal environment despite continuous outside changes.'",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_002",
+      "topic": "Homeostasis Fundamentals",
+      "question": "How many cells are in the human body, and what is the primary role of organ systems?",
+      "answer": "The human body contains more than 65 trillion cells.\n\nOrgan systems are designed to regulate the body's internal environment, maintaining homeostasis through coordinated responses.",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_003",
+      "topic": "Homeostasis Fundamentals",
+      "question": "What is the NEUROENDOCRINE SYSTEM and why is it specifically highlighted as critical to homeostasis?",
+      "answer": "The neuroendocrine system provides a communication network to tissues and organs.\n\nIt integrates both:\n• Neural mechanisms (fast, precise, targeted — e.g., baroreceptor reflex, shivering)\n• Hormonal mechanisms (slower, widespread, sustained — e.g., ADH, insulin, cortisol)\n\nWithout it, organ systems cannot coordinate to detect deviations, process information, or execute corrective responses.",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_004",
+      "topic": "Homeostasis Fundamentals",
+      "question": "What is the distinction between the internal and external environment in homeostasis?",
+      "answer": "Internal environment: The chemical and physical milieu surrounding the body's cells — primarily the interstitial fluid, blood plasma, and other ECF.\n\nExternal environment: Everything outside the body.\n\nHomeostasis specifically defends the INTERNAL environment against changes in the EXTERNAL environment.",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_005",
+      "topic": "Homeostasis Fundamentals",
+      "question": "Name the five organ systems in the interrelationship diagram and each one's primary homeostatic role.",
+      "answer": "1. Digestive system — Takes in nutrients, breaks them down, eliminates unabsorbed matter (feces)\n2. Respiratory system — Takes in oxygen and eliminates carbon dioxide\n3. Cardiovascular system — Distributes O₂ and nutrients to all body cells; delivers wastes and CO₂ to disposal organs\n4. Urinary system — Eliminates nitrogenous wastes and excess ions\n5. Integumentary system — Protects the body as a whole from the external environment",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_006",
+      "topic": "Homeostasis Fundamentals",
+      "question": "How do nutrients and wastes exchange between blood and body cells?",
+      "answer": "Exchange occurs through the interstitial fluid — NOT directly between blood and cells.\n\nNutrients: Blood plasma → capillary wall → interstitial fluid → cell membrane → ICF\nWastes: Cell → interstitial fluid → capillary wall → blood plasma\n\nThe interstitial fluid is the immediate chemical environment of virtually all body cells.",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_007",
+      "topic": "Homeostasis Fundamentals",
+      "question": "Why is it more accurate to say homeostasis maintains a 'relatively stable' environment rather than a perfectly constant one?",
+      "answer": "Homeostasis permits small, temporary fluctuations around a set point — it does not require absolute constancy.\n\nExamples:\n• Blood glucose varies from ~70 mg/dL (fasting) to ~140 mg/dL (postprandial) but returns to set point (~90 mg/dL)\n• Body temperature has a normal circadian variation (~36.5–37.5°C)\n\nThe key criterion: deviations are temporary and self-correcting. Persistent deviation = homeostatic failure = disease.",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_008",
+      "topic": "Feedback Control Mechanisms",
+      "question": "What are the three types of homeostatic control mechanisms?",
+      "answer": "i. Negative feedback — response OPPOSES the original stimulus, returning the variable toward the set point (most common)\nii. Positive feedback — response AMPLIFIES the original stimulus, escalating until a defined endpoint terminates the cycle\niii. Feed-forward — anticipatory responses that prepare the body for upcoming changes BEFORE they occur\n\nAll are mediated by neural or hormonal mechanisms.",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_009",
+      "topic": "Feedback Control Mechanisms",
+      "question": "Describe the negative feedback loop for elevated body temperature (overheating).",
+      "answer": "Stimulus: Body temperature rises\n→ Receptors (temperature-sensitive cells in skin and brain) detect the change\n→ Afferent pathway sends signal to control center (thermoregulatory center in hypothalamus)\n→ Efferent pathway signals effectors: sweat glands activated\n→ Response: Evaporation of sweat → body temperature falls → stimulus ends\n\nThe response OPPOSES the original change, restoring balance.",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_010",
+      "topic": "Feedback Control Mechanisms",
+      "question": "Describe the negative feedback loop for a drop in body temperature (cold exposure).",
+      "answer": "Stimulus: Body temperature falls\n→ Temperature-sensitive receptors in skin and brain detect the drop\n→ Afferent signal to hypothalamic thermoregulatory center\n→ Efferent signal to effectors: skeletal muscles\n→ Response: Shivering begins → heat generated → body temperature rises → stimulus ends",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_011",
+      "topic": "Feedback Control Mechanisms",
+      "question": "Describe the negative feedback loop for blood pressure regulation when a person rises from bed.",
+      "answer": "Stimulus: Person rises from bed → blood drains from upper body → blood pressure drops (homeostatic imbalance)\n→ Baroreceptors above heart detect the BP drop\n→ Baroreceptors send signals to cardiac center of brainstem\n→ Cardiac center accelerates heartbeat\n→ Blood pressure rises back to normal → homeostasis restored",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_012",
+      "topic": "Feedback Control Mechanisms",
+      "question": "What is positive feedback, and what is the classic physiologic example from this lecture?",
+      "answer": "In positive feedback, the response AMPLIFIES the original stimulus rather than opposing it. The cycle escalates until an external endpoint terminates it.\n\nClassic example: Parturition (childbirth)\n1. Fetal head pushes against cervix\n2. Nerve impulses from cervix transmitted to brain\n3. Brain stimulates pituitary to secrete oxytocin\n4. Oxytocin stimulates uterine contractions, pushing fetus further toward cervix\n5. Cycle amplifies until delivery — the endpoint that terminates the loop",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_013",
+      "topic": "Feedback Control Mechanisms",
+      "question": "What are feed-forward reflexes, and why are they NOT classified as feedback loops?",
+      "answer": "Feed-forward reflexes prepare the body for UPCOMING changes or events BEFORE those changes actually occur.\n\nThey are NOT feedback loops because the response does NOT feed back to reduce the original stimulus. There is no return signal — the response is one-directional and anticipatory.\n\nKey distinction: Feedback loops correct deviations that have already occurred; feed-forward reflexes prevent or prepare for deviations that haven't happened yet.",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_014",
+      "topic": "Feedback Control Mechanisms",
+      "question": "What is the gastrocolic reflex, and why is it the classic example of a feed-forward reflex?",
+      "answer": "The gastrocolic reflex: Food enters stomach → stomach stretches → large intestinal motility increases.\n\nIt is feed-forward because:\n• The colonic response occurs BEFORE food reaches the large intestine\n• The colon is being PREPARED ('more room for new food') in anticipation of incoming material\n• The colonic response does NOT reduce stomach stretch — there is no feedback loop\n\nClinical pearl: This reflex explains the urge to defecate after meals and is exaggerated in IBS.",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_015",
+      "topic": "Feedback Control Mechanisms",
+      "question": "Why is positive feedback not inherently homeostatic, and when does it become pathologic?",
+      "answer": "Positive feedback drives the regulated variable AWAY from the set point — it is inherently destabilizing.\n\nPhysiologic positive feedback is useful only when it has a natural ENDPOINT that terminates the loop:\n• Labor → terminated by delivery\n• Blood clotting → terminated by clot formation\n\nPathologic positive feedback: The loop lacks an endpoint → progressive escalation → disease\nExamples from the lecture table: Septic shock, DIC",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_016",
+      "topic": "Sensor-Control Center-Effector Pathway",
+      "question": "List and define the five core components of a homeostatic control system (Figure 1-1).",
+      "answer": "1. Stimulus — produces a change in the regulated variable\n2. Receptor/Sensor — detects the change; sends information along the afferent pathway\n3. Afferent pathway — carries information FROM receptor TO control center\n4. Control Center — determines set point; integrates input and generates output\n5. Efferent pathway — carries command FROM control center TO effector\n6. Effector — executes the corrective response\n7. Response — feeds back to reduce the stimulus and return the variable to homeostatic level",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_017",
+      "topic": "Sensor-Control Center-Effector Pathway",
+      "question": "In thermoregulation, identify the sensor, control center, and effectors for both heat and cold responses.",
+      "answer": "Sensor: Temperature-sensitive cells in skin and brain (central and peripheral thermoreceptors)\n\nControl Center: Thermoregulatory center in the hypothalamus\n\nEffectors for HEAT excess: Sweat glands → evaporative cooling\nEffectors for COLD: Skeletal muscles → shivering thermogenesis; cutaneous blood vessels → vasoconstriction",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_018",
+      "topic": "Sensor-Control Center-Effector Pathway",
+      "question": "In blood pressure regulation, identify the sensor, control center, and effectors.",
+      "answer": "Sensor: Baroreceptors (above the heart — aortic arch and carotid sinus)\n\nControl Center: Cardiac center of the brainstem\n\nEffectors: Heart (increases rate and contractility) and blood vessels (vasoconstriction)",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_019",
+      "topic": "Sensor-Control Center-Effector Pathway",
+      "question": "What is the difference between the afferent and efferent pathways?",
+      "answer": "Afferent pathway: Carries sensory information FROM the receptor/sensor TO the control center.\n\nEfferent pathway: Carries the corrective command FROM the control center TO the effector.\n\nMemory tip: Afferent = Arrive at the control center; Efferent = Exit from the control center.",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_020",
+      "topic": "Sensor-Control Center-Effector Pathway",
+      "question": "What is the 'set point,' which component of the control loop determines it, and how does the system respond to deviation?",
+      "answer": "Set point: The target value the system attempts to maintain for a regulated variable.\n\nThe CONTROL CENTER determines the set point. It compares incoming sensory data to the set point, and if deviation is detected, generates an efferent response to return the variable toward the set point.\n\nExample: Core temperature set point = 37°C (98.4°F)",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_021",
+      "topic": "Sensor-Control Center-Effector Pathway",
+      "question": "In the oxytocin/labor positive feedback loop, identify the sensor, control center, and effector.",
+      "answer": "Sensor: Stretch receptors in the cervix\nControl Center: Brain (hypothalamus → posterior pituitary axis)\nEffector: Uterine smooth muscle\n\nNote: This is POSITIVE feedback — the effector response amplifies the stimulus rather than opposing it, until delivery terminates the loop.",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_022",
+      "topic": "Regulated Variables and Set Points",
+      "question": "List all regulated variables from Table 1-2 with their typical set point values.",
+      "answer": "Arterial O₂ partial pressure: 100 mm Hg\nArterial CO₂ partial pressure: 40 mm Hg\nArterial blood pH: 7.4\nGlucose: 90 mg/dL (5 mM)\nCore body temperature: 98.4°F (37°C)\nSerum Na⁺: 140 mM\nSerum K⁺: 4.0 mM\nSerum Ca²⁺: 2.5 mM\nMean arterial blood pressure: 90 mm Hg\nGlomerular filtration rate: 120 mL/min",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_023",
+      "topic": "Regulated Variables and Set Points",
+      "question": "What distinguishes a 'regulated variable' from a 'controlled effector'?",
+      "answer": "Regulated variable: The physiologic parameter being defended and kept near a set point — the WHAT being controlled.\nExamples: blood pressure, glucose, temperature\n\nControlled effector: The organ or mechanism used to achieve correction — the HOW the correction is made.\nExamples: heart rate, sweat glands, insulin secretion\n\nClassic distinction: Blood pressure is the regulated variable; heart rate and vascular tone are the controlled effectors.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_024",
+      "topic": "Regulated Variables and Set Points",
+      "question": "Why is serum K⁺ tightly regulated at 4.0 mM?",
+      "answer": "Even small deviations in serum K⁺ alter the resting membrane potential of excitable cells (cardiac muscle, skeletal muscle, neurons).\n\nHypokalemia (<3.5 mM): Hyperpolarization → muscle weakness, arrhythmias (flattened T waves, U waves, VF risk)\nHyperkalemia (>5.5 mM): Depolarization → peaked T waves, wide QRS, fatal cardiac arrest\n\nRegulators: Aldosterone (renal K⁺ excretion), insulin (drives K⁺ into cells), pH (acidosis ↑ serum K⁺)",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_025",
+      "topic": "Regulated Variables and Set Points",
+      "question": "What is the significance of arterial pH being set at 7.4?",
+      "answer": "pH 7.4 is optimal for enzyme function, protein stability, and oxygen delivery:\n• Most enzymes have peak activity near 7.4\n• Hemoglobin O₂ affinity is optimized at 7.4 (Bohr effect)\n\nAcidosis (pH <7.35): Enzyme dysfunction, hyperkalemia, vasodilation, CNS depression\nAlkalosis (pH >7.45): Neuromuscular excitability, hypokalemia, coronary spasm\n\nRegulators: Bicarbonate buffer, respiratory (PCO₂ regulation), renal (HCO₃⁻ regulation)",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_026",
+      "topic": "Body Fluid Compartments",
+      "question": "What are the total body water percentages across different life stages?",
+      "answer": "Infants: 73% or more\nAdult males: ~60% water\nAdult females: ~50% water\nOld age: declines to ~45%\n\nWomen have less TBW than men due to relatively higher adipose tissue content; fat is largely anhydrous.",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_027",
+      "topic": "Body Fluid Compartments",
+      "question": "What are the major body fluid compartments and their approximate volumes in a 70 kg adult male?",
+      "answer": "Total body water = 60% of body mass ≈ 42 L\n\nIntracellular fluid (ICF): ~25 L (2/3 of TBW)\nExtracellular fluid (ECF): ~16 L (1/3 of TBW)\n  • Interstitial fluid: ~13 L (80% of ECF)\n  • Blood plasma: ~3 L (20% of ECF)\n  • Transcellular fluid: ~1 L (CSF, synovial, pleural, peritoneal, etc.)",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_028",
+      "topic": "Body Fluid Compartments",
+      "question": "Compare the electrolyte compositions of ICF, interstitial fluid, and blood plasma.",
+      "answer": "ICF: Na⁺ 15 mM | K⁺ 120 mM | Cl⁻ 20 mM | Protein 3 mM | Osmolarity 285 mOsM\nInterstitial fluid: Na⁺ 145 mM | K⁺ 4.2 mM | Cl⁻ 113 mM | Protein 0 mM | Osmolarity 285 mOsM\nBlood plasma: Na⁺ 142 mM | K⁺ 4 mM | Cl⁻ 103 mM | Protein 1 mM | Osmolarity 285 mOsM\n\nKey principle: ICF = HIGH K⁺, LOW Na⁺. ECF = HIGH Na⁺, LOW K⁺. All compartments share the same osmolarity (285 mOsM).",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_029",
+      "topic": "Body Fluid Compartments",
+      "question": "How does fluid movement between the interstitial and plasma compartments protect plasma volume during hemorrhage?",
+      "answer": "Fluid can move freely from the interstitial compartment to plasma, helping maintain blood volume.\n\nKey clinical calculation:\n• ECF = 80% interstitial, 20% plasma\n• A hemorrhaging patient must LOSE ~5 L of ECF before plasma volume decreases by 1 L\n• To REPLACE 1 L of plasma volume, ~5 L of isotonic saline must be infused (80% redistributes to interstitium)\n\nThis is why crystalloid resuscitation requires large volumes.",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_030",
+      "topic": "Body Fluid Compartments",
+      "question": "What does transcellular fluid include, and what is its clinical significance?",
+      "answer": "Transcellular fluid (~1 L): Specialized fluid collections separated by epithelial cells:\n• CSF, synovial fluid, aqueous/vitreous humor\n• Pleural, peritoneal, pericardial fluids\n• Lymph\n\nClinical significance:\n• Pathologic accumulation = 'third spacing'\n• Ascites (peritoneal), pleural effusion, hemarthrosis, hydrocephalus\n• Sequesters fluid away from functional compartments → effective hypovolemia",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_031",
+      "topic": "Body Fluid Compartments",
+      "question": "Why is plasma protein concentration (~1 mM) much higher than interstitial fluid protein (~0 mM), and what is the physiologic consequence?",
+      "answer": "Plasma proteins (primarily albumin) are too large to cross normal capillary walls, so they are retained in the vascular compartment.\n\nConsequence: This creates ONCOTIC PRESSURE (colloid osmotic pressure), which opposes capillary hydrostatic pressure and retains fluid in the vasculature.\n\nLoss of this gradient (hypoalbuminemia from liver failure, nephrotic syndrome, malnutrition) → fluid leaks into interstitium → edema.",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_032",
+      "topic": "Homeostatic Failure and Disease",
+      "question": "What are the three levels at which homeostasis can fail?",
+      "answer": "1. Sensor dysfunction — inadequate detection of change → delayed or absent correction\n   Examples: orthostatic hypotension (blunted baroreceptors), hypoglycemia unawareness\n\n2. Control center dysfunction — abnormal integration or inappropriate set point → inappropriate hormone or neural response\n   Examples: SIADH, central diabetes insipidus, fever\n\n3. Effector dysfunction — target tissue unresponsive to corrective signal → persistent dysregulation despite signal\n   Examples: Type 2 DM (insulin resistance), heart failure",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_033",
+      "topic": "Homeostatic Failure and Disease",
+      "question": "What type of homeostatic failure occurs in Type 2 diabetes mellitus, and what is the clinical hallmark?",
+      "answer": "Effector dysfunction — peripheral tissues (muscle, fat, liver) are insulin-resistant and cannot execute glucose uptake.\n\nClinical hallmark: HIGH insulin + HIGH glucose\n• The pancreas correctly detects hyperglycemia and secretes insulin\n• But effectors cannot respond\n• Result: Persistent hyperglycemia despite elevated insulin\n\nContrast with T1DM: LOW insulin + HIGH glucose = effector (beta cell) production failure",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_034",
+      "topic": "Homeostatic Failure and Disease",
+      "question": "What is SIADH, and what type of homeostatic failure does it represent?",
+      "answer": "SIADH = Syndrome of Inappropriate ADH secretion\nType of failure: Control center dysfunction\n\nNormally: Low plasma osmolality → SUPPRESSES ADH → water excreted\nIn SIADH: ADH secreted DESPITE low plasma osmolality → water retained → serum Na⁺ diluted → hyponatremia\n\nDiagnostic clue: Low serum Na⁺ + concentrated urine + elevated urine Na⁺",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_035",
+      "topic": "Homeostatic Failure and Disease",
+      "question": "What is the mechanism of pathologic positive feedback in septic shock?",
+      "answer": "Septic shock = pathologic positive feedback without a termination endpoint:\n\nInflammatory mediators → vasodilation + capillary leak → decreased BP → decreased perfusion → organ damage → MORE inflammatory mediators → further vasodilation → progressive circulatory collapse\n\nEach step amplifies the next with no natural endpoint → multi-organ failure → death without external intervention.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_036",
+      "topic": "Homeostatic Failure and Disease",
+      "question": "How does the clinical presentation differ between sensor failure and effector failure?",
+      "answer": "Sensor failure:\n• Regulated variable changes but sensor fails to detect it → no signal generated → no correction\n• Hormone levels: LOW (no signal produced)\n• Example: Hypoglycemia unawareness (blunted glucose sensors)\n\nEffector failure:\n• Sensor and control center work correctly; signal IS generated\n• Target tissue cannot respond\n• Hormone levels: HIGH (signal present but ineffective)\n• Example: T2DM — insulin secreted, but tissues don't respond",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_037",
+      "topic": "Aging and Physiologic Decline",
+      "question": "How does aging impair homeostasis across all three components of the control loop?",
+      "answer": "1. Sensors lose sensitivity — blunted detection of change (e.g., reduced baroreceptor firing, impaired thermoreceptor sensitivity)\n2. Control centers respond more slowly with less precision\n3. Effectors have reduced reserve and capacity to execute responses\n\nOverall result: Reduced sensitivity and reserve → poor adaptation to physiologic stressors\n\nKey concept: Lab values may be NORMAL at rest, but decompensation occurs faster and is more severe under stress.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_038",
+      "topic": "Aging and Physiologic Decline",
+      "question": "Why do older adults commonly develop orthostatic hypotension?",
+      "answer": "Multi-level failure of blood pressure homeostasis with aging:\n1. Reduced baroreceptor sensitivity (sensor failure) — slower detection of BP drop\n2. Slower cardiac center processing (control center decline)\n3. Decreased cardiac reserve — heart cannot increase output quickly enough\n4. Reduced vascular compliance — vessels respond less effectively\n5. Decreased TBW (~45%) — less volume buffer\n\nResult: When standing, compensatory tachycardia and vasoconstriction are delayed and insufficient → transient cerebral hypoperfusion → dizziness, near-syncope, falls",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_039",
+      "topic": "Aging and Physiologic Decline",
+      "question": "How does aging affect thermoregulation, and what are the clinical risks?",
+      "answer": "Aging impairs thermoregulation at multiple levels:\n• Reduced thermoreceptor sensitivity\n• Decreased hypothalamic responsiveness\n• Reduced sweat gland function → impaired evaporative cooling\n• Less skeletal muscle mass → impaired shivering thermogenesis\n• Decreased subcutaneous fat → less insulation\n\nClinical risks:\n• Elderly may NOT mount a fever during serious infection (falsely reassuring)\n• High risk of heat stroke in summer\n• High risk of hypothermia in cold environments",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_040",
+      "topic": "Aging and Physiologic Decline",
+      "question": "How does declining total body water with aging affect drug dosing for water-soluble medications?",
+      "answer": "TBW declines from ~60% (young adult male) to ~45% (elderly).\n\nFor water-soluble drugs (distributed in TBW):\n• Smaller volume of distribution → HIGHER peak plasma concentrations at the same dose\n• Toxicity risk increases\n• Examples: digoxin, lithium, aminoglycosides → dose reductions required\n\nFor lipid-soluble drugs: Relative increase in fat → larger volume of distribution → prolonged half-life → drug accumulation\n• Examples: benzodiazepines, anesthetic agents",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_041",
+      "topic": "Aging and Physiologic Decline",
+      "question": "From the slide 8 table, what are the primary regulated variables and clinical consequences associated with aging-related homeostatic decline?",
+      "answer": "Primary regulated variables: Blood pressure, temperature, volume\n\nWhat fails: Reduced sensitivity and reserve across all three loop components\n\nClinical consequences:\n• Orthostatic hypotension (BP dysregulation)\n• Impaired thermoregulation (temperature dysregulation)\n• Poor adaptation to stressors (volume/hemodynamic dysregulation)\n\nOverarching theme: Normal resting values do not guarantee intact homeostatic reserve.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_042",
+      "topic": "Homeostatic Failure and Disease",
+      "question": "Is blood clotting an example of positive or negative feedback? What makes DIC pathologic?",
+      "answer": "Blood clotting = Physiologic POSITIVE feedback:\n• Vascular injury → platelet activation → ADP + thromboxane A₂ → recruit more platelets → escalating aggregation → clot forms (endpoint terminates the loop)\n\nDIC = Pathologic positive feedback:\n• Coagulation cascade runs unchecked throughout vasculature\n• No termination endpoint\n• Consumes all clotting factors and platelets → paradoxical hemorrhage + microvascular thrombosis\n• From the table: Failure type = pathologic positive feedback; primary variable = coagulation",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_043",
+      "topic": "Regulated Variables and Set Points",
+      "question": "What is the GFR set point and how is it used to stage chronic kidney disease?",
+      "answer": "Normal GFR = 120 mL/min (volume of plasma filtered by kidneys per minute)\n\nCKD Staging by GFR:\n• Stage 1: ≥90 (with kidney damage markers)\n• Stage 2: 60–89\n• Stage 3: 30–59\n• Stage 4: 15–29\n• Stage 5 (ESRD): <15 mL/min\n\nGFR <60 mL/min for >3 months = CKD Stage 3 or worse.",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_044",
+      "topic": "Sensor-Control Center-Effector Pathway",
+      "question": "What does 'imbalance' represent in Figure 1-1, and how does the control loop restore 'balance'?",
+      "answer": "'Imbalance' = a deviation of the regulated variable from its set point — the triggering event for the homeostatic response.\n\nRestoration of 'balance':\n1. Stimulus causes imbalance\n2. Receptor detects it → afferent signal to control center\n3. Control center processes the deviation and generates efferent output\n4. Effector executes corrective response\n5. Response feeds back to reduce the stimulus → variable returns to set point = 'balance' restored",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_045",
+      "topic": "Homeostasis Fundamentals",
+      "question": "Who coined the term 'homeostasis,' and what earlier concept did it build upon?",
+      "answer": "Walter Cannon coined 'homeostasis' (20th century, American physiologist), building on Claude Bernard's 'milieu intérieur' (internal environment, 19th century French physiologist).\n\nBernard: First recognized that maintaining a stable internal environment is fundamental to life.\nCannon: Formalized the concept and described the dynamic regulatory mechanisms that achieve this stability.",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_046",
+      "topic": "Homeostatic Failure and Disease",
+      "question": "What is central diabetes insipidus and what type of homeostatic failure does it represent?",
+      "answer": "Central DI = failure of the posterior pituitary to secrete ADH despite high plasma osmolality.\nType of failure: Control center dysfunction\n\nSensor (osmoreceptors) correctly detects elevated osmolality → sends afferent signal → but control center (pituitary) FAILS to release ADH → collecting duct cannot retain water → massive dilute polyuria → hypernatremia\n\nContrast: Central DI — ADH absent when it should be present; SIADH — ADH present when it should be absent.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_047",
+      "topic": "Body Fluid Compartments",
+      "question": "Why do all body fluid compartments share the same osmolarity (285 mOsM), and what are the clinical implications for IV fluid selection?",
+      "answer": "All compartments are in osmotic equilibrium — water moves freely across membranes until osmolarity equalizes.\n\nIV fluid clinical implications:\n• Isotonic (0.9% NaCl, LR) — no net cell swelling/shrinkage → stays in ECF\n• Hypertonic (3% NaCl) — raises ECF osmolarity → water drawn OUT of cells → cells shrink (used for cerebral edema)\n• Hypotonic (D5W, free water) — lowers ECF osmolarity → water moves INTO cells → risk of cerebral edema",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_048",
+      "topic": "Regulated Variables and Set Points",
+      "question": "How do PaO₂ and PaCO₂ interact as respiratory regulatory variables, and which is the primary driver of ventilation?",
+      "answer": "PaCO₂ (set point 40 mmHg) = PRIMARY driver of ventilation in healthy individuals\n• ↑ PCO₂ → acidosis → stimulates central chemoreceptors → ↑ ventilation\n\nPaO₂ (set point 100 mmHg) = BACKUP driver\n• Peripheral chemoreceptors only trigger strong drive when PaO₂ falls below ~60 mmHg\n\nClinical relevance — COPD:\n• Chronic CO₂ retention blunts central chemoreceptor sensitivity\n• PaO₂ becomes the primary ventilatory drive\n• High-flow O₂ may suppress this drive → CO₂ narcosis (respiratory depression)",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_049",
+      "topic": "Homeostatic Failure and Disease",
+      "question": "From slide 8, summarize the sensor dysfunction row of the homeostatic failure table.",
+      "answer": "Disease examples: Orthostatic hypotension, hypoglycemia unawareness\nPrimary regulated variables: Blood pressure, glucose\nWhat fails: Inadequate detection of change\nClinical consequence: Delayed or absent correction\n\nMechanism: The regulated variable deviates from set point but the sensor fires too weakly or not at all → control center never receives the signal → no efferent response generated → variable remains uncorrected.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_050",
+      "topic": "Homeostatic Failure and Disease",
+      "question": "From slide 8, summarize the effector dysfunction row of the homeostatic failure table.",
+      "answer": "Disease examples: Type 2 diabetes mellitus, heart failure\nPrimary regulated variables: Glucose, cardiac output\nWhat fails: Target tissue unresponsive\nClinical consequence: Persistent dysregulation despite the presence of the corrective signal\n\nMechanism: The signal (insulin, neurohormonal activation) is correctly generated, but the effector cannot execute the appropriate response despite receiving the message.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_051",
+      "topic": "Homeostatic Failure and Disease",
+      "question": "From slide 8, summarize the control center dysfunction row of the homeostatic failure table.",
+      "answer": "Disease examples: SIADH, central diabetes insipidus, fever\nPrimary regulated variables: Osmolality, temperature\nWhat fails: Abnormal integration of signals or abnormal set point\nClinical consequence: Inappropriate hormone release\n\nMechanism: The control center either (a) releases hormone when it should suppress — SIADH; (b) fails to release hormone when it should — central DI; or (c) resets the set point to an abnormal level — fever.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "q_001",
+      "topic": "Homeostasis Fundamentals",
+      "type": "mcq",
+      "question": "A 62-year-old patient presents with community-acquired pneumonia and a temperature of 39.4°C. He is diaphoretic and tachycardic. Which of the following is the regulated variable being defended by homeostatic mechanisms in this patient?",
+      "options": [
+        "Sweat gland activity",
+        "Cutaneous blood flow",
+        "Core body temperature",
+        "Hypothalamic neural output"
+      ],
+      "correct": 2,
+      "explanation": "Core body temperature is the REGULATED VARIABLE — the parameter the homeostatic system is attempting to maintain at its set point (37°C). Sweat gland activity, cutaneous blood flow, and hypothalamic neural output are all EFFECTORS or control center outputs — the mechanisms used to execute the correction. This distinction between regulated variables and controlled effectors is a core learning objective of this lecture."
+    },
+    {
+      "id": "q_002",
+      "topic": "Sensor-Control Center-Effector Pathway",
+      "type": "mcq",
+      "question": "A patient undergoing therapeutic hypothermia after cardiac arrest demonstrates centrally coordinated shivering, vasoconstriction, and metabolic heat production. Which structure serves as the CONTROL CENTER coordinating these responses?",
+      "options": [
+        "Peripheral thermoreceptors in the skin",
+        "Hypothalamus",
+        "Sweat glands",
+        "Skeletal muscle"
+      ],
+      "correct": 1,
+      "explanation": "The hypothalamus (thermoregulatory center) is the control center. It receives afferent input from thermoreceptors (sensors), integrates the information, and sends efferent commands to effectors. Peripheral thermoreceptors are the sensors; skeletal muscle and sweat glands are the effectors that execute responses but do not coordinate or integrate information."
+    },
+    {
+      "id": "q_003",
+      "topic": "Feedback Control Mechanisms",
+      "type": "mcq",
+      "question": "A 28-year-old woman in active labor receives IV Pitocin to augment uterine contractions. Contractions become progressively stronger and more frequent. This physiologic response is BEST described as which type of control mechanism?",
+      "options": [
+        "Negative feedback",
+        "Feedforward regulation",
+        "Positive feedback",
+        "Reflex inhibition"
+      ],
+      "correct": 2,
+      "explanation": "This is positive feedback. Cervical stretch → oxytocin release → stronger contractions → fetus pushed further → more cervical stretch → more oxytocin. Each response amplifies the original stimulus rather than opposing it. This escalation continues until delivery (the external endpoint terminates the loop). Negative feedback would REDUCE contractions; feedforward would prepare for contractions without amplifying the current stimulus."
+    },
+    {
+      "id": "q_004",
+      "topic": "Homeostatic Failure and Disease",
+      "type": "mcq",
+      "question": "A 55-year-old man with type 2 diabetes has a fasting plasma glucose of 190 mg/dL despite elevated circulating insulin levels. Which BEST explains the failure of homeostatic regulation?",
+      "options": [
+        "Decreased insulin production by pancreatic beta cells",
+        "Impaired glucose sensing by hypothalamic neurons",
+        "Reduced responsiveness of peripheral tissues to insulin",
+        "Increased renal glucose excretion preventing feedback correction"
+      ],
+      "correct": 2,
+      "explanation": "Type 2 DM is EFFECTOR DYSFUNCTION. The control center (pancreas) works correctly — it detects hyperglycemia and secretes insulin. However, the effector (peripheral tissues) is insulin-resistant and cannot execute glucose uptake. The clinical hallmark is HIGH insulin + HIGH glucose = effector failure. Decreased beta-cell insulin production characterizes T1DM, not T2DM."
+    },
+    {
+      "id": "q_005",
+      "topic": "Aging and Physiologic Decline",
+      "type": "mcq",
+      "question": "A 79-year-old patient develops dizziness and near-syncope upon standing. Orthostatic vital signs confirm a significant blood pressure drop. Which age-related changes BEST explain the inadequate compensation?",
+      "options": [
+        "Increased GFR and sodium retention",
+        "Reduced baroreceptor sensitivity and decreased cardiac reserve",
+        "Elevated serum sodium above 145 mM",
+        "Increased total body water percentage"
+      ],
+      "correct": 1,
+      "explanation": "Orthostatic hypotension in the elderly results from reduced baroreceptor sensitivity (sensor failure) and decreased cardiac reserve (effector failure). Baroreceptors fail to quickly detect the BP drop, and even when detected, the heart and vessels cannot respond forcefully or quickly enough. TBW DECREASES with aging (to ~45%), not increases. GFR also decreases with aging."
+    },
+    {
+      "id": "q_006",
+      "topic": "Body Fluid Compartments",
+      "type": "mcq",
+      "question": "A trauma patient has lost 3 L of extracellular fluid. By approximately how much has his plasma volume decreased?",
+      "options": [
+        "3.0 L",
+        "1.5 L",
+        "0.6 L",
+        "0.3 L"
+      ],
+      "correct": 2,
+      "explanation": "Plasma constitutes 20% of ECF. If 3 L of ECF is lost: plasma loss = 20% × 3 L = 0.6 L. Because 80% of ECF is interstitial, the interstitium acts as a buffer — a patient must lose ~5 L of ECF before plasma volume decreases by 1 L. This is why patients can tolerate significant fluid losses before hemodynamic compromise becomes apparent."
+    },
+    {
+      "id": "q_007",
+      "topic": "Feedback Control Mechanisms",
+      "type": "mcq",
+      "question": "The gastrocolic reflex causes increased large intestinal motility when food enters the stomach, preparing the colon for incoming digested material. Which type of control mechanism BEST describes this response?",
+      "options": [
+        "Negative feedback",
+        "Positive feedback",
+        "Feed-forward reflex",
+        "Tonic inhibition"
+      ],
+      "correct": 2,
+      "explanation": "Feed-forward reflexes prepare the body for UPCOMING changes before those changes arrive. The colon increases motility in response to stomach stretch — before food has reached the colon. This is anticipatory and preparatory, NOT corrective. It cannot be feedback (positive or negative) because the colonic response does not feed back to reduce or amplify stomach stretch — there is no loop."
+    },
+    {
+      "id": "q_008",
+      "topic": "Body Fluid Compartments",
+      "type": "mcq",
+      "question": "You need to raise a patient's plasma volume by 1 L using isotonic saline. Approximately how much saline must be infused?",
+      "options": [
+        "1 L",
+        "2 L",
+        "3 L",
+        "5 L"
+      ],
+      "correct": 3,
+      "explanation": "Isotonic saline distributes throughout the entire ECF. Since plasma = 20% of ECF, to raise plasma volume by 1 L the total ECF must expand by 5 L (1 ÷ 0.20 = 5). The other 4 L redistributes to the interstitium. This explains why large crystalloid volumes are needed for resuscitation and why colloids are more efficient for direct plasma volume expansion."
+    },
+    {
+      "id": "q_009",
+      "topic": "Regulated Variables and Set Points",
+      "type": "mcq",
+      "question": "Which electrolyte has the HIGHEST concentration in the intracellular fluid (ICF)?",
+      "options": [
+        "Sodium (Na⁺)",
+        "Chloride (Cl⁻)",
+        "Potassium (K⁺)",
+        "Calcium (Ca²⁺)"
+      ],
+      "correct": 2,
+      "explanation": "K⁺ is the dominant intracellular cation at ~120 mM. ICF Na⁺ is only ~15 mM. This gradient is actively maintained by the Na⁺/K⁺-ATPase pump (3 Na⁺ out, 2 K⁺ in per cycle). The ECF is dominated by Na⁺ (~142–145 mM). This electrochemical gradient is essential for resting membrane potential and action potential generation in excitable cells."
+    },
+    {
+      "id": "q_010",
+      "topic": "Homeostatic Failure and Disease",
+      "type": "mcq",
+      "question": "A patient with septic shock develops progressively worsening hypotension despite aggressive fluid resuscitation. Inflammatory mediators cause vasodilation → decreased perfusion → worsening organ damage → more inflammation. This represents which type of homeostatic failure?",
+      "options": [
+        "Negative feedback dysregulation",
+        "Sensor threshold elevation",
+        "Pathologic positive feedback",
+        "Feed-forward reflex exhaustion"
+      ],
+      "correct": 2,
+      "explanation": "Septic shock exemplifies pathologic positive feedback — each step amplifies the next with no natural endpoint. Unlike physiologic positive feedback (e.g., labor, which ends with delivery), septic shock has no external endpoint to terminate the cycle. Without intervention to break the loop (antibiotics, vasopressors, source control), it leads to irreversible multi-organ failure."
+    },
+    {
+      "id": "q_011",
+      "topic": "Homeostasis Fundamentals",
+      "type": "mcq",
+      "question": "Which of the following BEST describes why the neuroendocrine system is specifically highlighted as critical to homeostasis?",
+      "options": [
+        "It is the only body system capable of producing hormones",
+        "It provides the communication network linking sensors, control centers, and effectors across organ systems",
+        "It regulates only endocrine glands and has no neural component",
+        "It prevents positive feedback from occurring in any organ system"
+      ],
+      "correct": 1,
+      "explanation": "The neuroendocrine system (highlighted in pink on the lecture slides) provides the communication network to tissues and organs that makes coordinated homeostasis possible. It integrates both neural (fast, precise, targeted) and hormonal (slower, widespread, sustained) mechanisms, ensuring that all organ systems can detect deviations, process information, and execute corrective responses in a coordinated manner."
+    },
+    {
+      "id": "q_012",
+      "topic": "Aging and Physiologic Decline",
+      "type": "mcq",
+      "question": "An 82-year-old woman taking a water-soluble antibiotic at a standard adult dose develops signs of drug toxicity. Which pharmacokinetic change BEST explains this outcome?",
+      "options": [
+        "Increased total body water creates a larger volume of distribution",
+        "Reduced total body water creates a smaller volume of distribution, raising peak plasma concentration",
+        "Increased fat stores sequester the drug, prolonging its half-life",
+        "Enhanced GFR increases drug clearance, requiring higher doses"
+      ],
+      "correct": 1,
+      "explanation": "Elderly patients have reduced TBW (~45% vs. 60%). For water-soluble drugs, reduced TBW means a smaller volume of distribution. The same dose distributed in a smaller volume results in HIGHER peak plasma concentrations → toxicity. GFR typically DECREASES with aging (not increases), further slowing clearance. Increased fat stores affect lipid-soluble, not water-soluble, drugs."
+    },
+    {
+      "id": "q_013",
+      "topic": "Sensor-Control Center-Effector Pathway",
+      "type": "mcq",
+      "question": "A medication blocks afferent nerve conduction from baroreceptors to the brainstem cardiac center. What is the expected physiologic consequence when the patient stands up?",
+      "options": [
+        "Exaggerated tachycardia due to removal of tonic inhibition",
+        "Failure to detect the blood pressure drop, leading to uncompensated hypotension",
+        "Enhanced cardiac output due to removal of parasympathetic tone",
+        "Increased renal sodium retention due to elevated aldosterone"
+      ],
+      "correct": 1,
+      "explanation": "Blocking the AFFERENT pathway severs communication between the sensor (baroreceptors) and the control center (cardiac center). The control center never 'knows' BP has dropped → no efferent response generated → no tachycardia or vasoconstriction → uncompensated orthostatic hypotension. This mirrors the clinical picture in autonomic neuropathy (e.g., diabetic patients) where afferent pathways are damaged."
+    },
+    {
+      "id": "q_014",
+      "topic": "Regulated Variables and Set Points",
+      "type": "mcq",
+      "question": "A COPD patient chronically retains CO₂ (PaCO₂ = 58 mmHg). His central chemoreceptors have adapted to the elevated CO₂. What becomes his primary ventilatory drive?",
+      "options": [
+        "Elevated PaCO₂ via central chemoreceptors",
+        "Low PaO₂ via peripheral chemoreceptors",
+        "Elevated bicarbonate via metabolic compensation",
+        "Baroreceptor-mediated respiratory drive"
+      ],
+      "correct": 1,
+      "explanation": "In COPD with chronic CO₂ retention, central chemoreceptors adapt (reset their set point) and stop responding to elevated PCO₂. The primary ventilatory drive shifts to the HYPOXIC DRIVE — peripheral chemoreceptors (carotid/aortic bodies) responding to low PaO₂. Clinically: giving high-flow O₂ can suppress this drive → CO₂ narcosis → respiratory failure. This is why controlled O₂ delivery is important in chronic hypercapnic COPD."
+    },
+    {
+      "id": "q_015",
+      "topic": "Homeostatic Failure and Disease",
+      "type": "mcq",
+      "question": "A 67-year-old man presents with confusion and serum Na⁺ of 120 mEq/L. His urine is concentrated with elevated urine Na⁺. Which of the following BEST explains this finding?",
+      "options": [
+        "Renal failure causing sodium retention",
+        "Type 2 diabetes causing osmotic diuresis",
+        "Inappropriate ADH secretion despite low plasma osmolality",
+        "Baroreceptor-mediated renal water retention"
+      ],
+      "correct": 2,
+      "explanation": "Low serum Na⁺ + concentrated urine + elevated urine Na⁺ = SIADH. ADH is secreted INAPPROPRIATELY despite already low plasma osmolality — this is CONTROL CENTER dysfunction. The control center fails to suppress ADH when osmolality is low → water retained → serum Na⁺ diluted → hyponatremia. Concentrated urine confirms ADH is still active."
+    },
+    {
+      "id": "q_016",
+      "topic": "Feedback Control Mechanisms",
+      "type": "true_false",
+      "question": "True or False: Positive feedback loops are always pathologic and serve no normal physiologic purpose in the human body.",
+      "correct": false,
+      "explanation": "FALSE. Positive feedback serves important physiologic functions when a natural ENDPOINT terminates the loop: parturition (ended by delivery), blood clotting (ended by clot formation), action potential generation (ended by Na⁺ channel inactivation). Positive feedback becomes PATHOLOGIC only when it lacks a termination endpoint — as in septic shock or DIC — causing progressive, unchecked escalation."
+    },
+    {
+      "id": "q_017",
+      "topic": "Homeostasis Fundamentals",
+      "type": "true_false",
+      "question": "True or False: Homeostasis requires that the internal environment remain perfectly constant with absolutely no fluctuation around the set point.",
+      "correct": false,
+      "explanation": "FALSE. Homeostasis maintains a RELATIVELY stable environment — small, temporary fluctuations around a set point are normal. Blood glucose varies from ~70 to ~140 mg/dL throughout the day; temperature fluctuates ~1°C with circadian rhythm. The critical criterion is that deviations are temporary and self-correcting. Persistent, uncorrected deviation = homeostatic failure = disease."
+    },
+    {
+      "id": "q_018",
+      "topic": "Body Fluid Compartments",
+      "type": "true_false",
+      "question": "True or False: Adult females have a higher percentage of total body water than adult males of the same age.",
+      "correct": false,
+      "explanation": "FALSE. Adult males have approximately 60% TBW, while adult females have approximately 50% TBW. Women have proportionally more adipose tissue, which is largely anhydrous (contains very little water). Because fat has lower water content than lean muscle, a higher fat percentage produces a lower TBW percentage."
+    },
+    {
+      "id": "q_019",
+      "topic": "Regulated Variables and Set Points",
+      "type": "true_false",
+      "question": "True or False: All three major body fluid compartments (ICF, interstitial fluid, and blood plasma) maintain an osmolarity of approximately 285 mOsM despite having markedly different electrolyte compositions.",
+      "correct": true,
+      "explanation": "TRUE. Despite ICF having high K⁺/low Na⁺ and ECF having high Na⁺/low K⁺, all compartments maintain osmotic equilibrium at ~285 mOsM. Water moves freely across membranes until osmolarity equalizes. This principle governs IV fluid selection — isotonic fluids maintain balance; hypertonic or hypotonic fluids shift water between compartments."
+    },
+    {
+      "id": "q_020",
+      "topic": "Sensor-Control Center-Effector Pathway",
+      "type": "true_false",
+      "question": "True or False: In a negative feedback loop, the effector response amplifies the original stimulus to drive the variable further from the set point.",
+      "correct": false,
+      "explanation": "FALSE. In NEGATIVE feedback, the effector response OPPOSES and reduces the original stimulus, returning the variable TOWARD the set point. POSITIVE feedback amplifies the stimulus. The hallmark of negative feedback is self-termination: once the variable returns to set point, the stimulus ends and the response stops."
+    },
+    {
+      "id": "q_021",
+      "topic": "Homeostatic Failure and Disease",
+      "type": "true_false",
+      "question": "True or False: In SIADH, ADH is released despite low plasma osmolality, representing a failure at the control center level of homeostatic regulation.",
+      "correct": true,
+      "explanation": "TRUE. SIADH = Syndrome of INAPPROPRIATE ADH. Plasma osmolality is LOW (indicating excess water), which should SUPPRESS ADH. Instead, the control center (hypothalamus/pituitary) continues to release ADH despite this signal to stop. This is control center dysfunction → inappropriate hormone release → water retention → hyponatremia."
+    },
+    {
+      "id": "q_022",
+      "topic": "Aging and Physiologic Decline",
+      "type": "true_false",
+      "question": "True or False: An elderly patient with normal resting lab values is guaranteed to have intact homeostatic reserve and will tolerate physiologic stressors as well as a younger adult.",
+      "correct": false,
+      "explanation": "FALSE. This is a critical clinical principle. Aging reduces homeostatic RESERVE — resting values may be normal because the body isn't being challenged. Under physiologic stress (illness, surgery, hemorrhage, positional changes), the reduced sensitivity of sensors, slower control center responses, and diminished effector capacity all become apparent. 'Poor adaptation to stressors' is the defining clinical consequence of aging-related homeostatic decline."
+    },
+    {
+      "id": "q_023",
+      "topic": "Feedback Control Mechanisms",
+      "type": "true_false",
+      "question": "True or False: Feed-forward reflexes are a subtype of feedback loop that correct a deviation before it reaches dangerous levels.",
+      "correct": false,
+      "explanation": "FALSE. Feed-forward reflexes are NOT feedback loops. They are open-loop, anticipatory responses that prepare the body for upcoming changes BEFORE those changes occur. The critical distinction: feedback requires the response to influence the original stimulus (a loop exists). In feed-forward, the response (e.g., increased colonic motility) does not feed back to reduce or influence the triggering stimulus (stomach stretch). No loop = not feedback."
+    },
+    {
+      "id": "q_024",
+      "topic": "Body Fluid Compartments",
+      "type": "true_false",
+      "question": "True or False: Plasma protein concentration is approximately zero in the interstitial fluid because proteins are too large to cross normal capillary walls under physiologic conditions.",
+      "correct": true,
+      "explanation": "TRUE. Interstitial fluid protein ≈ 0 mM; plasma protein ≈ 1 mM. Plasma proteins (primarily albumin) are retained in the vascular compartment because they cannot cross normal capillary endothelium. This generates ONCOTIC PRESSURE, which counterbalances hydrostatic pressure and retains fluid in the vasculature. Loss of this gradient (e.g., hypoalbuminemia from liver failure or nephrotic syndrome) causes edema."
+    },
+    {
+      "id": "q_025",
+      "topic": "Homeostatic Failure and Disease",
+      "type": "true_false",
+      "question": "True or False: A patient with Type 2 diabetes mellitus who has elevated fasting blood glucose AND elevated circulating insulin most likely has sensor-level failure of homeostatic regulation.",
+      "correct": false,
+      "explanation": "FALSE. HIGH insulin + HIGH glucose = EFFECTOR failure (insulin resistance), NOT sensor failure. The sensor (pancreatic beta cells) correctly detects hyperglycemia. The control center correctly secretes insulin. But the effectors (peripheral tissues) cannot respond. Sensor failure would produce LOW insulin + HIGH glucose — the sensor never fires, so no insulin is secreted. Hormone level is the key clue: high = effector failure; low = sensor or CC failure."
+    },
+    {
+      "id": "q_026",
+      "topic": "Sensor-Control Center-Effector Pathway",
+      "type": "matching",
+      "question": "Match each component of the homeostatic control loop with its correct definition or thermoregulation example.",
+      "pairs": [
+        { "term": "Sensor / Receptor", "match": "Temperature-sensitive cells in the skin and brain" },
+        { "term": "Afferent pathway", "match": "Carries temperature information from receptors to the hypothalamus" },
+        { "term": "Control center", "match": "Thermoregulatory center in the hypothalamus" },
+        { "term": "Effector", "match": "Sweat glands (heat excess) or skeletal muscle shivering (cold)" }
+      ]
+    },
+    {
+      "id": "q_027",
+      "topic": "Regulated Variables and Set Points",
+      "type": "matching",
+      "question": "Match each regulated variable with its normal set point value from Table 1-2.",
+      "pairs": [
+        { "term": "Arterial PO₂", "match": "100 mm Hg" },
+        { "term": "Arterial blood pH", "match": "7.4" },
+        { "term": "Fasting blood glucose", "match": "90 mg/dL (5 mM)" },
+        { "term": "Mean arterial blood pressure", "match": "90 mm Hg" }
+      ]
+    },
+    {
+      "id": "q_028",
+      "topic": "Body Fluid Compartments",
+      "type": "matching",
+      "question": "Match each body fluid compartment with its approximate volume in a 70 kg adult male.",
+      "pairs": [
+        { "term": "Intracellular fluid (ICF)", "match": "25 L" },
+        { "term": "Interstitial fluid", "match": "13 L" },
+        { "term": "Blood plasma", "match": "3 L" },
+        { "term": "Transcellular fluid", "match": "1 L" }
+      ]
+    },
+    {
+      "id": "q_029",
+      "topic": "Homeostatic Failure and Disease",
+      "type": "matching",
+      "question": "Match each disease or condition with the level of homeostatic failure it represents.",
+      "pairs": [
+        { "term": "Type 2 diabetes mellitus", "match": "Effector dysfunction (insulin resistance)" },
+        { "term": "SIADH", "match": "Control center dysfunction (inappropriate ADH release)" },
+        { "term": "Orthostatic hypotension in the elderly", "match": "Sensor dysfunction (blunted baroreceptor sensitivity)" },
+        { "term": "Septic shock", "match": "Pathologic positive feedback (unchecked amplification)" }
+      ]
+    },
+    {
+      "id": "q_030",
+      "topic": "Feedback Control Mechanisms",
+      "type": "matching",
+      "question": "Match each control mechanism with its best physiologic or clinical example.",
+      "pairs": [
+        { "term": "Negative feedback", "match": "Sweating in response to elevated core body temperature" },
+        { "term": "Physiologic positive feedback", "match": "Escalating uterine contractions during labor, terminated by delivery" },
+        { "term": "Feed-forward reflex", "match": "Increased large intestinal motility when food enters the stomach" },
+        { "term": "Pathologic positive feedback", "match": "Progressive hypotension and organ failure in septic shock" }
+      ]
+    },
+    {
+      "id": "q_031",
+      "topic": "Homeostasis Fundamentals",
+      "type": "matching",
+      "question": "Match each organ system with its primary homeostatic role.",
+      "pairs": [
+        { "term": "Respiratory system", "match": "Takes in oxygen and eliminates carbon dioxide" },
+        { "term": "Urinary system", "match": "Eliminates nitrogenous wastes and excess ions" },
+        { "term": "Integumentary system", "match": "Protects the body as a whole from the external environment" },
+        { "term": "Cardiovascular system", "match": "Distributes O₂ and nutrients; delivers wastes and CO₂ to disposal organs" }
+      ]
+    },
+    {
+      "id": "q_032",
+      "topic": "Regulated Variables and Set Points",
+      "type": "fill_in_blank",
+      "question": "The normal set point for arterial blood pH is ________, and values below ________ are classified as acidosis.",
+      "answer": "7.4 / 7.35",
+      "acceptableAnswers": ["7.4 / 7.35", "7.4 and 7.35", "pH 7.4; acidosis below 7.35"]
+    },
+    {
+      "id": "q_033",
+      "topic": "Body Fluid Compartments",
+      "type": "fill_in_blank",
+      "question": "The intracellular fluid constitutes approximately ________ of total body water, while the extracellular fluid constitutes approximately ________.",
+      "answer": "2/3 / 1/3",
+      "acceptableAnswers": ["2/3 / 1/3", "two-thirds / one-third", "67% / 33%"]
+    },
+    {
+      "id": "q_034",
+      "topic": "Homeostasis Fundamentals",
+      "type": "fill_in_blank",
+      "question": "The ________ system provides a communication network to tissues and organs, enabling both neural and hormonal homeostatic responses.",
+      "answer": "neuroendocrine",
+      "acceptableAnswers": ["neuroendocrine", "neuro-endocrine", "neuroendocrine system"]
+    },
+    {
+      "id": "q_035",
+      "topic": "Feedback Control Mechanisms",
+      "type": "fill_in_blank",
+      "question": "Feed-forward reflexes are not loops; they serve to prepare the body for ________ changes or events.",
+      "answer": "upcoming",
+      "acceptableAnswers": ["upcoming", "anticipated", "future", "impending", "incoming"]
+    },
+    {
+      "id": "q_036",
+      "topic": "Body Fluid Compartments",
+      "type": "fill_in_blank",
+      "question": "To replace 1 L of plasma volume by infusing isotonic saline, approximately ________ L must be administered, because plasma represents only ________ % of the ECF.",
+      "answer": "5 / 20",
+      "acceptableAnswers": ["5 / 20", "5 L / 20%", "five / twenty"]
+    },
+    {
+      "id": "q_037",
+      "topic": "Regulated Variables and Set Points",
+      "type": "fill_in_blank",
+      "question": "The normal set points for serum Na⁺, serum K⁺, and serum Ca²⁺ are ________ mM, ________ mM, and ________ mM, respectively.",
+      "answer": "140 / 4.0 / 2.5",
+      "acceptableAnswers": ["140 / 4.0 / 2.5", "140 / 4 / 2.5", "140 mM / 4.0 mM / 2.5 mM"]
+    },
+    {
+      "id": "q_038",
+      "topic": "Aging and Physiologic Decline",
+      "type": "fill_in_blank",
+      "question": "Total body water declines to approximately ________ % of body mass in elderly individuals, compared to approximately ________ % in young adult males.",
+      "answer": "45 / 60",
+      "acceptableAnswers": ["45 / 60", "~45% / ~60%", "45% / 60%"]
+    },
+    {
+      "id": "q_039",
+      "topic": "Homeostatic Failure and Disease",
+      "type": "fill_in_blank",
+      "question": "In Type 2 diabetes mellitus, elevated blood glucose combined with elevated circulating insulin indicates ________ dysfunction — specifically, ________ resistance of peripheral tissues.",
+      "answer": "effector / insulin",
+      "acceptableAnswers": ["effector / insulin", "effector dysfunction / insulin resistance", "target tissue / insulin"]
+    },
+    {
+      "id": "q_040",
+      "topic": "Sensor-Control Center-Effector Pathway",
+      "type": "fill_in_blank",
+      "question": "The ________ pathway carries sensory information FROM the receptor TO the control center, while the ________ pathway carries the corrective response FROM the control center TO the effector.",
+      "answer": "afferent / efferent",
+      "acceptableAnswers": ["afferent / efferent", "sensory / motor"]
+    },
+    {
+      "id": "q_041",
+      "topic": "Feedback Control Mechanisms",
+      "type": "mcq",
+      "question": "A PA student argues that shivering in response to cold is 'positive feedback' because it amplifies the warming response. Which explanation BEST justifies why shivering is actually negative feedback?",
+      "options": [
+        "Shivering amplifies the cold stimulus to a crisis point",
+        "Shivering opposes the original cold stimulus by generating heat, returning temperature toward the set point",
+        "Shivering is a feed-forward reflex that anticipates cold exposure",
+        "Shivering continues after the body reaches the set point, confirming positive feedback"
+      ],
+      "correct": 1,
+      "explanation": "Shivering is NEGATIVE feedback because it OPPOSES the original stimulus (cold). The stimulus is cold → temperature falls below set point. Shivering generates heat, which opposes cold and returns temperature toward 37°C. Once the set point is restored, shivering stops — self-terminating, which is the hallmark of negative feedback. Positive feedback would cause more cooling in response to cold, the opposite of what occurs."
+    },
+    {
+      "id": "q_042",
+      "topic": "Body Fluid Compartments",
+      "type": "mcq",
+      "question": "A patient with severe hypoalbuminemia develops bilateral pitting edema. Which fluid compartment shift BEST explains this finding?",
+      "options": [
+        "Fluid moves from ICF to ECF due to hypertonicity",
+        "Reduced plasma oncotic pressure allows fluid to shift from plasma to the interstitial compartment",
+        "Increased ADH causes fluid retention specifically in the plasma compartment",
+        "Transcellular fluid accumulates due to lymphatic obstruction"
+      ],
+      "correct": 1,
+      "explanation": "Plasma proteins generate oncotic pressure that holds fluid in the vascular compartment. With hypoalbuminemia, oncotic pressure falls → capillary hydrostatic pressure exceeds oncotic pressure → fluid shifts from plasma to interstitium → edema. Normal plasma protein (~1 mM) vs. interstitial protein (~0 mM) maintains this gradient because proteins are too large to cross capillary walls."
+    },
+    {
+      "id": "q_043",
+      "topic": "Aging and Physiologic Decline",
+      "type": "mcq",
+      "question": "An 80-year-old woman with serious pneumonia has a temperature of 37.1°C and appears mildly confused. Her family insists she cannot have a serious infection because she has no fever. Which principle from this lecture BEST explains the clinical concern?",
+      "options": [
+        "Elderly patients develop higher fevers than younger adults due to increased inflammatory response",
+        "Aging impairs thermoregulation — elderly patients may not mount a fever despite serious infection",
+        "A normal temperature rules out bacterial infection in any age group",
+        "Absence of fever indicates the infection is viral rather than bacterial"
+      ],
+      "correct": 1,
+      "explanation": "Aging impairs thermoregulation at multiple levels: blunted thermoreceptor sensitivity, decreased hypothalamic responsiveness to pyrogens, reduced metabolic heat production. An elderly patient may have bacteremia or sepsis with a normal or even LOW temperature. This is a critical clinical point — absent fever does NOT rule out serious infection in the elderly, and the threshold for empiric treatment should be lower."
+    },
+    {
+      "id": "q_044",
+      "topic": "Homeostatic Failure and Disease",
+      "type": "mcq",
+      "question": "Blood clotting normally self-amplifies until a stable clot forms. In DIC, this process runs unchecked. Which statement BEST explains the difference between physiologic and pathologic positive feedback in this context?",
+      "options": [
+        "Physiologic clotting uses negative feedback; DIC converts it to positive feedback",
+        "Both use positive feedback, but DIC lacks the endpoint that terminates the physiologic loop",
+        "DIC involves a feedback mechanism that is neither positive nor negative",
+        "Physiologic clotting is feed-forward; DIC is pathologic negative feedback"
+      ],
+      "correct": 1,
+      "explanation": "Both physiologic clotting and DIC use positive feedback (cascade amplification). The critical difference is the ENDPOINT: physiologic clotting terminates when a stable clot forms. In DIC, the loop runs unchecked throughout the vasculature — consuming all clotting factors and platelets — causing both thrombosis and hemorrhage simultaneously. This illustrates the fundamental principle: positive feedback requires an endpoint to be physiologically useful."
+    },
+    {
+      "id": "q_045",
+      "topic": "Aging and Physiologic Decline",
+      "type": "mcq",
+      "question": "According to the lecture table on homeostatic failure, which clinical consequence is specifically associated with AGING-RELATED decline, as distinct from the other failure types?",
+      "options": [
+        "Inappropriate hormone release despite normal sensor function",
+        "Target tissue unresponsiveness to circulating hormones",
+        "Reduced sensitivity and reserve leading to poor adaptation to stressors",
+        "Pathologic amplification of the corrective signal"
+      ],
+      "correct": 2,
+      "explanation": "The aging-related decline column in the table is characterized by REDUCED SENSITIVITY AND RESERVE, with the clinical consequence of POOR ADAPTATION TO STRESSORS. This differs from: control center failure (inappropriate hormone release), effector failure (target tissue unresponsiveness), and pathologic positive feedback (unchecked amplification). The aging patient may appear normal at rest but cannot mount adequate responses when challenged."
+    },
+    {
+      "id": "q_046",
+      "topic": "Regulated Variables and Set Points",
+      "type": "fill_in_blank",
+      "question": "The normal GFR set point is ________ mL/min, and a GFR below ________ mL/min for more than 3 months defines CKD Stage 3 or worse.",
+      "answer": "120 / 60",
+      "acceptableAnswers": ["120 / 60", "120 mL/min / 60 mL/min"]
+    },
+    {
+      "id": "q_047",
+      "topic": "Homeostasis Fundamentals",
+      "type": "fill_in_blank",
+      "question": "Walter Cannon coined the term 'homeostasis,' building on Claude Bernard's concept of the ________ — the stable internal fluid environment surrounding the body's cells.",
+      "answer": "milieu intérieur",
+      "acceptableAnswers": ["milieu intérieur", "milieu interieur", "internal environment", "internal milieu"]
+    },
+    {
+      "id": "q_048",
+      "topic": "Body Fluid Compartments",
+      "type": "fill_in_blank",
+      "question": "All three major body fluid compartments share an osmolarity of ________ mOsM, despite having very different ________ compositions.",
+      "answer": "285 / electrolyte",
+      "acceptableAnswers": ["285 / electrolyte", "285 mOsM / electrolyte", "285 / ionic", "285 / solute"]
+    },
+    {
+      "id": "q_049",
+      "topic": "Feedback Control Mechanisms",
+      "type": "true_false",
+      "question": "True or False: In septic shock, the pathologic positive feedback differs from physiologic positive feedback (e.g., parturition) primarily because it lacks a natural termination endpoint.",
+      "correct": true,
+      "explanation": "TRUE. The defining difference between physiologic and pathologic positive feedback is the ENDPOINT. Parturition ends with delivery; clotting ends with clot formation. Septic shock has no endpoint: inflammation → hypoperfusion → organ damage → more inflammation → escalation → death without intervention. This is why external measures (antibiotics, vasopressors, source control) are required to break the loop."
+    },
+    {
+      "id": "q_050",
+      "topic": "Regulated Variables and Set Points",
+      "type": "true_false",
+      "question": "True or False: The normal arterial PCO₂ set point is 40 mm Hg, and in healthy individuals, rising PCO₂ is the primary stimulus for increasing respiratory rate.",
+      "correct": true,
+      "explanation": "TRUE. In healthy individuals, PaCO₂ is the PRIMARY driver of ventilation. Rising CO₂ → carbonic acid → H⁺ → stimulates central chemoreceptors in the medulla → increased respiratory rate and depth → CO₂ blown off → PaCO₂ returns toward 40 mmHg. PaO₂ serves as a backup drive, triggering strong ventilatory responses only when it falls below ~60 mmHg."
+    }
+  ]
+}

@@ -1,0 +1,2151 @@
+{
+  "id": "lecture_008",
+  "title": "Spinal Nerves",
+  "subtitle": "Chapter 13 — Plexuses, Dermatomes, Myotomes & DTRs",
+  "course": "Anatomy & Physiology",
+  "color": "#2e8b57",
+  "icon": "🧠",
+  "topics": [
+    "Spinal Nerve Overview",
+    "Connective Tissue & Nerve Structure",
+    "Cervical Plexus",
+    "Brachial Plexus & Major Nerves",
+    "Brachial Plexus Clinical Correlates",
+    "Lumbar Plexus & Major Nerves",
+    "Sacral Plexus & Major Nerves",
+    "Dermatomes, Myotomes & DTRs"
+  ],
+  "slideImages": "slides/lecture_008/",
+  "flashcards": [
+    {
+      "id": "fc_001",
+      "topic": "Spinal Nerve Overview",
+      "question": "How many pairs of spinal nerves exist, and what are their regional distributions?",
+      "answer": "31 pairs total:\n- 8 cervical (C1–C8)\n- 12 thoracic (T1–T12)\n- 5 lumbar (L1–L5)\n- 5 sacral (S1–S5)\n- 1 coccygeal (Co1)",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_002",
+      "topic": "Spinal Nerve Overview",
+      "question": "Spinal nerves are classified as 'mixed nerves.' What does this mean?",
+      "answer": "Spinal nerves contain both motor (efferent) and sensory (afferent) fibers, allowing them to carry signals both to and from the CNS.",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_003",
+      "topic": "Spinal Nerve Overview",
+      "question": "What is the function of the anterior (ventral) root of a spinal nerve, and where are its cell bodies located?",
+      "answer": "The ventral root is a MOTOR root. It:\n- Contains motor neuron axons\n- Conducts impulses FROM the spinal cord TO the periphery\n- Cell bodies are located in the GRAY MATTER of the spinal cord",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_004",
+      "topic": "Spinal Nerve Overview",
+      "question": "What is the function of the posterior (dorsal) root of a spinal nerve, and where are its cell bodies located?",
+      "answer": "The dorsal root is a SENSORY root. It:\n- Contains sensory nerve fibers\n- Conducts impulses FROM the periphery TO the spinal cord\n- Cell bodies are located in the POSTERIOR (dorsal) ROOT GANGLION",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_005",
+      "topic": "Spinal Nerve Overview",
+      "question": "What are the four branches (rami) of a spinal nerve and their functions?",
+      "answer": "1. Posterior (dorsal) ramus — serves deep muscles and skin of the posterior trunk\n2. Anterior (ventral) ramus — serves upper/lower limb muscles and lateral/anterior trunk skin\n3. Meningeal branch — re-enters vertebral canal; supplies vertebrae, ligaments, blood vessels, and meninges\n4. Rami communicantes — connects to the ANS (sympathetic chain)",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_006",
+      "topic": "Spinal Nerve Overview",
+      "question": "Through which anatomical structure do spinal nerves exit the vertebral column?",
+      "answer": "Spinal nerves exit through the intervertebral foramen.",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_007",
+      "topic": "Spinal Nerve Overview",
+      "question": "Which spinal nerve segments form plexuses, and which do not?",
+      "answer": "Ventral rami of all spinal nerves EXCEPT T2–T12 form plexuses. T2–T12 remain as individual intercostal (thoracic) nerves.",
+      "slideRef": "slide_09.jpg",
+      "slideNumber": 9
+    },
+    {
+      "id": "fc_008",
+      "topic": "Spinal Nerve Overview",
+      "question": "List the five main nerve plexuses.",
+      "answer": "1. Cervical plexus\n2. Brachial plexus\n3. Lumbar plexus\n4. Sacral plexus\n5. Coccygeal plexus",
+      "slideRef": "slide_09.jpg",
+      "slideNumber": 9
+    },
+    {
+      "id": "fc_009",
+      "topic": "Spinal Nerve Overview",
+      "question": "What is the dorsal horn of the spinal cord, and what types of neurons are found there?",
+      "answer": "The dorsal horn contains INTERNEURONS that receive input from:\n- Somatic sensory neurons (SS)\n- Visceral sensory neurons (VS)",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_010",
+      "topic": "Spinal Nerve Overview",
+      "question": "What is the ventral horn of the spinal cord, and what types of neurons are found there?",
+      "answer": "The ventral horn contains MOTOR NEURONS:\n- Somatic motor neurons (SM) — innervate skeletal muscle\n- Visceral motor neurons (VM) — autonomic efferents",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_011",
+      "topic": "Connective Tissue & Nerve Structure",
+      "question": "Name the three connective tissue layers surrounding a peripheral nerve from innermost to outermost.",
+      "answer": "1. Endoneurium — loose connective tissue external to the neurilemma; surrounds individual axons\n2. Perineurium — overlapping squamous cells wrapping fascicles (bundles of nerve fibers)\n3. Epineurium — dense irregular connective tissue wrapping the entire nerve",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_012",
+      "topic": "Connective Tissue & Nerve Structure",
+      "question": "What is a fascicle in the context of peripheral nerve anatomy?",
+      "answer": "A fascicle is a bundle of nerve fibers surrounded by the perineurium.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_013",
+      "topic": "Connective Tissue & Nerve Structure",
+      "question": "What is the neurilemma, and what cells form it?",
+      "answer": "The neurilemma is the outermost layer of a peripheral nerve fiber formed by Schwann cells. Schwann cells also form the myelin sheath around the axon.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_014",
+      "topic": "Connective Tissue & Nerve Structure",
+      "question": "Use the mnemonic 'EFE' to recall the three nerve layers in order from innermost to outermost.",
+      "answer": "E — Endoneurium (innermost, around individual axons)\nF — (fascicle is wrapped by)\nPerineurium\nE — Epineurium (outermost, wraps entire nerve)\n\nMemory cue: 'EFE' or think of it like a cable — wire → insulation → cable jacket",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_015",
+      "topic": "Cervical Plexus",
+      "question": "What spinal nerve roots form the cervical plexus?",
+      "answer": "The cervical plexus is formed by the ventral rami of spinal nerves C1–C5.",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_016",
+      "topic": "Cervical Plexus",
+      "question": "What does the cervical plexus supply?",
+      "answer": "The cervical plexus supplies:\n- Skin of the head, neck, and upper shoulders\n- Muscles of the head, neck, and upper shoulders\n- Connects with some cranial nerves\n- Supplies the DIAPHRAGM via the phrenic nerve",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_017",
+      "topic": "Cervical Plexus",
+      "question": "What nerve supplies the diaphragm, and which spinal nerve roots form it?",
+      "answer": "The PHRENIC NERVE supplies the diaphragm.\nIt arises from C3, C4, and C5.\n\nMnemonic: 'C3-4-5 keep the diaphragm alive!'",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_018",
+      "topic": "Cervical Plexus",
+      "question": "What is the clinical consequence of a spinal cord lesion above C3–C5?",
+      "answer": "A spinal cord lesion above C3–C5 causes RESPIRATORY ARREST because it disrupts the phrenic nerve, which drives diaphragm contraction. The patient cannot breathe independently.\n\nMnemonic: 'C3-4-5 keep the diaphragm alive!'",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_019",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What spinal nerve roots form the brachial plexus?",
+      "answer": "The brachial plexus is formed by roots C5, C6, C7, C8, and T1.",
+      "slideRef": "slide_16.jpg",
+      "slideNumber": 16
+    },
+    {
+      "id": "fc_020",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What is the mnemonic for remembering the five organizational levels of the brachial plexus?",
+      "answer": "'Remember To Drink Cold Beer'\n\nR — Roots (5)\nT — Trunks (3)\nD — Divisions (2: anterior and posterior)\nC — Cords (3)\nB — Branches (5)",
+      "slideRef": "slide_17.jpg",
+      "slideNumber": 17
+    },
+    {
+      "id": "fc_021",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "How do the roots of the brachial plexus form the three trunks?",
+      "answer": "- C5 + C6 → Upper (Superior) Trunk\n- C7 → Middle Trunk\n- C8 + T1 → Inferior Trunk",
+      "slideRef": "slide_18.jpg",
+      "slideNumber": 18
+    },
+    {
+      "id": "fc_022",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "How do the trunks of the brachial plexus form the three cords?",
+      "answer": "Each trunk divides into anterior and posterior divisions:\n- Anterior divisions of Upper + Middle Trunk → Lateral Cord\n- Anterior division of Inferior Trunk → Medial Cord\n- Posterior divisions of ALL three trunks → Posterior Cord\n\nNote: Cords are named by their position relative to the axillary artery.",
+      "slideRef": "slide_18.jpg",
+      "slideNumber": 18
+    },
+    {
+      "id": "fc_023",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What are the five major terminal branches of the brachial plexus? Give the mnemonic.",
+      "answer": "Mnemonic: MARMU\n1. Musculocutaneous nerve (lateral cord)\n2. Axillary nerve (posterior cord)\n3. Radial nerve (posterior cord)\n4. Median nerve (lateral + medial cords)\n5. Ulnar nerve (medial cord)",
+      "slideRef": "slide_21.jpg",
+      "slideNumber": 21
+    },
+    {
+      "id": "fc_024",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What are the branches of the posterior cord of the brachial plexus? Give the mnemonic.",
+      "answer": "Mnemonic: ULTRA\nU — Upper subscapular nerve\nL — Lower subscapular nerve\nT — Thoracodorsal nerve\nR — Radial nerve\nA — Axillary nerve",
+      "slideRef": "slide_20.jpg",
+      "slideNumber": 20
+    },
+    {
+      "id": "fc_025",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What muscles does the musculocutaneous nerve innervate, and from which cord does it arise?",
+      "answer": "The musculocutaneous nerve arises from the LATERAL CORD and innervates the three flexors of the arm:\n1. Biceps brachii\n2. Coracobrachialis\n3. Brachialis\n\nSensory: lateral forearm",
+      "slideRef": "slide_27.jpg",
+      "slideNumber": 27
+    },
+    {
+      "id": "fc_026",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What is the clinical presentation of a musculocutaneous nerve lesion?",
+      "answer": "- Biceps: weak arm and forearm flexion; loss of forearm supination\n- Coracobrachialis: weak arm flexion\n- Brachialis: weak arm flexion\n- Skin of lateral forearm: loss of sensation",
+      "slideRef": "slide_27.jpg",
+      "slideNumber": 27
+    },
+    {
+      "id": "fc_027",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What muscles does the axillary nerve innervate, from which cord does it arise, and with which artery does it run?",
+      "answer": "Arises from: Posterior cord\nInnervates:\n- Deltoid (shoulder abduction)\n- Teres minor (lateral rotation of shoulder)\nSensory: lateral shoulder\nRuns with: Posterior circumflex artery",
+      "slideRef": "slide_28.jpg",
+      "slideNumber": 28
+    },
+    {
+      "id": "fc_028",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What is the clinical presentation of an axillary nerve lesion?",
+      "answer": "- Deltoid: loss of shoulder abduction\n- Teres minor: loss of lateral rotation of humerus\n- Long head of triceps brachii: loss of forearm extension\n- Sensory: loss of sensation on lateral shoulder\n\nCause: shoulder dislocation or fracture of surgical neck of humerus",
+      "slideRef": "slide_29.jpg",
+      "slideNumber": 29
+    },
+    {
+      "id": "fc_029",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What is the radial nerve's spinal level, cord of origin, and general motor function?",
+      "answer": "Spinal level: C5–T1\nCord: Posterior cord\nMotor: Innervates essentially ALL EXTENSOR muscles of the arm, forearm, and hand\nSensory: dorsal arm, forearm, and dorsal lateral hand\n\nMnemonic: BEST (Brachioradialis, Extensors of wrist/fingers, Supinators, Triceps brachii)",
+      "slideRef": "slide_32.jpg",
+      "slideNumber": 32
+    },
+    {
+      "id": "fc_030",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What is 'wrist drop' and which nerve lesion causes it?",
+      "answer": "WRIST DROP is the inability to extend the wrist, caused by a RADIAL NERVE lesion (specifically the deep branch).\n\nMechanism: Loss of extensor muscles of the forearm and abductor pollicis longus → unopposed wrist flexion",
+      "slideRef": "slide_33.jpg",
+      "slideNumber": 33
+    },
+    {
+      "id": "fc_031",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What is the median nerve's cord(s) of origin, and what does it generally innervate?",
+      "answer": "Cords: Both lateral AND medial cords (C5–T1)\nMotor: Pronators and thenar muscles\nFunction: Flexes and pronates the wrist",
+      "slideRef": "slide_38.jpg",
+      "slideNumber": 38
+    },
+    {
+      "id": "fc_032",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What muscles are innervated by the recurrent branch of the median nerve, and what is the result of its injury?",
+      "answer": "The recurrent branch innervates the THENAR muscles.\nInjury → APE HAND:\n- Loss of thumb abduction, opposition, and flexion\n- Thenar eminence wasting\n- NO sensory loss (the recurrent branch is purely motor)",
+      "slideRef": "slide_41.jpg",
+      "slideNumber": 41
+    },
+    {
+      "id": "fc_033",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What is the ulnar nerve's cord of origin, spinal level, and key innervations?",
+      "answer": "Cord: Medial cord\nLevel: C8–T1\nForearm: Flexes and adducts the hand (FCU, medial half of FDP)\nHand: Moves the 'pinkie,' adducts thumb (adductor pollicis), adduction/abduction of fingers (interossei), hypothenar muscles, lumbricals 3–4\nSensory: Medial side of hand (1.5 fingers)",
+      "slideRef": "slide_43.jpg",
+      "slideNumber": 43
+    },
+    {
+      "id": "fc_034",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What is the Long Thoracic Nerve, and what is the mnemonic SALT?",
+      "answer": "Long Thoracic Nerve (C5–C7) innervates the SERRATUS ANTERIOR muscle.\n\nMnemonic: SALT = Serratus Anterior Long Thoracic\n\nFunction: Stabilizes scapula to thoracic cage; assists in abduction above horizontal",
+      "slideRef": "slide_25.jpg",
+      "slideNumber": 25
+    },
+    {
+      "id": "fc_035",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What is winged scapula, and what nerve lesion causes it?",
+      "answer": "WINGED SCAPULA = inability to anchor the scapula to the thoracic cage, causing the scapula to protrude like a wing.\n\nCause: Lesion of the LONG THORACIC NERVE (C5–C7) → loss of serratus anterior\n\nCauses: Stab wounds, blow to neck, axillary node dissection after mastectomy\n\nResult: Cannot abduct arm above horizontal",
+      "slideRef": "slide_26.jpg",
+      "slideNumber": 26
+    },
+    {
+      "id": "fc_036",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "What is Erb-Duchenne (Waiter's Tip) Palsy? What trunk and nerves are injured?",
+      "answer": "Erb-Duchenne Palsy = UPPER TRUNK lesion (C5–C6)\nNerves affected: Suprascapular, Musculocutaneous, and Axillary\n\nPresentation:\n- Impaired shoulder abduction (deltoid/supraspinatus)\n- Impaired lateral rotation (infraspinatus)\n- Loss of elbow flexion and supination (biceps)\n- Arm hangs in 'waiter's tip' position\n\nCause: Lateral trauma to neck during delivery (dystocia) or adult trauma",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_037",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "What is Klumpke Palsy, and what trunk is involved?",
+      "answer": "Klumpke Palsy = LOWER TRUNK lesion (C8–T1)\nNerves: Ulnar (and Median) injury\n\nPresentation: TOTAL CLAW HAND\n- Inability to extend digits at DIP and PIP\n- Inability to flex MCP joints\n- Loss of intrinsic hand muscles (lumbricals, interossei, thenar, hypothenar)\n\nCauses (adults): trauma, thoracic outlet syndrome\nCauses (infants): upward force on arm during delivery",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_038",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "Distinguish between the Hand of Benediction (Pope's Hand) and the Ulnar Claw.",
+      "answer": "HAND OF BENEDICTION:\n- Lesion: MEDIAN nerve (proximal)\n- Appears ONLY when trying to make a fist\n- Hand at rest looks normal\n- Digits 2–3 remain partially extended\n\nULNAR CLAW:\n- Lesion: ULNAR nerve\n- Chronically flexed 4th and 5th digits\n- Cannot EXTEND 4th and 5th fingers at rest",
+      "slideRef": "slide_46.jpg",
+      "slideNumber": 46
+    },
+    {
+      "id": "fc_039",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "What is Saturday Night Palsy and what nerve/location is involved?",
+      "answer": "Saturday Night Palsy = radial nerve compression against the SPIRAL GROOVE of the humerus (mid-shaft fracture or prolonged compression, e.g., falling asleep with arm over chair or using crutches).\n\nPresentation:\n- WRIST DROP\n- Weak brachioradialis reflex (triceps reflex is NORMAL because triceps branch is proximal)\n- Numbness over dorsum of hand",
+      "slideRef": "slide_34.jpg",
+      "slideNumber": 34
+    },
+    {
+      "id": "fc_040",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "What is Carpal Tunnel Syndrome and which nerve is affected?",
+      "answer": "Carpal Tunnel Syndrome = entrapment of the MEDIAN NERVE at the carpal tunnel.\n\nThe tunnel is bounded by:\n- Ventral: inelastic flexor retinaculum\n- Dorsal: carpal bones\n\nSensory alterations: lateral palm, digits 1–3 and lateral half of digit 4",
+      "slideRef": "slide_42.jpg",
+      "slideNumber": 42
+    },
+    {
+      "id": "fc_041",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "A fracture of the surgical neck of the humerus injures which nerve and artery? What is the presentation?",
+      "answer": "Nerve: AXILLARY NERVE\nArtery: POSTERIOR CIRCUMFLEX ARTERY\n\nPresentation:\n- Impaired shoulder abduction (deltoid)\n- Impaired lateral rotation (teres minor)\n- Flattened deltoid ('squaring' of shoulder)\n- Loss of sensation over deltoid/lateral arm\n- Risk of AVN (avascular necrosis)",
+      "slideRef": "slide_30.jpg",
+      "slideNumber": 30
+    },
+    {
+      "id": "fc_042",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "What is Ape Hand and how does it differ from Hand of Benediction?",
+      "answer": "APE HAND:\n- Injury: DISTAL median nerve lesion (at elbow or lower) or recurrent branch laceration\n- Affects: thenar muscles only\n- Findings: loss of thumb abduction, opposition, flexion; thenar wasting\n- NO sensory loss\n\nHand of Benediction:\n- PROXIMAL median nerve lesion\n- Visible only when making a fist\n- Includes sensory loss of lateral 3.5 fingers",
+      "slideRef": "slide_41.jpg",
+      "slideNumber": 41
+    },
+    {
+      "id": "fc_043",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "What is the Ulnar Claw due to a lesion below the elbow, and what are the causative fractures?",
+      "answer": "Ulnar Claw (distal lesion):\n- Lesion: ulnar nerve below elbow\n- Affects: hypothenar muscles, adductor pollicis, interossei, lumbricals 3–4, sensory to medial 1.5 fingers\n\nPresentations: clawing of digits 4–5 on extension\n\nCausative fractures:\n- Proximal: fracture of medial epicondyle of humerus\n- Distal: fracture of hook of hamate (fall on outstretched hand)",
+      "slideRef": "slide_45.jpg",
+      "slideNumber": 45
+    },
+    {
+      "id": "fc_044",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "What are the upper limb myotomes for C5 through T1?",
+      "answer": "C5 — Shoulder abduction and flexion\nC5–C6 — Elbow flexion, forearm supination\nC7 — Elbow extension, wrist extension, finger extension\nC8 — Finger flexion\nT1 — Intrinsic hand muscles",
+      "slideRef": "slide_47.jpg",
+      "slideNumber": 47
+    },
+    {
+      "id": "fc_045",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "question": "What spinal nerve roots form the lumbar plexus, and what does it innervate?",
+      "answer": "Ventral rami of T12–L4\nInnervates: thigh, abdominal wall, and psoas muscle\n\nMajor nerves:\n- Femoral Nerve (L2–L4)\n- Obturator Nerve (L2–L4)\n- Lateral Femoral Cutaneous Nerve (L2–L3) — sensory only",
+      "slideRef": "slide_52.jpg",
+      "slideNumber": 52
+    },
+    {
+      "id": "fc_046",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "question": "What muscles does the femoral nerve (L2–L4) innervate?",
+      "answer": "Hip flexors:\n- Iliopsoas (iliacus + psoas)\n- Pectineus\n- Sartorius\n\nKnee extensors:\n- Quadriceps femoris (rectus femoris, vastus lateralis, vastus medialis, vastus intermedius)",
+      "slideRef": "slide_56.jpg",
+      "slideNumber": 56
+    },
+    {
+      "id": "fc_047",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "question": "What is the presentation of a femoral nerve injury?",
+      "answer": "- Decreased hip flexion\n- Decreased knee extension (quadriceps weakness)\n- Decreased sensation of anterior thigh and medial leg\n\nCause: pelvic fracture",
+      "slideRef": "slide_56.jpg",
+      "slideNumber": 56
+    },
+    {
+      "id": "fc_048",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "question": "What is the NAVEL mnemonic for the femoral triangle, and what are its borders?",
+      "answer": "Contents (lateral to medial): NAVEL\nN — Femoral Nerve\nA — Femoral Artery\nV — Femoral Vein\nE — Empty space\nL — Lymphatics\n\nBorders:\n- Lateral: Sartorius\n- Medial: Adductor longus\n- Superior: Inguinal ligament\n\nClinical use: catheterization site",
+      "slideRef": "slide_55.jpg",
+      "slideNumber": 55
+    },
+    {
+      "id": "fc_049",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "question": "What does the obturator nerve (L2–L4) innervate, and what is the presentation of its injury?",
+      "answer": "Motor:\n- Adductors of hip: adductor brevis, longus, magnus\n- Knee flexor: gracilis\n\nInjury (anterior hip dislocation):\n- Decreased hip adduction\n- Decreased sensation of medial thigh",
+      "slideRef": "slide_57.jpg",
+      "slideNumber": 57
+    },
+    {
+      "id": "fc_050",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "question": "What is Meralgia Paresthetica, and what nerve and spinal level are involved?",
+      "answer": "Meralgia Paresthetica = mononeuropathy of the LATERAL FEMORAL CUTANEOUS NERVE (L2–L3).\n\nMechanism: Entrapment as it passes through the inguinal ligament\n\nRisk factors: pregnancy, tight clothing, obesity, diabetes\n\nPresentation: paresthesias and/or hyperesthesia in the ANTEROLATERAL THIGH (purely sensory nerve)\n\nTreatment: weight loss, loose clothing, pain medication, nerve block",
+      "slideRef": "slide_58.jpg",
+      "slideNumber": 58
+    },
+    {
+      "id": "fc_051",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What spinal nerve roots form the sacral plexus, and what does it supply?",
+      "answer": "Ventral rami of L4–S4\nSupplies: buttocks, perineum, and lower limbs\n\nMajor nerves:\n- Superior gluteal nerve (L4–S1)\n- Inferior gluteal nerve (L5–S2)\n- Pudendal nerve (S2–S4)\n- Sciatic nerve (L4–S3) — largest nerve in body",
+      "slideRef": "slide_60.jpg",
+      "slideNumber": 60
+    },
+    {
+      "id": "fc_052",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What does the superior gluteal nerve innervate, and what is the presentation of its injury?",
+      "answer": "Innervates (L4–S1):\n- Gluteus medius\n- Gluteus minimus\n- Tensor fascia latae\nFunction: Hip abduction and medial rotation\n\nInjury (posterior hip dislocation, polio):\n→ TRENDELENBURG GAIT: standing on the side of the lesion, the CONTRALATERAL hip drops",
+      "slideRef": "slide_62.jpg",
+      "slideNumber": 62
+    },
+    {
+      "id": "fc_053",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "Describe Trendelenburg Sign/Gait and how to identify which side has the lesion.",
+      "answer": "Trendelenburg Sign: When standing on the affected leg, the CONTRALATERAL pelvis drops because the ipsilateral hip abductors (gluteus medius/minimus) cannot hold it up.\n\nRemember:\n- Lesion is IPSILATERAL to the standing leg\n- Hip drops CONTRALATERALLY\n\nCause: Superior gluteal nerve injury (also iatrogenic — IM injection to superomedial gluteal region is wrong!)",
+      "slideRef": "slide_63.jpg",
+      "slideNumber": 63
+    },
+    {
+      "id": "fc_054",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What does the inferior gluteal nerve innervate, and what is the presentation of its injury?",
+      "answer": "Innervates (L5–S2):\n- Gluteus maximus\nFunction: Hip extension and lateral rotation of thigh\n\nInjury (posterior hip dislocation):\n→ Difficulty rising from a seated position (cannot extend hip forcefully)",
+      "slideRef": "slide_64.jpg",
+      "slideNumber": 64
+    },
+    {
+      "id": "fc_055",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What is the pudendal nerve (S2–S4) and what does it innervate?",
+      "answer": "Sensory: perineum (genitalia, anal region)\nMotor: external urethral sphincter and external anal sphincter\n\nClinical: Can be BLOCKED during childbirth (pudendal block)",
+      "slideRef": "slide_60.jpg",
+      "slideNumber": 60
+    },
+    {
+      "id": "fc_056",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What two nerves does the sciatic nerve divide into, and at what level?",
+      "answer": "The sciatic nerve (L4–S3) splits into:\n1. TIBIAL NERVE\n2. COMMON FIBULAR (PERONEAL) NERVE\n\nThe split usually occurs in the posterior thigh/popliteal fossa.\nThe common fibular nerve then splits at the NECK OF THE FIBULA into deep and superficial fibular nerves.",
+      "slideRef": "slide_66.jpg",
+      "slideNumber": 66
+    },
+    {
+      "id": "fc_057",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What muscles does the tibial branch of the sciatic nerve innervate in the thigh?",
+      "answer": "Tibial branch innervates the HAMSTRINGS:\n- Biceps femoris\n- Semitendinosus\n- Semimembranosus\n- Adductor magnus (hamstring part)\n\nFunction: Hip extension and knee flexion\nSensory: posterior thigh, gluteal region, lower leg (except medial side)",
+      "slideRef": "slide_65.jpg",
+      "slideNumber": 65
+    },
+    {
+      "id": "fc_058",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What is the mnemonic TIP for the tibial nerve, and what is the clinical presentation of its injury?",
+      "answer": "TIP = Tibial Inverts and Plantarflexes\nInjured → can't stand on TIPtoes\n\nTibial nerve innervates:\n- Plantar flexion: gastrocnemius, soleus, plantaris\n- Inversion: tibialis posterior\n- Toe flexion: flexor hallucis longus, flexor digitorum longus\n- Popliteus (unlocks extended knee)\nSensory: sole of foot\n\nInjury: dorsiflexion and eversion of foot; sensory loss on sole",
+      "slideRef": "slide_69.jpg",
+      "slideNumber": 69
+    },
+    {
+      "id": "fc_059",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What is the mnemonic PED for the peroneal nerve, and what is the clinical presentation of its injury?",
+      "answer": "PED = Peroneal Everts and Dorsiflexes\nInjured → foot droPED\n\nDeep peroneal nerve innervates:\n- Tibialis anterior (dorsiflexion)\n- Extensor hallucis longus\n- Extensor digitorum longus\n- Peroneus tertius (eversion)\n\nInjury → FOOT DROP: cannot dorsiflex or extend toes; sensory loss on dorsum of foot",
+      "slideRef": "slide_71.jpg",
+      "slideNumber": 71
+    },
+    {
+      "id": "fc_060",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What is foot drop, and which nerve injury causes it?",
+      "answer": "FOOT DROP = inability to dorsiflex the foot, evert it, or extend the toes.\n\nCause: COMMON FIBULAR (PERONEAL) NERVE injury — the most common nerve injury in the lower leg.\n\nTypical mechanism: fracture of the NECK OF THE FIBULA\n\nAlso causes: loss of sensation on dorsum of foot\n\nGait: patient must high-step to avoid tripping",
+      "slideRef": "slide_74.jpg",
+      "slideNumber": 74
+    },
+    {
+      "id": "fc_061",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What does the superficial peroneal nerve innervate?",
+      "answer": "The superficial peroneal nerve innervates:\n- Peroneus longus\n- Peroneus brevis\nFunction: FOOT EVERSION\n\nIt is a branch of the common peroneal nerve (along with the deep peroneal nerve).",
+      "slideRef": "slide_75.jpg",
+      "slideNumber": 75
+    },
+    {
+      "id": "fc_062",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What is piriformis syndrome and what are the risk factors?",
+      "answer": "Piriformis syndrome = sciatic nerve compression near the piriformis muscle in the greater sciatic foramen.\n\nRisk factors: overdevelopment of piriformis muscle (skaters, mountain climbers, cyclists)\n\nPresentation: sciatica-like symptoms — pain radiating down the posterior leg\n\nMore common in WOMEN than men",
+      "slideRef": "slide_68.jpg",
+      "slideNumber": 68
+    },
+    {
+      "id": "fc_063",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What is the sural nerve and how is it formed?",
+      "answer": "The sural nerve is a SENSORY nerve in the calf region formed by branches of:\n1. Tibial nerve\n2. Common fibular nerve\n\nIt provides sensation to the lateral leg and foot.",
+      "slideRef": "slide_61.jpg",
+      "slideNumber": 61
+    },
+    {
+      "id": "fc_064",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What are the lower limb myotomes for L2 through S2?",
+      "answer": "L2 — Hip flexors (iliopsoas)\nL3 — Knee extensors (quadriceps)\nL4 — Ankle dorsiflexors (tibialis anterior)\nL5 — Long toe extensors (extensor hallucis and digitorum longus)\nS1 — Ankle plantarflexors (gastrocnemius/soleus)\nS2 — Toe abductors (abductor hallucis/plantar interossei)",
+      "slideRef": "slide_77.jpg",
+      "slideNumber": 77
+    },
+    {
+      "id": "fc_065",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "Define a dermatome.",
+      "answer": "A DERMATOME is an area of skin innervated by sensory fibers from a SINGLE spinal nerve root.\n\nClinical use:\n- Identifies the level of sensory loss\n- Localizes radiculopathy or nerve root compression\n\nNote: All spinal nerves EXCEPT C1 innervate specific dermatomes.",
+      "slideRef": "slide_11.jpg",
+      "slideNumber": 11
+    },
+    {
+      "id": "fc_066",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "Define a myotome.",
+      "answer": "A MYOTOME is a group of muscles primarily innervated by motor fibers from a SINGLE spinal nerve root.\n\nClinical use:\n- Identifies the level of motor weakness\n- Helps distinguish nerve root vs. peripheral nerve injury",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_067",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "Define Deep Tendon Reflexes (DTRs) and their clinical utility.",
+      "answer": "DTRs are involuntary muscle contractions in response to tendon stretch, mediated by a spinal nerve root.\n\nClinical utility:\n- Tests integrity of sensory nerve, motor nerve, and spinal cord segment\n- Helps localize neurologic lesions\n- Loss = LMN lesion; Hyperreflexia = UMN lesion",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_068",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "What are the key DTRs and their corresponding spinal levels?",
+      "answer": "C5–C6 → Biceps reflex\nC6 → Brachioradialis reflex\nC7 → Triceps reflex\nL4 → Patellar (knee-jerk) reflex\nS1 → Achilles reflex",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_069",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "What are the landmark dermatomes used clinically?",
+      "answer": "C2 — posterior half of skull\nC3 — high turtleneck shirt area\nC4 — low collar shirt area\nC6 — thumbs\nT4 — nipple line (teat pore)\nT7 — xiphoid process\nT10 — umbilicus (belly button) — important for early appendicitis pain referral\nL1 — inguinal ligament\nL4 — kneecaps\nS2–S4 — erection, sensation of penile/anal zones",
+      "slideRef": "slide_11.jpg",
+      "slideNumber": 11
+    },
+    {
+      "id": "fc_070",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "What is the clinical significance of the T10 dermatome?",
+      "answer": "T10 corresponds to the UMBILICUS.\n\nClinical relevance: Early appendicitis presents with pain referred to the PERIUMBILICAL region (T10 dermatome) before localizing to the right lower quadrant (somatic pain via T12–L1).",
+      "slideRef": "slide_11.jpg",
+      "slideNumber": 11
+    },
+    {
+      "id": "fc_071",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "What sensation does C6 supply, and what is the memory trick?",
+      "answer": "C6 → innervates the THUMB\n\nMemory trick: 'Thumbs up sign on left hand looks like a six for C6'",
+      "slideRef": "slide_11.jpg",
+      "slideNumber": 11
+    },
+    {
+      "id": "fc_072",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "What dermatomes cover the lateral foot vs. dorsum of foot?",
+      "answer": "S1 → lateral foot\nL5 → dorsum of foot\n\nClinical use: testing S1 and L5 helps screen for disc herniation at L4–L5 or L5–S1.",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_073",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "What is the clinical triad (dermatome, myotome, DTR) for L4 nerve root?",
+      "answer": "L4 nerve root:\n- Dermatome: medial lower leg and medial foot\n- Myotome: ankle dorsiflexion (tibialis anterior); knee extension\n- DTR: PATELLAR (knee-jerk) reflex",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_074",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "What is the clinical triad (dermatome, myotome, DTR) for S1 nerve root?",
+      "answer": "S1 nerve root:\n- Dermatome: lateral foot\n- Myotome: plantarflexion (gastrocnemius/soleus); toe abduction\n- DTR: ACHILLES reflex",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_075",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "What is the clinical triad (dermatome, myotome, DTR) for C7 nerve root?",
+      "answer": "C7 nerve root:\n- Dermatome: middle finger\n- Myotome: elbow extension, wrist extension, finger extension\n- DTR: TRICEPS reflex",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_076",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "What spinal nerve root is important for the diaphragm referral of pain to the shoulder?",
+      "answer": "Diaphragm and gallbladder pain can be referred to the RIGHT SHOULDER via the PHRENIC NERVE (C3–C5).\n\nThis is Kehr's sign in context of diaphragmatic irritation — relevant for diaphragmatic abscess, gallbladder disease, or free air under the diaphragm.",
+      "slideRef": "slide_11.jpg",
+      "slideNumber": 11
+    },
+    {
+      "id": "fc_077",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "Where does the brachial plexus lie anatomically, and how is it divided?",
+      "answer": "The brachial plexus is divided into:\n- SUPRACLAVICULAR portion: in the neck (roots and trunks)\n- INFRACLAVICULAR portion: in the axillary area (divisions, cords, branches)\n\nIt passes through the posterior triangle of the neck (bounded by trapezius, SCM, and clavicle).",
+      "slideRef": "slide_16.jpg",
+      "slideNumber": 16
+    },
+    {
+      "id": "fc_078",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "The thoracodorsal nerve innervates which muscle? What movement does it enable?",
+      "answer": "The THORACODORSAL NERVE (C6–C8) innervates the LATISSIMUS DORSI.\nFunction: arm adduction, extension, and internal rotation",
+      "slideRef": "slide_22.jpg",
+      "slideNumber": 22
+    },
+    {
+      "id": "fc_079",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "The suprascapular nerve innervates which muscles?",
+      "answer": "The SUPRASCAPULAR NERVE innervates:\n1. Supraspinatus (initiates shoulder abduction 0–15°)\n2. Infraspinatus (lateral rotation of shoulder)",
+      "slideRef": "slide_22.jpg",
+      "slideNumber": 22
+    },
+    {
+      "id": "fc_080",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "Describe the course of the radial nerve and why mid-shaft humeral fractures specifically affect it.",
+      "answer": "The radial nerve spirals in the SPIRAL (radial) GROOVE on the posterior surface of the humerus. A mid-shaft humeral fracture can entrap the nerve at this groove.\n\nPresentation at this level:\n- Wrist drop (extensor forearm muscles)\n- Loss of digit extension\n- Triceps and brachioradialis reflexes may be preserved if injury is truly mid-shaft",
+      "slideRef": "slide_36.jpg",
+      "slideNumber": 36
+    },
+    {
+      "id": "fc_081",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "What is the difference in triceps involvement between a high (axilla-level) radial nerve injury and a mid-shaft humeral fracture?",
+      "answer": "HIGH (axilla) radial nerve injury:\n- Triceps affected → loss of elbow extension AND triceps reflex\n- Wrist drop, digit drop, sensory loss\n\nMID-SHAFT humeral fracture (spiral groove):\n- Triceps branch is given off PROXIMAL to spiral groove\n- Triceps usually SPARED (normal triceps reflex)\n- Still get wrist drop, weak brachioradialis reflex",
+      "slideRef": "slide_36.jpg",
+      "slideNumber": 36
+    },
+    {
+      "id": "fc_082",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "question": "What is the mnemonic 'Some Irish Sailor Pesters Polly' for the lumbar plexus?",
+      "answer": "Mnemonic for lumbar plexus nerves (from superior to inferior):\nSubcostal\nIliohypogastric\nIlioinguinal\nGenitofemoral\nLateral cutaneous nerve of thigh\nObturator\nFemoral\n\nAlternate: 'Interested In Getting Leftovers On Fridays'",
+      "slideRef": "slide_53.jpg",
+      "slideNumber": 53
+    },
+    {
+      "id": "fc_083",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What is a sciatic nerve injury and its most common causes?",
+      "answer": "Sciatic nerve injury causes:\n- Loss of hamstring function (hip extension, knee flexion)\n- Posterior thigh and lower leg sensory loss\n- All distal leg and foot dysfunction (tibial + peroneal combined)\n\nCauses:\n- Intervertebral disc herniation\n- Spinal stenosis\n- Posterior hip dislocation\n- Iatrogenic (improper IM injection)",
+      "slideRef": "slide_67.jpg",
+      "slideNumber": 67
+    },
+    {
+      "id": "fc_084",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "What is the proximal radial head injury presentation compared to mid-shaft?",
+      "answer": "PROXIMAL RADIAL HEAD injury:\n- Radial nerve is injured as it passes toward the posterior compartment of the forearm\n- Results in loss of DIGIT EXTENSION only\n- Wrist extension preserved (because some extensor branches given off before)\n\nMID-SHAFT humeral fracture:\n- Wrist drop and digit drop\n- Triceps usually preserved",
+      "slideRef": "slide_36.jpg",
+      "slideNumber": 36
+    },
+    {
+      "id": "fc_085",
+      "topic": "Cervical Plexus",
+      "question": "What are the main cutaneous branches of the cervical plexus?",
+      "answer": "The cutaneous branches of the cervical plexus include:\n- Lesser occipital nerve (C2)\n- Great auricular nerve (C2, C3)\n- Transverse cervical nerve (C2, C3)\n- Supraclavicular nerves (C3, C4)\n\nThese supply skin of the head, neck, and upper shoulders.",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_086",
+      "topic": "Spinal Nerve Overview",
+      "question": "What system do the rami communicantes connect, and why is this clinically relevant?",
+      "answer": "Rami communicantes connect spinal nerves to the SYMPATHETIC TRUNK (ANS).\n\nThis is relevant because:\n- Autonomic dysfunction can occur with spinal cord injuries\n- Sympathetic chain ganglia are paired alongside the vertebral column\n- Used in procedures like sympathetic nerve blocks",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_087",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "A patient with a fibular neck fracture presents with footdrop and inability to evert the foot. What nerve is injured, and which compartments are affected?",
+      "answer": "Nerve: COMMON FIBULAR (PERONEAL) NERVE\n\nAffected compartments:\n- Anterior compartment: dorsiflexion lost\n- Lateral compartment: eversion lost\n\nDeep peroneal → anterior compartment (dorsiflexion, toe extension)\nSuperficial peroneal → lateral compartment (eversion)\n\nSensory loss: dorsum of foot and lateral leg",
+      "slideRef": "slide_74.jpg",
+      "slideNumber": 74
+    },
+    {
+      "id": "fc_088",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "Describe the Hand of Benediction in detail: which muscles are paralyzed and what is the underlying anatomy?",
+      "answer": "Hand of Benediction (proximal median nerve lesion — supracondylar fracture):\n\nParalyzed muscles:\n- Flexor digitorum superficialis → all fingers\n- Flexor pollicis longus → thumb\n- Flexor pollicis brevis → thumb\n- Lateral ½ FDP → digits 2–3\n- Radial two lumbricals → digits 2–3\n\nResult: When trying to make a fist, digits 2–3 remain extended (the ulnar-innervated digits 4–5 CAN flex)\n\nSensory loss: thenar eminence, lateral 3.5 fingers (palmar and dorsal aspects)",
+      "slideRef": "slide_40.jpg",
+      "slideNumber": 40
+    },
+    {
+      "id": "fc_089",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "What is the significance of S2, S3, S4 dermatomes?",
+      "answer": "S2, S3, S4 supply:\n- Erection and sensation of the penile and anal zones\n\nMemory trick: 'S2, 3, 4 keep the penis off the floor'\n\nThey are tested in cauda equina syndrome (saddle anesthesia).",
+      "slideRef": "slide_11.jpg",
+      "slideNumber": 11
+    },
+    {
+      "id": "fc_090",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "Why is the tibial nerve rarely injured clinically?",
+      "answer": "The tibial nerve is RARELY injured because it is DEEP-positioned in the posterior leg, protected by large muscles. Injury typically requires severe posterior knee trauma (e.g., posterior knee dislocation).\n\nContrast with: common peroneal nerve, which is the MOST COMMONLY INJURED nerve in the lower limb because it passes superficially around the fibular neck.",
+      "slideRef": "slide_70.jpg",
+      "slideNumber": 70
+    },
+    {
+      "id": "fc_091",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "question": "What is the iliopsoas muscle and how does the femoral nerve relate to it?",
+      "answer": "The ILIOPSOAS is formed by the junction of:\n- Iliacus (origin: iliac fossa)\n- Psoas major (origin: vertebral bodies T12–L4)\n\nFunction: primary HIP FLEXOR\n\nThe femoral nerve travels through the femoral triangle, lateral to the femoral artery, and the iliopsoas is one of its key motor targets.",
+      "slideRef": "slide_56.jpg",
+      "slideNumber": 56
+    },
+    {
+      "id": "fc_092",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "What specific injury mechanism leads to Erb-Duchenne Palsy in newborns vs. adults?",
+      "answer": "NEWBORNS: Shoulder dystocia — lateral traction on the neck during difficult vaginal delivery forces the head away from the shoulder, stretching/tearing the upper trunk (C5–C6)\n\nADULTS: Trauma from a blow to the head/shoulder (motorcycle accidents, sports) causing the same mechanism",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_093",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "What injury mechanism leads to Klumpke Palsy in newborns vs. adults?",
+      "answer": "NEWBORNS: Upward force on the arm during delivery (e.g., arm pulled up during breech delivery) → lower trunk (C8–T1) injury\n\nADULTS:\n- Trauma\n- Thoracic outlet syndrome\n- Grabbing overhead to break a fall",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_094",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "What are the subscapular nerves and what do they innervate?",
+      "answer": "Upper subscapular nerve → Subscapularis (medial rotation of humerus)\nLower subscapular nerve → Teres major (adduction, medial rotation) and subscapularis\n\nBoth are branches of the posterior cord.",
+      "slideRef": "slide_22.jpg",
+      "slideNumber": 22
+    },
+    {
+      "id": "fc_095",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What is the popliteus muscle and why is its innervation clinically notable?",
+      "answer": "The popliteus is innervated by the TIBIAL NERVE.\nFunction: UNLOCKS the extended knee by internally rotating the tibia (or externally rotating the femur) — allows initiation of knee flexion from full extension.",
+      "slideRef": "slide_69.jpg",
+      "slideNumber": 69
+    },
+    {
+      "id": "fc_096",
+      "topic": "Spinal Nerve Overview",
+      "question": "What does the meningeal branch of a spinal nerve supply, and why is this clinically relevant?",
+      "answer": "The meningeal branch re-enters the vertebral canal and supplies:\n- Vertebrae\n- Vertebral ligaments\n- Blood vessels of the spinal cord\n- Meninges\n\nClinical relevance: inflammation or compression of this branch can cause meningeal symptoms or back pain.",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_097",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "The lateral pectoral nerve innervates which muscle, and from which cord does it arise?",
+      "answer": "Lateral pectoral nerve → innervates PECTORALIS MAJOR\nArises from: LATERAL CORD",
+      "slideRef": "slide_22.jpg",
+      "slideNumber": 22
+    },
+    {
+      "id": "fc_098",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "The medial pectoral nerve innervates which muscles, and from which cord does it arise?",
+      "answer": "Medial pectoral nerve → innervates:\n- Pectoralis major (sternocostal part)\n- Pectoralis minor\nArises from: MEDIAL CORD",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_099",
+      "topic": "Cervical Plexus",
+      "question": "What are the two main loops/communications in the cervical plexus?",
+      "answer": "1. Ansa cervicalis: a nerve loop formed by the superior root (C1–C2) and inferior root (C2–C3) — innervates infrahyoid (strap) muscles\n\n2. Connections to cranial nerves (especially CN XI — spinal accessory nerve)",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_100",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "How does dermatome mapping inform assessment of a patient with a herniated disc?",
+      "answer": "A herniated disc compresses specific nerve roots, causing:\n- SENSORY changes in the corresponding DERMATOME\n- MOTOR weakness in the corresponding MYOTOME\n- Loss or change of the corresponding DEEP TENDON REFLEX\n\nExample: L4–L5 disc herniation affecting L5 root → weakness of great toe extension (myotome), sensory loss on dorsum of foot/first web space (dermatome)",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_101",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What is the course of the deep peroneal nerve, and what is its motor vs. sensory territory?",
+      "answer": "Course: branch of common peroneal nerve → runs in ANTERIOR compartment of leg\n\nMotor:\n- Tibialis anterior (dorsiflexion)\n- Extensor hallucis longus\n- Extensor digitorum longus\n- Peroneus tertius (eversion)\n\nSensory: first web space between great toe and second toe (dorsum)",
+      "slideRef": "slide_71.jpg",
+      "slideNumber": 71
+    },
+    {
+      "id": "fc_102",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "question": "A patient complains of burning, tingling sensation in the anterolateral thigh that worsens after prolonged standing. What is the diagnosis and management?",
+      "answer": "Diagnosis: MERALGIA PARESTHETICA (lateral femoral cutaneous nerve entrapment at inguinal ligament)\n\nManagement:\n- Conservative: weight loss, loose clothing\n- Pain medication (NSAIDs, gabapentin)\n- Nerve block\n- Surgical decompression if refractory",
+      "slideRef": "slide_58.jpg",
+      "slideNumber": 58
+    },
+    {
+      "id": "fc_103",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "In carpal tunnel syndrome, why does the dorsum of the hand have preserved sensation?",
+      "answer": "In carpal tunnel syndrome, the MEDIAN NERVE is compressed at the carpal tunnel. The PALMAR CUTANEOUS BRANCH of the median nerve branches OFF BEFORE the tunnel, supplying the thenar eminence — this branch is therefore often spared.\n\nThe dorsum of the hand is supplied by the RADIAL and ULNAR nerves, not the median nerve — hence preserved.",
+      "slideRef": "slide_42.jpg",
+      "slideNumber": 42
+    },
+    {
+      "id": "fc_104",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "How does Saturday Night Palsy (arm over chair) differ in presentation from a mid-shaft humeral fracture compressing the radial nerve?",
+      "answer": "Both compress the radial nerve at the SPIRAL GROOVE:\n\nSaturday Night Palsy (compression):\n- Wrist drop\n- Weak brachioradialis reflex\n- Normal triceps reflex\n- Sensory loss: dorsum of hand\n\nMid-shaft humeral fracture:\n- Same presentation + risk of bone fragment damaging nerve\n\nKey distinction: Triceps is typically NORMAL in both because the triceps branch arises before the spiral groove.",
+      "slideRef": "slide_34.jpg",
+      "slideNumber": 34
+    },
+    {
+      "id": "fc_105",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "Summarize the TIP and PED mnemonics side by side for exam use.",
+      "answer": "TIP — Tibial Inverts and Plantarflexes; injured can't stand on TIPtoes\n→ Tibial nerve injury: foot everted and dorsiflexed at rest (calcaneus position)\n\nPED — Peroneal Everts and Dorsiflexes; injured foot droPED\n→ Peroneal nerve injury: foot inverted and plantarflexed at rest (foot drop)\n\nKey distinction: Tibial injury → foot points UP (calcaneus); Peroneal injury → foot drops DOWN",
+      "slideRef": "slide_71.jpg",
+      "slideNumber": 71
+    },
+    {
+      "id": "fc_106",
+      "topic": "Sacral Plexus & Major Nerves",
+      "question": "What is the nerve to piriformis and why does it matter?",
+      "answer": "Nerve to piriformis (S1–S2) innervates the piriformis muscle (lateral hip rotator).\n\nClinical relevance: The sciatic nerve passes just inferior to the piriformis. In ~15% of people, the sciatic nerve actually pierces through the piriformis. A hypertrophied piriformis can compress the sciatic nerve → PIRIFORMIS SYNDROME (pseudo-sciatica).",
+      "slideRef": "slide_68.jpg",
+      "slideNumber": 68
+    },
+    {
+      "id": "fc_107",
+      "topic": "Connective Tissue & Nerve Structure",
+      "question": "What type of connective tissue makes up each of the three layers of a peripheral nerve?",
+      "answer": "Endoneurium — LOOSE connective tissue (external to neurilemma/Schwann cell)\nPerineurium — overlapping SQUAMOUS cells (wraps fascicles)\nEpineurium — DENSE IRREGULAR connective tissue (wraps entire nerve)\n\nBlood vessels penetrate all three coverings to provide blood supply.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_108",
+      "topic": "Brachial Plexus & Major Nerves",
+      "question": "From which cord does the median nerve arise, and how is it unique?",
+      "answer": "The MEDIAN NERVE is unique because it arises from BOTH the LATERAL and MEDIAL cords (it has two heads — lateral and medial):\n- Lateral head: C5–C7 from lateral cord\n- Medial head: C8–T1 from medial cord\n\nThese join to form the complete median nerve (C5–T1).",
+      "slideRef": "slide_38.jpg",
+      "slideNumber": 38
+    },
+    {
+      "id": "fc_109",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "question": "What is the clinical relevance of the femoral triangle in invasive procedures?",
+      "answer": "The femoral triangle provides vascular access for:\n- Cardiac catheterization (femoral artery)\n- Central venous access (femoral vein)\n- Lymph node biopsy\n\nThe NAVEL mnemonic helps identify structures: N-A-V-E-L (lateral to medial)\n\nRisk: inadvertent femoral nerve injury can cause quadriceps weakness and loss of patellar reflex.",
+      "slideRef": "slide_55.jpg",
+      "slideNumber": 55
+    },
+    {
+      "id": "fc_110",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "question": "How does knowing the C5 myotome help localize a cervical spine injury?",
+      "answer": "C5 myotome = shoulder abduction and elbow flexion.\n\nIf a patient has:\n- Intact shoulder abduction but weak elbow flexion → injury between C5 and C6 level\n- Loss of both → C5 level injury\n\nPaired with C5 dermatome (lateral arm) and C5–C6 biceps reflex assessment, you can triangulate the level of injury.",
+      "slideRef": "slide_47.jpg",
+      "slideNumber": 47
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "q_001",
+      "topic": "Spinal Nerve Overview",
+      "type": "mcq",
+      "question": "A medical student is studying the spinal cord cross-section. Which of the following correctly describes the dorsal root ganglion?",
+      "options": [
+        "Contains cell bodies of motor neurons",
+        "Contains cell bodies of sensory neurons",
+        "Is located in the gray matter of the spinal cord",
+        "Is part of the ventral root"
+      ],
+      "correct": 1,
+      "explanation": "The dorsal root ganglion contains cell bodies of SENSORY (afferent) neurons. Motor neuron cell bodies are located in the gray matter of the spinal cord (ventral horn). The dorsal root carries sensory information from the periphery to the spinal cord."
+    },
+    {
+      "id": "q_002",
+      "topic": "Spinal Nerve Overview",
+      "type": "mcq",
+      "question": "A 45-year-old man sustains a spinal cord injury at C2. Which of the following complications is most immediately life-threatening?",
+      "options": [
+        "Loss of bowel and bladder control",
+        "Paralysis of the upper extremities",
+        "Loss of diaphragmatic function and respiratory arrest",
+        "Loss of sensation in the upper thorax"
+      ],
+      "correct": 2,
+      "explanation": "The phrenic nerve (C3, C4, C5) drives diaphragmatic contraction. A lesion ABOVE C3 interrupts phrenic nerve function, causing respiratory arrest. This is immediately life-threatening and requires ventilator support. 'C3-4-5 keep the diaphragm alive!'"
+    },
+    {
+      "id": "q_003",
+      "topic": "Spinal Nerve Overview",
+      "type": "mcq",
+      "question": "The anterior (ventral) ramus of a spinal nerve differs from the posterior (dorsal) ramus in that it:",
+      "options": [
+        "Supplies only the deep muscles of the back",
+        "Carries only motor fibers",
+        "Supplies muscles and structures of the upper and lower limbs",
+        "Re-enters the vertebral canal to supply the meninges"
+      ],
+      "correct": 2,
+      "explanation": "The anterior (ventral) ramus supplies muscles and structures of the upper and lower limbs and the lateral/anterior trunk skin. The posterior ramus supplies deep back muscles and posterior trunk skin. The meningeal branch re-enters the vertebral canal."
+    },
+    {
+      "id": "q_004",
+      "topic": "Connective Tissue & Nerve Structure",
+      "type": "mcq",
+      "question": "During a nerve biopsy, the pathologist identifies fascicles — discrete bundles of nerve fibers — within the specimen. Which connective tissue layer directly surrounds each fascicle?",
+      "options": [
+        "Epineurium",
+        "Endoneurium",
+        "Perineurium",
+        "Neurilemma"
+      ],
+      "correct": 2,
+      "explanation": "The PERINEURIUM consists of overlapping squamous cells that wrap fascicles (bundles of nerve fibers). The endoneurium wraps individual axons; the epineurium wraps the entire nerve; the neurilemma is formed by Schwann cells around individual axons."
+    },
+    {
+      "id": "q_005",
+      "topic": "Connective Tissue & Nerve Structure",
+      "type": "true_false",
+      "question": "True or False: The epineurium is the innermost connective tissue layer of a peripheral nerve, directly surrounding individual axons.",
+      "correct": "false",
+      "explanation": "FALSE. The ENDONEURIUM is the innermost layer, surrounding individual axons (external to the neurilemma). The PERINEURIUM wraps fascicles. The EPINEURIUM is the OUTERmost layer wrapping the entire nerve. Order from inside out: Endoneurium → Perineurium → Epineurium."
+    },
+    {
+      "id": "q_006",
+      "topic": "Cervical Plexus",
+      "type": "mcq",
+      "question": "A patient is in a diving accident and sustains a cervical spine injury at C4. Which of the following is the most likely outcome?",
+      "options": [
+        "Loss of hand function only",
+        "Paraplegia with intact upper extremity function",
+        "Respiratory failure requiring mechanical ventilation",
+        "Loss of shoulder abduction only"
+      ],
+      "correct": 2,
+      "explanation": "The phrenic nerve originates from C3, C4, and C5. A C4 lesion would likely compromise phrenic nerve function, paralyzing the diaphragm and causing respiratory failure requiring ventilation. This is the basis of the mnemonic 'C3-4-5 keep the diaphragm alive!'"
+    },
+    {
+      "id": "q_007",
+      "topic": "Cervical Plexus",
+      "type": "fill_in_blank",
+      "question": "The phrenic nerve arises from cervical spinal levels ________, and lesions above this level result in respiratory arrest.",
+      "answer": "C3, C4, C5",
+      "acceptableAnswers": ["C3-C5", "C3, C4, and C5", "C3 C4 C5"]
+    },
+    {
+      "id": "q_008",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A PA student is asked to trace the formation of the lateral cord of the brachial plexus. Which combination of divisions correctly forms the lateral cord?",
+      "options": [
+        "Posterior divisions of all three trunks",
+        "Anterior division of the inferior trunk only",
+        "Anterior divisions of the upper and middle trunks",
+        "Posterior divisions of the upper and middle trunks"
+      ],
+      "correct": 2,
+      "explanation": "The lateral cord is formed by the ANTERIOR divisions of the UPPER and MIDDLE trunks. The medial cord = anterior division of inferior trunk. The posterior cord = posterior divisions of ALL three trunks. Cords are named by their position relative to the axillary artery."
+    },
+    {
+      "id": "q_009",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "Which mnemonic correctly represents the organizational subunits of the brachial plexus in order from proximal to distal?",
+      "options": [
+        "Roots, Divisions, Trunks, Cords, Branches",
+        "Roots, Trunks, Divisions, Cords, Branches",
+        "Trunks, Roots, Divisions, Cords, Branches",
+        "Roots, Trunks, Cords, Divisions, Branches"
+      ],
+      "correct": 1,
+      "explanation": "The correct order is Roots → Trunks → Divisions → Cords → Branches. Mnemonic: 'Remember To Drink Cold Beer.' Each trunk splits into two divisions (anterior and posterior) before forming the cords."
+    },
+    {
+      "id": "q_010",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A 19-year-old football player sustains a direct blow to the posterior triangle of his neck and is found to have a winged scapula. Which nerve was most likely injured?",
+      "options": [
+        "Axillary nerve",
+        "Suprascapular nerve",
+        "Long thoracic nerve",
+        "Thoracodorsal nerve"
+      ],
+      "correct": 2,
+      "explanation": "LONG THORACIC NERVE (C5–C7) innervates the serratus anterior, which stabilizes the scapula to the thoracic cage. Injury causes WINGED SCAPULA — the scapula protrudes medially when the arm is raised. Mnemonic: SALT = Serratus Anterior Long Thoracic."
+    },
+    {
+      "id": "q_011",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "question": "A newborn delivered after prolonged shoulder dystocia is found to hold his arm adducted, internally rotated, with the forearm pronated ('waiter's tip' position). Which trunk of the brachial plexus was most likely injured?",
+      "options": [
+        "Inferior trunk (C8–T1)",
+        "Middle trunk (C7)",
+        "Upper trunk (C5–C6)",
+        "All three trunks equally"
+      ],
+      "correct": 2,
+      "type": "mcq",
+      "explanation": "This is ERB-DUCHENNE (WAITER'S TIP) PALSY from an UPPER TRUNK (C5–C6) injury. Affected nerves: suprascapular, musculocutaneous, and axillary. Loss of shoulder abduction, lateral rotation, and elbow flexion/supination causes the characteristic posture. Cause: lateral traction on neck during difficult delivery."
+    },
+    {
+      "id": "q_012",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "mcq",
+      "question": "A patient sustains a fracture of the medial epicondyle of the humerus. Which of the following findings would be expected on physical exam?",
+      "options": [
+        "Loss of wrist extension (wrist drop)",
+        "Loss of thumb opposition (ape hand)",
+        "Clawing of the 4th and 5th digits, loss of finger abduction/adduction",
+        "Loss of shoulder abduction"
+      ],
+      "correct": 2,
+      "explanation": "Fracture of the medial epicondyle injures the ULNAR NERVE, causing ulnar claw (clawing of digits 4–5), loss of intrinsic hand muscle function (interossei → no finger abduction/adduction), hypothenar weakness, and sensory loss over medial 1.5 fingers. Wrist drop = radial; ape hand = median recurrent branch."
+    },
+    {
+      "id": "q_013",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "mcq",
+      "question": "A 35-year-old woman undergoes a mastectomy with axillary lymph node dissection. Postoperatively, she cannot raise her arm above 90°. Which nerve was most likely damaged?",
+      "options": [
+        "Axillary nerve",
+        "Long thoracic nerve",
+        "Median nerve",
+        "Radial nerve"
+      ],
+      "correct": 1,
+      "explanation": "Axillary lymph node dissection can damage the LONG THORACIC NERVE, leading to WINGED SCAPULA and inability to abduct the arm above 90° (because the serratus anterior cannot stabilize the scapula for full shoulder abduction)."
+    },
+    {
+      "id": "q_014",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "mcq",
+      "question": "A man wakes up after falling asleep drunk with his arm draped over the back of a chair. He now has wrist drop but can still extend at the elbow. The brachioradialis reflex is diminished. Which is the most likely site of nerve injury?",
+      "options": [
+        "Axilla (high radial nerve injury)",
+        "Spiral groove of the humerus",
+        "Elbow (radial head)",
+        "Wrist"
+      ],
+      "correct": 1,
+      "explanation": "This is SATURDAY NIGHT PALSY — radial nerve compression at the SPIRAL GROOVE of the humerus. The triceps branch is given off PROXIMAL to the spiral groove, so triceps function (elbow extension) is PRESERVED. Wrist drop and diminished brachioradialis reflex are characteristic findings."
+    },
+    {
+      "id": "q_015",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "true_false",
+      "question": "True or False: In Saturday Night Palsy (radial nerve compression at the spiral groove), the triceps reflex is typically absent.",
+      "correct": "false",
+      "explanation": "FALSE. In Saturday Night Palsy, the radial nerve is compressed at the SPIRAL GROOVE of the humerus. The branch to the triceps is given off PROXIMAL to this point, so the triceps and its reflex are typically PRESERVED. Wrist drop and weak brachioradialis reflex are present, but the triceps reflex is normal."
+    },
+    {
+      "id": "q_016",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "mcq",
+      "question": "A patient cannot make a fist properly — when trying to close her hand, her index and middle fingers remain partially extended. Her hand appears normal at rest. Sensation is reduced over the thumb, index finger, and lateral palm. Which nerve is injured?",
+      "options": [
+        "Ulnar nerve",
+        "Radial nerve",
+        "Median nerve (proximal lesion)",
+        "Median nerve (distal lesion — recurrent branch)"
+      ],
+      "correct": 2,
+      "explanation": "This is the HAND OF BENEDICTION from a PROXIMAL MEDIAN NERVE injury. The deformity appears when making a fist (digits 2–3 cannot flex), and the hand looks normal at rest. Sensory loss of lateral 3.5 fingers distinguishes this from an ulnar claw (which is chronic and affects digits 4–5)."
+    },
+    {
+      "id": "q_017",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "mcq",
+      "question": "A patient has thenar eminence wasting, cannot oppose the thumb, but has no sensory loss. Which nerve and which specific branch is most likely injured?",
+      "options": [
+        "Ulnar nerve — deep branch",
+        "Median nerve — anterior interosseous branch",
+        "Median nerve — recurrent branch",
+        "Radial nerve — superficial branch"
+      ],
+      "correct": 2,
+      "explanation": "The RECURRENT BRANCH of the median nerve is a purely MOTOR branch that innervates the thenar muscles (abductor pollicis brevis, opponens pollicis, flexor pollicis brevis). Injury causes APE HAND — loss of thumb opposition, abduction, and flexion, with NO sensory loss. Superficial laceration of the palm is a classic cause."
+    },
+    {
+      "id": "q_018",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "mcq",
+      "question": "A patient presents with tingling in the first three fingers and lateral palm, especially at night, relieved by shaking the hand. Physical exam shows thenar wasting. What is the most likely diagnosis?",
+      "options": [
+        "Cubital tunnel syndrome (ulnar nerve entrapment at elbow)",
+        "Thoracic outlet syndrome",
+        "Carpal tunnel syndrome",
+        "Pronator teres syndrome"
+      ],
+      "correct": 2,
+      "explanation": "CARPAL TUNNEL SYNDROME = median nerve entrapment at the carpal tunnel. Classic presentation: nocturnal paresthesias in lateral 3.5 fingers (digits 1–3 and half of 4), thenar wasting, Tinel's and Phalen's signs positive. The 'flick sign' (shaking the hand relieves symptoms) is pathognomonic."
+    },
+    {
+      "id": "q_019",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "true_false",
+      "question": "True or False: In Klumpke Palsy, the injury involves the upper trunk (C5–C6) of the brachial plexus.",
+      "correct": "false",
+      "explanation": "FALSE. Klumpke Palsy involves the LOWER TRUNK (C8–T1). This is caused by upward traction on the arm (e.g., infant grasping an object to break a fall, or breech delivery). It results in total claw hand due to loss of intrinsic hand muscles. Erb-Duchenne (waiter's tip) involves the upper trunk (C5–C6)."
+    },
+    {
+      "id": "q_020",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "matching",
+      "question": "Match each nerve with its primary motor function:",
+      "pairs": [
+        {"term": "Musculocutaneous nerve", "match": "Elbow flexion and forearm supination (biceps, brachialis, coracobrachialis)"},
+        {"term": "Axillary nerve", "match": "Shoulder abduction (deltoid) and lateral rotation (teres minor)"},
+        {"term": "Radial nerve", "match": "Wrist and finger extension; all extensors of arm and forearm"},
+        {"term": "Median nerve (recurrent branch)", "match": "Thumb abduction, opposition, and flexion (thenar muscles)"},
+        {"term": "Ulnar nerve", "match": "Finger adduction/abduction (interossei) and hypothenar muscles"}
+      ]
+    },
+    {
+      "id": "q_021",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "matching",
+      "question": "Match each brachial plexus cord with its derived terminal branches:",
+      "pairs": [
+        {"term": "Lateral cord", "match": "Musculocutaneous nerve and lateral head of median nerve"},
+        {"term": "Medial cord", "match": "Ulnar nerve and medial head of median nerve"},
+        {"term": "Posterior cord", "match": "Axillary nerve and radial nerve (ULTRA branches)"},
+        {"term": "Upper trunk (C5–C6)", "match": "Contributes to Erb-Duchenne palsy when injured"}
+      ]
+    },
+    {
+      "id": "q_022",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A 65-year-old obese woman presents with burning and tingling over her anterolateral thigh. The symptoms worsen when she stands or walks and are relieved by sitting. There is no motor weakness. Which nerve is most likely involved?",
+      "options": [
+        "Femoral nerve",
+        "Obturator nerve",
+        "Lateral femoral cutaneous nerve",
+        "Sciatic nerve"
+      ],
+      "correct": 2,
+      "explanation": "This is MERALGIA PARESTHETICA — entrapment of the LATERAL FEMORAL CUTANEOUS NERVE (L2–L3) at the inguinal ligament. It is a purely sensory nerve, so there is NO motor weakness. Obesity, tight clothing, and pregnancy are common causes. Symptoms involve anterolateral thigh only."
+    },
+    {
+      "id": "q_023",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A patient is noted to have weakness in hip adduction and decreased sensation over the medial thigh. Which nerve is most likely injured?",
+      "options": [
+        "Femoral nerve",
+        "Obturator nerve",
+        "Sciatic nerve",
+        "Superior gluteal nerve"
+      ],
+      "correct": 1,
+      "explanation": "The OBTURATOR NERVE (L2–L4) innervates the hip adductors (adductor brevis, longus, magnus) and gracilis, and provides sensation to the medial thigh. Injury (e.g., anterior hip dislocation, difficult pelvic surgery) causes decreased hip adduction and medial thigh sensory loss."
+    },
+    {
+      "id": "q_024",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A patient with a pelvic fracture is unable to flex the hip or extend the knee, and has decreased sensation over the anterior thigh and medial leg. Which nerve is injured?",
+      "options": [
+        "Obturator nerve",
+        "Sciatic nerve",
+        "Femoral nerve",
+        "Lateral femoral cutaneous nerve"
+      ],
+      "correct": 2,
+      "explanation": "FEMORAL NERVE (L2–L4) injury causes: decreased hip flexion (iliopsoas, sartorius), decreased knee extension (quadriceps), decreased/absent patellar reflex, and sensory loss over anterior thigh and medial leg (via saphenous nerve branch)."
+    },
+    {
+      "id": "q_025",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "During a neurologic exam, a physician observes that when a patient stands on her right leg, her left hip drops. The lesion is on which side, and which nerve is affected?",
+      "options": [
+        "Left side; inferior gluteal nerve",
+        "Right side; superior gluteal nerve",
+        "Left side; superior gluteal nerve",
+        "Right side; femoral nerve"
+      ],
+      "correct": 1,
+      "explanation": "TRENDELENBURG SIGN: The lesion is IPSILATERAL to the STANDING LEG (the hip that drops is contralateral). Standing on the right leg → left hip drops → RIGHT superior gluteal nerve is injured → right gluteus medius/minimus cannot stabilize the pelvis. The lesion is on the RIGHT."
+    },
+    {
+      "id": "q_026",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "An elderly woman cannot rise from a seated position without using her arms for leverage. She has no difficulty walking on level ground. Which nerve is most likely injured?",
+      "options": [
+        "Superior gluteal nerve",
+        "Inferior gluteal nerve",
+        "Femoral nerve",
+        "Obturator nerve"
+      ],
+      "correct": 1,
+      "explanation": "INFERIOR GLUTEAL NERVE (L5–S2) innervates the gluteus maximus, which is the primary HIP EXTENSOR. This muscle is critical for rising from a seated position and climbing stairs. Injury causes difficulty getting up from a chair without arm assistance."
+    },
+    {
+      "id": "q_027",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A 25-year-old cyclist presents with pain radiating from the gluteal region down the posterior thigh and leg, mimicking disc herniation. MRI of the lumbar spine is normal. Which condition is most likely?",
+      "options": [
+        "Femoral nerve entrapment",
+        "Meralgia paresthetica",
+        "Piriformis syndrome",
+        "Obturator nerve entrapment"
+      ],
+      "correct": 2,
+      "explanation": "PIRIFORMIS SYNDROME: the sciatic nerve is compressed by the piriformis muscle near the greater sciatic foramen. Cyclists, skaters, and mountain climbers who overdevelop this muscle are at risk. Symptoms mimic sciatica but the lumbar MRI is normal. More common in women."
+    },
+    {
+      "id": "q_028",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A patient sustains a fibular neck fracture and now presents with an inability to dorsiflex the foot or extend the toes. Sensation is lost over the dorsum of the foot. The patellar reflex is intact. Which nerve was injured?",
+      "options": [
+        "Tibial nerve",
+        "Femoral nerve",
+        "Common fibular (peroneal) nerve",
+        "Sciatic nerve"
+      ],
+      "correct": 2,
+      "explanation": "COMMON FIBULAR NERVE injury is the most common lower extremity nerve injury. It passes superficially around the fibular neck. Injury causes FOOT DROP (loss of dorsiflexion and toe extension), loss of foot eversion, and sensory loss over the dorsum of the foot."
+    },
+    {
+      "id": "q_029",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "true_false",
+      "question": "True or False: The tibial nerve is the most commonly injured nerve in the lower extremity because of its superficial position at the fibular neck.",
+      "correct": "false",
+      "explanation": "FALSE. The COMMON FIBULAR (PERONEAL) NERVE is the most commonly injured nerve in the lower extremity — it passes superficially around the fibular neck. The TIBIAL NERVE is RARELY injured because it is DEEP within the posterior compartment of the leg."
+    },
+    {
+      "id": "q_030",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "fill_in_blank",
+      "question": "The mnemonic TIP stands for: Tibial nerve ________ and Plantarflexes. A patient with a tibial nerve injury will be unable to stand on their ________ toes.",
+      "answer": "Inverts; TIP",
+      "acceptableAnswers": ["inverts; tip", "Inverts; tiptoes"]
+    },
+    {
+      "id": "q_031",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "What does the mnemonic PED stand for, and what is the characteristic deformity when the peroneal nerve is injured?",
+      "options": [
+        "Peroneal Extends and Dorsiflexes; foot inverts",
+        "Peroneal Everts and Dorsiflexes; foot drops (foot drop)",
+        "Peroneal Everts and Dorsiflexes; foot inverts",
+        "Peroneal Extends and Depresses; plantar drop"
+      ],
+      "correct": 1,
+      "explanation": "PED = Peroneal Everts and Dorsiflexes; injured foot droPED. Common peroneal nerve injury → FOOT DROP: inability to dorsiflex and evert the foot, loss of toe extension, sensory loss on dorsum of foot."
+    },
+    {
+      "id": "q_032",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "The pudendal nerve (S2–S4) can be blocked during childbirth to reduce perineal pain. What does this nerve supply?",
+      "options": [
+        "Motor innervation to the gluteus maximus only",
+        "Sensory to the medial thigh and motor to the adductors",
+        "Sensory to the perineum and motor to the external urethral and anal sphincters",
+        "Sensory to the anterior thigh and motor to the quadriceps"
+      ],
+      "correct": 2,
+      "explanation": "The PUDENDAL NERVE (S2–S4) supplies: sensory to the perineum (genitalia, anal region) and motor to the external urethral sphincter and external anal sphincter. It is blocked during childbirth for perineal analgesia."
+    },
+    {
+      "id": "q_033",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "mcq",
+      "question": "A patient presents with acute appendicitis. Initially, the pain is felt around the navel. Which dermatome level explains this referred pain?",
+      "options": [
+        "T4",
+        "T7",
+        "T10",
+        "L1"
+      ],
+      "correct": 2,
+      "explanation": "The T10 dermatome corresponds to the UMBILICUS. Early appendicitis causes visceral pain referred to the T10 dermatome (periumbilical), before localizing to the right lower quadrant (McBurney's point) as the parietal peritoneum becomes involved."
+    },
+    {
+      "id": "q_034",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "mcq",
+      "question": "A patient has absent Achilles reflex and is unable to plantarflex the foot. Loss of sensation is noted over the lateral foot. Which nerve root is most likely compressed?",
+      "options": [
+        "L3",
+        "L4",
+        "L5",
+        "S1"
+      ],
+      "correct": 3,
+      "explanation": "S1 nerve root: myotome = plantarflexion (gastrocnemius/soleus); dermatome = lateral foot; DTR = Achilles reflex. Disc herniation at L5–S1 commonly compresses the S1 nerve root."
+    },
+    {
+      "id": "q_035",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "mcq",
+      "question": "A patient sustains a herniated disc at L4–L5 compressing the L4 nerve root. Which deep tendon reflex would be most affected?",
+      "options": [
+        "Achilles reflex",
+        "Biceps reflex",
+        "Patellar (knee-jerk) reflex",
+        "Triceps reflex"
+      ],
+      "correct": 2,
+      "explanation": "L4 nerve root: myotome = ankle dorsiflexion and knee extension; dermatome = medial lower leg; DTR = PATELLAR reflex. L5 = dorsiflexion/toe extension, no major DTR. S1 = Achilles reflex."
+    },
+    {
+      "id": "q_036",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "matching",
+      "question": "Match the spinal nerve root with its corresponding deep tendon reflex:",
+      "pairs": [
+        {"term": "C5–C6", "match": "Biceps reflex"},
+        {"term": "C6", "match": "Brachioradialis reflex"},
+        {"term": "C7", "match": "Triceps reflex"},
+        {"term": "L4", "match": "Patellar reflex"},
+        {"term": "S1", "match": "Achilles reflex"}
+      ]
+    },
+    {
+      "id": "q_037",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "true_false",
+      "question": "True or False: All 31 pairs of spinal nerves innervate specific dermatomes.",
+      "correct": "false",
+      "explanation": "FALSE. All spinal nerves EXCEPT C1 innervate specific dermatomes. C1 is primarily motor (innervating suboccipital muscles) and lacks a significant cutaneous distribution."
+    },
+    {
+      "id": "q_038",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "mcq",
+      "question": "A patient with a cervical disc herniation at C6–C7 is most likely to have weakness in which movement?",
+      "options": [
+        "Shoulder abduction",
+        "Elbow flexion",
+        "Elbow extension, wrist extension, and finger extension",
+        "Intrinsic hand muscles"
+      ],
+      "correct": 2,
+      "explanation": "C7 myotome: elbow extension, wrist extension, finger extension, and shoulder adduction. A C6–C7 disc herniation compressing C7 would cause weakness in these movements. C5 = shoulder abduction; C5–C6 = elbow flexion; T1 = intrinsic hand muscles."
+    },
+    {
+      "id": "q_039",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "fill_in_blank",
+      "question": "The dermatome for the thumb is ________, and a helpful memory trick is that the thumbs-up sign looks like the number 6.",
+      "answer": "C6",
+      "acceptableAnswers": ["C6", "cervical 6"]
+    },
+    {
+      "id": "q_040",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "mcq",
+      "question": "A patient develops right shoulder pain after a car accident. Imaging shows no shoulder pathology, but the radiograph reveals free air under the right hemidiaphragm. What is the mechanism of the shoulder pain?",
+      "options": [
+        "Referred pain via the axillary nerve (C5–C6)",
+        "Referred pain via the phrenic nerve (C3–C5) to the C4 dermatome (shoulder)",
+        "Direct trauma to the suprascapular nerve",
+        "Activation of the brachial plexus upper trunk"
+      ],
+      "correct": 1,
+      "explanation": "Diaphragmatic irritation (from free air, gallbladder disease, or abscess) stimulates the PHRENIC NERVE (C3–C5). Pain is referred to the C4 dermatome, which covers the SHOULDER region — hence right shoulder tip pain. This is classic Kehr's sign (left shoulder for splenic rupture, right for diaphragmatic/hepatic/gallbladder irritation)."
+    },
+    {
+      "id": "q_041",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "fill_in_blank",
+      "question": "The five main terminal branches of the brachial plexus can be recalled using the mnemonic ________, which stands for Musculocutaneous, Axillary, Radial, Median, and Ulnar.",
+      "answer": "MARMU",
+      "acceptableAnswers": ["MARMU"]
+    },
+    {
+      "id": "q_042",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A patient has loss of sensation over the lateral forearm only, with weak elbow and forearm flexion. Which nerve is most likely injured?",
+      "options": [
+        "Radial nerve",
+        "Musculocutaneous nerve",
+        "Median nerve",
+        "Ulnar nerve"
+      ],
+      "correct": 1,
+      "explanation": "The MUSCULOCUTANEOUS nerve (C5–C7, lateral cord) innervates the biceps brachii, brachialis, and coracobrachialis, and provides sensory innervation to the lateral forearm (as the lateral cutaneous nerve of the forearm). This isolated pattern of weakness plus lateral forearm sensory loss is characteristic."
+    },
+    {
+      "id": "q_043",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "Which nerve accompanies the posterior circumflex artery, making shoulder dislocation particularly dangerous for both vascular and neural injury?",
+      "options": [
+        "Radial nerve",
+        "Median nerve",
+        "Musculocutaneous nerve",
+        "Axillary nerve"
+      ],
+      "correct": 3,
+      "explanation": "The AXILLARY NERVE runs with the POSTERIOR CIRCUMFLEX ARTERY through the quadrangular space. Shoulder dislocation or fracture of the surgical neck of the humerus can damage both structures, causing loss of deltoid function and risk of avascular necrosis of the humeral head."
+    },
+    {
+      "id": "q_044",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "true_false",
+      "question": "True or False: The posterior cord of the brachial plexus gives rise to the median nerve.",
+      "correct": "false",
+      "explanation": "FALSE. The MEDIAN NERVE arises from BOTH the LATERAL and MEDIAL cords (not the posterior cord). The posterior cord gives rise to the axillary nerve, radial nerve, thoracodorsal nerve, and upper/lower subscapular nerves (mnemonic: ULTRA)."
+    },
+    {
+      "id": "q_045",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "type": "true_false",
+      "question": "True or False: The lateral femoral cutaneous nerve has both motor and sensory components.",
+      "correct": "false",
+      "explanation": "FALSE. The LATERAL FEMORAL CUTANEOUS NERVE (L2–L3) is a PURELY SENSORY nerve supplying the anterolateral thigh. It has NO motor component. This is why Meralgia Paresthetica (its entrapment) causes sensory symptoms only, with no motor weakness."
+    },
+    {
+      "id": "q_046",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "The femoral nerve passes through which anatomical space to enter the femoral triangle?",
+      "options": [
+        "Obturator canal",
+        "Greater sciatic foramen",
+        "Beneath the inguinal ligament (lateral to femoral artery)",
+        "Through the adductor canal"
+      ],
+      "correct": 2,
+      "explanation": "The femoral nerve passes BENEATH the inguinal ligament, LATERAL to the femoral artery, to enter the femoral triangle. Remember NAVEL (N=Nerve is most lateral). The obturator nerve passes through the obturator canal. The sciatic nerve passes through the greater sciatic foramen."
+    },
+    {
+      "id": "q_047",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "matching",
+      "question": "Match each nerve with its characteristic clinical syndrome when injured:",
+      "pairs": [
+        {"term": "Superior gluteal nerve", "match": "Trendelenburg gait (contralateral hip drop)"},
+        {"term": "Common fibular nerve", "match": "Foot drop (inability to dorsiflex)"},
+        {"term": "Tibial nerve", "match": "Loss of plantarflexion; can't stand on tiptoes"},
+        {"term": "Inferior gluteal nerve", "match": "Difficulty rising from a seated position"},
+        {"term": "Sciatic nerve", "match": "Combined foot drop and plantarflexion loss with posterior thigh sensory loss"}
+      ]
+    },
+    {
+      "id": "q_048",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "matching",
+      "question": "Match each brachial plexus injury with its defining clinical feature:",
+      "pairs": [
+        {"term": "Erb-Duchenne Palsy", "match": "Waiter's tip position; upper trunk C5–C6"},
+        {"term": "Klumpke Palsy", "match": "Total claw hand; lower trunk C8–T1"},
+        {"term": "Winged scapula", "match": "Long thoracic nerve injury; cannot raise arm above 90°"},
+        {"term": "Wrist drop", "match": "Radial nerve injury at spiral groove; Saturday Night Palsy"},
+        {"term": "Ape hand", "match": "Recurrent branch of median nerve; thenar wasting, no sensory loss"}
+      ]
+    },
+    {
+      "id": "q_049",
+      "topic": "Spinal Nerve Overview",
+      "type": "mcq",
+      "question": "A patient sustains an injury to the T6 spinal nerve. Which nerve structure would be responsible for serving the deep muscles of the back at this level?",
+      "options": [
+        "Anterior (ventral) ramus",
+        "Posterior (dorsal) ramus",
+        "Meningeal branch",
+        "Rami communicantes"
+      ],
+      "correct": 1,
+      "explanation": "The POSTERIOR (DORSAL) RAMUS serves the deep muscles of the skin and posterior surface of the trunk. The ventral ramus serves limbs and lateral/anterior trunk; the meningeal branch supplies vertebral structures; rami communicantes connect to ANS."
+    },
+    {
+      "id": "q_050",
+      "topic": "Spinal Nerve Overview",
+      "type": "mcq",
+      "question": "Which of the following correctly describes the formation and role of a plexus?",
+      "options": [
+        "A plexus is formed by dorsal root ganglia merging together",
+        "Plexuses are formed by the ventral rami of spinal nerves (except T2–T12)",
+        "Thoracic spinal nerves T1–T12 all form part of the brachial plexus",
+        "A plexus only carries sensory fibers"
+      ],
+      "correct": 1,
+      "explanation": "Plexuses are formed by the VENTRAL RAMI of spinal nerves. The key exception is T2–T12, which remain as individual intercostal nerves. Plexuses contain both motor and sensory fibers (mixed)."
+    },
+    {
+      "id": "q_051",
+      "topic": "Connective Tissue & Nerve Structure",
+      "type": "mcq",
+      "question": "Which connective tissue layer of a peripheral nerve is responsible for forming a blood-nerve barrier, protecting nerve fascicles from large molecules?",
+      "options": [
+        "Epineurium",
+        "Endoneurium",
+        "Neurilemma",
+        "Perineurium"
+      ],
+      "correct": 3,
+      "explanation": "The PERINEURIUM forms a blood-nerve barrier, consisting of overlapping squamous cells that protect fascicles. It maintains the intrafascicular environment, similar to the blood-brain barrier for the CNS."
+    },
+    {
+      "id": "q_052",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "Which of the following is the correct spinal level and trunk formation for the brachial plexus?",
+      "options": [
+        "C4–C8: upper trunk from C4–C5, middle from C6, lower from C7–C8",
+        "C5–T1: upper trunk from C5–C6, middle from C7, lower from C8–T1",
+        "C5–T2: upper trunk from C5–C6, middle from C7–C8, lower from T1–T2",
+        "C4–T1: upper trunk from C4–C5, middle from C6–C7, lower from C8–T1"
+      ],
+      "correct": 1,
+      "explanation": "The brachial plexus: Roots C5–T1. Upper trunk = C5+C6; Middle trunk = C7; Inferior trunk = C8+T1. This is fundamental anatomy."
+    },
+    {
+      "id": "q_053",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "fill_in_blank",
+      "question": "The mnemonic SALT helps recall that the ________ nerve (C5–C7) innervates the serratus anterior muscle, and its injury causes a winged scapula.",
+      "answer": "Long Thoracic",
+      "acceptableAnswers": ["long thoracic", "Long Thoracic Nerve"]
+    },
+    {
+      "id": "q_054",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "Which of the following muscles is innervated by the TIBIAL nerve and is responsible for UNLOCKING the knee from full extension?",
+      "options": [
+        "Gastrocnemius",
+        "Soleus",
+        "Plantaris",
+        "Popliteus"
+      ],
+      "correct": 3,
+      "explanation": "The POPLITEUS is innervated by the tibial nerve. Its unique function is to UNLOCK the knee from full extension by internally rotating the tibia (or externally rotating the femur), allowing initiation of knee flexion."
+    },
+    {
+      "id": "q_055",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "The sural nerve is a sensory nerve in the calf that is formed by branches from which two nerves?",
+      "options": [
+        "Femoral nerve and obturator nerve",
+        "Sciatic nerve and femoral nerve",
+        "Tibial nerve and common fibular nerve",
+        "Deep fibular nerve and superficial fibular nerve"
+      ],
+      "correct": 2,
+      "explanation": "The SURAL NERVE is a sensory nerve formed by branches of the TIBIAL nerve and COMMON FIBULAR nerve. It provides sensation to the lateral leg and foot. It is frequently used as a nerve graft donor site."
+    },
+    {
+      "id": "q_056",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "mcq",
+      "question": "A patient with L5 nerve root compression would be expected to have which of the following deficits?",
+      "options": [
+        "Absent Achilles reflex and loss of plantarflexion",
+        "Loss of knee extension and absent patellar reflex",
+        "Loss of hip flexion",
+        "Loss of toe extension and dorsiflexion; sensory loss on dorsum of foot"
+      ],
+      "correct": 3,
+      "explanation": "L5 myotome: long toe extensors (extensor hallucis and digitorum longus) and dorsiflexion. L5 dermatome: dorsum of foot and first web space. Importantly, L5 has NO major DTR associated with it. Absent Achilles = S1; absent patellar = L4."
+    },
+    {
+      "id": "q_057",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "true_false",
+      "question": "True or False: Loss of a deep tendon reflex is consistent with an upper motor neuron (UMN) lesion.",
+      "correct": "false",
+      "explanation": "FALSE. LOSS (hyporeflexia or areflexia) of DTRs is consistent with a LOWER MOTOR NEURON (LMN) lesion, as the reflex arc itself is disrupted. UPPER MOTOR NEURON lesions typically cause HYPERREFLEXIA (exaggerated reflexes) and spasticity due to loss of inhibitory control."
+    },
+    {
+      "id": "q_058",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "An IM injection is accidentally given to the superomedial gluteal region instead of the superolateral region. Which nerve is at risk?",
+      "options": [
+        "Inferior gluteal nerve",
+        "Pudendal nerve",
+        "Superior gluteal nerve",
+        "Sciatic nerve"
+      ],
+      "correct": 2,
+      "explanation": "The SUPERIOR GLUTEAL NERVE can be damaged by IM injections given to the SUPEROMEDIAL gluteal region. This is why IM injections should be given in the SUPEROLATERAL quadrant (ventrogluteal site is preferred). Injury causes Trendelenburg gait."
+    },
+    {
+      "id": "q_059",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "mcq",
+      "question": "A patient cannot adduct the fingers (spread them apart) or adduct the thumb. Sensation is reduced over the medial palm and 5th finger. The ring and little fingers are clawed at rest. Which nerve is injured?",
+      "options": [
+        "Median nerve",
+        "Radial nerve",
+        "Ulnar nerve",
+        "Musculocutaneous nerve"
+      ],
+      "correct": 2,
+      "explanation": "ULNAR NERVE injury at or distal to the elbow: loss of interossei (finger adduction/abduction), adductor pollicis, hypothenar muscles, lumbricals 3–4; clawing of digits 4–5 at rest; sensory loss over medial 1.5 fingers and medial palm."
+    },
+    {
+      "id": "q_060",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "true_false",
+      "question": "True or False: In ulnar claw hand, the claw deformity is most pronounced in digits 2 and 3.",
+      "correct": "false",
+      "explanation": "FALSE. In ulnar claw, the deformity is most pronounced in DIGITS 4 and 5 because the lumbricals of digits 4–5 are ulnar innervated. The lumbricals of digits 2–3 are median innervated and remain functional. This paradox (more deformity distally) is because the FDP for digits 4–5 is also ulnar innervated, causing more flexion at DIP."
+    },
+    {
+      "id": "q_061",
+      "topic": "Cervical Plexus",
+      "type": "mcq",
+      "question": "A patient undergoing cardiac surgery develops Horner's syndrome and difficulty with shoulder shrugging postoperatively. The mediastinal dissection likely damaged which of the following neural structures near the cervical region?",
+      "options": [
+        "Phrenic nerve",
+        "Brachial plexus upper trunk",
+        "Cervical plexus connections to sympathetic chain",
+        "Ansa cervicalis"
+      ],
+      "correct": 2,
+      "explanation": "Horner's syndrome (ptosis, miosis, anhidrosis) results from injury to the cervical SYMPATHETIC CHAIN, which connects via rami communicantes to the cervical plexus. Mediastinal or neck surgery can disrupt these sympathetic fibers."
+    },
+    {
+      "id": "q_062",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "Which of the following correctly lists the contents of the femoral triangle from lateral to medial?",
+      "options": [
+        "Nerve, Vein, Artery, Empty space, Lymphatics",
+        "Nerve, Artery, Vein, Empty space, Lymphatics",
+        "Artery, Nerve, Vein, Lymphatics, Empty space",
+        "Vein, Artery, Nerve, Empty space, Lymphatics"
+      ],
+      "correct": 1,
+      "explanation": "NAVEL (lateral to medial): N=Nerve (femoral), A=Artery (femoral), V=Vein (femoral), E=Empty space, L=Lymphatics. The nerve is most lateral, the lymphatics most medial."
+    },
+    {
+      "id": "q_063",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "mcq",
+      "question": "Which spinal cord level dermatome corresponds to the nipple line?",
+      "options": [
+        "T2",
+        "T4",
+        "T7",
+        "T10"
+      ],
+      "correct": 1,
+      "explanation": "T4 corresponds to the NIPPLE LINE (teat pore level). This is a classic landmark dermatome. T7 = xiphoid process; T10 = umbilicus; T4 = nipples."
+    },
+    {
+      "id": "q_064",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "fill_in_blank",
+      "question": "The dermatome S2, S3, S4 supplies the ________ and anal zones, remembered by the phrase 'S2, 3, 4 keep the penis off the floor.'",
+      "answer": "perineum/penile",
+      "acceptableAnswers": ["perineum", "penile", "erection and sensation of penile and anal zones", "perineal"]
+    },
+    {
+      "id": "q_065",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A patient with a posterior knee dislocation has loss of plantarflexion, cannot invert the foot, and has numbness on the sole. Which nerve is most likely injured?",
+      "options": [
+        "Common fibular nerve",
+        "Tibial nerve",
+        "Sural nerve",
+        "Sciatic nerve"
+      ],
+      "correct": 1,
+      "explanation": "TIBIAL NERVE injury: Loss of plantarflexion, inversion, and sole sensation. This is TIP: Tibial Inverts and Plantarflexes. The tibial nerve is rarely injured due to its deep position, but posterior knee dislocation is a classic cause. The foot rests in dorsiflexion/eversion (calcaneus foot)."
+    },
+    {
+      "id": "q_066",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A patient has weakness of elbow extension, wrist extension, and finger extension, along with sensory loss over the dorsal arm and lateral hand. The brachioradialis and triceps reflexes are absent. Which nerve and level of injury is most likely?",
+      "options": [
+        "Radial nerve at the spiral groove (mid-shaft fracture)",
+        "Radial nerve at the axilla (high injury)",
+        "Ulnar nerve at the medial epicondyle",
+        "Posterior interosseous nerve at the radial head"
+      ],
+      "correct": 1,
+      "explanation": "HIGH RADIAL NERVE injury (at the axilla): All radial nerve functions are lost including TRICEPS (absent triceps reflex), wrist extension (wrist drop), digit extension, supination, brachioradialis. This distinguishes it from a mid-shaft/spiral groove injury where the triceps is usually spared."
+    },
+    {
+      "id": "q_067",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "Which muscles are specifically classified as hamstrings?",
+      "options": [
+        "Rectus femoris, vastus lateralis, vastus medialis",
+        "Biceps femoris, semitendinosus, semimembranosus",
+        "Gluteus maximus, gluteus medius, tensor fascia latae",
+        "Adductor magnus, gracilis, pectineus"
+      ],
+      "correct": 1,
+      "explanation": "The HAMSTRINGS are: Biceps femoris (long and short heads), Semitendinosus, and Semimembranosus. They are innervated primarily by the TIBIAL branch of the sciatic nerve (except short head of biceps femoris = common fibular branch). Function: hip extension and knee flexion."
+    },
+    {
+      "id": "q_068",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "true_false",
+      "question": "True or False: The radial nerve provides sensory innervation to the dorsal arm, forearm, and dorsal lateral hand.",
+      "correct": "true",
+      "explanation": "TRUE. The radial nerve (C5–T1) provides sensory innervation to the dorsal arm, forearm, and dorsal lateral hand (posterior cutaneous nerve of arm, posterior cutaneous nerve of forearm, and superficial radial nerve). This is tested when assessing for Saturday Night Palsy or spiral groove injuries."
+    },
+    {
+      "id": "q_069",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "Which of the following describes the correct function of the median nerve in the forearm?",
+      "options": [
+        "Supination and wrist extension",
+        "Wrist flexion, pronation, and thumb/finger flexion",
+        "All finger extension and wrist extension",
+        "Adduction and abduction of the fingers"
+      ],
+      "correct": 1,
+      "explanation": "The MEDIAN NERVE innervates the PRONATORS and flexors of the forearm: pronator teres, flexor carpi radialis, palmaris longus, flexor digitorum superficialis, flexor pollicis longus, pronator quadratus, and lateral half of FDP. Key functions: wrist flexion, pronation, thumb and lateral finger flexion."
+    },
+    {
+      "id": "q_070",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A patient with a hip fracture is noted to have weakness of the quadriceps and iliopsoas. Which nerve root levels are most likely compromised?",
+      "options": [
+        "L1–L3",
+        "L2–L4",
+        "L4–S1",
+        "L5–S2"
+      ],
+      "correct": 1,
+      "explanation": "The FEMORAL NERVE (L2–L4) innervates both the iliopsoas (hip flexion) and quadriceps (knee extension). A pelvic or hip fracture can damage the femoral nerve, causing weakness in these muscle groups. L2–L4 is the correct root level."
+    },
+    {
+      "id": "q_071",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "mcq",
+      "question": "A cyclist presents with paresthesias in the medial 1.5 fingers and can no longer abduct or adduct the fingers. He recalls falling and landing on his outstretched hand. Fracture of which bone is most likely responsible?",
+      "options": [
+        "Distal radius (Colles fracture)",
+        "Scaphoid",
+        "Hook of hamate",
+        "Medial epicondyle of humerus"
+      ],
+      "correct": 2,
+      "explanation": "Fracture of the HOOK OF HAMATE (from fall on outstretched hand or gripping a handlebar/bat) causes DISTAL ulnar nerve injury. Result: ulnar claw (4th and 5th digits), loss of intrinsic hand muscles (interossei → no finger abduction/adduction), sensory loss over medial 1.5 fingers."
+    },
+    {
+      "id": "q_072",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "mcq",
+      "question": "Which of the following correctly pairs a dermatome landmark with its spinal level?",
+      "options": [
+        "T4 = umbilicus, T10 = nipple",
+        "T10 = umbilicus, T4 = nipple",
+        "L1 = kneecap, L4 = inguinal ligament",
+        "C4 = thumbs, C6 = low-collar shirt"
+      ],
+      "correct": 1,
+      "explanation": "T10 = umbilicus (belly button — important for early appendicitis referral); T4 = nipple line. L4 = kneecaps; L1 = inguinal ligament. C6 = thumbs; C4 = low-collar shirt level."
+    },
+    {
+      "id": "q_073",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A patient can flex and extend the elbow normally but cannot supinate the forearm against resistance. The lesion most likely involves which nerve?",
+      "options": [
+        "Median nerve",
+        "Ulnar nerve",
+        "Radial nerve (superficial branch)",
+        "Radial nerve (deep branch — posterior interosseous)"
+      ],
+      "correct": 3,
+      "explanation": "The DEEP BRANCH of the radial nerve (posterior interosseous nerve) innervates the supinator muscle. Injury at the radial head (deep branch level) causes loss of supination and digit extension without affecting brachioradialis (which is given off proximally). The brachioradialis reflex may be weak but triceps is intact."
+    },
+    {
+      "id": "q_074",
+      "topic": "Cervical Plexus",
+      "type": "true_false",
+      "question": "True or False: The cervical plexus is formed by the ventral rami of C1 through C8.",
+      "correct": "false",
+      "explanation": "FALSE. The CERVICAL PLEXUS is formed by ventral rami of C1–C5 only. The brachial plexus is formed by C5–T1. C1–C5 → cervical plexus (supplies skin and muscles of head/neck/upper shoulders, and phrenic nerve to diaphragm)."
+    },
+    {
+      "id": "q_075",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A patient has a posterior hip dislocation. Which of the following pairs of nerves are most at risk?",
+      "options": [
+        "Femoral nerve and obturator nerve",
+        "Superior gluteal nerve and inferior gluteal nerve",
+        "Sciatic nerve and pudendal nerve",
+        "Lateral femoral cutaneous nerve and sural nerve"
+      ],
+      "correct": 1,
+      "explanation": "POSTERIOR HIP DISLOCATION places the SUPERIOR GLUTEAL NERVE (L4–S1) and INFERIOR GLUTEAL NERVE (L5–S2) at highest risk, as they exit posteriorly. The superior gluteal nerve → Trendelenburg gait; inferior gluteal nerve → difficulty rising from a chair. The sciatic nerve can also be at risk but the question specifies the most likely pair."
+    },
+    {
+      "id": "q_076",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "fill_in_blank",
+      "question": "The branches of the posterior cord can be remembered by the mnemonic ________, which stands for Upper subscapular, Lower subscapular, Thoracodorsal, Radial, and Axillary.",
+      "answer": "ULTRA",
+      "acceptableAnswers": ["ULTRA"]
+    },
+    {
+      "id": "q_077",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A patient with chronic back pain and L5–S1 disc herniation compressing S1 would be expected to have which combination of findings?",
+      "options": [
+        "Absent patellar reflex, weak knee extension, numbness over medial thigh",
+        "Absent Achilles reflex, weak plantarflexion, numbness over lateral foot",
+        "Absent biceps reflex, weak shoulder abduction, numbness over lateral arm",
+        "Absent brachioradialis reflex, weak wrist extension, numbness over thumb"
+      ],
+      "correct": 1,
+      "explanation": "S1 nerve root: myotome = plantarflexion (gastrocnemius/soleus), DTR = Achilles reflex, dermatome = lateral foot. L4 = patellar reflex; C5–C6 = biceps; C6 = brachioradialis."
+    },
+    {
+      "id": "q_078",
+      "topic": "Connective Tissue & Nerve Structure",
+      "type": "matching",
+      "question": "Match each nerve layer with its correct description:",
+      "pairs": [
+        {"term": "Endoneurium", "match": "Loose connective tissue external to the neurilemma; surrounds individual axons"},
+        {"term": "Perineurium", "match": "Overlapping squamous cells forming a blood-nerve barrier around fascicles"},
+        {"term": "Epineurium", "match": "Dense irregular connective tissue wrapping the entire peripheral nerve"},
+        {"term": "Neurilemma", "match": "Outermost layer of Schwann cell surrounding the axon; enables nerve regeneration"}
+      ]
+    },
+    {
+      "id": "q_079",
+      "topic": "Spinal Nerve Overview",
+      "type": "mcq",
+      "question": "How many total pairs of spinal nerves exist in the human body?",
+      "options": [
+        "28 pairs",
+        "30 pairs",
+        "31 pairs",
+        "33 pairs"
+      ],
+      "correct": 2,
+      "explanation": "There are 31 pairs of spinal nerves: 8 cervical (note: 7 cervical vertebrae but 8 nerves — C1 exits above C1 vertebra), 12 thoracic, 5 lumbar, 5 sacral, and 1 coccygeal."
+    },
+    {
+      "id": "q_080",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "In the posterior triangle of the neck, which major nerve plexus can be found?",
+      "options": [
+        "Lumbar plexus",
+        "Brachial plexus",
+        "Sacral plexus",
+        "Coccygeal plexus"
+      ],
+      "correct": 1,
+      "explanation": "The BRACHIAL PLEXUS passes through the POSTERIOR TRIANGLE of the neck (bounded by the trapezius, SCM, and clavicle). Its supraclavicular portion (roots and trunks) is located here, making it vulnerable to neck trauma, compression, or surgical procedures in this region."
+    },
+    {
+      "id": "q_081",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "true_false",
+      "question": "True or False: In Ape Hand (distal median nerve/recurrent branch injury), there is significant sensory loss over the thumb and lateral palm.",
+      "correct": "false",
+      "explanation": "FALSE. APE HAND from recurrent branch injury has NO sensory loss because the recurrent branch is a PURE MOTOR branch. Sensory innervation of the lateral palm and digits 1–3 comes from the main median nerve trunk, which is not involved in an isolated recurrent branch lesion."
+    },
+    {
+      "id": "q_082",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "Which nerve innervates the latissimus dorsi, and from which cord does it arise?",
+      "options": [
+        "Thoracodorsal nerve; posterior cord",
+        "Lower subscapular nerve; medial cord",
+        "Long thoracic nerve; lateral cord",
+        "Medial pectoral nerve; medial cord"
+      ],
+      "correct": 0,
+      "explanation": "The THORACODORSAL NERVE (C6–C8) arises from the POSTERIOR CORD and innervates the LATISSIMUS DORSI. The lat functions in arm adduction, extension, and internal rotation. It is part of the ULTRA mnemonic for posterior cord branches."
+    },
+    {
+      "id": "q_083",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "true_false",
+      "question": "True or False: The superficial peroneal nerve and deep peroneal nerve are both branches of the common fibular (peroneal) nerve.",
+      "correct": "true",
+      "explanation": "TRUE. The COMMON FIBULAR (PERONEAL) NERVE splits at the NECK OF THE FIBULA into: (1) Superficial peroneal nerve (foot eversion — peroneus longus and brevis) and (2) Deep peroneal nerve (dorsiflexion, toe extension — tibialis anterior, extensors)."
+    },
+    {
+      "id": "q_084",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A pregnant woman in her third trimester complains of burning, tingling sensation over the lateral thigh that worsens when she stands for prolonged periods. Examination reveals no motor deficits. What is the most likely diagnosis and mechanism?",
+      "options": [
+        "Femoral nerve compression due to the enlarged uterus",
+        "Lateral femoral cutaneous nerve entrapment at the inguinal ligament",
+        "Obturator nerve compression causing medial thigh pain",
+        "L2 disc herniation with radiculopathy"
+      ],
+      "correct": 1,
+      "explanation": "Pregnancy is a classic risk factor for MERALGIA PARESTHETICA — the lateral femoral cutaneous nerve (L2–L3) is compressed at the inguinal ligament by the enlarging uterus and hormonal laxity. Purely sensory (anterolateral thigh); no motor deficits. Resolves postpartum in most cases."
+    },
+    {
+      "id": "q_085",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "mcq",
+      "question": "A laceration to the lateral palm injures the recurrent branch of the median nerve. Which specific muscles are most directly affected?",
+      "options": [
+        "Adductor pollicis and first dorsal interosseous",
+        "Flexor digitorum superficialis and flexor digitorum profundus",
+        "Abductor pollicis brevis, opponens pollicis, and superficial head of flexor pollicis brevis",
+        "Lumbricals 2–4 and hypothenar muscles"
+      ],
+      "correct": 2,
+      "explanation": "The RECURRENT BRANCH innervates the THENAR muscles: abductor pollicis brevis, opponens pollicis, and superficial head of flexor pollicis brevis. Injury causes Ape Hand — loss of thumb opposition with no sensory loss."
+    },
+    {
+      "id": "q_086",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "Which of the following accurately describes the clinical presentation expected from an injury to the superior gluteal nerve?",
+      "options": [
+        "Difficulty rising from a chair; weakness of hip extension",
+        "Ipsilateral hip drops when standing on the contralateral leg",
+        "Contralateral hip drops when standing on the ipsilateral (affected) leg",
+        "Loss of sensation over the medial thigh"
+      ],
+      "correct": 2,
+      "explanation": "TRENDELENBURG SIGN from superior gluteal nerve injury: when standing on the AFFECTED (ipsilateral) leg, the CONTRALATERAL hip DROPS because the ipsilateral gluteus medius/minimus (hip abductors) cannot stabilize the pelvis. Difficulty rising from a chair = inferior gluteal nerve."
+    },
+    {
+      "id": "q_087",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "mcq",
+      "question": "Which statement about dermatomes is most accurate?",
+      "options": [
+        "Dermatomes are areas of muscle innervated by a single motor root",
+        "Adjacent dermatomes have NO overlap, allowing precise mapping",
+        "A dermatome is the area of skin innervated by sensory fibers from a single spinal nerve root",
+        "C1 innervates the posterior scalp dermatome"
+      ],
+      "correct": 2,
+      "explanation": "A DERMATOME is the area of skin innervated by sensory fibers from a SINGLE SPINAL NERVE ROOT. Adjacent dermatomes DO overlap, which is why loss of a single nerve root may produce less sensory deficit than expected. C1 does NOT have a cutaneous dermatome."
+    },
+    {
+      "id": "q_088",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A patient has weakness of shoulder abduction (0–90°) that is PRESERVED at full range, and weakness of lateral shoulder rotation. The dermatome over the lateral shoulder is numb. Which specific nerve is injured?",
+      "options": [
+        "Suprascapular nerve",
+        "Long thoracic nerve",
+        "Axillary nerve",
+        "Musculocutaneous nerve"
+      ],
+      "correct": 2,
+      "explanation": "The AXILLARY NERVE innervates the deltoid (shoulder abduction) and teres minor (lateral rotation) and provides sensory innervation to the lateral shoulder (regimental badge area). An axillary nerve lesion causes all three deficits together, classically from shoulder dislocation or surgical neck fracture."
+    },
+    {
+      "id": "q_089",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "mcq",
+      "question": "What is the correct description of thoracic outlet syndrome as a cause of Klumpke-type palsy?",
+      "options": [
+        "Compression of C5–C6 roots between scalene muscles",
+        "Compression of C8–T1 lower trunk between the first rib and clavicle",
+        "Entrapment of the median nerve at the carpal tunnel",
+        "Compression of the radial nerve in the spiral groove"
+      ],
+      "correct": 1,
+      "explanation": "Thoracic outlet syndrome involves compression of the LOWER TRUNK (C8–T1) of the brachial plexus (along with subclavian vessels) between the first rib and clavicle. This causes Klumpke-type palsy: intrinsic hand muscle weakness, clawing, and medial forearm/hand sensory loss."
+    },
+    {
+      "id": "q_090",
+      "topic": "Spinal Nerve Overview",
+      "type": "mcq",
+      "question": "Why are there 8 cervical spinal nerves when there are only 7 cervical vertebrae?",
+      "options": [
+        "C8 is formed by a duplication of C7",
+        "C1 exits ABOVE the C1 vertebra; each subsequent nerve exits below its corresponding vertebra, with C8 exiting above T1",
+        "There is an extra cervical vertebra in most individuals",
+        "C8 is formed by fusion of C7 and T1"
+      ],
+      "correct": 1,
+      "explanation": "C1 exits ABOVE the C1 vertebra (atlas). C2 exits below C2, etc. Because there is a nerve exiting above C1 and one below C7 (= C8 nerve), we get 8 cervical nerves from 7 cervical vertebrae. C8 exits between C7 and T1 vertebrae."
+    },
+    {
+      "id": "q_091",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "fill_in_blank",
+      "question": "The musculocutaneous nerve provides sensory innervation to the ________ forearm via the lateral cutaneous nerve of the forearm.",
+      "answer": "lateral",
+      "acceptableAnswers": ["lateral", "lateral aspect of the"]
+    },
+    {
+      "id": "q_092",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "fill_in_blank",
+      "question": "The sciatic nerve is formed by the ventral and dorsal roots of spinal levels ________, making it the largest nerve in the human body.",
+      "answer": "L4-S3",
+      "acceptableAnswers": ["L4 to S3", "L4–S3", "L4, L5, S1, S2, S3"]
+    },
+    {
+      "id": "q_093",
+      "topic": "Dermatomes, Myotomes & DTRs",
+      "type": "true_false",
+      "question": "True or False: The C5 myotome is primarily tested by shoulder abduction and elbow flexion.",
+      "correct": "true",
+      "explanation": "TRUE. C5 myotome = shoulder abduction and flexion. C5–C6 = elbow flexion and forearm supination. This is tested clinically when screening for C5 nerve root pathology (e.g., C4–C5 disc herniation)."
+    },
+    {
+      "id": "q_094",
+      "topic": "Lumbar Plexus & Major Nerves",
+      "type": "true_false",
+      "question": "True or False: The obturator nerve provides motor innervation to the quadriceps femoris.",
+      "correct": "false",
+      "explanation": "FALSE. The FEMORAL nerve (L2–L4) innervates the quadriceps femoris. The OBTURATOR nerve (L2–L4) innervates the hip ADDUCTORS (adductor brevis, longus, magnus) and gracilis. Obturator injury causes loss of adduction, not knee extension."
+    },
+    {
+      "id": "q_095",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "The upper limb myotome C8 is best assessed by testing which movement?",
+      "options": [
+        "Shoulder abduction",
+        "Elbow flexion",
+        "Wrist extension",
+        "Finger flexion"
+      ],
+      "correct": 3,
+      "explanation": "C8 myotome = FINGER FLEXION. This is tested by asking the patient to grip the examiner's fingers against resistance. C5 = shoulder abduction; C5–C6 = elbow flexion; C7 = wrist/elbow extension and finger extension."
+    },
+    {
+      "id": "q_096",
+      "topic": "Brachial Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "The T1 myotome is best assessed by which action?",
+      "options": [
+        "Finger flexion",
+        "Wrist extension",
+        "Intrinsic hand muscle function (finger abduction/adduction)",
+        "Thumb opposition"
+      ],
+      "correct": 2,
+      "explanation": "T1 myotome = INTRINSIC HAND MUSCLES, primarily tested by finger abduction and adduction (interossei). This distinguishes T1 pathology (e.g., Klumpke/thoracic outlet) from C8 (finger flexion)."
+    },
+    {
+      "id": "q_097",
+      "topic": "Cervical Plexus",
+      "type": "mcq",
+      "question": "Which of the following correctly describes the location and significance of the phrenic nerve relative to the cervical plexus?",
+      "options": [
+        "It arises from C1–C3 and supplies the intercostal muscles",
+        "It arises from C3–C5 and is the sole motor supply to the diaphragm",
+        "It arises from C5–C7 and supplies the serratus anterior",
+        "It arises from C6–C8 and runs with the brachial plexus"
+      ],
+      "correct": 1,
+      "explanation": "The PHRENIC NERVE arises from C3, C4, C5 (primarily C4) and is the SOLE MOTOR innervation of the diaphragm. It also provides sensory innervation to the diaphragm, pericardium, and central diaphragmatic peritoneum. Mnemonic: 'C3-4-5 keep the diaphragm alive!'"
+    },
+    {
+      "id": "q_098",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "Which sacral plexus nerve branch can be intentionally blocked during childbirth to reduce perineal pain, and at what pudendal nerve level is this performed?",
+      "options": [
+        "Superior gluteal nerve; blocked at the sciatic notch",
+        "Inferior gluteal nerve; blocked at the gluteal region",
+        "Pudendal nerve (S2–S4); blocked transvaginally near the ischial spine",
+        "Sciatic nerve; blocked in the popliteal fossa"
+      ],
+      "correct": 2,
+      "explanation": "PUDENDAL NERVE BLOCK: The pudendal nerve (S2–S4) is blocked transvaginally near the ISCHIAL SPINE during childbirth to provide perineal analgesia. It innervates the perineum (genitalia, anal region) and external sphincters, reducing the pain of delivery and episiotomy."
+    },
+    {
+      "id": "q_099",
+      "topic": "Brachial Plexus Clinical Correlates",
+      "type": "mcq",
+      "question": "A patient with a supracondylar fracture of the humerus is noted to have a 'hand of benediction.' The digits affected when making a fist are:",
+      "options": [
+        "Digits 4 and 5 (ring and little fingers)",
+        "Digits 2 and 3 (index and middle fingers)",
+        "All digits equally",
+        "Only the thumb"
+      ],
+      "correct": 1,
+      "explanation": "Hand of benediction: median nerve proximal lesion. When making a fist, DIGITS 2 and 3 remain EXTENDED (index and middle finger) because FDP lateral half (digits 2–3) and radial lumbricals (digits 2–3) are paralyzed. Digits 4–5 CAN flex because they are ulnar-innervated."
+    },
+    {
+      "id": "q_100",
+      "topic": "Sacral Plexus & Major Nerves",
+      "type": "mcq",
+      "question": "A patient sustained a posterior hip dislocation. On examination, the left hip drops when she stands on her right leg. The nerve lesion is on which side and which nerve is involved?",
+      "options": [
+        "Left side; superior gluteal nerve",
+        "Right side; inferior gluteal nerve",
+        "Right side; superior gluteal nerve",
+        "Left side; inferior gluteal nerve"
+      ],
+      "correct": 2,
+      "explanation": "Trendelenburg Sign: She stands on her RIGHT leg; the LEFT hip drops. The lesion is IPSILATERAL to the standing leg = RIGHT. The nerve is the SUPERIOR GLUTEAL NERVE (innervates gluteus medius/minimus = hip abductors). RIGHT superior gluteal nerve injury → cannot stabilize pelvis → left hip drops."
+    }
+  ]
+}

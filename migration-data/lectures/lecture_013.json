@@ -1,0 +1,1788 @@
+{
+  "id": "lecture_013",
+  "title": "Endocrine Studies & Lipoproteins",
+  "subtitle": "Thyroid, Adrenal, Pancreas, and Lipid Laboratory Diagnosis",
+  "course": "Laboratory Diagnosis",
+  "color": "#2e8b6e",
+  "icon": "🧪",
+  "topics": [
+    "Thyroid Function & Labs",
+    "Adrenal Gland & Cortisol",
+    "Aldosterone & RAAS",
+    "Pancreas & Blood Glucose",
+    "Diabetes Mellitus",
+    "Pancreatitis",
+    "Lipids & Lipoproteins",
+    "Clinical Correlations & Disease States"
+  ],
+  "slideImages": "slides/lecture_013/",
+  "flashcards": [
+    {
+      "id": "fc_001",
+      "topic": "Thyroid Function & Labs",
+      "question": "What are the four key abbreviations in the thyroid hormone axis and their sources?",
+      "answer": "TRH = Thyrotropin-releasing hormone (hypothalamus)\nTSH = Thyroid-stimulating hormone (anterior pituitary)\nT4 = Thyroxine (thyroid gland)\nT3 = Triiodothyronine (thyroid gland)",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_002",
+      "topic": "Thyroid Function & Labs",
+      "question": "What percentage of thyroid hormone production is T4 versus T3, and what is the key difference between them?",
+      "answer": "T4 (Thyroxine): 90% of production — larger quantities, requires iodine for formation\nT3 (Triiodothyronine): 10% of production — biologically active form, created by deiodination of T4\nReverse T3 (rT3): inactive form",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_003",
+      "topic": "Thyroid Function & Labs",
+      "question": "Describe the hypothalamic-pituitary-thyroid (HPT) axis and its feedback mechanism.",
+      "answer": "TRH (hypothalamus) → stimulates TSH release from anterior pituitary → TSH stimulates thyroid hormone (T3 and T4) production and release from thyroid gland.\nNegative feedback: T3 is the primary feedback stimulus. Elevated T3/T4 inhibit both the hypothalamus and pituitary.\nTSH production is inversely related to T3 and T4 levels.",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_004",
+      "topic": "Thyroid Function & Labs",
+      "question": "What three plasma proteins transport thyroid hormones, and what is the significance of free vs. bound forms?",
+      "answer": "Thyroid hormones are transported by:\n1. Thyroid-binding globulin (TBG) — primary carrier\n2. Transthyretin\n3. Albumin\nFree forms (unbound) are considered biologically 'active.'\nBound hormone is inactive and unavailable to tissues.",
+      "slideRef": "slide_09.jpg",
+      "slideNumber": 9
+    },
+    {
+      "id": "fc_005",
+      "topic": "Thyroid Function & Labs",
+      "question": "Why is TSH the most sensitive first-line screening test for thyroid disease?",
+      "answer": "There is an inverse log-linear relationship between TSH and free T4.\nA very small change in free T4 results in large changes in TSH — making TSH an amplified signal.\nTSH is the most sensitive first-line screening test for suspected thyroid abnormalities.",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_006",
+      "topic": "Thyroid Function & Labs",
+      "question": "If T3 is the biologically active form, why do we primarily measure free T4 levels?",
+      "answer": "1. The thyroid gland produces T4 in response to TSH stimulation.\n2. Free T4 is then converted to the biologically active T3 in peripheral tissues.\n3. Changes to thyroid hormone levels show up in Free T4 before they appear in T3.\nTherefore, free T4 is an earlier and more reliable indicator of thyroid status.",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_007",
+      "topic": "Thyroid Function & Labs",
+      "question": "What is the clinical utility of Free T3 as a thyroid lab?",
+      "answer": "Free T3 (free triiodothyronine) is useful to diagnose hyperthyroidism when:\n- TSH is low (suppressed)\n- Free T4 is still within normal range\nThis pattern can occur early in hyperthyroidism (T3-toxicosis).",
+      "slideRef": "slide_12.jpg",
+      "slideNumber": 12
+    },
+    {
+      "id": "fc_008",
+      "topic": "Thyroid Function & Labs",
+      "question": "What is the Free Thyroxine Index (FTI) and why is it largely obsolete?",
+      "answer": "FTI = (Total T4) × (available hormone-binding sites on TBG)\nIt was used to approximate free T4 levels and account for changes in protein concentrations.\nIt is largely obsolete because modern direct free hormone assays (free T4 and free T3) are more accurate and do not require this calculation.",
+      "slideRef": "slide_11.jpg",
+      "slideNumber": 11
+    },
+    {
+      "id": "fc_009",
+      "topic": "Thyroid Function & Labs",
+      "question": "What is the stepwise approach to ordering thyroid labs?",
+      "answer": "Step 1: Order TSH (best screening test)\n- If TSH is normal → no further testing needed\n- If TSH is abnormal → proceed to Step 2\nStep 2: Check free T4\n- Helps determine if the gland is hyper- or hypofunctioning\nStep 3 (if needed): Free T3 — if TSH is low and T4 is still normal (early hyperthyroid)\nDirect free hormone assays preferred over FTI.",
+      "slideRef": "slide_11.jpg",
+      "slideNumber": 11
+    },
+    {
+      "id": "fc_010",
+      "topic": "Thyroid Function & Labs",
+      "question": "In primary thyroid disorders, how do TSH and free T3/T4 move relative to each other?",
+      "answer": "In PRIMARY disorders (thyroid gland is the problem), TSH and free T3/T4 move in OPPOSITE directions:\n- Primary hypothyroidism: TSH ↑, Free T3/T4 ↓\n- Primary hyperthyroidism: TSH ↓, Free T3/T4 ↑\nMnemonic: Primary = Opposite directions",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_011",
+      "topic": "Thyroid Function & Labs",
+      "question": "In secondary and tertiary thyroid disorders, how do TSH and free T3/T4 move?",
+      "answer": "In SECONDARY (pituitary) and TERTIARY (hypothalamus) disorders, TSH and free T3/T4 move in the SAME direction:\n- Both are decreased\nExample: Pituitary failure → insufficient TSH → thyroid makes less T3/T4\nMnemonic: Secondary/Tertiary = Same direction (both down)",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_012",
+      "topic": "Thyroid Function & Labs",
+      "question": "What are the three types of anti-thyroid antibodies and their clinical significance?",
+      "answer": "1. Anti-TPO (antithyroid peroxidase / antimicrosomal antibodies):\n   - Diagnoses Hashimoto's thyroiditis or autoimmune thyroiditis\n   - Elevated titer + symptoms + abnormal TSH/FT4 = diagnostic for autoimmune thyroid disease\n2. Anti-TG (antithyroglobulin antibodies):\n   - Similar utility to anti-TPO; used less commonly unless iodine deficiency suspected\n3. TSH receptor antibodies (TRAbs):\n   - Specific for Graves' disease",
+      "slideRef": "slide_14.jpg",
+      "slideNumber": 14
+    },
+    {
+      "id": "fc_013",
+      "topic": "Thyroid Function & Labs",
+      "question": "What is the most common cause of thyroid disease in societies with adequate iodine supply?",
+      "answer": "Anti-thyroid antibodies are the most common cause of thyroid disease in iodine-sufficient societies.\nThey are also present in approximately 15% of the general population without overt disease.",
+      "slideRef": "slide_14.jpg",
+      "slideNumber": 14
+    },
+    {
+      "id": "fc_014",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "List the classic symptoms and physical exam findings of hypothyroidism.",
+      "answer": "Symptoms (slowed metabolism):\n- Weight gain, depression, lack of energy\n- Cold intolerance, constipation\nPhysical Exam:\n- Goiter\n- Bradycardia\n- Decreased deep tendon reflexes (DTRs)",
+      "slideRef": "slide_15.jpg",
+      "slideNumber": 15
+    },
+    {
+      "id": "fc_015",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "List the classic symptoms and physical exam findings of hyperthyroidism.",
+      "answer": "Symptoms (increased metabolism):\n- Weight loss, anxiety, tremors, nervousness\n- Heat intolerance, palpitations, menstrual changes\nPhysical Exam:\n- Arrhythmias (atrial fibrillation)\n- Exophthalmos (bulging eyes)\n- Vision changes\n- Pretibial myxedema (swollen red or brown patches on legs with non-pitting edema)",
+      "slideRef": "slide_15.jpg",
+      "slideNumber": 15
+    },
+    {
+      "id": "fc_016",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What lab pattern is expected in primary hypothyroidism and what are its main causes in the US vs. worldwide?",
+      "answer": "Lab pattern: Increased serum TSH, Decreased free T3 or T4\nIn 95% of cases, originates in the thyroid gland itself.\nMain cause in the US: autoimmunity (Hashimoto's thyroiditis)\nMost common cause worldwide: iodine deficiency",
+      "slideRef": "slide_16.jpg",
+      "slideNumber": 16
+    },
+    {
+      "id": "fc_017",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What is Hashimoto's Thyroiditis and what antibodies are associated with it?",
+      "answer": "Hashimoto's Thyroiditis:\n- Common, chronic inflammatory autoimmune disease\n- Results in autoimmune thyroid cell destruction → hypothyroidism\n- ~90% of patients express anti-TPO antibodies\n- 20-50% express anti-TG antibodies\nClassic presentation: hypothyroid symptoms + goiter",
+      "slideRef": "slide_16.jpg",
+      "slideNumber": 16
+    },
+    {
+      "id": "fc_018",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What is Graves' Disease and what is the hallmark antibody?",
+      "answer": "Graves' Disease:\n- Autoimmune hyperthyroid condition\n- TSH-receptor antibodies (TRAbs) target and stimulate TSH receptors on the thyroid gland → increased hormone production\n- Familial predisposition; women > men\n- Hallmark: presence of TSH-receptor antibodies (TRAbs)\n- Labs: Decreased TSH (sometimes undetectable), increased free T3 or T4",
+      "slideRef": "slide_17.jpg",
+      "slideNumber": 17
+    },
+    {
+      "id": "fc_019",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "What mnemonic helps remember the layers of the adrenal cortex and the hormones they produce?",
+      "answer": "GFR = layers of adrenal cortex (outer to inner):\n- Glomerulosa → Mineralocorticoids (e.g., aldosterone)\n- Fasciculata → Glucocorticoids (e.g., cortisol)\n- Reticularis → Sex steroids (androgens, progesterone, estrogens)\nACE = hormones produced (Androgens, Cortisol, Everything mineral)\nThe medulla produces catecholamines (epinephrine, norepinephrine).",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_020",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "What are glucocorticoids and what are their metabolic effects?",
+      "answer": "Glucocorticoids (e.g., cortisol) are cholesterol-based steroid hormones from the zona fasciculata.\nMetabolic effects:\n- Increase gluconeogenesis (glucose production)\n- Decrease glucose utilization by peripheral tissues\nNet effect: raise blood glucose levels",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_021",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "Describe the HPA axis and its regulation of cortisol production.",
+      "answer": "Hypothalamic-Pituitary-Adrenal (HPA) Axis:\nCRH (corticotropin-releasing hormone) released from hypothalamus → stimulates ACTH (corticotropin) release from anterior pituitary → stimulates adrenal cortex to produce cortisol.\nNegative feedback: cortisol inhibits both the hypothalamus and pituitary.\nOccurs in a circadian/diurnal pattern — peaks 4–8 AM.",
+      "slideRef": "slide_20.jpg",
+      "slideNumber": 20
+    },
+    {
+      "id": "fc_022",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "Why is a single random serum cortisol level not useful for diagnosing adrenal dysfunction?",
+      "answer": "Cortisol secretion is diurnal and pulsatile:\n- Highest concentrations: 4–8 AM\n- Physical and mental stress can elevate cortisol and blunt the circadian rhythm\nBecause of this variability, a single random cortisol is not reliable for diagnosing adrenal dysfunction.\nException: A decreased EARLY MORNING cortisol level may suggest adrenal insufficiency.",
+      "slideRef": "slide_23.jpg",
+      "slideNumber": 23
+    },
+    {
+      "id": "fc_023",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "What is the 24-hour urinary free cortisol (UFC) test and when is it used?",
+      "answer": "24-hour UFC:\n- Measures urinary free cortisol over a full day\n- Reliable gauge of EXCESS cortisol secretion by the adrenal cortex\n- Preferred over single serum collection due to diurnal variation\n- Should NOT be used in patients with renal impairment (unreliable)\n- Most specific screening test for Cushing Syndrome",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_024",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "What is the salivary cortisol test and what is its clinical use?",
+      "answer": "Salivary cortisol:\n- Concentrations correlate well with serum cortisol\n- NOT influenced by changes in protein concentrations (measures free cortisol)\n- Measurement of late-night salivary cortisol is an acceptable screening method for hypercortisolism (Cushing Syndrome)\n- Convenient for outpatient collection",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_025",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "What is the Dexamethasone Suppression Test and what is it used for?",
+      "answer": "Dexamethasone Suppression Test:\n- Dexamethasone is a synthetic glucocorticoid, more potent than cortisol\n- Used in cases of suspected hypercortisolism (Cushing Syndrome)\n- Suppresses ACTH and CRH secretion when given PO or IV\n- If effective → suppresses cortisol production (normal response)\n- Failure to suppress → suggests autonomous cortisol production",
+      "slideRef": "slide_25.jpg",
+      "slideNumber": 25
+    },
+    {
+      "id": "fc_026",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "Describe the ACTH (Corticotropin) Stimulation Test — protocol and interpretation.",
+      "answer": "ACTH Stimulation Test:\n- Most useful for diagnosing adrenal insufficiency\n- Assesses secretory response of adrenal cortex to an ACTH-like stimulus\n- ACTH analog (cosyntropin) administered IV or IM\n- Measure serum cortisol at baseline, 30 min, and 60 min after administration\nNormal: cortisol rises significantly\nAbnormal: lack of cortisol rise → suggests adrenal insufficiency",
+      "slideRef": "slide_25.jpg",
+      "slideNumber": 25
+    },
+    {
+      "id": "fc_027",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "Describe the CRH Stimulation Test — purpose and interpretation.",
+      "answer": "CRH Stimulation Test:\n- CRH administered IV; ACTH and cortisol measured at 0, 30, 60, 90, 120 minutes\n- Determines response of pituitary gland\n- Used to determine SOURCE of adrenal insufficiency after abnormal ACTH stimulation test\nResults:\n- Normal: ↑ ACTH and ↑ cortisol\n- Primary adrenal insufficiency: ↑ ACTH, no cortisol production\n- Secondary (pituitary): low ACTH, low cortisol",
+      "slideRef": "slide_26.jpg",
+      "slideNumber": 26
+    },
+    {
+      "id": "fc_028",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What are the classic clinical features of Cushing Syndrome?",
+      "answer": "Cushing Syndrome = disorder of excess cortisol production\nClinical features:\n- HTN, weight gain, truncal obesity\n- Moon facies, buffalo hump, striae, hirsutism\n- Menstrual abnormalities, poor wound healing\n- Decreased muscle mass, proximal limb weakness\n- Elevated blood glucose, glucosuria, polyuria",
+      "slideRef": "slide_27.jpg",
+      "slideNumber": 27
+    },
+    {
+      "id": "fc_029",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What are the three required diagnostic criteria for Cushing Syndrome?",
+      "answer": "Diagnosis of Cushing Syndrome requires evidence of ALL THREE:\n1. Increased cortisol production\n2. Loss of suppression of cortisol synthesis\n3. Loss of cortisol diurnal variation\nScreening tests: 24-hour UFC (most specific), PM salivary cortisol, dexamethasone suppression test\nOther labs: hyperglycemia, dyslipidemia, hypokalemia, metabolic alkalosis",
+      "slideRef": "slide_27.jpg",
+      "slideNumber": 27
+    },
+    {
+      "id": "fc_030",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What are the four major etiologies of Cushing Syndrome and expected ACTH levels in each?",
+      "answer": "1. Exogenous steroids: No suppression on high-dose DST, ACTH decreased\n2. Cushing Disease (pituitary ACTH-secreting adenoma — MC endogenous cause): Suppression on high-dose DST, ACTH normal to elevated\n3. Adrenal tumor (cortisol-secreting): No suppression, ACTH decreased\n4. Ectopic ACTH production (e.g., small cell lung cancer): No suppression, ACTH normal to elevated",
+      "slideRef": "slide_28.jpg",
+      "slideNumber": 28
+    },
+    {
+      "id": "fc_031",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What is the most common endogenous cause of Cushing Syndrome?",
+      "answer": "Cushing Disease (not Cushing Syndrome) is the MC endogenous cause.\n- Often caused by small ACTH-secreting pituitary tumors (microadenomas)\n- Expect normal to elevated ACTH concentration\n- Cortisol IS suppressible with HIGH-dose dexamethasone (distinguishes from ectopic and adrenal sources)",
+      "slideRef": "slide_28.jpg",
+      "slideNumber": 28
+    },
+    {
+      "id": "fc_032",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "How does the high-dose dexamethasone suppression test differentiate Cushing Disease from an ectopic ACTH-producing tumor?",
+      "answer": "Cushing Disease (pituitary microadenoma):\n- High-dose DST: SUPPRESSION of cortisol occurs\n- ACTH: elevated\nEctopic ACTH-producing tumor (e.g., small cell lung cancer):\n- High-dose DST: NO suppression\n- ACTH: elevated\nKey differentiator: pituitary tumors retain some feedback sensitivity; ectopic sources do not.",
+      "slideRef": "slide_29.jpg",
+      "slideNumber": 29
+    },
+    {
+      "id": "fc_033",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "Distinguish primary vs. secondary adrenal insufficiency in terms of cause, ACTH, aldosterone, and renin.",
+      "answer": "Primary Adrenal Insufficiency (Addison Disease):\n- Destruction of adrenal cortex → low cortisol AND aldosterone\n- ACTH: elevated (no negative feedback from cortisol)\n- Renin: elevated; Aldosterone: low\n- US MCC: autoimmune; Worldwide MCC: TB adrenalitis\nSecondary Adrenal Insufficiency:\n- MCC: hypopituitarism\n- ACTH: decreased → less adrenal stimulation\n- Adrenal medulla unaffected; aldosterone deficiency usually absent\n- Renin: normal to low",
+      "slideRef": "slide_30.jpg",
+      "slideNumber": 30
+    },
+    {
+      "id": "fc_034",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What labs differentiate primary, secondary, and tertiary adrenal insufficiency?",
+      "answer": "Primary (adrenal): CRH ↑, ACTH HIGH, Cortisol LOW, CRH stim → ↑ ACTH response, Aldosterone low, Renin HIGH\nSecondary (pituitary): CRH ↑, ACTH LOW, Cortisol LOW, CRH stim → absent/↓ ACTH, Aldosterone low, Renin normal/low\nTertiary (hypothalamus): CRH low, ACTH low, Cortisol low, CRH stim → exaggerated prolonged ACTH, Aldosterone low, Renin normal/low",
+      "slideRef": "slide_33.jpg",
+      "slideNumber": 33
+    },
+    {
+      "id": "fc_035",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What unique physical exam finding occurs in PRIMARY adrenal insufficiency that does NOT occur in secondary?",
+      "answer": "Hyperpigmentation of the skin and mucous membranes.\nMechanism: In primary adrenal insufficiency, lack of cortisol removes negative feedback → pituitary secretes high levels of ACTH and melanocyte-stimulating hormone (MSH), which share a precursor (POMC). Elevated MSH → hyperpigmentation.\nSecondary: ACTH is low, so no hyperpigmentation occurs.",
+      "slideRef": "slide_31.jpg",
+      "slideNumber": 31
+    },
+    {
+      "id": "fc_036",
+      "topic": "Aldosterone & RAAS",
+      "question": "Describe the RAAS pathway for mineralocorticoid regulation.",
+      "answer": "Decreased blood Na+/volume/pressure →\nKidney juxtaglomerular cells release RENIN →\nRenin cleaves angiotensinogen (liver) → Angiotensin I →\nACE (lung) converts to Angiotensin II →\nAngiotensin II stimulates adrenal cortex (zona glomerulosa) to secrete ALDOSTERONE →\nAldosterone → reabsorption of NaCl and H2O\nNegative feedback: restored blood pressure/volume suppresses renin.",
+      "slideRef": "slide_21.jpg",
+      "slideNumber": 21
+    },
+    {
+      "id": "fc_037",
+      "topic": "Aldosterone & RAAS",
+      "question": "What does aldosterone do physiologically?",
+      "answer": "Aldosterone (mineralocorticoid with highest activity):\n- Promotes Na+ conservation (reabsorption) in renal collecting duct\n- Promotes K+ loss (excretion)\n- Considerably influences fluid retention vs. loss\n- Net effect: increased blood volume and blood pressure",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_038",
+      "topic": "Aldosterone & RAAS",
+      "question": "What is the most important diagnostic test for establishing hyperaldosteronism or hypoaldosteronism?",
+      "answer": "Plasma aldosterone concentration is the most important test.\n- Aldosterone blood concentration is regulated by the RAAS\n- Must be interpreted alongside plasma renin activity to determine primary vs. secondary cause",
+      "slideRef": "slide_34.jpg",
+      "slideNumber": 34
+    },
+    {
+      "id": "fc_039",
+      "topic": "Aldosterone & RAAS",
+      "question": "What is primary aldosteronism (Conn Syndrome) and what is its expected aldosterone-to-renin ratio?",
+      "answer": "Primary Aldosteronism (PA):\n- Excess aldosterone due to adrenal gland abnormality (renin-independent)\n- MCC: bilateral adrenal hyperplasia or aldosterone-secreting adenoma (Conn Syndrome)\n- Aldosterone stimulates Na+ retention → increased volume → suppresses renin\n- Aldosterone-to-Renin Ratio (ARR): >30 when aldosterone ≥15 ng/dL = abnormal\n- Confirm with saline infusion test (preferred suppression test)",
+      "slideRef": "slide_35.jpg",
+      "slideNumber": 35
+    },
+    {
+      "id": "fc_040",
+      "topic": "Aldosterone & RAAS",
+      "question": "What distinguishes primary from secondary hyperaldosteronism?",
+      "answer": "Primary Hyperaldosteronism:\n- Problem is in the ADRENAL GLAND\n- Renin-independent; renin is LOW (suppressed by volume expansion)\n- MCC: bilateral hyperplasia or adenoma (Conn Syndrome)\nSecondary Hyperaldosteronism:\n- Problem is OUTSIDE the adrenal gland\n- Due to increased renin\n- MCC: decreased renal perfusion (renal artery stenosis)\n- Also seen in: heart failure, nephrotic syndrome, liver cirrhosis\n- More common than primary",
+      "slideRef": "slide_36.jpg",
+      "slideNumber": 36
+    },
+    {
+      "id": "fc_041",
+      "topic": "Aldosterone & RAAS",
+      "question": "What clinical features are common to both primary and secondary hyperaldosteronism?",
+      "answer": "Both share:\n- HTN associated with hypervolemia\n- Clinical features: nocturnal polyuria, polydipsia, weakness\nElectrolyte abnormalities from excess aldosterone:\n- Hypokalemia (K+ wasting)\n- Metabolic alkalosis",
+      "slideRef": "slide_36.jpg",
+      "slideNumber": 36
+    },
+    {
+      "id": "fc_042",
+      "topic": "Aldosterone & RAAS",
+      "question": "What is pseudohypoaldosteronism and how does it differ from true primary hypoaldosteronism?",
+      "answer": "Pseudohypoaldosteronism:\n- Caused by tissue RESISTANCE to aldosterone (not deficiency)\n- Low blood volume + Na+ due to resistance → upregulates renin → upregulates aldosterone\n- Labs: significantly ELEVATED plasma aldosterone AND elevated plasma renin activity\n- (Compare: true primary hypoaldosteronism has LOW aldosterone and low production)",
+      "slideRef": "slide_37.jpg",
+      "slideNumber": 37
+    },
+    {
+      "id": "fc_043",
+      "topic": "Pancreatitis",
+      "question": "What are the top three causes of acute pancreatitis?",
+      "answer": "Top 3 causes of acute pancreatitis:\n1. Biliary tract obstruction (gallstones)\n2. Alcohol abuse\n3. Idiopathic causes\nPathophysiology: Intra-pancreatic digestive enzymes are activated → auto-digestion → inflammatory response → edema, necrosis, hemorrhage",
+      "slideRef": "slide_40.jpg",
+      "slideNumber": 40
+    },
+    {
+      "id": "fc_044",
+      "topic": "Pancreatitis",
+      "question": "Which enzyme is preferred for diagnosing acute pancreatitis — amylase or lipase — and why?",
+      "answer": "LIPASE is preferred:\n- Sensitivity/specificity >95% for acute pancreatitis\n- Peaks sooner (rises within 4–8 hours) and declines LATER than amylase (normalizes over 8–14 days)\n- More specific to the pancreas\nAmylase:\n- Rises within 6–12 hours, normalizes in 3–5 days\n- Less specific (also elevated in salivary gland disease)\nDiagnostic threshold: >3x upper limit of normal (ULN) for either enzyme",
+      "slideRef": "slide_40.jpg",
+      "slideNumber": 40
+    },
+    {
+      "id": "fc_045",
+      "topic": "Pancreatitis",
+      "question": "What are the reference ranges for amylase and lipase, and what threshold is used to diagnose acute pancreatitis?",
+      "answer": "Amylase normal range: 21–101 U/L\nLipase normal range: 7–60 U/L\nDiagnostic threshold for acute pancreatitis: >3× the upper limit of normal (ULN) for either enzyme",
+      "slideRef": "slide_40.jpg",
+      "slideNumber": 40
+    },
+    {
+      "id": "fc_046",
+      "topic": "Pancreatitis",
+      "question": "How does chronic pancreatitis differ from acute pancreatitis in terms of lab findings?",
+      "answer": "Chronic Pancreatitis:\n- Characterized by cellular destruction with scar tissue replacement\n- Amylase and lipase are LESS informative (glandular tissue is destroyed over time)\n- Diagnosis largely depends on history and imaging studies\n- Patients often develop impaired glucose tolerance or diabetes\nAcute pancreatitis: elevated amylase/lipase (>3× ULN) are the hallmark markers.",
+      "slideRef": "slide_41.jpg",
+      "slideNumber": 41
+    },
+    {
+      "id": "fc_047",
+      "topic": "Pancreatitis",
+      "question": "What are the causes of chronic pancreatitis in different populations?",
+      "answer": "Primary cause in industrialized countries: excessive alcohol consumption\nPrimary cause in developing countries: malnutrition\nMost common cause in CHILDREN: cystic fibrosis",
+      "slideRef": "slide_41.jpg",
+      "slideNumber": 41
+    },
+    {
+      "id": "fc_048",
+      "topic": "Pancreas & Blood Glucose",
+      "question": "What are the endocrine and exocrine functions of the pancreas?",
+      "answer": "Exocrine (majority): Secretes digestion-related enzymes into the GI tract via pancreatic duct\n- MC exocrine disorder: pancreatitis\nEndocrine: Islets of Langerhans (hormone-producing cell clusters) scattered throughout:\n- Alpha (α) cells: glucagon\n- Beta (β) cells: insulin\n- MC endocrine disorder: diabetes mellitus",
+      "slideRef": "slide_39.jpg",
+      "slideNumber": 39
+    },
+    {
+      "id": "fc_049",
+      "topic": "Pancreas & Blood Glucose",
+      "question": "Compare the actions of insulin and glucagon on blood glucose.",
+      "answer": "INSULIN (from β-cells):\n- Decreases blood glucose\n- Increases cellular uptake of glucose\n- Promotes fat storage: lipogenesis and glycogenesis\nGLUCAGON (from α-cells):\n- Increases blood glucose\n- Stimulates glycogenolysis (glycogen breakdown)\n- Stimulates gluconeogenesis (glucose from lactate or amino acids)",
+      "slideRef": "slide_42.jpg",
+      "slideNumber": 42
+    },
+    {
+      "id": "fc_050",
+      "topic": "Diabetes Mellitus",
+      "question": "What is the classification of Diabetes Mellitus and key features of each type?",
+      "answer": "Type 1 DM:\n- Autoimmune beta cell destruction → absolute insulin deficiency (insulin-dependent)\n- Associated with islet cell antibodies, insulin antibodies\nType 2 DM:\n- 90–95% of DM cases\n- Results from insulin resistance\nGestational DM: occurs during pregnancy\nOther: genetic defects, cystic fibrosis, chemically-induced",
+      "slideRef": "slide_43.jpg",
+      "slideNumber": 43
+    },
+    {
+      "id": "fc_051",
+      "topic": "Diabetes Mellitus",
+      "question": "What are the chronic complications of diabetes mellitus resulting from chronic hyperglycemia?",
+      "answer": "Chronic hyperglycemia leads to:\n- Polyneuropathy (nerve damage)\n- Nephropathy (kidney damage — diabetic kidney disease)\n- Retinopathy (eye damage)\n- Skin changes, poor wound healing\n- Reduced ability to fight infections\n- Weight loss",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_052",
+      "topic": "Diabetes Mellitus",
+      "question": "What are the classic symptoms of diabetes that prompt ordering a blood glucose test (the 'polys')?",
+      "answer": "Classic 3 'polys' of diabetes:\n1. Polyphagia (increased hunger)\n2. Polydipsia (increased thirst)\n3. Polyuria (increased urination)\nOther symptoms: weight loss, fatigue, blurred vision, slow-healing wounds",
+      "slideRef": "slide_45.jpg",
+      "slideNumber": 45
+    },
+    {
+      "id": "fc_053",
+      "topic": "Diabetes Mellitus",
+      "question": "What are the three types of blood glucose tests and how is each collected?",
+      "answer": "1. Random plasma glucose: taken at any time regardless of last meal; capillary blood via finger stick; screening/emergency\n2. Fasting plasma glucose (FPG): no oral intake (except water) for 8–12 hours prior; GOLD STANDARD for DM diagnosis\n3. Oral glucose tolerance test (OGTT): 75g glucose in 10–12 oz water consumed over 5 min; measure fasting and 2-hour post-bolus samples; 3 days prior: regular diet (≥100–150g carbs/day), unrestricted activity",
+      "slideRef": "slide_46.jpg",
+      "slideNumber": 46
+    },
+    {
+      "id": "fc_054",
+      "topic": "Diabetes Mellitus",
+      "question": "What glucose values diagnose pre-diabetes (impaired tolerance) vs. diabetes mellitus for each test?",
+      "answer": "Random plasma glucose: DM ≥200 mg/dL (with classic symptoms)\nFasting plasma glucose: Pre-diabetes 110–125 mg/dL; DM ≥126 mg/dL (on 2 occasions)\n2-hour GTT: Pre-diabetes ≥140–199 mg/dL; DM ≥200 mg/dL\nHemoglobin A1c: Pre-diabetes 5.7–6.4%; DM ≥6.5%",
+      "slideRef": "slide_48.jpg",
+      "slideNumber": 48
+    },
+    {
+      "id": "fc_055",
+      "topic": "Diabetes Mellitus",
+      "question": "What is HbA1c, what does it reflect, and what is the target for diabetic patients?",
+      "answer": "HbA1c (Hemoglobin A1c):\n- Formed by nonenzymatic linkage of glucose to hemoglobin → stable ketoamine\n- Persists for the lifespan of the RBC (~120 days)\n- Not affected by short-term fasting plasma glucose fluctuations\n- Reflects average glucose over the preceding 10–12 weeks\n- Should be checked TWICE per year in diabetic patients\n- Target: keep <7.0% to minimize diabetes-related complications\n- DM diagnosis: ≥6.5%",
+      "slideRef": "slide_47.jpg",
+      "slideNumber": 47
+    },
+    {
+      "id": "fc_056",
+      "topic": "Diabetes Mellitus",
+      "question": "What is the microalbumin test and why is it ordered in diabetic patients?",
+      "answer": "Microalbumin test:\n- Urine test that detects low levels of albumin in urine\n- Early marker of diabetic nephropathy (kidney damage)\n- Ordered as part of diabetes monitoring\n- Detects kidney involvement before frank proteinuria develops",
+      "slideRef": "slide_47.jpg",
+      "slideNumber": 47
+    },
+    {
+      "id": "fc_057",
+      "topic": "Diabetes Mellitus",
+      "question": "What is C-peptide and why is it clinically useful in hypoglycemia workup?",
+      "answer": "C-peptide:\n- Produced and co-secreted with endogenous insulin from β-cells\n- NOT present in injectable (exogenous) insulin formulations\nClinical utility in hypoglycemia:\n- If C-peptide is HIGH + low glucose → endogenous insulin excess (insulinoma) or sulfonylurea use\n- If C-peptide is LOW + low glucose → exogenous insulin injection (factitious hypoglycemia)\n- Helps distinguish insulinoma from insulin injection as cause of hypoglycemia",
+      "slideRef": "slide_49.jpg",
+      "slideNumber": 49
+    },
+    {
+      "id": "fc_058",
+      "topic": "Diabetes Mellitus",
+      "question": "What are the symptoms and diagnostic threshold for hypoglycemia?",
+      "answer": "Hypoglycemia:\n- Defined by low fasting plasma glucose, often <40 mg/dL\n- Symptoms result from inadequate glucose supply to the CNS and autonomic activation:\n  • Sweating, tachycardia, anxiety, dizziness\n  • Slurred speech, altered mental status (AMS)\n- Complete recovery occurs when FPG is restored to normal\n- Most common in patients treated for DM (insulin or sulfonylurea overdose)",
+      "slideRef": "slide_49.jpg",
+      "slideNumber": 49
+    },
+    {
+      "id": "fc_059",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What are the major plasma lipids and their primary roles?",
+      "answer": "Major plasma lipids:\n1. Cholesterol: synthesized in liver and intestine; used for hormone/hormone precursor synthesis, cell membrane structure\n2. Triglycerides: partially synthesized in liver; primary fat storage form; primary composition of dietary fat\nFunctions of lipids:\n- Hormones or hormone precursors\n- Energy storage and body fuel\n- Cell membrane structure and function\n- Nerve insulation (improved conduction)\n- Constitute 95% of tissue storage fat",
+      "slideRef": "slide_53.jpg",
+      "slideNumber": 53
+    },
+    {
+      "id": "fc_060",
+      "topic": "Lipids & Lipoproteins",
+      "question": "Why are lipids transported as lipoproteins rather than freely in plasma?",
+      "answer": "Lipids do not circulate freely in solution because they are hydrophobic.\nThey are:\n- Bound to proteins (apolipoproteins)\n- Transported as macromolecular complexes called LIPOPROTEINS\nLipoproteins allow lipids to be carried in the aqueous environment of blood.",
+      "slideRef": "slide_53.jpg",
+      "slideNumber": 53
+    },
+    {
+      "id": "fc_061",
+      "topic": "Lipids & Lipoproteins",
+      "question": "List the major lipoprotein classes in order from largest to smallest, with their key features.",
+      "answer": "1. Chylomicrons (~1000 nm): largest; contain cholesterol, triglycerides, phospholipids, apolipoproteins; transport dietary fat from gut\n2. VLDL (Very Low-Density Lipoprotein, ~70 nm): degrades to LDL in circulation; carries triglycerides\n3. IDL (Intermediate Density Lipoprotein, ~40 nm): transitional\n4. LDL (Low-Density Lipoprotein, ~20 nm): 'bad' cholesterol; transports cholesterol from liver to body cells\n5. HDL (High-Density Lipoprotein, ~10 nm): 'good' cholesterol; removes excess cholesterol from cells → liver for catabolism",
+      "slideRef": "slide_55.jpg",
+      "slideNumber": 55
+    },
+    {
+      "id": "fc_062",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What is the function and clinical significance of LDL?",
+      "answer": "LDL (Low-Density Lipoprotein):\n- 'Bad' cholesterol\n- Transports cholesterol FROM the liver TO body cells\n- Elevated LDL: direct correlation with increased arterial atherosclerosis risk\n- High-fat diets reduce liver LDL receptors → slower LDL metabolism → higher LDL\n- Target: <100 mg/dL\nVLDL degrades to LDL in circulation.",
+      "slideRef": "slide_55.jpg",
+      "slideNumber": 55
+    },
+    {
+      "id": "fc_063",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What is the function and clinical significance of HDL?",
+      "answer": "HDL (High-Density Lipoprotein):\n- 'Good' cholesterol\n- Removes excess cholesterol from cells and vessel walls → returns to liver for catabolism (reverse cholesterol transport)\n- Elevated HDL: cardioprotective, indicative of healthy lifestyle\n- Low HDL: closely correlated with coronary heart disease; accelerates atherosclerosis\n- Target: ≥50 mg/dL",
+      "slideRef": "slide_59.jpg",
+      "slideNumber": 59
+    },
+    {
+      "id": "fc_064",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What does a standard lipid panel measure and what are the reference ranges?",
+      "answer": "A lipid panel measures:\n1. Triglycerides: <150 mg/dL\n2. Total cholesterol: <200 mg/dL\n3. LDL: <100 mg/dL\n4. HDL: ≥50 mg/dL\n5. Cholesterol-to-HDL ratio: <5.0 (no units)\nAlso calculates cholesterol-to-HDL ratio = Total cholesterol ÷ HDL",
+      "slideRef": "slide_56.jpg",
+      "slideNumber": 56
+    },
+    {
+      "id": "fc_065",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What is the Friedewald equation for calculating LDL?",
+      "answer": "Friedewald Equation (previous gold standard):\nLDL-C = Total Cholesterol – HDL – (Triglycerides ÷ 5)\nThe triglycerides/5 estimate represents VLDL cholesterol.\nLimitation: less accurate at high triglyceride levels.\nNewer alternatives:\n- Martin-Hopkins calculation (uses individualized factor for VLDL-C)\n- Sampson method (proposed by NIH — better accuracy at low LDL and high TG)",
+      "slideRef": "slide_57.jpg",
+      "slideNumber": 57
+    },
+    {
+      "id": "fc_066",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What is the cholesterol-to-HDL ratio, how is it calculated, and what does an elevated ratio indicate?",
+      "answer": "Cholesterol-to-HDL Ratio:\n- Calculation: Total Cholesterol ÷ HDL\n- Tells us the amount of HDL that is part of the total cholesterol\n- Normal: <5.0 (no units)\n- Elevated ratio (>5.0): increased risk of developing atherosclerotic cardiovascular disease\nHigher ratios indicate that more of the total cholesterol is non-protective (non-HDL) cholesterol.",
+      "slideRef": "slide_56.jpg",
+      "slideNumber": 56
+    },
+    {
+      "id": "fc_067",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What are the disease states associated with elevated triglycerides?",
+      "answer": "Elevated triglycerides (hypertriglyceridemia) occur with:\n- High fat/carbohydrate diets\n- Disease states:\n  • Hypothyroidism\n  • Myocardial infarction (MI)\n  • Nephrotic syndrome\n  • Liver disease\n  • Diabetes mellitus\n  • Obesity\n  • Atherosclerosis\n  • Pancreatitis",
+      "slideRef": "slide_58.jpg",
+      "slideNumber": 58
+    },
+    {
+      "id": "fc_068",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What conditions cause elevated total cholesterol, and what conditions cause low total cholesterol?",
+      "answer": "Elevated total cholesterol:\n- Associated with increased risk of heart disease\n- Occurs in: hypothyroidism, atherosclerosis, diabetes, kidney failure, pregnancy\nLow total cholesterol:\n- Seen in: anemia, malignancies, malnutrition",
+      "slideRef": "slide_58.jpg",
+      "slideNumber": 58
+    },
+    {
+      "id": "fc_069",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "What are the lab abnormalities seen in primary adrenal insufficiency beyond ACTH and cortisol?",
+      "answer": "Primary adrenal insufficiency (Addison Disease) — additional labs:\n- Hypoglycemia\n- Hyponatremia (low Na+ — loss of aldosterone-mediated Na+ retention)\n- Hyperkalemia (high K+ — loss of aldosterone-mediated K+ excretion)\n- Non-anion gap metabolic acidosis\n- Increased renin\n- Decreased aldosterone",
+      "slideRef": "slide_32.jpg",
+      "slideNumber": 32
+    },
+    {
+      "id": "fc_070",
+      "topic": "Thyroid Function & Labs",
+      "question": "What is the clinical utility of TSH in monitoring a patient already on thyroid hormone treatment?",
+      "answer": "TSH is used to:\n1. Monitor patients on thyroid hormone replacement therapy (e.g., levothyroxine)\n2. Ensure TSH remains within target range (not too suppressed or elevated)\n3. Used with T4 to manage patients with Graves' disease\nIf TSH is within normal range → therapy is appropriately dosed",
+      "slideRef": "slide_12.jpg",
+      "slideNumber": 12
+    },
+    {
+      "id": "fc_071",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What percentage of daily cholesterol production comes from the liver?",
+      "answer": "Approximately 70% of daily cholesterol production comes from the liver.\nThe liver plays the central role in regulating cholesterol levels and its relationship with lipoproteins.",
+      "slideRef": "slide_51.jpg",
+      "slideNumber": 51
+    },
+    {
+      "id": "fc_072",
+      "topic": "Aldosterone & RAAS",
+      "question": "What causes secondary hypoaldosteronism and what medications are associated with it?",
+      "answer": "Secondary Hypoaldosteronism:\n- Low aldosterone due to factors OUTSIDE the adrenal gland\n- Causes:\n  • Lack of pituitary ACTH production\n  • Long-term glucocorticoid use (suppresses HPA axis)\n  • Medications: ACE inhibitors (block angiotensin II → less aldosterone stimulation)",
+      "slideRef": "slide_37.jpg",
+      "slideNumber": 37
+    },
+    {
+      "id": "fc_073",
+      "topic": "Diabetes Mellitus",
+      "question": "What is the gold standard test for diagnosing diabetes mellitus and what are the diagnostic criteria?",
+      "answer": "Fasting Plasma Glucose (FPG) is the GOLD STANDARD.\n- Requires fasting for at least 8 hours\n- Must be confirmed on 2 separate occasions\n- Diagnostic: FPG ≥126 mg/dL\n- Pre-diabetes: FPG 110–125 mg/dL\nNote: HbA1c ≥6.5% or 2-hour GTT ≥200 mg/dL can also diagnose DM.",
+      "slideRef": "slide_48.jpg",
+      "slideNumber": 48
+    },
+    {
+      "id": "fc_074",
+      "topic": "Diabetes Mellitus",
+      "question": "What is the gold standard test for diagnosing gestational diabetes?",
+      "answer": "The 3-hour glucose tolerance test (3h GTT) is the gold standard for diagnosing gestational diabetes.\nNote: The standard 2-hour OGTT uses 75g glucose; gestational DM screening typically uses a 50g challenge first, then 100g 3-hour GTT to confirm.",
+      "slideRef": "slide_48.jpg",
+      "slideNumber": 48
+    },
+    {
+      "id": "fc_075",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What adrenal crisis is associated with acute adrenocortical failure in primary adrenal insufficiency?",
+      "answer": "Addisonian Crisis (acute adrenocortical failure):\n- Life-threatening emergency\n- Can occur in patients with Addison Disease during physiologic stress (illness, surgery)\n- Presents with severe hypotension, vomiting, profound weakness, hypoglycemia\n- Requires emergency IV hydrocortisone and fluid resuscitation",
+      "slideRef": "slide_30.jpg",
+      "slideNumber": 30
+    },
+    {
+      "id": "fc_076",
+      "topic": "Thyroid Function & Labs",
+      "question": "Explain how transient changes in plasma protein concentrations can affect thyroid function test results.",
+      "answer": "Total T4 and T3 are affected by changes in binding protein concentrations:\n- Increased TBG (e.g., pregnancy, estrogen use): more bound T4 → higher TOTAL T4, but FREE T4 remains normal\n- Decreased TBG (e.g., nephrotic syndrome, liver disease): lower bound T4 → lower TOTAL T4, but FREE T4 remains normal\nThis is why FREE hormone assays are preferred over total T4/T3 — they accurately reflect active hormone regardless of protein changes.",
+      "slideRef": "slide_11.jpg",
+      "slideNumber": 11
+    },
+    {
+      "id": "fc_077",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What mechanism explains why high-fat diets worsen LDL levels?",
+      "answer": "High-fat/high-cholesterol diets:\n- Cause a REDUCTION in liver LDL receptors\n- Fewer LDL receptors → slower LDL clearance from circulation → higher LDL levels\n- This slows LDL metabolism and increases cardiovascular risk",
+      "slideRef": "slide_59.jpg",
+      "slideNumber": 59
+    },
+    {
+      "id": "fc_078",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "What is the effect of physical and mental stress on cortisol levels and the circadian rhythm?",
+      "answer": "Physical and mental stress:\n- Can ELEVATE cortisol concentrations\n- Can BLUNT the circadian rhythm of cortisol secretion\nThis is why a single random cortisol is unreliable — stress alone can raise it falsely.\nNormal pattern: cortisol peaks 4–8 AM, lowest levels at night.",
+      "slideRef": "slide_23.jpg",
+      "slideNumber": 23
+    },
+    {
+      "id": "fc_079",
+      "topic": "Pancreas & Blood Glucose",
+      "question": "What is glucosuria and what does it indicate in a diabetic patient?",
+      "answer": "Glucosuria = glucose in the urine\n- Occurs when blood glucose exceeds the renal threshold (~180 mg/dL) and spills into urine\n- In diabetic patients, it indicates poorly controlled hyperglycemia\n- Urine glucose monitoring is less precise than blood glucose but can serve as a supplemental tool",
+      "slideRef": "slide_47.jpg",
+      "slideNumber": 47
+    },
+    {
+      "id": "fc_080",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What is the difference between the Friedewald equation and the Martin-Hopkins calculation for LDL?",
+      "answer": "Friedewald Equation (previous gold standard):\n- LDL-C = Total Cholesterol – HDL – (TG/5)\n- Less accurate at high triglyceride levels or very low LDL\nMartin-Hopkins Calculation:\n- Uses an individualized factor (based on TG and non-HDL cholesterol) instead of fixed divisor of 5\n- Provides better accuracy, especially at low LDL and high TG values\nSampson Method:\n- Proposed by NIH; another improvement on accuracy",
+      "slideRef": "slide_57.jpg",
+      "slideNumber": 57
+    },
+    {
+      "id": "fc_081",
+      "topic": "Pancreatitis",
+      "question": "What is the pathophysiology of acute pancreatitis?",
+      "answer": "Acute pancreatitis pathophysiology:\n1. Triggering event (gallstone obstruction, alcohol, etc.) activates intra-pancreatic digestive enzymes prematurely\n2. Auto-digestion of pancreatic tissue occurs\n3. Triggers inflammatory response → edema, necrosis, hemorrhage\n4. May extend to systemic inflammatory response\nLabs: Amylase and lipase >3× ULN are pathognomonic markers.",
+      "slideRef": "slide_40.jpg",
+      "slideNumber": 40
+    },
+    {
+      "id": "fc_082",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What electrolyte and acid-base abnormalities are classic in primary adrenal insufficiency and why?",
+      "answer": "Primary adrenal insufficiency → loss of aldosterone:\n- Hyponatremia: aldosterone normally retains Na+; without it, Na+ is lost\n- Hyperkalemia: aldosterone normally excretes K+; without it, K+ accumulates\n- Non-anion gap metabolic acidosis: aldosterone drives H+ excretion; deficiency leads to acid retention\nMnemonic: Primary AI = opposite of hyperaldosteronism (which causes ↑Na, ↓K, alkalosis)",
+      "slideRef": "slide_32.jpg",
+      "slideNumber": 32
+    },
+    {
+      "id": "fc_083",
+      "topic": "Thyroid Function & Labs",
+      "question": "What is the significance of an elevated anti-TPO titer in diagnosis?",
+      "answer": "Elevated anti-TPO titer + clinical symptoms + abnormal TSH/FT4 = DIAGNOSTIC for autoimmune thyroid disease (specifically Hashimoto's thyroiditis).\nAnti-TPO is present in ~90% of Hashimoto's patients.\nNote: Normal anti-TPO concentrations are not well established; the test is most useful when clearly elevated in the clinical context.",
+      "slideRef": "slide_14.jpg",
+      "slideNumber": 14
+    },
+    {
+      "id": "fc_084",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What is pretibial myxedema and in which thyroid condition does it occur?",
+      "answer": "Pretibial myxedema:\n- Swollen red or brown patches on the legs with NON-PITTING edema\n- Occurs in HYPERTHYROIDISM, specifically in Graves' Disease\n- Despite the name 'myxedema' (usually associated with hypothyroidism), pretibial myxedema is a manifestation of Graves' autoimmune process",
+      "slideRef": "slide_15.jpg",
+      "slideNumber": 15
+    },
+    {
+      "id": "fc_085",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "What are the 3 categories of steroid hormones from the adrenal cortex?",
+      "answer": "1. Glucocorticoids (zona fasciculata):\n   - Example: cortisol\n   - Increase gluconeogenesis, decrease glucose utilization\n2. Mineralocorticoids (zona glomerulosa):\n   - Example: aldosterone\n   - Promote Na+ conservation and K+ loss; influence fluid retention\n   - Aldosterone has the highest mineralocorticoid activity\n3. Sex steroids (zona reticularis):\n   - Androgens, progesterones, estrogens\nAll are cholesterol-based.",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_086",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What is the clinical relationship between elevated HDL and low HDL regarding cardiovascular health?",
+      "answer": "Elevated HDL:\n- Typically indicative of a healthy lifestyle\n- Cardioprotective (promotes reverse cholesterol transport)\nLow HDL:\n- Closely correlated with coronary heart disease\n- Thought to accelerate development of atherosclerosis\nTarget: HDL ≥50 mg/dL\nIn practice, HDL is the one lipid where HIGHER is better.",
+      "slideRef": "slide_59.jpg",
+      "slideNumber": 59
+    },
+    {
+      "id": "fc_087",
+      "topic": "Thyroid Function & Labs",
+      "question": "What is the role of TSH with T4 in managing Graves' Disease specifically?",
+      "answer": "In Graves' Disease (hyperthyroidism):\n- TSH is used TOGETHER WITH T4 (not just one alone) to monitor treatment\n- TSH may become very suppressed (sometimes undetectable)\n- Free T4 is also tracked to confirm response to antithyroid therapy\n- Goal: normalize TSH and free T4 to euthyroid state\nTSH alone may lag behind in returning to normal after T4 normalizes.",
+      "slideRef": "slide_12.jpg",
+      "slideNumber": 12
+    },
+    {
+      "id": "fc_088",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "How are steroid hormones transported in the blood?",
+      "answer": "Steroid hormones are transported in the blood:\n- Bound to carrier proteins (albumin, hormone-binding globulins)\n- OR as free hormone (unbound)\nThe percent bound to protein varies with each hormone's affinity for carrier proteins.\nOnly the FREE fraction is biologically active.",
+      "slideRef": "slide_22.jpg",
+      "slideNumber": 22
+    },
+    {
+      "id": "fc_089",
+      "topic": "Pancreas & Blood Glucose",
+      "question": "What is the oral glucose tolerance test (OGTT) preparation protocol?",
+      "answer": "OGTT preparation (3 days prior):\n- Regular diet with at least 100–150 g carbohydrates per day\n- Unrestricted physical activity\nTest day:\n- 75g glucose dissolved in 10–12 oz water, consumed over 5 minutes\n- Collect 2 samples: fasting and at 2 hours post-bolus\nPurpose: assesses glycemic response to a glucose load.",
+      "slideRef": "slide_46.jpg",
+      "slideNumber": 46
+    },
+    {
+      "id": "fc_090",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What is the relationship between the liver and cholesterol production?",
+      "answer": "The liver:\n- Produces approximately 70% of daily cholesterol\n- Synthesizes cholesterol endogenously (regardless of dietary intake)\n- Also processes dietary cholesterol from intestine\n- Regulates plasma cholesterol through LDL receptors and bile secretion\n- Bile secretion (exocrine function) helps eliminate excess cholesterol",
+      "slideRef": "slide_51.jpg",
+      "slideNumber": 51
+    },
+    {
+      "id": "fc_091",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "In Cushing Syndrome from an adrenal tumor vs. exogenous steroids, how do ACTH levels compare?",
+      "answer": "Both adrenal tumor and exogenous steroids result in DECREASED ACTH:\n- Adrenal tumor: autonomous cortisol production → feedback inhibits ACTH from pituitary\n- Exogenous steroids: exogenous glucocorticoid → suppresses HPA axis → low ACTH\nHigh-dose DST: neither suppresses cortisol further (already autonomous or exogenous)\nACTH level helps distinguish: both have low ACTH (vs. pituitary/ectopic causes with high ACTH)",
+      "slideRef": "slide_29.jpg",
+      "slideNumber": 29
+    },
+    {
+      "id": "fc_092",
+      "topic": "Aldosterone & RAAS",
+      "question": "What is the saline infusion test and when is it used?",
+      "answer": "Saline Infusion Test:\n- Preferred suppression test to CONFIRM primary aldosteronism\n- Used after an elevated Aldosterone-to-Renin Ratio (ARR >30 with aldosterone ≥15 ng/dL)\n- IV saline infusion: normally would suppress aldosterone secretion\n- In primary aldosteronism: aldosterone fails to suppress (autonomous production)\n- Confirms the diagnosis before imaging/surgical workup",
+      "slideRef": "slide_35.jpg",
+      "slideNumber": 35
+    },
+    {
+      "id": "fc_093",
+      "topic": "Thyroid Function & Labs",
+      "question": "What is reverse T3 (rT3) and what is its clinical significance?",
+      "answer": "Reverse T3 (rT3):\n- Produced by alternative deiodination of T4\n- Structurally similar to T3 but biologically INACTIVE\n- Can accumulate in severe illness (euthyroid sick syndrome), caloric restriction, and certain medications\n- Competes with T3 for receptor binding without activating the receptor\n- Not routinely measured in standard thyroid panels",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_094",
+      "topic": "Diabetes Mellitus",
+      "question": "What proportion of Americans have diabetes mellitus and how many are unaware?",
+      "answer": "Almost 13% of Americans have diabetes mellitus.\nApproximately 40% of those with DM are unaware of their diagnosis.\nThis underscores the importance of routine screening, particularly with fasting plasma glucose or HbA1c in at-risk populations.",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_095",
+      "topic": "Pancreatitis",
+      "question": "What is the temporal difference between amylase and lipase in acute pancreatitis?",
+      "answer": "Amylase:\n- Rises within 6–12 hours of onset\n- Normalizes within 3–5 days\nLipase:\n- Rises within 4–8 hours of onset (slightly faster)\n- Normalizes over 8–14 days (stays elevated longer)\nClinical implication: Lipase remains elevated longer, making it more useful for patients who present late after symptom onset.",
+      "slideRef": "slide_40.jpg",
+      "slideNumber": 40
+    },
+    {
+      "id": "fc_096",
+      "topic": "Thyroid Function & Labs",
+      "question": "In what clinical scenario is free T3 specifically ordered (not free T4)?",
+      "answer": "Free T3 is specifically useful when:\n- TSH is LOW (suppressed) — suggesting hyperthyroidism\n- BUT Free T4 is still within normal range\nThis pattern is called 'T3 toxicosis' — early or isolated T3-mediated hyperthyroidism.\nFree T3 confirms the hyperthyroid diagnosis when free T4 alone would miss it.",
+      "slideRef": "slide_12.jpg",
+      "slideNumber": 12
+    },
+    {
+      "id": "fc_097",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "Why does primary adrenal insufficiency cause hyperpigmentation but secondary does not?",
+      "answer": "Primary AI: Low cortisol → no negative feedback → hypothalamus ↑ CRH → pituitary ↑ ACTH and ↑ MSH (both derived from POMC precursor) → elevated MSH → hyperpigmentation\nSecondary AI: Problem is at the pituitary → ACTH is LOW → MSH is also low → no hyperpigmentation\nHyperpigmentation is therefore a hallmark of PRIMARY (not secondary) adrenal insufficiency.",
+      "slideRef": "slide_31.jpg",
+      "slideNumber": 31
+    },
+    {
+      "id": "fc_098",
+      "topic": "Adrenal Gland & Cortisol",
+      "question": "What is the key difference between the ACTH stimulation test and the CRH stimulation test?",
+      "answer": "ACTH Stimulation Test:\n- Tests the ADRENAL GLAND'S response\n- Uses cosyntropin (ACTH analog) IV/IM\n- Most useful to DIAGNOSE adrenal insufficiency\n- Measures cortisol response at baseline, 30 min, 60 min\nCRH Stimulation Test:\n- Tests the PITUITARY GLAND'S response\n- Used to LOCALIZE the source (primary vs. secondary/tertiary) after abnormal ACTH stim test\n- Measures both ACTH and cortisol response",
+      "slideRef": "slide_26.jpg",
+      "slideNumber": 26
+    },
+    {
+      "id": "fc_099",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What disease states are associated with both elevated cholesterol AND elevated triglycerides?",
+      "answer": "Both cholesterol and triglycerides may be elevated in:\n- Hypothyroidism\n- Diabetes mellitus\n- Obesity\n- Atherosclerosis\n- Nephrotic syndrome\n- Liver disease\nNote: Hypothyroidism commonly causes dyslipidemia (both elevated TC and TG) — thyroid hormone is needed for normal lipid metabolism.",
+      "slideRef": "slide_58.jpg",
+      "slideNumber": 58
+    },
+    {
+      "id": "fc_100",
+      "topic": "Pancreas & Blood Glucose",
+      "question": "How does HbA1c differ from fasting plasma glucose in terms of what each reflects?",
+      "answer": "Fasting Plasma Glucose (FPG):\n- Point-in-time measurement\n- Reflects glucose status at the moment of the draw\n- Affected by recent meals, stress, illness\nHbA1c:\n- Reflects AVERAGE glucose over preceding 10–12 weeks\n- Not affected by short-term fluctuations\n- Provides long-term glycemic control assessment\n- No fasting required\nBoth can diagnose DM, but HbA1c tracks management; FPG is more sensitive for acute changes.",
+      "slideRef": "slide_47.jpg",
+      "slideNumber": 47
+    },
+    {
+      "id": "fc_101",
+      "topic": "Lipids & Lipoproteins",
+      "question": "What is hyperlipidemia and what are its two major subtypes?",
+      "answer": "Hyperlipidemia = elevated plasma lipid levels\nTwo major subtypes:\n1. Hypertriglyceridemia: elevated triglycerides\n2. Hypercholesterolemia: elevated total cholesterol\nBoth are associated with increased cardiovascular risk, particularly through promotion of atherosclerosis.",
+      "slideRef": "slide_58.jpg",
+      "slideNumber": 58
+    },
+    {
+      "id": "fc_102",
+      "topic": "Clinical Correlations & Disease States",
+      "question": "What makes the presentation of ectopic ACTH production different from Cushing Disease?",
+      "answer": "Ectopic ACTH Production (e.g., small cell lung cancer, bronchial carcinoid):\n- Produces ACTH from outside pituitary\n- ACTH: normal to elevated (same as Cushing Disease)\n- High-dose DST: NO suppression (key difference from Cushing Disease which does suppress)\n- Often more severe/rapid onset\n- Hypokalemia may be more severe\nCushing Disease (pituitary): HIGH-dose DST does suppress cortisol\nDistinguishing: imaging + inferior petrosal sinus sampling",
+      "slideRef": "slide_28.jpg",
+      "slideNumber": 28
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "q_001",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "A 35-year-old woman presents with weight gain, fatigue, cold intolerance, and constipation. You order thyroid labs. Which test is the BEST first-line screening test for suspected thyroid disease?",
+      "options": ["Free T4", "Free T3", "TSH", "Anti-TPO antibodies"],
+      "correct": 2,
+      "explanation": "TSH (thyroid stimulating hormone) is the most sensitive first-line screening test for suspected thyroid abnormalities due to its inverse log-linear relationship with free T4 — small changes in T4 result in large changes in TSH, making it an amplified indicator."
+    },
+    {
+      "id": "q_002",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "A patient's TSH returns elevated and her free T4 is low. These findings are most consistent with:",
+      "options": ["Secondary hypothyroidism", "Primary hypothyroidism", "Primary hyperthyroidism", "Graves' disease"],
+      "correct": 1,
+      "explanation": "In PRIMARY thyroid disorders, TSH and free T3/T4 move in OPPOSITE directions. Elevated TSH with low free T4 indicates primary hypothyroidism — the thyroid gland is failing, so the pituitary releases more TSH in compensation."
+    },
+    {
+      "id": "q_003",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "A 28-year-old man has a TSH of 0.08 mIU/L (low) but a free T4 within normal limits. What is the MOST appropriate next step?",
+      "options": ["Reassure the patient, TSH is the only relevant test", "Order free T3 to evaluate for early hyperthyroidism", "Order anti-TG antibodies", "Order a dexamethasone suppression test"],
+      "correct": 1,
+      "explanation": "Free T3 is useful to diagnose hyperthyroidism when TSH is low but free T4 is still normal — a pattern called T3 toxicosis. Free T3 rises before free T4 in early hyperthyroidism."
+    },
+    {
+      "id": "q_004",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "Which antibody is the HALLMARK diagnostic marker of Graves' disease?",
+      "options": ["Anti-TPO antibodies", "Anti-TG antibodies", "TSH receptor antibodies (TRAbs)", "Islet cell antibodies"],
+      "correct": 2,
+      "explanation": "TSH receptor antibodies (TRAbs) are specific for Graves' disease. They target and stimulate TSH receptors on the thyroid gland, causing autonomous increased hormone production and hyperthyroidism."
+    },
+    {
+      "id": "q_005",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "A patient with nephrotic syndrome has a low total T4 but normal free T4 and a normal TSH. The most likely explanation is:",
+      "options": ["Subclinical hypothyroidism", "Primary hypothyroidism", "Decreased thyroid-binding globulin reducing total but not free T4", "Hashimoto's thyroiditis"],
+      "correct": 2,
+      "explanation": "In nephrotic syndrome, protein loss (including TBG) reduces the total T4 because less T4 is bound. However, free T4 (the active form) remains normal, as does TSH. This is why free hormone assays are preferred over total T4/T3."
+    },
+    {
+      "id": "q_006",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "A 45-year-old woman presents with weight gain, fatigue, cold intolerance, bradycardia, and decreased deep tendon reflexes. Her TSH is markedly elevated with low free T4. Anti-TPO antibodies are also elevated. The most likely diagnosis is:",
+      "options": ["Graves' disease", "Hashimoto's thyroiditis", "Secondary hypothyroidism", "Subacute thyroiditis"],
+      "correct": 1,
+      "explanation": "Hashimoto's thyroiditis presents with hypothyroid symptoms, elevated TSH, low free T4, and positive anti-TPO antibodies (~90% of cases). It is the most common cause of hypothyroidism in the US."
+    },
+    {
+      "id": "q_007",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "A 25-year-old woman presents with palpitations, weight loss, heat intolerance, exophthalmos, and pretibial myxedema. Labs show undetectable TSH with elevated free T4. Which additional lab confirms the diagnosis?",
+      "options": ["Anti-TPO antibodies", "TSH receptor antibodies (TRAbs)", "Antithyroglobulin antibodies (anti-TG)", "Serum calcitonin"],
+      "correct": 1,
+      "explanation": "Graves' disease is confirmed by TSH receptor antibodies (TRAbs). The clinical picture (exophthalmos, pretibial myxedema, hyperthyroid symptoms) strongly suggests Graves' disease, which is an autoimmune condition with TSH-receptor stimulating antibodies."
+    },
+    {
+      "id": "q_008",
+      "topic": "Thyroid Function & Labs",
+      "type": "true_false",
+      "question": "In secondary hypothyroidism (pituitary origin), TSH and free T4 move in opposite directions.",
+      "correct": false,
+      "explanation": "FALSE. In secondary and tertiary disorders, TSH and free T4 move in the SAME direction (both are decreased). The pituitary is the problem — insufficient TSH is produced, leading to reduced thyroid stimulation and thus low T4. Opposite directions characterize PRIMARY thyroid disorders."
+    },
+    {
+      "id": "q_009",
+      "topic": "Thyroid Function & Labs",
+      "type": "true_false",
+      "question": "The Free Thyroxine Index (FTI) is currently the preferred method for estimating free T4 levels in clinical practice.",
+      "correct": false,
+      "explanation": "FALSE. The FTI is largely OBSOLETE due to improved direct free hormone assays (free T4 and free T3). Direct assays do not require a preliminary step to separate free from bound hormones and are more accurate."
+    },
+    {
+      "id": "q_010",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "mcq",
+      "question": "A 38-year-old woman presents with truncal obesity, moon facies, purple striae, and hypertension. You suspect Cushing Syndrome. Which of the following is the MOST specific screening test?",
+      "options": ["Serum ACTH level", "24-hour urinary free cortisol (UFC)", "Random plasma cortisol", "Salivary cortisol in the morning"],
+      "correct": 1,
+      "explanation": "The 24-hour urinary free cortisol (UFC) is the most specific screening test for Cushing Syndrome. It accounts for diurnal variation by measuring cortisol over the full 24-hour period, providing a reliable gauge of total cortisol output. Random cortisol is unreliable due to pulsatile secretion."
+    },
+    {
+      "id": "q_011",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "mcq",
+      "question": "A patient with confirmed Cushing Syndrome has a high-dose dexamethasone suppression test showing suppression of cortisol, with elevated ACTH. The most likely etiology is:",
+      "options": ["Adrenal cortex adenoma", "Ectopic ACTH-producing tumor (small cell lung cancer)", "Cushing Disease (pituitary microadenoma)", "Exogenous steroid use"],
+      "correct": 2,
+      "explanation": "Cushing DISEASE (pituitary microadenoma) is the only cause that shows cortisol suppression on HIGH-dose dexamethasone AND elevated ACTH. Pituitary tumors retain some feedback sensitivity, unlike ectopic or adrenal sources."
+    },
+    {
+      "id": "q_012",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "mcq",
+      "question": "A patient has confirmed Cushing Syndrome with NO suppression on high-dose dexamethasone. ACTH is elevated. Which etiology is most consistent?",
+      "options": ["Exogenous steroid therapy", "Adrenal cortisol-secreting adenoma", "Ectopic ACTH-producing tumor", "Cushing Disease"],
+      "correct": 2,
+      "explanation": "Ectopic ACTH-producing tumors (e.g., small cell lung cancer, bronchial carcinoid) show no suppression on high-dose dexamethasone AND have elevated ACTH. This distinguishes them from Cushing Disease (pituitary), which does suppress on high-dose dex. Adrenal tumors would have low ACTH."
+    },
+    {
+      "id": "q_013",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "mcq",
+      "question": "Which test is MOST useful for diagnosing adrenal insufficiency?",
+      "options": ["CRH stimulation test", "ACTH stimulation test", "24-hour urine cortisol", "Dexamethasone suppression test"],
+      "correct": 1,
+      "explanation": "The ACTH (corticotropin) stimulation test is most useful for diagnosing adrenal insufficiency. It administers cosyntropin IV/IM and measures the adrenal cortex's cortisol response. A lack of appropriate cortisol rise indicates adrenal insufficiency."
+    },
+    {
+      "id": "q_014",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "A 30-year-old woman with primary adrenal insufficiency (Addison Disease) presents for routine follow-up. Which physical finding would be unique to her condition compared to secondary adrenal insufficiency?",
+      "options": ["Hypoglycemia", "Weakness and fatigue", "Hyperpigmentation of the skin", "Orthostatic hypotension"],
+      "correct": 2,
+      "explanation": "Hyperpigmentation is unique to PRIMARY adrenal insufficiency. Loss of cortisol negative feedback → excess ACTH and MSH (both derived from POMC) → hyperpigmentation. Secondary AI has low ACTH, so no hyperpigmentation occurs."
+    },
+    {
+      "id": "q_015",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "A patient with primary adrenal insufficiency is most likely to have which set of electrolyte abnormalities?",
+      "options": ["Hypernatremia, hypokalemia, metabolic alkalosis", "Hyponatremia, hyperkalemia, non-anion gap metabolic acidosis", "Hyponatremia, hypokalemia, metabolic alkalosis", "Hypernatremia, hyperkalemia, metabolic acidosis"],
+      "correct": 1,
+      "explanation": "Primary adrenal insufficiency causes aldosterone deficiency: Na+ is not retained (hyponatremia), K+ is not excreted (hyperkalemia), and H+ is not excreted (non-anion gap metabolic acidosis). This is the opposite of hyperaldosteronism."
+    },
+    {
+      "id": "q_016",
+      "topic": "Aldosterone & RAAS",
+      "type": "mcq",
+      "question": "A 52-year-old hypertensive man is found to have elevated aldosterone and a LOW plasma renin activity. His aldosterone-to-renin ratio (ARR) is 42. Which condition does this pattern most suggest?",
+      "options": ["Secondary hyperaldosteronism from renal artery stenosis", "Heart failure", "Primary aldosteronism", "Secondary adrenal insufficiency"],
+      "correct": 2,
+      "explanation": "Primary aldosteronism features elevated aldosterone with LOW renin (renin is suppressed by volume expansion from aldosterone). ARR >30 with aldosterone ≥15 ng/dL is abnormal and suggests primary aldosteronism. Secondary hyperaldosteronism has HIGH renin."
+    },
+    {
+      "id": "q_017",
+      "topic": "Aldosterone & RAAS",
+      "type": "mcq",
+      "question": "Which of the following is the most common cause of secondary hyperaldosteronism?",
+      "options": ["Bilateral adrenal hyperplasia", "Renal artery stenosis", "Pituitary adenoma", "Long-term ACE inhibitor use"],
+      "correct": 1,
+      "explanation": "Secondary hyperaldosteronism is most commonly caused by decreased renal perfusion due to renal artery stenosis. Reduced renal blood flow stimulates plasma renin activity, which drives the RAAS to increase aldosterone production."
+    },
+    {
+      "id": "q_018",
+      "topic": "Aldosterone & RAAS",
+      "type": "true_false",
+      "question": "In pseudohypoaldosteronism, plasma aldosterone levels are significantly elevated.",
+      "correct": true,
+      "explanation": "TRUE. Pseudohypoaldosteronism is caused by tissue RESISTANCE to aldosterone (not deficiency). The body compensates by upregulating renin and aldosterone. Lab findings include ELEVATED plasma aldosterone concentrations AND elevated plasma renin activity — distinguishing it from true primary hypoaldosteronism where aldosterone is low."
+    },
+    {
+      "id": "q_019",
+      "topic": "Aldosterone & RAAS",
+      "type": "mcq",
+      "question": "Which test is preferred to confirm primary aldosteronism after an elevated aldosterone-to-renin ratio?",
+      "options": ["CRH stimulation test", "ACTH stimulation test", "Saline infusion test", "24-hour urine aldosterone"],
+      "correct": 2,
+      "explanation": "The saline infusion test is the preferred confirmatory test for primary aldosteronism. IV saline normally suppresses aldosterone; in primary aldosteronism, aldosterone fails to suppress, confirming autonomous production."
+    },
+    {
+      "id": "q_020",
+      "topic": "Pancreatitis",
+      "type": "mcq",
+      "question": "A 45-year-old man with a history of heavy alcohol use presents with severe epigastric pain radiating to the back. Labs show amylase at 340 U/L and lipase at 420 U/L. Which statement about these findings is MOST accurate?",
+      "options": ["Amylase is more specific than lipase for pancreatic disease", "Lipase peaks later and remains elevated longer than amylase", "Amylase normalizes over 8–14 days after acute pancreatitis", "The amylase-to-lipase ratio is diagnostic for pancreatitis etiology"],
+      "correct": 1,
+      "explanation": "Lipase peaks sooner (4–8 hours) and declines LATER (normalizes over 8–14 days) than amylase (normalizes in 3–5 days). Lipase is also more specific for pancreatic disease (sensitivity/specificity >95%). Amylase normalizes faster and is less pancreas-specific."
+    },
+    {
+      "id": "q_021",
+      "topic": "Pancreatitis",
+      "type": "mcq",
+      "question": "In chronic pancreatitis, which statement about lab findings is most accurate?",
+      "options": ["Amylase and lipase are reliably elevated >3× ULN", "Diagnosis depends primarily on clinical history and imaging", "Lipase is always more useful than amylase in chronic pancreatitis", "Blood glucose is consistently normal"],
+      "correct": 1,
+      "explanation": "In chronic pancreatitis, amylase and lipase are LESS informative because glandular tissue is replaced by scar tissue over time. Diagnosis depends largely on history and imaging. Patients often develop impaired glucose tolerance or diabetes due to islet cell involvement."
+    },
+    {
+      "id": "q_022",
+      "topic": "Pancreatitis",
+      "type": "mcq",
+      "question": "The most common cause of chronic pancreatitis in industrialized countries is:",
+      "options": ["Cystic fibrosis", "Malnutrition", "Excessive alcohol consumption", "Gallstones"],
+      "correct": 2,
+      "explanation": "In industrialized countries, excessive alcohol consumption is the primary cause of chronic pancreatitis. In developing countries it is malnutrition, and in children the MCC is cystic fibrosis."
+    },
+    {
+      "id": "q_023",
+      "topic": "Diabetes Mellitus",
+      "type": "mcq",
+      "question": "Which diabetes diagnostic test is considered the GOLD STANDARD?",
+      "options": ["Random plasma glucose", "Hemoglobin A1c", "Fasting plasma glucose", "2-hour oral glucose tolerance test"],
+      "correct": 2,
+      "explanation": "Fasting plasma glucose (FPG) is the GOLD STANDARD for diagnosing diabetes. It requires at least 8 hours of fasting and must be ≥126 mg/dL on 2 separate occasions to diagnose DM. Pre-diabetes: 110–125 mg/dL."
+    },
+    {
+      "id": "q_024",
+      "topic": "Diabetes Mellitus",
+      "type": "mcq",
+      "question": "A 52-year-old obese man has a fasting plasma glucose of 118 mg/dL on two separate occasions. His HbA1c is 6.1%. What is the correct interpretation?",
+      "options": ["Normal — no further workup needed", "Pre-diabetes (impaired fasting glucose)", "Diabetes mellitus — start metformin", "Type 1 diabetes — check islet cell antibodies"],
+      "correct": 1,
+      "explanation": "FPG 110–125 mg/dL and HbA1c 5.7–6.4% both indicate PRE-DIABETES (impaired glucose tolerance). DM would require FPG ≥126 mg/dL or HbA1c ≥6.5%. Lifestyle intervention is the priority in pre-diabetes."
+    },
+    {
+      "id": "q_025",
+      "topic": "Diabetes Mellitus",
+      "type": "mcq",
+      "question": "An HbA1c reflects average blood glucose over what time period?",
+      "options": ["2–4 weeks", "6–8 weeks", "10–12 weeks", "6 months"],
+      "correct": 2,
+      "explanation": "HbA1c reflects average blood glucose over the preceding 10–12 weeks because it is tied to the lifespan of red blood cells (~120 days). It is not affected by short-term fluctuations in plasma glucose."
+    },
+    {
+      "id": "q_026",
+      "topic": "Diabetes Mellitus",
+      "type": "mcq",
+      "question": "A patient with hypoglycemia has elevated insulin but LOW C-peptide. What is the most likely cause?",
+      "options": ["Insulinoma", "Sulfonylurea overdose", "Exogenous insulin injection (factitious)", "Type 2 diabetes"],
+      "correct": 2,
+      "explanation": "C-peptide is co-secreted with ENDOGENOUS insulin only. Exogenous (injectable) insulin does NOT contain C-peptide. Low C-peptide + elevated insulin + hypoglycemia = factitious hypoglycemia from self-administered insulin. An insulinoma would show HIGH C-peptide + high insulin."
+    },
+    {
+      "id": "q_027",
+      "topic": "Diabetes Mellitus",
+      "type": "true_false",
+      "question": "HbA1c ≥6.5% on a single test is sufficient to diagnose diabetes mellitus without requiring a confirmatory fasting plasma glucose.",
+      "correct": true,
+      "explanation": "TRUE. An HbA1c ≥6.5% can diagnose diabetes mellitus. Unlike FPG which must be confirmed on 2 separate occasions, HbA1c ≥6.5% is a standalone diagnostic criterion (per ADA guidelines). However, clinical context and confirmation may still be recommended in asymptomatic patients."
+    },
+    {
+      "id": "q_028",
+      "topic": "Diabetes Mellitus",
+      "type": "mcq",
+      "question": "A known diabetic patient has an HbA1c of 8.2%. What does this indicate and what is the target?",
+      "answer": null,
+      "options": ["Well controlled; target is <8.0%", "Poorly controlled; target is <7.0%", "Normal glycemia; no changes needed", "Hypoglycemia risk; reduce medications"],
+      "correct": 1,
+      "explanation": "An HbA1c of 8.2% indicates poorly controlled diabetes. The target for most diabetic patients is <7.0% to minimize diabetes-related complications including nephropathy, retinopathy, and neuropathy. This patient requires medication adjustment and/or lifestyle counseling."
+    },
+    {
+      "id": "q_029",
+      "topic": "Diabetes Mellitus",
+      "type": "mcq",
+      "question": "What is the gold standard test for diagnosing gestational diabetes?",
+      "options": ["2-hour OGTT with 75g glucose", "3-hour glucose tolerance test with 100g glucose", "Random plasma glucose", "Fasting plasma glucose on 2 occasions"],
+      "correct": 1,
+      "explanation": "The 3-hour glucose tolerance test (GTT) with 100g glucose is the gold standard for diagnosing gestational diabetes, typically performed after a positive 50g glucose challenge screen."
+    },
+    {
+      "id": "q_030",
+      "topic": "Lipids & Lipoproteins",
+      "type": "mcq",
+      "question": "A 55-year-old man's lipid panel shows: Total cholesterol 220, HDL 35, Triglycerides 180, LDL calculated 149. Which value is most concerning for cardiovascular risk?",
+      "options": ["Elevated total cholesterol only", "Low HDL with elevated LDL", "Mildly elevated triglycerides", "All values are within normal limits"],
+      "correct": 1,
+      "explanation": "The most concerning combination is LOW HDL (<50 mg/dL) and ELEVATED LDL (>100 mg/dL). Low HDL is closely correlated with coronary heart disease and accelerates atherosclerosis. Elevated LDL directly promotes arterial plaque formation. Both together significantly elevate CV risk."
+    },
+    {
+      "id": "q_031",
+      "topic": "Lipids & Lipoproteins",
+      "type": "mcq",
+      "question": "Using the Friedewald equation, calculate the LDL for a patient with: Total cholesterol = 200 mg/dL, HDL = 50 mg/dL, Triglycerides = 100 mg/dL.",
+      "options": ["LDL = 130 mg/dL", "LDL = 140 mg/dL", "LDL = 120 mg/dL", "LDL = 110 mg/dL"],
+      "correct": 0,
+      "explanation": "Friedewald: LDL = Total Cholesterol – HDL – (TG/5)\nLDL = 200 – 50 – (100/5) = 200 – 50 – 20 = 130 mg/dL\nThis LDL of 130 mg/dL is above the target of <100 mg/dL."
+    },
+    {
+      "id": "q_032",
+      "topic": "Lipids & Lipoproteins",
+      "type": "mcq",
+      "question": "Which lipoprotein degrades to LDL in the circulation?",
+      "options": ["Chylomicrons", "HDL", "VLDL", "IDL"],
+      "correct": 2,
+      "explanation": "VLDL (Very Low-Density Lipoprotein) degrades to LDL in circulation as it loses triglycerides. LDL is the final product of VLDL catabolism and is the primary atherogenic lipoprotein."
+    },
+    {
+      "id": "q_033",
+      "topic": "Lipids & Lipoproteins",
+      "type": "mcq",
+      "question": "What does the cholesterol-to-HDL ratio measure and what value is considered normal?",
+      "options": ["The ratio of LDL to HDL; normal <3.0", "Total cholesterol divided by HDL; normal <5.0", "HDL divided by LDL; normal >2.0", "Triglycerides divided by HDL; normal <2.0"],
+      "correct": 1,
+      "explanation": "The cholesterol-to-HDL ratio = Total Cholesterol ÷ HDL. A normal value is <5.0 (no units). It reflects how much of the total cholesterol is 'good' (HDL). An elevated ratio (>5.0) indicates increased risk of atherosclerotic cardiovascular disease."
+    },
+    {
+      "id": "q_034",
+      "topic": "Lipids & Lipoproteins",
+      "type": "true_false",
+      "question": "Elevated HDL cholesterol levels are associated with increased cardiovascular risk.",
+      "correct": false,
+      "explanation": "FALSE. Elevated HDL is CARDIOPROTECTIVE — HDL removes excess cholesterol from cells and vessel walls and promotes return to the liver for catabolism. It is LOW HDL that is associated with coronary heart disease and acceleration of atherosclerosis. HDL is the 'good' cholesterol."
+    },
+    {
+      "id": "q_035",
+      "topic": "Lipids & Lipoproteins",
+      "type": "mcq",
+      "question": "Which endocrine disorder is associated with elevated triglycerides AND elevated total cholesterol?",
+      "options": ["Hyperthyroidism", "Primary adrenal insufficiency", "Hypothyroidism", "Hyperaldosteronism"],
+      "correct": 2,
+      "explanation": "Hypothyroidism is associated with both elevated triglycerides AND elevated total cholesterol. Thyroid hormones regulate lipid metabolism; deficiency slows lipid clearance. This dyslipidemia increases cardiovascular risk in hypothyroid patients."
+    },
+    {
+      "id": "q_036",
+      "topic": "Lipids & Lipoproteins",
+      "type": "matching",
+      "question": "Match each lipoprotein with its primary function or characteristic:",
+      "pairs": [
+        {"term": "LDL", "match": "Transports cholesterol from liver to body cells ('bad' cholesterol)"},
+        {"term": "HDL", "match": "Removes excess cholesterol from cells and returns it to liver ('good' cholesterol)"},
+        {"term": "VLDL", "match": "Degrades to LDL in circulation; carries triglycerides from liver"},
+        {"term": "Chylomicrons", "match": "Largest lipoprotein; transports dietary fat from the gut"}
+      ],
+      "explanation": "Each lipoprotein class has a specific role: LDL delivers cholesterol to peripheral cells (atherogenic), HDL performs reverse cholesterol transport (protective), VLDL is the triglyceride-rich precursor to LDL, and chylomicrons handle dietary lipid absorption."
+    },
+    {
+      "id": "q_037",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "matching",
+      "question": "Match each Cushing Syndrome etiology with its high-dose dexamethasone suppression test result and ACTH level:",
+      "pairs": [
+        {"term": "Cushing Disease (pituitary)", "match": "High-dose DST: suppression; ACTH: elevated"},
+        {"term": "Adrenal cortisol-secreting tumor", "match": "High-dose DST: no suppression; ACTH: decreased"},
+        {"term": "Ectopic ACTH-producing tumor", "match": "High-dose DST: no suppression; ACTH: elevated"},
+        {"term": "Exogenous steroid therapy", "match": "High-dose DST: no suppression; ACTH: decreased"}
+      ],
+      "explanation": "The high-dose dexamethasone suppression test combined with ACTH levels is essential for differentiating Cushing Syndrome etiologies. Only the pituitary source retains partial feedback sensitivity and suppresses on high-dose dex."
+    },
+    {
+      "id": "q_038",
+      "topic": "Thyroid Function & Labs",
+      "type": "matching",
+      "question": "Match each thyroid antibody with its associated condition:",
+      "pairs": [
+        {"term": "Anti-TPO antibodies", "match": "Hashimoto's thyroiditis (autoimmune hypothyroidism)"},
+        {"term": "TSH receptor antibodies (TRAbs)", "match": "Graves' disease (autoimmune hyperthyroidism)"},
+        {"term": "Anti-TG antibodies", "match": "Also seen in Hashimoto's; used when iodine deficiency suspected"},
+        {"term": "Islet cell antibodies", "match": "Type 1 diabetes mellitus (autoimmune beta cell destruction)"}
+      ],
+      "explanation": "Anti-thyroid antibodies are highly specific for their respective autoimmune conditions. TRAbs are pathognomonic for Graves'; anti-TPO is the primary marker for Hashimoto's. Islet cell antibodies are not thyroid-related but distinguish Type 1 DM."
+    },
+    {
+      "id": "q_039",
+      "topic": "Diabetes Mellitus",
+      "type": "matching",
+      "question": "Match each blood glucose test result with the correct clinical interpretation:",
+      "pairs": [
+        {"term": "FPG 118 mg/dL on 2 occasions", "match": "Pre-diabetes (impaired fasting glucose)"},
+        {"term": "FPG ≥126 mg/dL on 2 occasions", "match": "Diabetes mellitus"},
+        {"term": "2-hour GTT = 165 mg/dL", "match": "Pre-diabetes (impaired glucose tolerance)"},
+        {"term": "HbA1c = 7.5%", "match": "Diabetes mellitus (above 6.5% threshold)"}
+      ],
+      "explanation": "Glucose thresholds: FPG 110–125 = pre-diabetes, ≥126 = DM. 2-hour GTT 140–199 = pre-diabetes, ≥200 = DM. HbA1c 5.7–6.4% = pre-diabetes, ≥6.5% = DM."
+    },
+    {
+      "id": "q_040",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "fill_in_blank",
+      "question": "The mnemonic for remembering the layers of the adrenal cortex (outer to inner) is ________, and the hormones they produce can be remembered by the mnemonic ________.",
+      "answer": "GFR; ACE",
+      "acceptableAnswers": ["GFR and ACE", "GFR / ACE"],
+      "explanation": "GFR = Glomerulosa (mineralocorticoids), Fasciculata (glucocorticoids), Reticularis (sex steroids). ACE = Androgens (reticularis), Cortisol (fasciculata), Everything mineral/aldosterone (glomerulosa)."
+    },
+    {
+      "id": "q_041",
+      "topic": "Thyroid Function & Labs",
+      "type": "fill_in_blank",
+      "question": "TSH is described as having an ________ log-linear relationship with free T4, meaning a small change in free T4 causes a large change in TSH.",
+      "answer": "inverse",
+      "acceptableAnswers": ["inverse", "inversely proportional"],
+      "explanation": "The inverse log-linear relationship between TSH and free T4 is the physiologic basis for TSH being the most sensitive screening test for thyroid disease. Small decreases in free T4 cause large increases in TSH, acting as an amplified signal."
+    },
+    {
+      "id": "q_042",
+      "topic": "Diabetes Mellitus",
+      "type": "fill_in_blank",
+      "question": "HbA1c reflects average blood glucose over the preceding ________ weeks and should be kept below ________% to minimize diabetes-related complications.",
+      "answer": "10-12 weeks; 7.0%",
+      "acceptableAnswers": ["10 to 12 weeks; 7%", "10-12; 7.0"],
+      "explanation": "HbA1c reflects approximately 10–12 weeks of glycemic control because hemoglobin is glycosylated throughout the RBC lifespan (~120 days). The therapeutic target is <7.0% to reduce risk of nephropathy, retinopathy, and neuropathy."
+    },
+    {
+      "id": "q_043",
+      "topic": "Lipids & Lipoproteins",
+      "type": "fill_in_blank",
+      "question": "The Friedewald equation for calculating LDL is: LDL-C = Total Cholesterol – HDL – (________).",
+      "answer": "Triglycerides / 5",
+      "acceptableAnswers": ["TG/5", "triglycerides divided by 5", "TG / 5"],
+      "explanation": "In the Friedewald equation, triglycerides/5 estimates VLDL cholesterol. LDL-C = Total Cholesterol – HDL – (TG/5). This was the previous gold standard but has been largely replaced by more accurate methods like Martin-Hopkins and the Sampson method."
+    },
+    {
+      "id": "q_044",
+      "topic": "Pancreatitis",
+      "type": "fill_in_blank",
+      "question": "Amylase and lipase are considered pathognomonic markers of acute pancreatitis when they are greater than ________ times the upper limit of normal.",
+      "answer": "3",
+      "acceptableAnswers": ["three", "3x", "3 times"],
+      "explanation": "Both amylase and lipase >3× the upper limit of normal (ULN) are historically characterized as pathognomonic for acute pancreatitis. Lipase is preferred due to higher sensitivity/specificity (>95%) and longer window of elevation."
+    },
+    {
+      "id": "q_045",
+      "topic": "Aldosterone & RAAS",
+      "type": "fill_in_blank",
+      "question": "In primary aldosteronism, the aldosterone-to-renin ratio (ARR) is considered ABNORMAL when it is greater than ________ and the aldosterone concentration is ≥15 ng/dL.",
+      "answer": "30",
+      "acceptableAnswers": [">30", "thirty", "30:1"],
+      "explanation": "An ARR >30 with aldosterone ≥15 ng/dL is the diagnostic threshold for primary aldosteronism. This should be confirmed with a saline infusion test. In primary aldosteronism, autonomous aldosterone production suppresses renin, creating a very high ratio."
+    },
+    {
+      "id": "q_046",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "true_false",
+      "question": "A decreased early morning cortisol level may suggest adrenal insufficiency, making it the one exception to the rule that a single random cortisol is not useful.",
+      "correct": true,
+      "explanation": "TRUE. Cortisol is normally at its HIGHEST in the early morning (4–8 AM). Therefore, a low AM cortisol is the one exception where a single measurement can be clinically meaningful — it may suggest adrenal insufficiency. In contrast, random or afternoon cortisol values are unreliable due to diurnal variation."
+    },
+    {
+      "id": "q_047",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "true_false",
+      "question": "The 24-hour urinary free cortisol test is reliable and should be used in patients with renal impairment.",
+      "correct": false,
+      "explanation": "FALSE. The 24-hour UFC should NOT be used in patients with renal impairment. Impaired kidney function affects cortisol excretion and clearance, making the measurement unreliable. Alternative tests (salivary cortisol, dexamethasone suppression) should be used in these patients."
+    },
+    {
+      "id": "q_048",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "A patient with confirmed Cushing Syndrome has no suppression on high-dose dexamethasone and a DECREASED ACTH level. The most likely source is:",
+      "options": ["Pituitary microadenoma (Cushing Disease)", "Ectopic ACTH from small cell lung cancer", "Cortisol-secreting adrenal adenoma", "Exogenous steroid use"],
+      "correct": 2,
+      "explanation": "Both adrenal tumor and exogenous steroids cause LOW ACTH (suppressed by autonomous/exogenous cortisol). However, exogenous steroids are a medication history, not a tumor. A cortisol-secreting adrenal adenoma produces cortisol autonomously → feedback suppresses both ACTH and CRH → low ACTH, no suppression on high-dose DST."
+    },
+    {
+      "id": "q_049",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "A patient presents with weight loss, anxiety, heat intolerance, and palpitations. TSH is undetectable. Free T4 is markedly elevated. Which physical exam finding would support a diagnosis of Graves' disease specifically?",
+      "options": ["Goiter alone", "Bradycardia", "Exophthalmos and pretibial myxedema", "Decreased DTRs"],
+      "correct": 2,
+      "explanation": "Exophthalmos (proptosis) and pretibial myxedema are distinctive features of GRAVES' disease specifically, not just hyperthyroidism in general. Goiter and weight loss can occur in any hyperthyroid state. Bradycardia and decreased DTRs are hypothyroid findings."
+    },
+    {
+      "id": "q_050",
+      "topic": "Pancreas & Blood Glucose",
+      "type": "mcq",
+      "question": "The urine microalbumin test is ordered in a diabetic patient to screen for:",
+      "options": ["Glucosuria", "Diabetic retinopathy", "Early diabetic nephropathy", "Pancreatitis"],
+      "correct": 2,
+      "explanation": "The microalbumin test detects small amounts of albumin in urine (microalbuminuria), which is an EARLY MARKER of diabetic nephropathy. It detects kidney involvement before overt proteinuria develops, allowing earlier intervention."
+    },
+    {
+      "id": "q_051",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "Which of the following conditions would cause elevated TOTAL T4 but a NORMAL free T4?",
+      "options": ["Primary hypothyroidism", "Graves' disease", "Increased TBG due to pregnancy or estrogen therapy", "Hashimoto's thyroiditis"],
+      "correct": 2,
+      "explanation": "Increased TBG (from pregnancy or estrogen therapy) binds more T4, raising TOTAL T4. However, free T4 remains normal because the active fraction is maintained by equilibrium. TSH and free T4 will both be normal — the patient is euthyroid despite elevated total T4."
+    },
+    {
+      "id": "q_052",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "mcq",
+      "question": "Which HPA axis hormone is released FIRST in response to stress and directly stimulates ACTH release?",
+      "options": ["Aldosterone", "CRH (corticotropin-releasing hormone)", "ACTH", "Cortisol"],
+      "correct": 1,
+      "explanation": "CRH (corticotropin-releasing hormone) is released from the hypothalamus FIRST in response to stress. CRH then stimulates the anterior pituitary to release ACTH, which stimulates the adrenal cortex to produce cortisol. The sequence is: CRH → ACTH → Cortisol."
+    },
+    {
+      "id": "q_053",
+      "topic": "Diabetes Mellitus",
+      "type": "mcq",
+      "question": "Type 1 diabetes mellitus differs from Type 2 in that:",
+      "options": ["Type 1 accounts for 90% of diabetes cases", "Type 1 results from insulin resistance", "Type 1 involves autoimmune destruction of beta cells leading to absolute insulin deficiency", "Type 1 can be prevented through lifestyle modifications"],
+      "correct": 2,
+      "explanation": "Type 1 DM results from autoimmune destruction of pancreatic beta cells leading to ABSOLUTE insulin deficiency, requiring insulin therapy. Type 2 accounts for 90–95% of cases and results from insulin resistance. Type 2 can be prevented/delayed with lifestyle modifications; Type 1 cannot."
+    },
+    {
+      "id": "q_054",
+      "topic": "Lipids & Lipoproteins",
+      "type": "true_false",
+      "question": "Lipids are transported as lipoproteins because they are hydrophilic and dissolve freely in plasma.",
+      "correct": false,
+      "explanation": "FALSE. Lipids are HYDROPHOBIC (water-insoluble) and do NOT dissolve freely in plasma. They must be packaged with proteins (apolipoproteins) into macromolecular complexes called lipoproteins to be transported through the aqueous blood environment."
+    },
+    {
+      "id": "q_055",
+      "topic": "Lipids & Lipoproteins",
+      "type": "mcq",
+      "question": "Which is the LARGEST lipoprotein class?",
+      "options": ["LDL (20 nm)", "VLDL (70 nm)", "Chylomicrons (1000 nm)", "HDL (10 nm)"],
+      "correct": 2,
+      "explanation": "Chylomicrons are the largest lipoproteins at approximately 1000 nm. They transport dietary (exogenous) lipids from the intestine. As size decreases, density increases: Chylomicrons > VLDL > IDL > LDL > HDL (smallest and most dense)."
+    },
+    {
+      "id": "q_056",
+      "topic": "Aldosterone & RAAS",
+      "type": "mcq",
+      "question": "Which medication class can cause secondary hypoaldosteronism by blocking the RAAS?",
+      "options": ["Diuretics", "Beta blockers", "ACE inhibitors", "Calcium channel blockers"],
+      "correct": 2,
+      "explanation": "ACE inhibitors block the conversion of Angiotensin I to Angiotensin II. Since Angiotensin II is the primary stimulus for aldosterone secretion, ACE inhibitors reduce aldosterone production, potentially causing secondary hypoaldosteronism (particularly in patients with underlying renal disease)."
+    },
+    {
+      "id": "q_057",
+      "topic": "Pancreatitis",
+      "type": "true_false",
+      "question": "Lipase has a higher sensitivity and specificity for acute pancreatitis compared to amylase.",
+      "correct": true,
+      "explanation": "TRUE. Lipase has a sensitivity and specificity >95% for acute pancreatitis, superior to amylase. Lipase is also more specific to the pancreas (amylase is also produced by salivary glands, which can cause false positives). Additionally, lipase stays elevated longer (8–14 days vs. 3–5 days for amylase)."
+    },
+    {
+      "id": "q_058",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "A 62-year-old woman with a history of renal artery stenosis presents with difficult-to-control hypertension, weakness, and nocturia. Labs reveal elevated aldosterone with elevated plasma renin activity. This pattern is consistent with:",
+      "options": ["Primary aldosteronism (Conn Syndrome)", "Secondary hyperaldosteronism", "Pseudohypoaldosteronism", "Primary adrenal insufficiency"],
+      "correct": 1,
+      "explanation": "Secondary hyperaldosteronism features elevated aldosterone with ELEVATED renin — the adrenal gland is appropriately responding to excess renin stimulation from decreased renal perfusion. This differs from primary aldosteronism (low renin). Renal artery stenosis is the most common cause of secondary hyperaldosteronism."
+    },
+    {
+      "id": "q_059",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "Anti-thyroid antibodies are the most common cause of thyroid disease in societies with adequate iodine supply and are also present in what percentage of the general population?",
+      "options": ["5%", "10%", "15%", "25%"],
+      "correct": 2,
+      "explanation": "Anti-thyroid antibodies are present in approximately 15% of the general population, even in individuals without overt thyroid disease. Their presence alone is not diagnostic; clinical symptoms and abnormal TSH/FT4 are also required."
+    },
+    {
+      "id": "q_060",
+      "topic": "Diabetes Mellitus",
+      "type": "mcq",
+      "question": "Which test is preferred for random blood glucose screening in the emergency department for a patient presenting with altered mental status?",
+      "options": ["Fasting plasma glucose", "Oral glucose tolerance test", "Random plasma glucose via finger stick", "Hemoglobin A1c"],
+      "correct": 2,
+      "explanation": "In emergency settings, a random plasma glucose via capillary finger stick is the appropriate test. It is rapid, does not require fasting, and can quickly rule in or out hypoglycemia (or significant hyperglycemia) as a cause of altered mental status. HbA1c and OGTT are not appropriate for acute/emergency situations."
+    },
+    {
+      "id": "q_061",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "mcq",
+      "question": "Salivary cortisol is preferred over serum cortisol for what specific clinical application?",
+      "options": ["Diagnosing adrenal insufficiency in the morning", "Screening for hypercortisolism using late-night measurement", "Monitoring steroid replacement therapy", "Ruling out ectopic ACTH production"],
+      "correct": 1,
+      "explanation": "Measurement of LATE-NIGHT salivary cortisol is an acceptable screening method for hypercortisolism (Cushing Syndrome). Cortisol should be lowest at night; elevated late-night salivary cortisol indicates loss of diurnal variation. It is not influenced by protein concentrations and correlates well with serum cortisol."
+    },
+    {
+      "id": "q_062",
+      "topic": "Pancreas & Blood Glucose",
+      "type": "mcq",
+      "question": "Alpha cells of the pancreatic islets of Langerhans produce:",
+      "options": ["Insulin", "Glucagon", "Somatostatin", "Amylase"],
+      "correct": 1,
+      "explanation": "Alpha (α) cells produce GLUCAGON, which raises blood glucose by stimulating glycogenolysis and gluconeogenesis. Beta (β) cells produce INSULIN, which lowers blood glucose. Amylase is an exocrine digestive enzyme, not produced by islet cells."
+    },
+    {
+      "id": "q_063",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "The worldwide most common cause of hypothyroidism is:",
+      "options": ["Hashimoto's thyroiditis", "Iodine deficiency", "Graves' disease", "Subacute thyroiditis"],
+      "correct": 1,
+      "explanation": "Iodine deficiency is the most common cause of hypothyroidism WORLDWIDE, though it is uncommon in countries with iodized salt. In the US, Hashimoto's thyroiditis (autoimmune) is the most common cause."
+    },
+    {
+      "id": "q_064",
+      "topic": "Lipids & Lipoproteins",
+      "type": "mcq",
+      "question": "Which condition is associated with LOW total cholesterol levels?",
+      "options": ["Hypothyroidism", "Diabetes mellitus", "Malignancy or malnutrition", "Kidney failure"],
+      "correct": 2,
+      "explanation": "Low total cholesterol is associated with anemia, malignancies, and malnutrition — states of cellular breakdown or inadequate substrate for cholesterol synthesis. Hypothyroidism, diabetes, and kidney failure are associated with ELEVATED total cholesterol."
+    },
+    {
+      "id": "q_065",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "Why is free T4 preferred over total T4 for assessing thyroid function in a pregnant patient?",
+      "answer": null,
+      "options": ["Pregnancy decreases TBG levels, lowering total T4", "Pregnancy increases TBG levels, elevating total T4 while free T4 remains normal", "Free T4 is cheaper to measure in pregnancy", "Total T4 becomes undetectable in pregnancy"],
+      "correct": 1,
+      "explanation": "Pregnancy increases estrogen → increases TBG production → more T4 is bound → higher TOTAL T4. However, FREE T4 remains normal because the patient is euthyroid. If you only measured total T4, you might incorrectly diagnose hyperthyroidism. Free T4 accurately reflects thyroid status regardless of TBG changes."
+    },
+    {
+      "id": "q_066",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "A patient presents with hypoglycemia, weakness, salt craving, hyperpigmentation, and hyperkalemia. What is the most likely diagnosis?",
+      "options": ["Cushing Syndrome", "Addison Disease (primary adrenal insufficiency)", "Secondary adrenal insufficiency", "SIADH"],
+      "correct": 1,
+      "explanation": "This presentation is classic for Addison Disease (chronic primary adrenal insufficiency): hypoglycemia (no glucocorticoid), hyperkalemia + hyponatremia (no aldosterone), and hyperpigmentation (excess ACTH/MSH from POMC). Secondary AI would not cause hyperpigmentation or aldosterone deficiency."
+    },
+    {
+      "id": "q_067",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "true_false",
+      "question": "In secondary adrenal insufficiency, aldosterone deficiency is typically present because both the adrenal cortex and medulla are affected.",
+      "correct": false,
+      "explanation": "FALSE. In secondary adrenal insufficiency (pituitary problem), the adrenal medulla is NOT affected and aldosterone deficiency is usually NOT present. ACTH does not primarily regulate aldosterone — aldosterone is controlled by the RAAS, which remains intact. Only cortisol (and androgens) are deficient in secondary AI."
+    },
+    {
+      "id": "q_068",
+      "topic": "Pancreatitis",
+      "type": "mcq",
+      "question": "A child is diagnosed with chronic pancreatitis. What is the most likely underlying condition?",
+      "options": ["Alcohol use disorder", "Malnutrition", "Cystic fibrosis", "Biliary tract obstruction"],
+      "correct": 2,
+      "explanation": "Cystic fibrosis (CF) is the most common cause of chronic pancreatitis in CHILDREN. CF causes thick secretions that obstruct pancreatic ducts, leading to chronic enzyme backup and glandular destruction. In adults, alcohol is the leading cause in industrialized countries."
+    },
+    {
+      "id": "q_069",
+      "topic": "Lipids & Lipoproteins",
+      "type": "fill_in_blank",
+      "question": "Approximately ________% of daily cholesterol production comes from the liver, making it the central organ in cholesterol regulation.",
+      "answer": "70",
+      "acceptableAnswers": ["70%", "seventy percent"],
+      "explanation": "About 70% of daily cholesterol is produced endogenously by the liver. This is why statins (HMG-CoA reductase inhibitors that target hepatic cholesterol synthesis) are so effective at lowering LDL cholesterol."
+    },
+    {
+      "id": "q_070",
+      "topic": "Thyroid Function & Labs",
+      "type": "fill_in_blank",
+      "question": "In Hashimoto's thyroiditis, approximately ________% of patients express anti-TPO antibodies.",
+      "answer": "90",
+      "acceptableAnswers": ["~90%", "ninety", "90%"],
+      "explanation": "Anti-TPO (antithyroid peroxidase) antibodies are present in approximately 90% of Hashimoto's thyroiditis patients, making it the primary serologic marker for this autoimmune condition. Anti-TG antibodies are found in 20–50% of cases."
+    },
+    {
+      "id": "q_071",
+      "topic": "Diabetes Mellitus",
+      "type": "mcq",
+      "question": "A diabetic patient's symptoms resolve completely after receiving oral glucose. Their FPG was found to be 34 mg/dL. This clinical presentation is most consistent with:",
+      "options": ["Diabetic ketoacidosis", "Hyperosmolar hyperglycemic state", "Hypoglycemia", "Addisonian crisis"],
+      "correct": 2,
+      "explanation": "Hypoglycemia is defined by a low FPG (often <40 mg/dL) with symptoms from CNS glucose deprivation (sweating, tachycardia, AMS) that COMPLETELY RESOLVE upon glucose restoration. This is a classic presentation in a diabetic patient, most commonly from insulin or sulfonylurea overdose."
+    },
+    {
+      "id": "q_072",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "mcq",
+      "question": "Which Cushing Syndrome screening test is MOST specific?",
+      "options": ["PM salivary cortisol", "Low-dose dexamethasone suppression test", "24-hour urinary free cortisol (UFC)", "Random serum cortisol"],
+      "correct": 2,
+      "explanation": "The 24-hour urinary free cortisol (UFC) is the MOST SPECIFIC screening test for Cushing Syndrome. It accounts for diurnal variation, is not affected by protein concentrations, and provides an integrated measure of cortisol output over the full day."
+    },
+    {
+      "id": "q_073",
+      "topic": "Pancreas & Blood Glucose",
+      "type": "mcq",
+      "question": "Insulin promotes glucose storage through which two mechanisms?",
+      "options": ["Glycogenolysis and gluconeogenesis", "Lipogenesis and glycogenesis", "Lipolysis and glycogenolysis", "Gluconeogenesis and lipolysis"],
+      "correct": 1,
+      "explanation": "Insulin promotes energy storage through LIPOGENESIS (fat synthesis from glucose) and GLYCOGENESIS (glycogen synthesis from glucose). It DECREASES blood glucose by increasing cellular uptake and promoting these anabolic storage pathways. Glycogenolysis and gluconeogenesis are glucagon-mediated glucose-raising mechanisms."
+    },
+    {
+      "id": "q_074",
+      "topic": "Lipids & Lipoproteins",
+      "type": "mcq",
+      "question": "Which of the following best describes the difference between the Friedewald equation and the Martin-Hopkins calculation?",
+      "options": ["Martin-Hopkins uses total cholesterol minus HDL only", "Martin-Hopkins uses an individualized factor for VLDL-C instead of a fixed TG/5", "Friedewald is more accurate at very high triglyceride levels", "Sampson method is a simplification of the Friedewald equation"],
+      "correct": 1,
+      "explanation": "The Martin-Hopkins calculation provides better accuracy by using an INDIVIDUALIZED factor (derived from a large dataset) to estimate VLDL-C, rather than the fixed divisor of 5 used in Friedewald. This is especially important at low LDL and high TG levels where Friedewald is less accurate."
+    },
+    {
+      "id": "q_075",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "Conn Syndrome is best described as:",
+      "options": ["Bilateral adrenal atrophy causing aldosterone deficiency", "An aldosterone-secreting adrenal adenoma causing primary aldosteronism", "ACTH-secreting pituitary tumor causing hypercortisolism", "Secondary hyperaldosteronism due to renal artery stenosis"],
+      "correct": 1,
+      "explanation": "Conn Syndrome = aldosterone-secreting adrenal adenoma, a cause of PRIMARY aldosteronism. It results in autonomous aldosterone excess, suppressed renin, hypertension, hypokalemia, and metabolic alkalosis — independent of the RAAS."
+    },
+    {
+      "id": "q_076",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "A patient with known Graves' disease is being monitored. Which combination of tests is most appropriate for ongoing management?",
+      "options": ["TSH alone", "Free T4 alone", "TSH and free T4 together", "Anti-TPO antibodies annually"],
+      "correct": 2,
+      "explanation": "TSH AND free T4 together are used to manage Graves' disease. TSH alone may lag behind in normalizing after treatment. Free T4 confirms euthyroid status. Both together provide the most complete picture of treatment response."
+    },
+    {
+      "id": "q_077",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "mcq",
+      "question": "The RAAS pathway involves renin cleaving angiotensinogen to form angiotensin I, which is then converted to angiotensin II by which enzyme?",
+      "options": ["Aldosterone synthase", "Angiotensin-converting enzyme (ACE)", "CRH", "Renin"],
+      "correct": 1,
+      "explanation": "Angiotensin-converting enzyme (ACE), located primarily in the lung endothelium, converts Angiotensin I to Angiotensin II. This is the target of ACE inhibitor medications. Angiotensin II then stimulates the adrenal cortex to secrete aldosterone."
+    },
+    {
+      "id": "q_078",
+      "topic": "Pancreatitis",
+      "type": "mcq",
+      "question": "In which body of water does ACE convert angiotensin I to angiotensin II?",
+      "options": ["Kidney", "Liver", "Lung", "Adrenal gland"],
+      "correct": 2,
+      "explanation": "ACE (angiotensin-converting enzyme) is primarily located in the endothelium of the LUNG, where the large surface area facilitates rapid conversion of Angiotensin I to Angiotensin II. This is a high-yield RAAS step."
+    },
+    {
+      "id": "q_079",
+      "topic": "Lipids & Lipoproteins",
+      "type": "mcq",
+      "question": "A patient with elevated total cholesterol is found to have a cholesterol-to-HDL ratio of 7.2. What does this indicate?",
+      "options": ["The patient has excellent cardiovascular protection due to high HDL", "The patient has an increased risk of atherosclerotic cardiovascular disease", "The ratio is within normal limits", "The triglycerides are primarily responsible for this ratio"],
+      "correct": 1,
+      "explanation": "A cholesterol-to-HDL ratio >5.0 indicates increased risk of atherosclerotic cardiovascular disease. A ratio of 7.2 suggests that a high proportion of total cholesterol is non-HDL (atherogenic) cholesterol. Lower ratios (higher HDL relative to total cholesterol) are cardioprotective."
+    },
+    {
+      "id": "q_080",
+      "topic": "Diabetes Mellitus",
+      "type": "true_false",
+      "question": "C-peptide is present in both endogenous insulin secretion and injectable insulin formulations.",
+      "correct": false,
+      "explanation": "FALSE. C-peptide is co-secreted with ENDOGENOUS insulin from pancreatic beta cells but is NOT present in injectable (exogenous) insulin formulations. This distinction is clinically crucial: a patient with hypoglycemia who received exogenous insulin will have LOW C-peptide, whereas an insulinoma will show HIGH C-peptide with high insulin."
+    },
+    {
+      "id": "q_081",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "Which combination of lab findings is most consistent with tertiary adrenal insufficiency (hypothalamic origin)?",
+      "options": ["High CRH, High ACTH, Low cortisol, High renin", "Low CRH, Low ACTH, Low cortisol, Exaggerated prolonged ACTH response to CRH stimulation, Normal renin", "High CRH, Low ACTH, Low cortisol, Absent ACTH response to CRH", "Low CRH, High ACTH, Low cortisol"],
+      "correct": 1,
+      "explanation": "Tertiary (hypothalamic) adrenal insufficiency: LOW CRH → low ACTH → low cortisol. On CRH stimulation test, the pituitary is still functional and responds with an exaggerated, prolonged ACTH response (the pituitary was just 'unstimulated'). Renin is normal to low; aldosterone is low."
+    },
+    {
+      "id": "q_082",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "Which thyroid function test would you order FIRST in a patient you suspect has thyroid disease, and what action would you take if it returns abnormal?",
+      "options": ["Order free T4; if abnormal, order TSH", "Order TSH; if abnormal, order free T4", "Order TSH and free T4 simultaneously in all patients", "Order anti-TPO; if positive, then order TSH"],
+      "correct": 1,
+      "explanation": "The stepwise approach: Order TSH FIRST (best screening test). If TSH is within normal range → no further testing. If TSH is abnormal → then order free T4 to clarify hyper- or hypothyroidism. This approach is evidence-based, cost-effective, and clinically efficient."
+    },
+    {
+      "id": "q_083",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "mcq",
+      "question": "Cortisol secretion follows a circadian pattern. At what time of day are cortisol concentrations normally at their HIGHEST?",
+      "options": ["12 PM (noon)", "6 PM", "4–8 AM (early morning)", "12 AM (midnight)"],
+      "correct": 2,
+      "explanation": "Cortisol concentrations are normally HIGHEST in the early morning between 4–8 AM, coinciding with preparation for the day's activity. Levels are lowest at night. This is why low MORNING cortisol may suggest adrenal insufficiency, and why late-night salivary cortisol is elevated in Cushing Syndrome."
+    },
+    {
+      "id": "q_084",
+      "topic": "Lipids & Lipoproteins",
+      "type": "mcq",
+      "question": "What percentage of tissue storage fat do lipids constitute?",
+      "options": ["50%", "75%", "90%", "95%"],
+      "correct": 3,
+      "explanation": "Lipids constitute 95% of tissue storage fat. This underscores their critical role as the primary energy storage molecules in the body, stored predominantly as triglycerides in adipose tissue."
+    },
+    {
+      "id": "q_085",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "A patient's TSH is markedly suppressed and both free T3 and free T4 are elevated. This pattern is most consistent with:",
+      "options": ["Primary hypothyroidism", "Secondary hypothyroidism", "Primary hyperthyroidism", "Tertiary hypothyroidism"],
+      "correct": 2,
+      "explanation": "Suppressed TSH + elevated free T3/T4 = PRIMARY hyperthyroidism. The thyroid is overproducing hormones, which suppresses TSH through negative feedback. In secondary/tertiary disorders, all hormones move in the SAME direction. In primary, TSH moves opposite to T3/T4."
+    },
+    {
+      "id": "q_086",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "A patient with secondary hyperaldosteronism would be expected to have which renin level?",
+      "options": ["Suppressed renin", "Elevated renin", "Normal renin", "Undetectable renin"],
+      "correct": 1,
+      "explanation": "Secondary hyperaldosteronism is caused by increased renin (e.g., from decreased renal perfusion in renal artery stenosis). Elevated renin drives the RAAS → elevated angiotensin II → elevated aldosterone. This distinguishes it from PRIMARY aldosteronism, where renin is suppressed."
+    },
+    {
+      "id": "q_087",
+      "topic": "Pancreas & Blood Glucose",
+      "type": "mcq",
+      "question": "How frequently should HbA1c be checked in a diabetic patient?",
+      "options": ["Once annually", "Every 6 months (twice per year)", "Every 3 months", "Only when symptomatic"],
+      "correct": 1,
+      "explanation": "HbA1c should be checked TWICE PER YEAR in diabetic patients (every ~6 months). This frequency allows for monitoring of 10–12 week average glucose and timely medication adjustments. More frequent monitoring may be appropriate when diabetes is uncontrolled."
+    },
+    {
+      "id": "q_088",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "mcq",
+      "question": "In the ACTH stimulation test, cortisol is measured at which time points?",
+      "options": ["At 0, 30, and 60 minutes after cosyntropin administration", "At 0 and 120 minutes after cosyntropin", "At baseline and 24 hours later", "Only at 60 minutes post-administration"],
+      "correct": 0,
+      "explanation": "In the ACTH stimulation test (cosyntropin test), serum cortisol is measured at BASELINE, 30 minutes, and 60 minutes after administration of cosyntropin (synthetic ACTH analog) IV or IM. A normal response is a significant rise in cortisol."
+    },
+    {
+      "id": "q_089",
+      "topic": "Lipids & Lipoproteins",
+      "type": "mcq",
+      "question": "Which of the following conditions is NOT associated with elevated triglycerides?",
+      "options": ["Hypothyroidism", "Diabetes mellitus", "Malnutrition", "Obesity"],
+      "correct": 2,
+      "explanation": "Malnutrition is associated with LOW cholesterol and lipid levels due to inadequate substrate for lipid synthesis. Elevated triglycerides are seen in hypothyroidism, diabetes, obesity, nephrotic syndrome, liver disease, and high-fat/carbohydrate diets."
+    },
+    {
+      "id": "q_090",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "Which of the following best explains why cortisol excess in Cushing Syndrome causes hyperglycemia?",
+      "options": ["Cortisol destroys pancreatic beta cells", "Cortisol increases gluconeogenesis and decreases glucose utilization by peripheral tissues", "Cortisol stimulates insulin secretion from the pancreas", "Cortisol activates aldosterone production which raises blood glucose"],
+      "correct": 1,
+      "explanation": "Cortisol (glucocorticoid) increases gluconeogenesis (new glucose production) AND decreases glucose utilization by peripheral tissues. This raises blood glucose. In Cushing Syndrome, chronically elevated cortisol leads to hyperglycemia and even frank diabetes."
+    },
+    {
+      "id": "q_091",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "A patient with anti-TPO antibodies, TSH of 7.2 mIU/L, and free T4 of 0.6 ng/dL presents with fatigue and cold intolerance. All three findings together are:",
+      "options": ["Suggestive but not diagnostic of any specific condition", "Diagnostic for Graves' disease", "Diagnostic for autoimmune thyroid disease (Hashimoto's thyroiditis)", "Diagnostic for secondary hypothyroidism"],
+      "correct": 2,
+      "explanation": "Elevated anti-TPO titer + symptoms (fatigue, cold intolerance) + abnormal TSH/FT4 = DIAGNOSTIC for autoimmune thyroid disease, specifically Hashimoto's thyroiditis. The slide explicitly states this three-part criterion."
+    },
+    {
+      "id": "q_092",
+      "topic": "Pancreas & Blood Glucose",
+      "type": "true_false",
+      "question": "Glucagon stimulates glycogenesis (glycogen synthesis) to lower blood glucose levels.",
+      "correct": false,
+      "explanation": "FALSE. Glucagon does the OPPOSITE — it stimulates GLYCOGENOLYSIS (glycogen breakdown) to RAISE blood glucose. Insulin stimulates glycogenesis (glycogen synthesis) to lower blood glucose. Glucagon and insulin have opposing effects on blood glucose."
+    },
+    {
+      "id": "q_093",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "mcq",
+      "question": "On a CRH stimulation test, a patient shows elevated ACTH but NO cortisol production. This result indicates:",
+      "options": ["Normal adrenal function", "Secondary adrenal insufficiency (pituitary problem)", "Primary adrenal insufficiency (adrenal gland problem)", "Tertiary adrenal insufficiency (hypothalamic problem)"],
+      "correct": 2,
+      "explanation": "CRH stimulation: Elevated ACTH but NO cortisol = PRIMARY adrenal insufficiency. The pituitary responds normally (makes ACTH), but the ADRENAL GLAND cannot respond (destroyed or dysfunctional). In secondary, both ACTH and cortisol responses are absent/decreased."
+    },
+    {
+      "id": "q_094",
+      "topic": "Lipids & Lipoproteins",
+      "type": "mcq",
+      "question": "What is the primary mechanism by which HDL protects against cardiovascular disease?",
+      "options": ["HDL transports cholesterol from the liver to body cells", "HDL removes excess cholesterol from vessel walls and cells and returns it to the liver", "HDL directly inhibits LDL receptor activity in peripheral tissues", "HDL reduces VLDL production in the liver"],
+      "correct": 1,
+      "explanation": "HDL performs REVERSE CHOLESTEROL TRANSPORT — removing excess cholesterol from cells and vessel walls and returning it to the liver for catabolism. This prevents cholesterol accumulation in arterial walls and the subsequent atherosclerotic plaque formation that LDL promotes."
+    },
+    {
+      "id": "q_095",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "A patient with hypoglycemia is found to have elevated insulin AND elevated C-peptide. What is the most likely diagnosis?",
+      "options": ["Exogenous insulin injection", "Sulfonylurea overdose causing endogenous insulin secretion", "Normal physiologic response", "Adrenal insufficiency"],
+      "correct": 1,
+      "explanation": "Elevated insulin + elevated C-peptide + hypoglycemia indicates ENDOGENOUS hyperinsulinism. C-peptide confirms the insulin is coming from beta cells (not injected). Sulfonylureas stimulate beta cells → elevated endogenous insulin + C-peptide. An insulinoma would also show this pattern. Exogenous insulin would show LOW C-peptide."
+    },
+    {
+      "id": "q_096",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "Which statement accurately describes the relationship between T4 and T3?",
+      "options": ["T3 is produced in larger quantities than T4 by the thyroid gland", "T4 is the biologically active form that directly acts on target tissues", "T4 is deiodinated in peripheral tissues to form the biologically active T3", "T3 requires iodine for its formation while T4 does not"],
+      "correct": 2,
+      "explanation": "T4 (thyroxine) is produced in larger quantities (90%) and serves as a prohormone. It is deiodinated in peripheral tissues to form T3 (triiodothyronine), which is the biologically active form. T4 formation requires iodine; T3 is produced by removing one iodine from T4."
+    },
+    {
+      "id": "q_097",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "true_false",
+      "question": "Dexamethasone is a weaker glucocorticoid than cortisol, which is why it is used in suppression testing.",
+      "correct": false,
+      "explanation": "FALSE. Dexamethasone is a SYNTHETIC glucocorticoid that is MORE POTENT than cortisol. Its potency is why it is used in suppression testing — it suppresses ACTH and CRH secretion via negative feedback. If the system is working normally, even small doses will suppress cortisol production."
+    },
+    {
+      "id": "q_098",
+      "topic": "Diabetes Mellitus",
+      "type": "mcq",
+      "question": "HbA1c is formed by which biochemical process?",
+      "options": ["Enzymatic cleavage of glucose from hemoglobin", "Nonenzymatic linkage of glucose to hemoglobin (glycosylation)", "Oxidative phosphorylation of hemoglobin by glucose", "Covalent bonding of insulin to hemoglobin"],
+      "correct": 1,
+      "explanation": "HbA1c is formed by NONENZYMATIC glycosylation — a spontaneous, non-enzymatic chemical reaction where glucose binds to hemoglobin (specifically the beta chain N-terminus) to form a stable ketoamine complex. This is not regulated — the higher the blood glucose, the more HbA1c is formed."
+    },
+    {
+      "id": "q_099",
+      "topic": "Lipids & Lipoproteins",
+      "type": "true_false",
+      "question": "The Sampson method for calculating LDL was proposed by the National Institutes of Health (NIH).",
+      "correct": true,
+      "explanation": "TRUE. The Sampson method was proposed by the National Institutes of Health (NIH) as an improvement over both the Friedewald equation and the Martin-Hopkins calculation for LDL estimation, particularly at low LDL and high triglyceride concentrations."
+    },
+    {
+      "id": "q_100",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "A 48-year-old woman has a total cholesterol of 230 and has a new diagnosis of hypothyroidism. After starting levothyroxine, you would expect her lipid profile to:",
+      "options": ["Remain unchanged — hypothyroidism does not affect lipids", "Worsen — levothyroxine increases LDL", "Improve — thyroid hormone replacement normalizes lipid metabolism", "Require immediate statin therapy regardless of levothyroxine"],
+      "correct": 2,
+      "explanation": "Hypothyroidism causes dyslipidemia (elevated cholesterol and triglycerides) by slowing lipid metabolism. Treatment with levothyroxine restores thyroid hormone levels → normalizes lipid metabolism → lipid profile IMPROVES. It is important to treat hypothyroidism before evaluating true baseline dyslipidemia."
+    },
+    {
+      "id": "q_101",
+      "topic": "Thyroid Function & Labs",
+      "type": "mcq",
+      "question": "Which of the following best explains why a patient with Hashimoto's thyroiditis can develop a goiter?",
+      "options": ["Excess T4 causes thyroid hypertrophy directly", "Elevated TSH from lack of negative feedback stimulates thyroid gland growth", "Anti-TPO antibodies directly cause thyroid cell proliferation", "Iodine excess causes thyroid gland enlargement"],
+      "correct": 1,
+      "explanation": "In Hashimoto's thyroiditis, autoimmune destruction of thyroid cells reduces T4 production → less negative feedback → pituitary secretes more TSH. Chronically elevated TSH stimulates thyroid gland growth → GOITER. The goiter is the thyroid's attempt to compensate for its destruction."
+    },
+    {
+      "id": "q_102",
+      "topic": "Aldosterone & RAAS",
+      "type": "mcq",
+      "question": "Which of the following describes the effect of aldosterone on the kidney?",
+      "options": ["Promotes Na+ excretion and K+ retention", "Promotes Na+ retention and K+ excretion", "Promotes H2O excretion and Na+ retention", "Promotes both Na+ and K+ excretion"],
+      "correct": 1,
+      "explanation": "Aldosterone promotes Na+ RETENTION (reabsorption) and K+ EXCRETION (loss) in the renal collecting duct. This increases blood volume (Na+ and water follow) and lowers serum K+. Excess aldosterone causes hypokalemia and hypertension; deficiency causes hyperkalemia and hypotension."
+    },
+    {
+      "id": "q_103",
+      "topic": "Pancreatitis",
+      "type": "mcq",
+      "question": "Which statement is TRUE regarding the relationship between chronic pancreatitis and diabetes?",
+      "options": ["Chronic pancreatitis does not affect islet cell function", "Patients with chronic pancreatitis often develop impaired glucose tolerance or diabetes", "Chronic pancreatitis causes type 1 diabetes exclusively", "Only alcoholic chronic pancreatitis causes diabetes"],
+      "correct": 1,
+      "explanation": "Patients with chronic pancreatitis often develop impaired glucose tolerance or diabetes because the ongoing glandular destruction eventually affects the endocrine islet cells (including beta cells that produce insulin). This is pancreatogenic diabetes (type 3c diabetes)."
+    },
+    {
+      "id": "q_104",
+      "topic": "Clinical Correlations & Disease States",
+      "type": "mcq",
+      "question": "Which of the following conditions would NOT be expected to elevate triglyceride levels?",
+      "options": ["Pancreatitis", "Hypothyroidism", "Graves' disease (hyperthyroidism)", "Diabetes mellitus"],
+      "correct": 2,
+      "explanation": "Graves' disease (hyperthyroidism) is associated with DECREASED triglycerides and weight loss due to accelerated metabolism. Hypothyroidism, diabetes, pancreatitis, obesity, nephrotic syndrome, and liver disease are all associated with elevated triglycerides."
+    },
+    {
+      "id": "q_105",
+      "topic": "Adrenal Gland & Cortisol",
+      "type": "mcq",
+      "question": "A patient taking long-term systemic glucocorticoids for rheumatoid arthritis presents with Cushingoid features. What is the expected ACTH level?",
+      "options": ["Elevated, due to adrenal stimulation", "Normal, unaffected by exogenous steroids", "Decreased, due to HPA axis suppression by exogenous glucocorticoids", "Variable, depending on time of day"],
+      "correct": 2,
+      "explanation": "Exogenous glucocorticoids suppress the HPA axis through negative feedback → DECREASED ACTH. With no ACTH stimulus, the adrenal cortex atrophies over time. Cushing features come from the exogenous steroids, not from the adrenal gland. Sudden discontinuation can cause adrenal crisis."
+    }
+  ]
+}

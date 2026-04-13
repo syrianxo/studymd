@@ -1,0 +1,2295 @@
+{
+  "id": "lecture_003",
+  "title": "The Tissue Level of Organization",
+  "subtitle": "Chapter 4: Epithelial, Connective, Muscle & Nervous Tissue",
+  "course": "Anatomy & Physiology",
+  "color": "#e07b54",
+  "icon": "🔬",
+  "topics": [
+    "Overview of Tissues",
+    "Epithelial Tissue Types",
+    "Cell Junctions",
+    "Membranes & Glands",
+    "Connective Tissue Proper",
+    "Connective Tissue Fibers & Matrix",
+    "Supporting Connective Tissues",
+    "Muscle Tissue",
+    "Nervous Tissue",
+    "Clinical Correlates"
+  ],
+  "slideImages": "slides/lecture_003/",
+  "flashcards": [
+    {
+      "id": "fc_001",
+      "topic": "Overview of Tissues",
+      "question": "What is the definition of a tissue?",
+      "answer": "A group of similar cells and cell products working together to perform a specific role in an organ.",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_002",
+      "topic": "Overview of Tissues",
+      "question": "What are the four primary tissue classes?",
+      "answer": "1. Epithelial\n2. Connective\n3. Nervous\n4. Muscular",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_003",
+      "topic": "Overview of Tissues",
+      "question": "What are the three primary germ layers of the embryo, from innermost to outermost?",
+      "answer": "1. Endoderm (inner)\n2. Mesoderm (middle)\n3. Ectoderm (outer)",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_004",
+      "topic": "Overview of Tissues",
+      "question": "What tissues does the endoderm give rise to?",
+      "answer": "Mucous membrane lining of the digestive and respiratory tracts, and digestive glands.",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_005",
+      "topic": "Overview of Tissues",
+      "question": "What does the mesoderm become, and what does it give rise to?",
+      "answer": "The mesoderm becomes gelatinous tissue called mesenchyme (wispy collagen fibers and fibroblasts in gel matrix). It gives rise to cartilage, bone, and blood.",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_006",
+      "topic": "Overview of Tissues",
+      "question": "What tissues does the ectoderm give rise to?",
+      "answer": "The epidermis and nervous system.",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_007",
+      "topic": "Overview of Tissues",
+      "question": "What are the two components of the extracellular matrix (ECM)?",
+      "answer": "1. Fibrous proteins\n2. Ground substance (clear gel also known as tissue fluid, extracellular fluid/ECF, or interstitial fluid)",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_008",
+      "topic": "Overview of Tissues",
+      "question": "What three characteristics differentiate the four primary tissue types from each other?",
+      "answer": "1. Types and functions of their cells\n2. Characteristics of the matrix (extracellular material)\n3. Relative amount of space occupied by cells versus matrix",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_009",
+      "topic": "Overview of Tissues",
+      "question": "What is the primary function of nervous tissue?",
+      "answer": "Internal communication. Found in the brain, spinal cord, and nerves.",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_010",
+      "topic": "Overview of Tissues",
+      "question": "What are the three subtypes of muscle tissue and their locations?",
+      "answer": "1. Skeletal — muscles attached to bones\n2. Cardiac — muscles of the heart\n3. Smooth — muscles of walls of hollow organs",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_011",
+      "topic": "Epithelial Tissue Types",
+      "question": "What are the two main types of epithelial tissue categorized by location?",
+      "answer": "1. Covering and lining epithelia — on external and internal surfaces\n2. Glandular epithelia — secretory tissue in glands",
+      "slideRef": "slide_08.jpg",
+      "slideNumber": 8
+    },
+    {
+      "id": "fc_012",
+      "topic": "Epithelial Tissue Types",
+      "question": "What are the three key characteristics of epithelial tissue?",
+      "answer": "1. Cells have polarity — apical (upper, free) and basal (lower, attached) surfaces\n2. Composed of closely packed cells with junctions\n3. Supported by a connective tissue reticular lamina (under the basal lamina)",
+      "slideRef": "slide_09.jpg",
+      "slideNumber": 9
+    },
+    {
+      "id": "fc_013",
+      "topic": "Epithelial Tissue Types",
+      "question": "What makes up the basement membrane of epithelium?",
+      "answer": "The basal lamina (secreted by epithelial cells) + the reticular lamina (connective tissue below). Together these form the basement membrane.",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_014",
+      "topic": "Epithelial Tissue Types",
+      "question": "Describe simple squamous epithelium: structure, function, and locations.",
+      "answer": "Structure: Single row of thin, flattened cells with disc-shaped nuclei.\nFunction: Permits rapid diffusion/transport; secretes serous fluid.\nLocations: Alveoli, glomeruli, endothelium (blood/lymph vessels), serosa.",
+      "slideRef": "slide_23.jpg",
+      "slideNumber": 23
+    },
+    {
+      "id": "fc_015",
+      "topic": "Epithelial Tissue Types",
+      "question": "Why is endothelium classified as simple squamous epithelium?",
+      "answer": "Endothelial cells line the interior of blood and lymphatic vessels. They are a single layer of thin, flat cells — the defining feature of simple squamous epithelium — which facilitates rapid diffusion.",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_016",
+      "topic": "Epithelial Tissue Types",
+      "question": "Describe simple cuboidal epithelium: structure, function, and locations.",
+      "answer": "Structure: Single layer of square or round cells.\nFunction: Absorption and secretion; mucus production and movement.\nLocations: Liver, thyroid, mammary and salivary glands, bronchioles, kidney tubules.",
+      "slideRef": "slide_25.jpg",
+      "slideNumber": 25
+    },
+    {
+      "id": "fc_017",
+      "topic": "Epithelial Tissue Types",
+      "question": "Describe simple columnar epithelium: structure, function, and locations.",
+      "answer": "Structure: Single row of tall, narrow cells; oval nuclei in basal half; may have brush border of microvilli, cilia, or goblet cells.\nFunction: Absorption and secretion; secretion of mucus.\nLocations: Lining of GI tract, uterus, kidney, uterine tubes.",
+      "slideRef": "slide_26.jpg",
+      "slideNumber": 26
+    },
+    {
+      "id": "fc_018",
+      "topic": "Epithelial Tissue Types",
+      "question": "What is pseudostratified epithelium and why is it classified as simple?",
+      "answer": "It looks multilayered (nuclei appear at several levels), but ALL cells touch the basement membrane — making it a single-layer (simple) epithelium. It has cilia and goblet cells.",
+      "slideRef": "slide_27.jpg",
+      "slideNumber": 27
+    },
+    {
+      "id": "fc_019",
+      "topic": "Epithelial Tissue Types",
+      "question": "Where is pseudostratified ciliated columnar epithelium located and what is its function?",
+      "answer": "Location: Respiratory tract and portions of the male urethra.\nFunction: Secretes and propels mucus.",
+      "slideRef": "slide_27.jpg",
+      "slideNumber": 27
+    },
+    {
+      "id": "fc_020",
+      "topic": "Epithelial Tissue Types",
+      "question": "What is pseudostratified epithelium with stereocilia and where is it found?",
+      "answer": "A pseudostratified epithelium characteristic of the male reproductive tract (epididymis). Stereocilia are non-motile structures (unlike true cilia). The lumen of the epididymis contains spermatozoa.",
+      "slideRef": "slide_28.jpg",
+      "slideNumber": 28
+    },
+    {
+      "id": "fc_021",
+      "topic": "Epithelial Tissue Types",
+      "question": "What is the most widespread epithelium in the body?",
+      "answer": "Stratified squamous epithelium.",
+      "slideRef": "slide_31.jpg",
+      "slideNumber": 31
+    },
+    {
+      "id": "fc_022",
+      "topic": "Epithelial Tissue Types",
+      "question": "How does stratified squamous epithelium renew itself?",
+      "answer": "The deepest layers undergo continuous mitosis. Daughter cells push toward the surface and become flatter as they migrate upward, eventually dying and flaking off (exfoliation or desquamation).",
+      "slideRef": "slide_31.jpg",
+      "slideNumber": 31
+    },
+    {
+      "id": "fc_023",
+      "topic": "Epithelial Tissue Types",
+      "question": "Compare keratinized vs. nonkeratinized stratified squamous epithelium.",
+      "answer": "Keratinized: Has a surface layer of dead, anucleate cells; found on skin (epidermis); resists abrasion, retards water loss, resists pathogen penetration. Palms/soles are heavily keratinized.\nNonkeratinized: No dead surface layer; resists abrasion and pathogen penetration; found in tongue, oral mucosa, esophagus, vagina.",
+      "slideRef": "slide_32.jpg",
+      "slideNumber": 32
+    },
+    {
+      "id": "fc_024",
+      "topic": "Epithelial Tissue Types",
+      "question": "Describe stratified cuboidal epithelium: layers, function, and locations.",
+      "answer": "Structure: Two or more cell layers; surface cells are square or round.\nFunction: Secretes sweat; produces sperm and ovarian hormones.\nLocations: Sweat gland ducts; ovarian follicles and seminiferous tubules.",
+      "slideRef": "slide_34.jpg",
+      "slideNumber": 34
+    },
+    {
+      "id": "fc_025",
+      "topic": "Epithelial Tissue Types",
+      "question": "Describe transitional epithelium: structure, function, and locations.",
+      "answer": "Structure: Multilayered epithelium; surface cells change from round to flat when stretched.\nFunction: Allows for filling/distension of the urinary tract.\nLocations: Ureter and urinary bladder.",
+      "slideRef": "slide_35.jpg",
+      "slideNumber": 35
+    },
+    {
+      "id": "fc_026",
+      "topic": "Cell Junctions",
+      "question": "What are the five types of cell junctions in epithelial tissue?",
+      "answer": "1. Tight junctions (Zonula Occludens)\n2. Adherens junctions (Zonula Adherens / Belt Desmosome)\n3. Desmosomes (Macula Adherens)\n4. Hemidesmosomes\n5. Gap junctions",
+      "slideRef": "slide_11.jpg",
+      "slideNumber": 11
+    },
+    {
+      "id": "fc_027",
+      "topic": "Cell Junctions",
+      "question": "What are tight junctions (Zonula Occludens), and what is their function?",
+      "answer": "Tight junctions (ZO) are located between adjacent plasma membranes. They prevent passage of water and solutes between cells and isolate wastes in the lumen. They are composed of claudins and occludins.",
+      "slideRef": "slide_12.jpg",
+      "slideNumber": 12
+    },
+    {
+      "id": "fc_028",
+      "topic": "Cell Junctions",
+      "question": "What are adherens junctions (Zonula Adherens) and what is their significance?",
+      "answer": "Also called belt desmosomes or ZA. Located below the tight junction; circle the entire cell forming an adhesion belt. The belt connects actin (cytoskeleton) with cadherins (adhesion proteins). They resist cell separation during contractile activity (e.g., intestines). Loss of cadherin promotes metastasis in cancer.",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_029",
+      "topic": "Cell Junctions",
+      "question": "What is the clinical significance of cadherin loss in adherens junctions?",
+      "answer": "Loss of cadherin promotes metastasis in cancer. Cadherins are the adhesion proteins that hold cells together; without them, cells lose cohesion and can invade other tissues.",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_030",
+      "topic": "Cell Junctions",
+      "question": "What are desmosomes (Macula Adherens) and where are they most abundant?",
+      "answer": "Patch-like connections between adjacent epithelial cells. They provide structural support by holding cells tightly together via intermediate filaments (keratin). Particularly abundant in epithelia exposed to physical stress — especially the epidermis.",
+      "slideRef": "slide_14.jpg",
+      "slideNumber": 14
+    },
+    {
+      "id": "fc_031",
+      "topic": "Cell Junctions",
+      "question": "What are hemidesmosomes and how do they differ from desmosomes?",
+      "answer": "Hemidesmosomes are basal specializations that connect keratin in basal cells to the basement membrane (not to adjacent cells). They use integrins (not cadherins) as transmembrane glycoproteins. Prominent in epithelia exposed to physical forces (e.g., epidermis).",
+      "slideRef": "slide_16.jpg",
+      "slideNumber": 16
+    },
+    {
+      "id": "fc_032",
+      "topic": "Cell Junctions",
+      "question": "What are gap junctions and what is their primary function?",
+      "answer": "Gap junctions allow rapid cell-to-cell communication. They are held together by channel proteins called connexons (composed of connexins) which are actual open channels. They allow electrical communication between cells and coordinate contractions in heart muscle.",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_033",
+      "topic": "Clinical Correlates",
+      "question": "What is Pemphigus Vulgaris and which junction does it affect?",
+      "answer": "An autoimmune disease where antibodies attack desmosomes (specifically desmoglein 3). Presents with flaccid intraepidermal bullae (blisters) including mucous membranes. Nikolsky sign is POSITIVE (epidermis separates with stroking). Prognosis is poor.",
+      "slideRef": "slide_15.jpg",
+      "slideNumber": 15
+    },
+    {
+      "id": "fc_034",
+      "topic": "Clinical Correlates",
+      "question": "What is Bullous Pemphigoid and which junction does it affect?",
+      "answer": "An autoimmune disease where antibodies attack hemidesmosomes. Presents with TENSE blisters. Nikolsky sign is NEGATIVE. Mucous membrane involvement is rare. Prognosis is favorable. Affects older patients.",
+      "slideRef": "slide_17.jpg",
+      "slideNumber": 17
+    },
+    {
+      "id": "fc_035",
+      "topic": "Clinical Correlates",
+      "question": "Compare Pemphigus Vulgaris vs. Bullous Pemphigoid across five key features.",
+      "answer": "Feature | PV | BP\nAge: Younger | Older\nMucous membranes: Yes | Rare\nAutoantibodies: Anti-desmoglein 3 | Anti-hemidesmosomes\nBlister location: Intraepidermal (superficial) | Subepidermal (deep)\nBlister quality: Flaccid, rupture easily | Tense and firm\nNikolsky sign: Positive | Negative\nPrognosis: Poor | Favorable",
+      "slideRef": "slide_18.jpg",
+      "slideNumber": 18
+    },
+    {
+      "id": "fc_036",
+      "topic": "Clinical Correlates",
+      "question": "What is the Nikolsky sign and in which blistering disease is it positive?",
+      "answer": "The Nikolsky sign is separation of the epidermis by stroking/rubbing the skin. It is POSITIVE in Pemphigus Vulgaris (desmosome destruction → intraepidermal split) and NEGATIVE in Bullous Pemphigoid (hemidesmosome destruction → subepidermal split, blister is deeper/stronger).",
+      "slideRef": "slide_18.jpg",
+      "slideNumber": 18
+    },
+    {
+      "id": "fc_037",
+      "topic": "Membranes & Glands",
+      "question": "What are the two major categories of body membranes?",
+      "answer": "1. Epithelial membranes (mucous, serous, cutaneous)\n2. Synovial membranes",
+      "slideRef": "slide_36.jpg",
+      "slideNumber": 36
+    },
+    {
+      "id": "fc_038",
+      "topic": "Membranes & Glands",
+      "question": "Describe mucous membranes (mucosae): location, function, and connective tissue component.",
+      "answer": "Line passageways with external connections (digestive, respiratory, urinary, reproductive tracts). Epithelial surfaces must be moist to reduce friction and facilitate absorption/excretion. The underlying connective tissue is called the lamina propria (areolar tissue).",
+      "slideRef": "slide_37.jpg",
+      "slideNumber": 37
+    },
+    {
+      "id": "fc_039",
+      "topic": "Membranes & Glands",
+      "question": "Describe serous membranes: structure and the three examples.",
+      "answer": "Line cavities NOT open to the outside. Thin but strong. Have fluid transudate to reduce friction. Have a parietal portion (lines cavity) and visceral portion/serosa (covers organs).\n3 serous membranes:\n1. Pleura — lines pleural cavities; covers lungs\n2. Peritoneum — lines peritoneal cavity; covers abdominal organs\n3. Pericardium — lines pericardial cavity; covers heart",
+      "slideRef": "slide_38.jpg",
+      "slideNumber": 38
+    },
+    {
+      "id": "fc_040",
+      "topic": "Membranes & Glands",
+      "question": "What is the cutaneous membrane?",
+      "answer": "The skin — the surface covering of the body. It is thick, waterproof, and dry. Consists of the epidermis and dermis.",
+      "slideRef": "slide_39.jpg",
+      "slideNumber": 39
+    },
+    {
+      "id": "fc_041",
+      "topic": "Membranes & Glands",
+      "question": "What are synovial membranes and how do they differ from epithelial membranes?",
+      "answer": "Synovial membranes line moving, articulating joint cavities. They produce synovial fluid (lubricant) and protect the ends of bones. Critically, they LACK a true epithelium — this distinguishes them from epithelial membranes.",
+      "slideRef": "slide_40.jpg",
+      "slideNumber": 40
+    },
+    {
+      "id": "fc_042",
+      "topic": "Membranes & Glands",
+      "question": "Define a gland and distinguish exocrine from endocrine glands.",
+      "answer": "A gland is a cell or organ that secretes substances for use elsewhere in the body or releases them for elimination.\nExocrine glands: maintain contact with epithelium via a duct (e.g., sweat, tear, pancreas, salivary glands).\nEndocrine glands: secrete hormones directly into blood; no duct (e.g., thyroid, adrenal, pituitary).",
+      "slideRef": "slide_41.jpg",
+      "slideNumber": 41
+    },
+    {
+      "id": "fc_043",
+      "topic": "Membranes & Glands",
+      "question": "Compare the three types of exocrine gland secretion mechanisms: merocrine, apocrine, and holocrine.",
+      "answer": "Merocrine (eccrine): Secretion by exocytosis; cell remains intact. Examples: eccrine sweat glands, pancreatic acinar cells. Secretes serous/watery fluids.\nApocrine: Apical portion of cell pinches off; partial loss of cytoplasm. Examples: mammary glands, apocrine sweat glands.\nHolocrine: Entire cell ruptures and dies. Examples: sebaceous glands, tarsal (Meibomian) glands. Secretes lipid-rich substances (sebum).",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_044",
+      "topic": "Membranes & Glands",
+      "question": "What is the clinical relevance of holocrine secretion?",
+      "answer": "Holocrine secretion (sebaceous glands) is associated with acne vulgaris. Dysfunction of tarsal (Meibomian) glands — also holocrine — leads to dry eye syndrome.",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_045",
+      "topic": "Membranes & Glands",
+      "question": "What is the clinical relevance of apocrine secretion?",
+      "answer": "Apocrine glands (mammary glands, apocrine sweat glands) are associated with lactation and body odor.",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_046",
+      "topic": "Membranes & Glands",
+      "question": "What is the functional advantage of merocrine secretion compared to apocrine and holocrine?",
+      "answer": "Merocrine secretion (exocytosis) allows continuous, regulated secretion without damaging the cell, making it most efficient for sustained output (e.g., pancreatic enzymes, eccrine sweat).",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_047",
+      "topic": "Membranes & Glands",
+      "question": "Name examples of simple gland types and give one example location for each.",
+      "answer": "Simple tubular: Intestinal glands (crypts of Lieberkühn)\nSimple coiled tubular: Merocrine (eccrine) sweat glands\nSimple branched tubular: Gastric glands, mucous glands of esophagus/tongue/duodenum\nSimple alveolar (acinar): Not found in adults (developmental stage only)\nSimple branched alveolar: Sebaceous (oil) glands",
+      "slideRef": "slide_45.jpg",
+      "slideNumber": 45
+    },
+    {
+      "id": "fc_048",
+      "topic": "Membranes & Glands",
+      "question": "Name examples of compound gland types and give one location for each.",
+      "answer": "Compound tubular: Mucous glands in mouth, bulbourethral glands, testes (seminiferous tubules)\nCompound alveolar (acinar): Mammary glands\nCompound tubuloalveolar: Salivary glands, glands of respiratory passages, pancreas",
+      "slideRef": "slide_45.jpg",
+      "slideNumber": 45
+    },
+    {
+      "id": "fc_049",
+      "topic": "Membranes & Glands",
+      "question": "What are the crypts of Lieberkühn and what type of gland are they?",
+      "answer": "The crypts of Lieberkühn are intestinal glands found in the large intestine. Each tubular structure is a simple tubular gland.",
+      "slideRef": "slide_46.jpg",
+      "slideNumber": 46
+    },
+    {
+      "id": "fc_050",
+      "topic": "Clinical Correlates",
+      "question": "Define the following cellular pathology terms: hyperplasia, hypertrophy, metaplasia, dysplasia.",
+      "answer": "Hyperplasia: ↑ number of cells (increased proliferation). E.g., endometrial hyperplasia.\nHypertrophy: ↑ cell size (enlargement). E.g., LV hypertrophy in hypertension, skeletal muscle growth.\nMetaplasia: Change in cell type — reversible replacement of one mature cell type with another due to chronic stress. E.g., Barrett's esophagus (columnar replaces squamous due to GERD).\nDysplasia: Disorganized growth — abnormal cell size, shape, and organization; precancerous. E.g., cervical dysplasia.",
+      "slideRef": "slide_49.jpg",
+      "slideNumber": 49
+    },
+    {
+      "id": "fc_051",
+      "topic": "Clinical Correlates",
+      "question": "Distinguish hypoplasia from atrophy.",
+      "answer": "Hypoplasia: ↓ number of cells — incomplete or reduced development of a tissue/organ. E.g., congenital organ hypoplasia.\nAtrophy (hypotrophy): ↓ cell size — reduction in cell size due to decreased demand or nutrition. E.g., muscle wasting with immobilization or aging.",
+      "slideRef": "slide_49.jpg",
+      "slideNumber": 49
+    },
+    {
+      "id": "fc_052",
+      "topic": "Clinical Correlates",
+      "question": "Define pleomorphism and anaplasia in the context of malignancy.",
+      "answer": "Pleomorphism: Marked variation in cell and nuclear size and shape — a common feature of malignancy.\nAnaplasia: Loss of differentiation — poorly differentiated cells whose degree of anaplasia correlates with malignancy. Seen in high-grade, aggressive cancers.",
+      "slideRef": "slide_49.jpg",
+      "slideNumber": 49
+    },
+    {
+      "id": "fc_053",
+      "topic": "Clinical Correlates",
+      "question": "What is Barrett's esophagus and what cellular process does it represent?",
+      "answer": "Barrett's esophagus is a condition where chronic GERD causes the normal nonkeratinized stratified squamous epithelium of the lower esophagus to be replaced by simple columnar, mucus-secreting epithelium (intestinal-type). This is an example of METAPLASIA — a reversible change in cell type due to chronic stress.",
+      "slideRef": "slide_54.jpg",
+      "slideNumber": 54
+    },
+    {
+      "id": "fc_054",
+      "topic": "Connective Tissue Proper",
+      "question": "What are the three broad categories of connective tissue and their functions?",
+      "answer": "1. Connective tissue proper — connects and protects\n2. Fluid connective tissues — transport (blood and lymph)\n3. Supporting connective tissues — structural strength (cartilage and bone)",
+      "slideRef": "slide_56.jpg",
+      "slideNumber": 56
+    },
+    {
+      "id": "fc_055",
+      "topic": "Connective Tissue Proper",
+      "question": "What are the four diverse functions of connective tissue?",
+      "answer": "1. Binding and support\n2. Protection\n3. Insulation\n4. Transportation (blood)",
+      "slideRef": "slide_57.jpg",
+      "slideNumber": 57
+    },
+    {
+      "id": "fc_056",
+      "topic": "Connective Tissue Proper",
+      "question": "What are the general features that distinguish connective tissue from epithelial tissue?",
+      "answer": "CT consists of specialized cells and extracellular matrix (ECM). ECM composes the majority of tissue volume and determines specialized function. CT cells do NOT cover or line surfaces (no free surfaces). CT is highly vascularized and has nerve supply — EXCEPT tendons and cartilage.",
+      "slideRef": "slide_58.jpg",
+      "slideNumber": 58
+    },
+    {
+      "id": "fc_057",
+      "topic": "Connective Tissue Proper",
+      "question": "What are the nine cell populations found in connective tissue proper?",
+      "answer": "1. Fibroblasts\n2. Fibrocytes\n3. Adipocytes\n4. Mesenchymal cells\n5. Macrophages\n6. Mast cells\n7. Lymphocytes\n8. Microphages (neutrophils/eosinophils)\n9. Melanocytes",
+      "slideRef": "slide_70.jpg",
+      "slideNumber": 70
+    },
+    {
+      "id": "fc_058",
+      "topic": "Connective Tissue Proper",
+      "question": "What is ground substance and what is its role?",
+      "answer": "Ground substance is clear, colorless, and viscous. It fills spaces between cells and slows pathogen movement through tissues. It is the fluid component of the ECM.",
+      "slideRef": "slide_70.jpg",
+      "slideNumber": 70
+    },
+    {
+      "id": "fc_059",
+      "topic": "Connective Tissue Proper",
+      "question": "What are areolar (loose) connective tissue's key features and role?",
+      "answer": "Loosely organized fibers with abundant blood vessels. Contains ALL three fiber types (collagen, elastic, reticular) and ALL six major cell types. Acts as 'packing material' — underlies epithelia, found in serous membranes, between muscles, and as passageways for nerves and blood vessels.",
+      "slideRef": "slide_74.jpg",
+      "slideNumber": 74
+    },
+    {
+      "id": "fc_060",
+      "topic": "Connective Tissue Proper",
+      "question": "Compare white fat and brown fat.",
+      "answer": "White fat: Most common; stores fat; absorbs shocks; slows heat loss (insulation).\nBrown fat: More vascularized; adipocytes have many mitochondria; when stimulated by nervous system, fat breakdown accelerates to release energy; absorbs energy from surrounding tissues (thermogenesis).",
+      "slideRef": "slide_76.jpg",
+      "slideNumber": 76
+    },
+    {
+      "id": "fc_061",
+      "topic": "Connective Tissue Proper",
+      "question": "What is reticular connective tissue and where is it found?",
+      "answer": "A mesh of reticular fibers and fibroblasts. Forms the supportive stroma (framework) for lymphatic organs. Found in lymph nodes, spleen, thymus, and bone marrow.",
+      "slideRef": "slide_77.jpg",
+      "slideNumber": 77
+    },
+    {
+      "id": "fc_062",
+      "topic": "Connective Tissue Proper",
+      "question": "What distinguishes dense connective tissue from loose connective tissue?",
+      "answer": "Dense CT contains more numerous, thicker, and denser (more closely packed) fibers, but FEWER cells than loose connective tissue.",
+      "slideRef": "slide_78.jpg",
+      "slideNumber": 78
+    },
+    {
+      "id": "fc_063",
+      "topic": "Connective Tissue Proper",
+      "question": "Describe dense regular connective tissue: structure, function, and examples.",
+      "answer": "Densely packed, parallel collagen fibers with compressed fibroblast nuclei. Elastic tissue may form wavy sheets in some locations. Resists force in one direction.\nExamples: Tendons (attach muscle to bone) and ligaments (hold bones together).",
+      "slideRef": "slide_79.jpg",
+      "slideNumber": 79
+    },
+    {
+      "id": "fc_064",
+      "topic": "Connective Tissue Proper",
+      "question": "Describe dense irregular connective tissue: structure and locations.",
+      "answer": "Densely packed, randomly arranged collagen fibers with few visible cells. Withstands unpredictable stresses from multiple directions.\nLocations: Deeper layer of skin (dermis); capsules around organs.",
+      "slideRef": "slide_80.jpg",
+      "slideNumber": 80
+    },
+    {
+      "id": "fc_065",
+      "topic": "Connective Tissue Proper",
+      "question": "What is dense elastic connective tissue and where is it found?",
+      "answer": "Dense regular CT containing a high proportion of elastic fibers. Allows recoil of tissue after stretching; maintains pulsatile blood flow through arteries; aids passive recoil of lungs after inspiration.\nLocations: Walls of large arteries; certain vertebral ligaments; walls of bronchial tubes.",
+      "slideRef": "slide_81.jpg",
+      "slideNumber": 81
+    },
+    {
+      "id": "fc_066",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "question": "What are the three types of connective tissue fibers?",
+      "answer": "1. Collagen — strongest and most abundant; provides high tensile strength\n2. Elastic — long, thin elastin fibers; allow stretch and recoil\n3. Reticular — thin, branching fibers; form supportive frameworks",
+      "slideRef": "slide_60.jpg",
+      "slideNumber": 60
+    },
+    {
+      "id": "fc_067",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "question": "What are the four most clinically important collagen types and their locations?",
+      "answer": "Type I (strong): Bone, skin, tendons, dentin, fascia, cornea, late wound repair.\nType II (slippery): Cartilage, vitreous body, nucleus pulposus.\nType III (bloody): Skin, blood vessels, uterus, fetal tissue, granulation tissue.\nType IV (BM): Basement membrane, basal lamina, lens.\nMnemonic: I=strong, II=slippery, III=bloody, IV=BM",
+      "slideRef": "slide_62.jpg",
+      "slideNumber": 62
+    },
+    {
+      "id": "fc_068",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "question": "What does Type I collagen appear as on H&E staining?",
+      "answer": "Collagen is typically acidophilic (pink) with H&E stain and forms classically described collagen fibers and bundles.",
+      "slideRef": "slide_61.jpg",
+      "slideNumber": 61
+    },
+    {
+      "id": "fc_069",
+      "topic": "Clinical Correlates",
+      "question": "What is Ehlers-Danlos syndrome and which collagen type does it affect?",
+      "answer": "Autosomal dominant connective tissue disorder affecting Type III collagen (due to defects in procollagen peptidase or lysyl hydroxylase). Features: hyperextension of skin, bleeding tendency, and hypermobile joints. The defect reduces strength of collagen cross-links.",
+      "slideRef": "slide_63.jpg",
+      "slideNumber": 63
+    },
+    {
+      "id": "fc_070",
+      "topic": "Clinical Correlates",
+      "question": "What is Osteogenesis Imperfecta and which collagen type does it affect?",
+      "answer": "Autosomal dominant disorder affecting Type I collagen. Features: multiple fractures with minimal trauma, blue sclerae. Important: may be confused with child abuse because of unexplained fractures.",
+      "slideRef": "slide_64.jpg",
+      "slideNumber": 64
+    },
+    {
+      "id": "fc_071",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "question": "What are elastic fibers composed of, and what is their structural property?",
+      "answer": "Elastic fibers are composed of:\n1. Elastin — relatively amorphous core substance\n2. Fibrillin — microfibrils of protein that surround the elastin core\nThey are branched and wavy; return to original length after stretching. Found in walls of blood vessels and form fenestrated membranes in larger vessels like the aorta.",
+      "slideRef": "slide_65.jpg",
+      "slideNumber": 65
+    },
+    {
+      "id": "fc_072",
+      "topic": "Clinical Correlates",
+      "question": "What is Marfan's Syndrome and what is the underlying molecular defect?",
+      "answer": "Autosomal dominant connective tissue disorder caused by a defect in the fibrillin-1 (FBN1) gene on chromosome 15, resulting in abnormal elastic tissue. Features: tall stature, long limbs/fingers/toes (arachnodactyly), lens dislocation, high arched palate, pectus excavatum. Life-threatening cardiovascular complications: mitral valve prolapse, aortic dissection, aortic regurgitation. Life expectancy is halved due to cardiovascular manifestations.",
+      "slideRef": "slide_67.jpg",
+      "slideNumber": 67
+    },
+    {
+      "id": "fc_073",
+      "topic": "Clinical Correlates",
+      "question": "What are the Steinberg sign and Walker-Murdoch sign used to assess?",
+      "answer": "Both are clinical signs used to identify Marfan syndrome by detecting arachnodactyly.\nSteinberg sign: Fold thumb into fist — positive if thumb tip extends from the palm.\nWalker-Murdoch sign: Grip wrist with opposite hand — positive if thumb and fifth finger overlap each other.",
+      "slideRef": "slide_68.jpg",
+      "slideNumber": 68
+    },
+    {
+      "id": "fc_074",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "question": "What are reticular fibers, what are they made of, and what is their function?",
+      "answer": "Reticular fibers are formed by TYPE III collagen. They are strong and flexible, resist force in many directions, stabilize functional cells and structures, and form the framework of organs such as lymph nodes and spleen. Reticular fibrils also compose the reticular lamina, which underlies the basal lamina of epithelium.",
+      "slideRef": "slide_69.jpg",
+      "slideNumber": 69
+    },
+    {
+      "id": "fc_075",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "question": "What stain is used to visualize reticular fibers?",
+      "answer": "Silver stain — reticular fibers appear dark/black (argyrophilic) with silver staining.",
+      "slideRef": "slide_69.jpg",
+      "slideNumber": 69
+    },
+    {
+      "id": "fc_076",
+      "topic": "Supporting Connective Tissues",
+      "question": "What are the three types of cartilage and their distinguishing features?",
+      "answer": "1. Hyaline: Clear, glassy appearance; fine collagen fibers; most common. Locations: articular cartilage, costal cartilage, trachea, larynx, fetal skeleton.\n2. Elastic: Abundant elastic fibers + collagen; flexible. Locations: external ear, epiglottis.\n3. Fibrocartilage: Large, coarse collagen bundles; resists compression, absorbs shock. Locations: pubic symphysis, menisci, intervertebral discs.",
+      "slideRef": "slide_82.jpg",
+      "slideNumber": 82
+    },
+    {
+      "id": "fc_077",
+      "topic": "Supporting Connective Tissues",
+      "question": "Why does cartilage have very poor healing capacity?",
+      "answer": "Cartilage has NO blood vessels and NO nerves (avascular, aneural). Nutrients must diffuse through the matrix. Without a blood supply, inflammatory and repair cells cannot access damaged cartilage, resulting in very limited repair capability.",
+      "slideRef": "slide_82.jpg",
+      "slideNumber": 82
+    },
+    {
+      "id": "fc_078",
+      "topic": "Supporting Connective Tissues",
+      "question": "What are chondrocytes and where do they reside within cartilage?",
+      "answer": "Chondrocytes are the cartilage cells. They reside within small spaces called lacunae embedded in the cartilage matrix. They maintain the surrounding matrix.",
+      "slideRef": "slide_83.jpg",
+      "slideNumber": 83
+    },
+    {
+      "id": "fc_079",
+      "topic": "Supporting Connective Tissues",
+      "question": "What is hyaline cartilage covered by, and what are its five functions?",
+      "answer": "Covered by perichondrium (except at articular surfaces).\nFunctions:\n1. Eases joint movement (articular cartilage)\n2. Holds airway open (trachea)\n3. Moves vocal cords (larynx)\n4. Growth of juvenile long bones (epiphyseal plate)\n5. Forms the fetal skeleton",
+      "slideRef": "slide_83.jpg",
+      "slideNumber": 83
+    },
+    {
+      "id": "fc_080",
+      "topic": "Supporting Connective Tissues",
+      "question": "Where is elastic cartilage found and what covers it?",
+      "answer": "Elastic cartilage is found in the external ear and epiglottis. It is covered with perichondrium and provides flexible, elastic support.",
+      "slideRef": "slide_84.jpg",
+      "slideNumber": 84
+    },
+    {
+      "id": "fc_081",
+      "topic": "Supporting Connective Tissues",
+      "question": "Where is fibrocartilage found and what is its key function?",
+      "answer": "Fibrocartilage contains large, coarse bundles of collagen fibers. It resists compression and absorbs shock.\nLocations: pubic symphysis, menisci (knee), and intervertebral discs.",
+      "slideRef": "slide_85.jpg",
+      "slideNumber": 85
+    },
+    {
+      "id": "fc_082",
+      "topic": "Supporting Connective Tissues",
+      "question": "Describe the structure of compact bone (osteon system).",
+      "answer": "Compact bone is arranged in cylinders called osteons (Haversian systems) that surround central canals (Haversian canals) running longitudinally through long bone shafts. Blood vessels and nerves travel through the central canal. Bone matrix is deposited in concentric lamellae — onion-like layers around each central canal.",
+      "slideRef": "slide_86.jpg",
+      "slideNumber": 86
+    },
+    {
+      "id": "fc_083",
+      "topic": "Supporting Connective Tissues",
+      "question": "Describe blood as a connective tissue.",
+      "answer": "Blood is a fluid connective tissue. Plasma is its ground substance. Formed elements include:\n- Erythrocytes (RBCs): transport O₂ and CO₂\n- Leukocytes (WBCs): defend against infection and disease\n- Platelets: cell fragments involved in clotting",
+      "slideRef": "slide_87.jpg",
+      "slideNumber": 87
+    },
+    {
+      "id": "fc_084",
+      "topic": "Muscle Tissue",
+      "question": "What are the three types of muscle tissue and their control (voluntary vs. involuntary)?",
+      "answer": "1. Skeletal muscle — voluntary\n2. Cardiac muscle — involuntary\n3. Smooth muscle — involuntary",
+      "slideRef": "slide_89.jpg",
+      "slideNumber": 89
+    },
+    {
+      "id": "fc_085",
+      "topic": "Muscle Tissue",
+      "question": "What are the five general functions of muscular tissue?",
+      "answer": "1. Exerts physical force on other tissues/organs\n2. Creates body and limb movement\n3. Facilitates digestion and waste elimination\n4. Enables breathing and speech\n5. Maintains blood circulation; also an important source of body heat",
+      "slideRef": "slide_89.jpg",
+      "slideNumber": 89
+    },
+    {
+      "id": "fc_086",
+      "topic": "Muscle Tissue",
+      "question": "Describe skeletal muscle histologically.",
+      "answer": "Made of long, thin muscle fibers. Most attach to bone. Contains MULTIPLE nuclei adjacent (peripheral) to the plasma membrane. Has striations (alternating dark and light bands). Voluntary control.",
+      "slideRef": "slide_90.jpg",
+      "slideNumber": 90
+    },
+    {
+      "id": "fc_087",
+      "topic": "Muscle Tissue",
+      "question": "Describe cardiac muscle histologically.",
+      "answer": "Limited to the heart. Cardiomyocytes are branched and shorter than skeletal fibers. Contain ONE centrally located nucleus. Striated and involuntary. Have intercalated discs joining cardiomyocytes end-to-end — these provide both electrical and mechanical connection.",
+      "slideRef": "slide_91.jpg",
+      "slideNumber": 91
+    },
+    {
+      "id": "fc_088",
+      "topic": "Muscle Tissue",
+      "question": "What are intercalated discs and why are they clinically important?",
+      "answer": "Intercalated discs join cardiomyocytes end-to-end. They contain gap junctions (for electrical communication) and desmosomes (for mechanical connection). This allows the heart to function as a syncytium — electrical signals spread rapidly across all cardiac cells for coordinated contraction.",
+      "slideRef": "slide_91.jpg",
+      "slideNumber": 91
+    },
+    {
+      "id": "fc_089",
+      "topic": "Muscle Tissue",
+      "question": "Describe smooth muscle histologically.",
+      "answer": "Made of fusiform (spindle-shaped) myocytes LACKING striations. Cells are relatively short with ONE central nucleus. Involuntary function. Most is visceral muscle — makes up walls of hollow organs (GI tract, bladder, blood vessels).",
+      "slideRef": "slide_92.jpg",
+      "slideNumber": 92
+    },
+    {
+      "id": "fc_090",
+      "topic": "Nervous Tissue",
+      "question": "What are the two main cell types of nervous tissue and their roles?",
+      "answer": "1. Neurons: Conduct electrical signals; composed of dendrites (receive input), cell body (nucleus/organelles), and axon (conducts information to other cells).\n2. Neuroglia (supporting cells): Maintain physical structure; repair tissue framework after injury; perform phagocytosis; provide nutrients to neurons; regulate interstitial fluid composition surrounding neurons.",
+      "slideRef": "slide_94.jpg",
+      "slideNumber": 94
+    },
+    {
+      "id": "fc_091",
+      "topic": "Nervous Tissue",
+      "question": "What are the three structural components of a neuron?",
+      "answer": "1. Dendrites — receive signals from other neurons\n2. Cell body (soma) — contains the nucleus and major organelles (including mitochondria)\n3. Axon — conducts information to other cells",
+      "slideRef": "slide_94.jpg",
+      "slideNumber": 94
+    },
+    {
+      "id": "fc_092",
+      "topic": "Epithelial Tissue Types",
+      "question": "Which epithelial type lines the urinary bladder and how does it change with distension?",
+      "answer": "Transitional epithelium (urothelium). When relaxed, surface cells are round/dome-shaped. When the bladder fills and stretches, surface cells flatten out, allowing the epithelium to accommodate significant volume changes.",
+      "slideRef": "slide_35.jpg",
+      "slideNumber": 35
+    },
+    {
+      "id": "fc_093",
+      "topic": "Epithelial Tissue Types",
+      "question": "What are microvilli and how do they differ from cilia in simple columnar epithelium?",
+      "answer": "Microvilli (brush border): Non-motile projections that increase apical surface area for absorption.\nCilia: Motile projections (in pseudostratified and some columnar epithelia) that sweep substances along the surface — e.g., propel mucus in the respiratory tract.",
+      "slideRef": "slide_26.jpg",
+      "slideNumber": 26
+    },
+    {
+      "id": "fc_094",
+      "topic": "Epithelial Tissue Types",
+      "question": "What is the epithelium of the alveoli and why is this significant?",
+      "answer": "Type I alveolar cells are simple squamous epithelium — extremely thin to allow rapid diffusion of O₂ and CO₂. Type II cells secrete surfactant. In pulmonary fibrosis, thickening of the alveolar wall (normally simple squamous) impairs gas exchange.",
+      "slideRef": "slide_23.jpg",
+      "slideNumber": 23
+    },
+    {
+      "id": "fc_095",
+      "topic": "Cell Junctions",
+      "question": "What proteins compose tight junctions and what is their specific function?",
+      "answer": "Tight junctions are composed of claudins and occludins. These transmembrane proteins form strands that fuse adjacent plasma membranes, preventing paracellular movement of water and solutes between cells. They also isolate luminal wastes.",
+      "slideRef": "slide_12.jpg",
+      "slideNumber": 12
+    },
+    {
+      "id": "fc_096",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "question": "What two structural proteins make up elastic fibers and what role does each play?",
+      "answer": "Elastin: Amorphous core protein that provides the elastic recoil property.\nFibrillin: Microfibrils that surround and scaffold the elastin core.\nIn the aorta, elastic lamellae formed by these fibers allow recoil in response to systolic pressure (Windkessel effect).",
+      "slideRef": "slide_65.jpg",
+      "slideNumber": 65
+    },
+    {
+      "id": "fc_097",
+      "topic": "Clinical Correlates",
+      "question": "In pulmonary fibrosis, which cell type and which epithelial type are primarily affected?",
+      "answer": "Simple squamous epithelium (type I pneumocytes) is primarily affected. In fibrosis, these normally thin cells are replaced by thickened/scarred tissue, increasing the diffusion distance and impairing gas exchange.",
+      "slideRef": "slide_50.jpg",
+      "slideNumber": 50
+    },
+    {
+      "id": "fc_098",
+      "topic": "Clinical Correlates",
+      "question": "A tissue sample shows multiple cell layers with flattened surface cells lacking nuclei and is exposed to frequent mechanical stress. What epithelial type is this?",
+      "answer": "Keratinized stratified squamous epithelium. The absence of nuclei in surface cells (anucleate) indicates keratinization. The multiple layers and mechanical stress resistance are key features. Found in the epidermis; heavily keratinized in palms and soles.",
+      "slideRef": "slide_51.jpg",
+      "slideNumber": 51
+    },
+    {
+      "id": "fc_099",
+      "topic": "Clinical Correlates",
+      "question": "A patient has excessive oily skin and recurrent follicular inflammation. Histology shows glands whose cells disintegrate during secretion. What type of secretion is this?",
+      "answer": "Holocrine secretion. The entire cell ruptures and dies as part of the secretory process. This describes sebaceous glands, which secrete sebum. Excess sebum production → acne vulgaris.",
+      "slideRef": "slide_52.jpg",
+      "slideNumber": 52
+    },
+    {
+      "id": "fc_100",
+      "topic": "Clinical Correlates",
+      "question": "A patient with pleural inflammation has sharp pain worsening with breathing that improves when breath-holding. Which pleural surface is most likely involved and why?",
+      "answer": "The parietal pleura. Only the parietal pleura has somatic sensory innervation (from intercostal and phrenic nerves), making it capable of producing sharp, well-localized pain that worsens with respiratory movement. The visceral pleura lacks somatic pain receptors.",
+      "slideRef": "slide_53.jpg",
+      "slideNumber": 53
+    },
+    {
+      "id": "fc_101",
+      "topic": "Supporting Connective Tissues",
+      "question": "What is the clinical significance of cartilage being avascular?",
+      "answer": "Because cartilage lacks blood vessels, it heals very poorly after injury. Nutrients must diffuse through the matrix from surrounding perichondrium. This is why articular cartilage damage (e.g., in osteoarthritis) is essentially irreversible.",
+      "slideRef": "slide_82.jpg",
+      "slideNumber": 82
+    },
+    {
+      "id": "fc_102",
+      "topic": "Clinical Correlates",
+      "question": "Which connective tissue disorder is associated with a defect in fibrillin-1 and what aortic complication can be life-threatening?",
+      "answer": "Marfan's Syndrome (autosomal dominant, fibrillin-1/FBN1 gene defect). The life-threatening aortic complication is aortic dissection due to weakened elastic tissue in the aortic media. Mitral valve prolapse and aortic regurgitation also occur. Life expectancy is halved without cardiovascular monitoring.",
+      "slideRef": "slide_67.jpg",
+      "slideNumber": 67
+    },
+    {
+      "id": "fc_103",
+      "topic": "Connective Tissue Proper",
+      "question": "What are the three subcategories of loose connective tissue?",
+      "answer": "A. Areolar connective tissue\nB. Adipose tissue\nC. Reticular connective tissue",
+      "slideRef": "slide_73.jpg",
+      "slideNumber": 73
+    },
+    {
+      "id": "fc_104",
+      "topic": "Connective Tissue Proper",
+      "question": "What is mesenchyme and what is its significance in development?",
+      "answer": "Mesenchyme consists of embryonic stem cells — the FIRST connective tissue formed in embryos. It is derived from mesoderm and gives rise to most connective tissues of the body. Not found in adults.",
+      "slideRef": "slide_71.jpg",
+      "slideNumber": 71
+    },
+    {
+      "id": "fc_105",
+      "topic": "Membranes & Glands",
+      "question": "What is the lamina propria and with which membrane type is it associated?",
+      "answer": "The lamina propria is areolar connective tissue that underlies mucous membranes. It supports the epithelium of mucosae and provides vascular and immune support.",
+      "slideRef": "slide_37.jpg",
+      "slideNumber": 37
+    },
+    {
+      "id": "fc_106",
+      "topic": "Muscle Tissue",
+      "question": "How does cardiac muscle differ from skeletal muscle in terms of nucleus number and position?",
+      "answer": "Skeletal muscle: MULTIPLE nuclei, located peripherally (adjacent to plasma membrane).\nCardiac muscle: ONE centrally located nucleus per cardiomyocyte.",
+      "slideRef": "slide_91.jpg",
+      "slideNumber": 91
+    },
+    {
+      "id": "fc_107",
+      "topic": "Muscle Tissue",
+      "question": "What structural feature unique to cardiac muscle allows coordinated electrical conduction?",
+      "answer": "Intercalated discs — specialized cell junctions at the ends of cardiomyocytes containing gap junctions (for electrical coupling) and desmosomes (for mechanical stability). Gap junctions allow rapid spread of electrical signals, making the heart act as a functional syncytium.",
+      "slideRef": "slide_91.jpg",
+      "slideNumber": 91
+    },
+    {
+      "id": "fc_108",
+      "topic": "Epithelial Tissue Types",
+      "question": "Which epithelium lines the esophagus and why?",
+      "answer": "Nonkeratinized stratified squamous epithelium. The esophagus requires multilayered protection against mechanical abrasion from swallowed food, but since it is moist and not exposed to air drying, keratinization is unnecessary.",
+      "slideRef": "slide_33.jpg",
+      "slideNumber": 33
+    },
+    {
+      "id": "fc_109",
+      "topic": "Cell Junctions",
+      "question": "Which cell junction type is responsible for coordinating cardiac contractions and how?",
+      "answer": "Gap junctions allow electrical communication between cardiomyocytes via connexons (composed of connexins), which are open channels. Electrical signals pass directly from cell to cell, coordinating simultaneous contraction of the heart.",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_110",
+      "topic": "Supporting Connective Tissues",
+      "question": "What is the nucleus pulposus and what collagen type is found there?",
+      "answer": "The nucleus pulposus is the gel-like inner core of the intervertebral disc, surrounded by fibrocartilage. It contains Type II collagen (slippery), consistent with its cartilaginous environment and shock-absorbing function.",
+      "slideRef": "slide_62.jpg",
+      "slideNumber": 62
+    },
+    {
+      "id": "fc_111",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "question": "What is the role of Type IV collagen and where is it exclusively found?",
+      "answer": "Type IV collagen forms the structural scaffold of the basement membrane (basal lamina) and lens of the eye. It is the only collagen type that does not form fibrils — instead it forms a sheet-like network critical for epithelial filtration and support.",
+      "slideRef": "slide_62.jpg",
+      "slideNumber": 62
+    },
+    {
+      "id": "fc_112",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "question": "What is the mnemonic for remembering the four major collagen types?",
+      "answer": "Type I = Strong (bone, tendons)\nType II = Slippery (cartilage)\nType III = Bloody (blood vessels, granulation tissue)\nType IV = BM (basement membrane)",
+      "slideRef": "slide_62.jpg",
+      "slideNumber": 62
+    },
+    {
+      "id": "fc_113",
+      "topic": "Overview of Tissues",
+      "question": "What is the difference between apical and basal surfaces in epithelial cells?",
+      "answer": "Apical surface: Upper, free surface — faces the lumen or external environment. May have microvilli, cilia, or stereocilia.\nBasal surface: Lower, attached surface — anchored to the basement membrane via hemidesmosomes.",
+      "slideRef": "slide_09.jpg",
+      "slideNumber": 9
+    },
+    {
+      "id": "fc_114",
+      "topic": "Connective Tissue Proper",
+      "question": "What connective tissue underlies epithelium and lines serous membranes (the 'packing material')?",
+      "answer": "Areolar connective tissue — loosely organized, abundant blood vessels, all three fiber types, all six major cell types. Acts as 'packing material.' Also provides passageways for nerves and blood vessels.",
+      "slideRef": "slide_74.jpg",
+      "slideNumber": 74
+    },
+    {
+      "id": "fc_115",
+      "topic": "Epithelial Tissue Types",
+      "question": "What are goblet cells and in which epithelia are they found?",
+      "answer": "Goblet cells are unicellular exocrine glands scattered among columnar cells. They produce and secrete mucus. Found in simple columnar epithelium (GI tract) and pseudostratified ciliated columnar epithelium (respiratory tract).",
+      "slideRef": "slide_26.jpg",
+      "slideNumber": 26
+    },
+    {
+      "id": "fc_116",
+      "topic": "Clinical Correlates",
+      "question": "What is the clinical significance of the esophagus having nonkeratinized stratified squamous epithelium, and what happens when it changes?",
+      "answer": "Normal esophageal epithelium (nonkeratinized stratified squamous) protects against mechanical abrasion. In Barrett's esophagus, chronic GERD causes metaplasia to simple columnar mucus-secreting epithelium — a precancerous change that increases risk for esophageal adenocarcinoma.",
+      "slideRef": "slide_54.jpg",
+      "slideNumber": 54
+    },
+    {
+      "id": "fc_117",
+      "topic": "Muscle Tissue",
+      "question": "What are fusiform myocytes and in which muscle type are they found?",
+      "answer": "Fusiform myocytes are spindle-shaped (tapered at both ends) muscle cells. They are found in smooth muscle. They lack striations, are short, and have one central nucleus.",
+      "slideRef": "slide_92.jpg",
+      "slideNumber": 92
+    },
+    {
+      "id": "fc_118",
+      "topic": "Supporting Connective Tissues",
+      "question": "What is the periosteum equivalent in cartilage, and which cartilage types have it?",
+      "answer": "The perichondrium is the fibrous connective tissue covering cartilage (analogous to periosteum for bone). Hyaline cartilage and elastic cartilage have perichondrium. Fibrocartilage and articular cartilage do NOT have perichondrium.",
+      "slideRef": "slide_84.jpg",
+      "slideNumber": 84
+    },
+    {
+      "id": "fc_119",
+      "topic": "Nervous Tissue",
+      "question": "What are the five functions of neuroglia?",
+      "answer": "1. Maintain physical structure of nervous tissues\n2. Repair tissue framework after injury\n3. Perform phagocytosis\n4. Provide nutrients to neurons\n5. Regulate the composition of interstitial fluid surrounding neurons",
+      "slideRef": "slide_94.jpg",
+      "slideNumber": 94
+    },
+    {
+      "id": "fc_120",
+      "topic": "Overview of Tissues",
+      "question": "Connective tissue is the most widely distributed tissue in the body. What are two notable avascular exceptions?",
+      "answer": "Tendons and cartilage are avascular — they lack blood vessels and nerves. This is why both heal very poorly and slowly after injury.",
+      "slideRef": "slide_58.jpg",
+      "slideNumber": 58
+    },
+    {
+      "id": "fc_121",
+      "topic": "Membranes & Glands",
+      "question": "What is the difference between the parietal and visceral layers of serous membranes?",
+      "answer": "Parietal layer: Lines the body cavity wall (e.g., parietal pleura lines the thoracic cavity).\nVisceral layer (serosa): Covers the surface of the organs within the cavity (e.g., visceral pleura covers the lungs).\nA thin layer of serous fluid between the two reduces friction during organ movement.",
+      "slideRef": "slide_38.jpg",
+      "slideNumber": 38
+    },
+    {
+      "id": "fc_122",
+      "topic": "Clinical Correlates",
+      "question": "What is the key histologic difference between Pemphigus Vulgaris and Bullous Pemphigoid regarding blister depth?",
+      "answer": "Pemphigus Vulgaris: Intraepidermal blister (superficial) — antibodies destroy desmosomes within the epidermis, causing acantholysis.\nBullous Pemphigoid: Subepidermal blister (deep) — antibodies destroy hemidesmosomes at the dermal-epidermal junction, causing a deeper, tenser blister that doesn't rupture easily.",
+      "slideRef": "slide_18.jpg",
+      "slideNumber": 18
+    },
+    {
+      "id": "fc_123",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "question": "Why is Type III collagen called 'bloody' and what granulation tissue significance does it have?",
+      "answer": "Type III collagen is called 'bloody' because it is found in blood vessels, uterus, fetal tissue, and GRANULATION TISSUE (early wound healing). It is the first collagen deposited during wound repair, later replaced by the stronger Type I collagen (late wound repair).",
+      "slideRef": "slide_62.jpg",
+      "slideNumber": 62
+    },
+    {
+      "id": "fc_124",
+      "topic": "Supporting Connective Tissues",
+      "question": "What are lacunae in cartilage and bone?",
+      "answer": "Lacunae are small cavities or spaces within the cartilage or bone matrix that house the resident cells — chondrocytes in cartilage and osteocytes in bone.",
+      "slideRef": "slide_83.jpg",
+      "slideNumber": 83
+    },
+    {
+      "id": "fc_125",
+      "topic": "Supporting Connective Tissues",
+      "question": "What are canaliculi in compact bone?",
+      "answer": "Canaliculi are tiny channels that connect adjacent lacunae to each other and to the central canal. They allow osteocytes to communicate and receive nutrients via gap junctions through their cytoplasmic processes.",
+      "slideRef": "slide_86.jpg",
+      "slideNumber": 86
+    },
+    {
+      "id": "fc_126",
+      "topic": "Membranes & Glands",
+      "question": "What cells line synovial membranes and what is unique about this membrane?",
+      "answer": "Synoviocytes line synovial membranes. Uniquely, synovial membranes LACK a true epithelium — they are composed of modified connective tissue (areolar CT with synoviocytes, collagen fibers, and adipocytes). This sets them apart from all epithelial membranes.",
+      "slideRef": "slide_40.jpg",
+      "slideNumber": 40
+    },
+    {
+      "id": "fc_127",
+      "topic": "Epithelial Tissue Types",
+      "question": "In which two locations is stratified squamous epithelium most heavily keratinized?",
+      "answer": "The palms and soles of the feet — areas subjected to the greatest mechanical friction and abrasion.",
+      "slideRef": "slide_32.jpg",
+      "slideNumber": 32
+    },
+    {
+      "id": "fc_128",
+      "topic": "Connective Tissue Proper",
+      "question": "What is adipose tissue's appearance histologically and why do cells look empty?",
+      "answer": "Adipocytes appear as empty-looking cells with thin margins. The nucleus is pressed against the cell membrane (signet ring appearance). Cells look empty because the lipid droplet dissolves during standard H&E tissue processing, leaving only the cell membrane.",
+      "slideRef": "slide_75.jpg",
+      "slideNumber": 75
+    },
+    {
+      "id": "fc_129",
+      "topic": "Clinical Correlates",
+      "question": "How does impaired wound healing relate to collagen synthesis?",
+      "answer": "Wound healing requires adequate Type I and Type III collagen synthesis for tensile strength. Impaired collagen synthesis (e.g., vitamin C deficiency in scurvy → impaired hydroxylation of proline/lysine → defective collagen cross-linking) leads to poor wound healing and tissue fragility.",
+      "slideRef": "slide_95.jpg",
+      "slideNumber": 95
+    },
+    {
+      "id": "fc_130",
+      "topic": "Epithelial Tissue Types",
+      "question": "What types of coverings/specializations can be found on the apical surface of epithelial cells?",
+      "answer": "The apical domain can have:\n1. Microvilli (brush border) — increase absorption surface area\n2. Cilia — motile, propel substances\n3. Stereocilia — non-motile; found in epididymis and inner ear",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_131",
+      "topic": "Overview of Tissues",
+      "question": "What is mucous connective tissue and when is it found?",
+      "answer": "Mucous connective tissue is a loose embryonic connective tissue (e.g., Wharton's jelly in the umbilical cord). It is not found in adults and is classified as embryonic connective tissue.",
+      "slideRef": "slide_71.jpg",
+      "slideNumber": 71
+    },
+    {
+      "id": "fc_132",
+      "topic": "Clinical Correlates",
+      "question": "A 60-year-old patient has joint pain worsening with activity, improved with rest, and imaging shows reduced joint space without systemic inflammatory markers. What tissue pathology underlies this?",
+      "answer": "Degeneration of hyaline cartilage — describing osteoarthritis. Hyaline cartilage covers articular surfaces; its avascular nature means it cannot regenerate. Joint space narrows as cartilage wears away. The absence of systemic inflammatory markers distinguishes OA from rheumatoid arthritis.",
+      "slideRef": "slide_98.jpg",
+      "slideNumber": 98
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "q_001",
+      "topic": "Overview of Tissues",
+      "type": "mcq",
+      "question": "A researcher is studying the extracellular matrix of four different tissue types. Which tissue has the HIGHEST ratio of matrix volume to cell volume?",
+      "options": [
+        "Epithelial tissue",
+        "Connective tissue",
+        "Nervous tissue",
+        "Muscle tissue"
+      ],
+      "correct": 1,
+      "explanation": "Connective tissue is defined by its abundant extracellular matrix, which composes the majority of tissue volume and determines the tissue's specialized function. Epithelial tissue, by contrast, is composed predominantly of closely packed cells with minimal matrix."
+    },
+    {
+      "id": "q_002",
+      "topic": "Overview of Tissues",
+      "type": "mcq",
+      "question": "A student notes that the ground substance of connective tissue is also referred to by several other names. Which of the following is NOT another name for ground substance?",
+      "options": [
+        "Tissue fluid",
+        "Interstitial fluid",
+        "Extracellular fluid (ECF)",
+        "Plasma"
+      ],
+      "correct": 3,
+      "explanation": "Ground substance is a clear gel called tissue fluid/gel, extracellular fluid (ECF), or interstitial fluid. Plasma is the ground substance of blood — a fluid connective tissue — not of connective tissue in general. The term 'plasma' refers specifically to the liquid component of blood."
+    },
+    {
+      "id": "q_003",
+      "topic": "Overview of Tissues",
+      "type": "mcq",
+      "question": "During embryonic development, which germ layer gives rise to cartilage, bone, and blood?",
+      "options": [
+        "Endoderm",
+        "Ectoderm",
+        "Mesoderm",
+        "Mesenchyme"
+      ],
+      "correct": 2,
+      "explanation": "The mesoderm (middle germ layer) becomes gelatinous mesenchyme and gives rise to cartilage, bone, and blood. The endoderm gives rise to mucous membranes of digestive/respiratory tracts. The ectoderm gives rise to epidermis and the nervous system. Mesenchyme is a derivative of mesoderm, not a primary germ layer."
+    },
+    {
+      "id": "q_004",
+      "topic": "Epithelial Tissue Types",
+      "type": "mcq",
+      "question": "A patient with pulmonary fibrosis undergoes lung biopsy. The affected tissue demonstrates reduced efficiency of gas exchange due to thickening of cells normally specialized for diffusion. Which epithelial cell shape is primarily affected?",
+      "options": [
+        "Cuboidal",
+        "Columnar",
+        "Squamous",
+        "Transitional"
+      ],
+      "correct": 2,
+      "explanation": "Simple squamous epithelium lines the alveoli. These extremely thin, flat cells facilitate rapid gas diffusion. In pulmonary fibrosis, these cells are replaced by thickened scar tissue, increasing the diffusion distance and impairing O₂/CO₂ exchange. Cuboidal cells are found in kidney tubules and glands; columnar cells line the GI tract."
+    },
+    {
+      "id": "q_005",
+      "topic": "Epithelial Tissue Types",
+      "type": "mcq",
+      "question": "A tissue sample demonstrates multiple cell layers with surface cells that are flattened and lack nuclei. The tissue is exposed to frequent mechanical stress. Which epithelial type best fits this description?",
+      "options": [
+        "Simple squamous",
+        "Stratified cuboidal",
+        "Keratinized stratified squamous",
+        "Transitional"
+      ],
+      "correct": 2,
+      "explanation": "Keratinized stratified squamous epithelium has multiple layers; cells become flat and anucleate at the surface due to keratinization. This type is specifically adapted for abrasion resistance (epidermis, palms, soles). Transitional epithelium also has multiple layers but surface cells retain nuclei and change shape with distension. Nonkeratinized stratified squamous retains nuclei in surface cells."
+    },
+    {
+      "id": "q_006",
+      "topic": "Epithelial Tissue Types",
+      "type": "mcq",
+      "question": "A biopsy from the respiratory tract shows a single layer of cells with nuclei appearing at multiple levels. All cells contact the basement membrane. Goblet cells and cilia are present. Which epithelial type is this?",
+      "options": [
+        "Stratified columnar epithelium",
+        "Simple columnar epithelium",
+        "Pseudostratified ciliated columnar epithelium",
+        "Transitional epithelium"
+      ],
+      "correct": 2,
+      "explanation": "Pseudostratified epithelium APPEARS multilayered because nuclei sit at different heights, but all cells contact the basement membrane — making it a single-layer (simple) epithelium. Cilia and goblet cells are hallmarks of this type in the respiratory tract. True stratified columnar has cells that do NOT all touch the basement membrane."
+    },
+    {
+      "id": "q_007",
+      "topic": "Epithelial Tissue Types",
+      "type": "mcq",
+      "question": "During cystoscopy, a urologist notes that the bladder mucosa appears to have fewer, rounded surface cells when the bladder is empty. When the bladder fills, these cells flatten dramatically. Which epithelium allows this?",
+      "options": [
+        "Simple cuboidal",
+        "Stratified squamous",
+        "Pseudostratified columnar",
+        "Transitional (urothelium)"
+      ],
+      "correct": 3,
+      "explanation": "Transitional epithelium (urothelium) is a multilayered epithelium whose surface cells change from round to flat when stretched. This unique property allows for filling and distension of the urinary tract. It is found in the ureter and urinary bladder."
+    },
+    {
+      "id": "q_008",
+      "topic": "Cell Junctions",
+      "type": "mcq",
+      "question": "A pathologist notes that a tumor specimen stains negative for E-cadherin. Which junction is most likely disrupted, and what is the clinical implication?",
+      "options": [
+        "Tight junction; increased paracellular permeability",
+        "Adherens junction; promotion of metastasis",
+        "Desmosome; formation of skin blisters",
+        "Gap junction; loss of coordinated contraction"
+      ],
+      "correct": 1,
+      "explanation": "E-cadherin is the adhesion protein of adherens junctions (Zonula Adherens). Loss of cadherin disrupts cell-cell adhesion and promotes metastasis — cells can detach and invade surrounding tissue. This is a key mechanism in epithelial-to-mesenchymal transition (EMT) in cancer."
+    },
+    {
+      "id": "q_009",
+      "topic": "Cell Junctions",
+      "type": "mcq",
+      "question": "Which junction prevents paracellular passage of water and luminal substances between intestinal epithelial cells?",
+      "options": [
+        "Gap junctions",
+        "Desmosomes",
+        "Tight junctions (Zonula Occludens)",
+        "Hemidesmosomes"
+      ],
+      "correct": 2,
+      "explanation": "Tight junctions (Zonula Occludens) are located between plasma membranes and prevent passage of water and solutes between cells. They also isolate luminal wastes and are composed of claudins and occludins. Gap junctions facilitate communication; desmosomes and hemidesmosomes provide mechanical anchoring."
+    },
+    {
+      "id": "q_010",
+      "topic": "Cell Junctions",
+      "type": "mcq",
+      "question": "An autoimmune disease attacks the junctions that connect the basal surface of keratinocytes to the basement membrane. What junction is targeted, and what type of blisters result?",
+      "options": [
+        "Desmosomes; flaccid intraepidermal blisters",
+        "Tight junctions; subepidermal edema",
+        "Hemidesmosomes; tense subepidermal blisters",
+        "Gap junctions; loss of epidermal coordination"
+      ],
+      "correct": 2,
+      "explanation": "Hemidesmosomes anchor basal keratinocytes to the basement membrane using integrins. Bullous Pemphigoid is an autoimmune disease where antibodies attack hemidesmosomes, creating tense subepidermal (deep) blisters with a negative Nikolsky sign. Pemphigus Vulgaris attacks desmosomes, producing superficial flaccid blisters with a positive Nikolsky sign."
+    },
+    {
+      "id": "q_011",
+      "topic": "Clinical Correlates",
+      "type": "mcq",
+      "question": "A 45-year-old woman presents with painful erosions involving her oral mucosa and skin. Physical examination shows that gentle rubbing of her skin causes the epidermis to separate. Which autoimmune target explains this finding?",
+      "options": [
+        "Hemidesmosomes (integrins)",
+        "Desmoglein 3 (desmosome component)",
+        "Claudins (tight junction proteins)",
+        "Connexins (gap junction proteins)"
+      ],
+      "correct": 1,
+      "explanation": "The positive Nikolsky sign (epidermal separation with rubbing), oral mucous membrane involvement, and flaccid blisters are classic for Pemphigus Vulgaris. Antibodies target desmoglein 3 — a cadherin component of desmosomes — causing intraepidermal blisters. Bullous Pemphigoid targets hemidesmosomes and produces tense blisters without mucous membrane involvement."
+    },
+    {
+      "id": "q_012",
+      "topic": "Clinical Correlates",
+      "type": "mcq",
+      "question": "Compared to Pemphigus Vulgaris, which of the following features is more characteristic of Bullous Pemphigoid?",
+      "options": [
+        "Positive Nikolsky sign",
+        "Involvement of mucous membranes",
+        "Flaccid blisters that rupture easily",
+        "Tense blisters with favorable prognosis"
+      ],
+      "correct": 3,
+      "explanation": "Bullous Pemphigoid features tense, firm blisters (subepidermal, deep) with a NEGATIVE Nikolsky sign, rare mucous membrane involvement, and a FAVORABLE prognosis. It affects older patients and targets hemidesmosomes. Pemphigus Vulgaris has flaccid blisters, positive Nikolsky sign, mucous membrane involvement, and poor prognosis."
+    },
+    {
+      "id": "q_013",
+      "topic": "Membranes & Glands",
+      "type": "mcq",
+      "question": "A patient with pleuritis (pleural inflammation) reports sharp, well-localized chest pain that worsens with deep breathing and improves with breath-holding. Which structure is most likely responsible for this pain?",
+      "options": [
+        "Visceral pleura",
+        "Parietal pleura",
+        "Visceral pericardium",
+        "Pulmonary parenchyma"
+      ],
+      "correct": 1,
+      "explanation": "Only the parietal pleura has somatic sensory innervation (intercostal nerves and phrenic nerve), enabling it to generate sharp, well-localized pain that varies with respiratory movement. The visceral pleura has autonomic innervation only and does not produce well-localized somatic pain."
+    },
+    {
+      "id": "q_014",
+      "topic": "Membranes & Glands",
+      "type": "mcq",
+      "question": "A patient with excessive oily skin and recurrent follicular inflammation undergoes histologic analysis. The glands show cells that disintegrate as part of the secretory process. Which secretion mechanism is responsible?",
+      "options": [
+        "Merocrine",
+        "Apocrine",
+        "Holocrine",
+        "Endocrine"
+      ],
+      "correct": 2,
+      "explanation": "Holocrine secretion involves the entire cell rupturing and dying to release its contents. Sebaceous glands use this mechanism to secrete sebum. This is responsible for acne vulgaris when sebum production is excessive. Merocrine uses exocytosis (cell intact); apocrine involves loss of apical cytoplasm only."
+    },
+    {
+      "id": "q_015",
+      "topic": "Membranes & Glands",
+      "type": "mcq",
+      "question": "Which type of membrane LACKS a true epithelium?",
+      "options": [
+        "Mucous membrane",
+        "Serous membrane",
+        "Cutaneous membrane",
+        "Synovial membrane"
+      ],
+      "correct": 3,
+      "explanation": "Synovial membranes line articulating joint cavities and are composed of modified connective tissue (areolar CT with synoviocytes). Unlike epithelial membranes (mucous, serous, cutaneous), synovial membranes lack a true epithelial layer."
+    },
+    {
+      "id": "q_016",
+      "topic": "Membranes & Glands",
+      "type": "mcq",
+      "question": "A 60-year-old man with chronic heartburn undergoes endoscopy. Biopsy of his lower esophagus reveals simple columnar mucus-secreting epithelium instead of the normal lining. What cellular process has occurred?",
+      "options": [
+        "Hyperplasia",
+        "Hypertrophy",
+        "Metaplasia",
+        "Dysplasia"
+      ],
+      "correct": 2,
+      "explanation": "Metaplasia is the reversible replacement of one mature cell type with another due to chronic stress. In Barrett's esophagus, chronic GERD causes the normal nonkeratinized stratified squamous epithelium to be replaced by simple columnar mucus-secreting epithelium (intestinal-type). This is a precancerous change that increases risk for esophageal adenocarcinoma."
+    },
+    {
+      "id": "q_017",
+      "topic": "Connective Tissue Proper",
+      "type": "mcq",
+      "question": "A patient ruptures a structure connecting skeletal muscle to bone. Histology shows parallel, densely packed collagen fibers optimized for unidirectional force transmission. Which connective tissue is involved?",
+      "options": [
+        "Dense irregular connective tissue",
+        "Loose areolar connective tissue",
+        "Dense regular connective tissue",
+        "Elastic connective tissue"
+      ],
+      "correct": 2,
+      "explanation": "Dense regular connective tissue has densely packed, parallel collagen fibers — ideal for withstanding tension in ONE direction. Tendons (muscle to bone) and ligaments (bone to bone) are composed of this tissue. Dense irregular CT has randomly arranged fibers to withstand multidirectional stress (e.g., dermis, organ capsules)."
+    },
+    {
+      "id": "q_018",
+      "topic": "Connective Tissue Proper",
+      "type": "mcq",
+      "question": "During abdominal surgery, a surgeon notes a flexible tissue with loosely arranged fibers, abundant ground substance, and abundant blood vessels between organs. Which tissue best matches this description?",
+      "answer": "Areolar connective tissue",
+      "options": [
+        "Dense regular connective tissue",
+        "Dense irregular connective tissue",
+        "Areolar connective tissue",
+        "Reticular connective tissue"
+      ],
+      "correct": 2,
+      "explanation": "Areolar (loose) connective tissue is the 'packing material' of the body — loosely organized fibers, abundant ground substance, and abundant blood vessels. It underlies epithelia and is found between organs, in serous membranes, and surrounding nerves and vessels. Reticular CT forms the framework of lymphoid organs."
+    },
+    {
+      "id": "q_019",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "type": "mcq",
+      "question": "A patient with impaired wound healing has defective tensile strength in multiple tissues. Laboratory testing confirms impaired synthesis of the strongest and most abundant fibrous structural protein. Which component is primarily compromised?",
+      "options": [
+        "Ground substance",
+        "Proteoglycans",
+        "Elastic fibers",
+        "Collagen fibers"
+      ],
+      "correct": 3,
+      "explanation": "Collagen is the strongest and most abundant fiber type in connective tissue, providing high tensile strength. Type I collagen is critical for wound repair. Impaired collagen synthesis (e.g., from vitamin C deficiency or genetic disorders) leads to poor wound healing and tissue fragility."
+    },
+    {
+      "id": "q_020",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "type": "mcq",
+      "question": "Type IV collagen is unique among collagens because it does not form fibrils. Where is Type IV collagen exclusively found?",
+      "options": [
+        "Tendons and ligaments",
+        "Blood vessel walls and granulation tissue",
+        "Basement membrane and basal lamina",
+        "Articular cartilage and nucleus pulposus"
+      ],
+      "correct": 2,
+      "explanation": "Type IV collagen forms a sheet-like network critical for basement membrane structure and filtration. It does not form fibrils like other collagen types. Type I = tendons/bone; Type III = blood vessels/granulation tissue; Type II = cartilage/nucleus pulposus."
+    },
+    {
+      "id": "q_021",
+      "topic": "Clinical Correlates",
+      "type": "mcq",
+      "question": "A patient with Ehlers-Danlos syndrome has hyperextensible skin, a bleeding tendency, and hypermobile joints. Which collagen type and inheritance pattern is most commonly involved?",
+      "options": [
+        "Type I collagen; autosomal recessive",
+        "Type III collagen; autosomal dominant",
+        "Type II collagen; X-linked",
+        "Type IV collagen; autosomal dominant"
+      ],
+      "correct": 1,
+      "explanation": "Ehlers-Danlos syndrome (classic/vascular forms) is autosomal dominant and affects Type III collagen (blood vessels, skin). The defect involves procollagen peptidase or lysyl hydroxylase, reducing collagen cross-link strength. Type I collagen is affected in Osteogenesis Imperfecta (fractures, blue sclerae)."
+    },
+    {
+      "id": "q_022",
+      "topic": "Clinical Correlates",
+      "type": "mcq",
+      "question": "A 19-year-old tall male with long limbs and fingers presents with a new systolic murmur. Echocardiography shows ascending aortic dilation. The underlying pathology involves dysfunction of which connective tissue component?",
+      "options": [
+        "Type I collagen providing tensile strength",
+        "Reticular fibers supporting hematopoietic tissue",
+        "Elastic fibers responsible for large artery recoil",
+        "Proteoglycans within ground substance"
+      ],
+      "correct": 2,
+      "explanation": "This describes Marfan's syndrome — autosomal dominant, fibrillin-1 (FBN1) gene defect → abnormal elastic tissue. The aorta is an elastic artery; its elastic lamellae allow recoil after systolic pressure. Fibrillin deficiency weakens these fibers, causing aortic dilation and predisposing to dissection. Life expectancy is halved without treatment."
+    },
+    {
+      "id": "q_023",
+      "topic": "Clinical Correlates",
+      "type": "mcq",
+      "question": "An infant presents with multiple unexplained fractures in various healing stages. The sclerae appear blue. Which collagen disorder must be considered?",
+      "options": [
+        "Ehlers-Danlos syndrome (Type III collagen)",
+        "Osteogenesis Imperfecta (Type I collagen)",
+        "Marfan's syndrome (fibrillin defect)",
+        "Chondrodysplasia (Type II collagen)"
+      ],
+      "correct": 1,
+      "explanation": "Osteogenesis Imperfecta (brittle bone disease) is autosomal dominant and affects Type I collagen — the main collagen in bone, skin, and tendons. Blue sclerae (thin sclera showing underlying choroid) and multiple fractures with minimal trauma are hallmarks. It is important to distinguish from child abuse."
+    },
+    {
+      "id": "q_024",
+      "topic": "Supporting Connective Tissues",
+      "type": "mcq",
+      "question": "A 60-year-old patient presents with progressive joint pain worsening with activity and improving with rest. Imaging shows reduced joint space without systemic inflammatory markers. Which underlying tissue pathology best explains this presentation?",
+      "options": [
+        "Autoimmune destruction of synovium",
+        "Degeneration of hyaline cartilage",
+        "Infection of bone tissue",
+        "Inflammation of a bursa"
+      ],
+      "correct": 1,
+      "explanation": "This describes osteoarthritis — degenerative joint disease caused by breakdown of hyaline articular cartilage. The lack of blood supply to cartilage prevents regeneration. Symptoms worsen with activity (mechanical wear) and improve with rest. Absence of systemic inflammatory markers distinguishes OA from rheumatoid arthritis (autoimmune synovial destruction)."
+    },
+    {
+      "id": "q_025",
+      "topic": "Supporting Connective Tissues",
+      "type": "mcq",
+      "question": "Which cartilage type is found at the pubic symphysis, menisci, and intervertebral discs?",
+      "options": [
+        "Hyaline cartilage",
+        "Elastic cartilage",
+        "Fibrocartilage",
+        "Articular cartilage"
+      ],
+      "correct": 2,
+      "explanation": "Fibrocartilage contains large, coarse bundles of collagen fibers and resists compression while absorbing shock. It is found at sites of high mechanical stress: pubic symphysis, knee menisci, and intervertebral discs. Hyaline cartilage lines articular surfaces and the trachea; elastic cartilage is in the ear and epiglottis."
+    },
+    {
+      "id": "q_026",
+      "topic": "Supporting Connective Tissues",
+      "type": "mcq",
+      "question": "A patient has a herniated disc pressing on a nerve root. The nucleus pulposus has extruded. Which collagen type is found in nucleus pulposus tissue?",
+      "options": [
+        "Type I",
+        "Type II",
+        "Type III",
+        "Type IV"
+      ],
+      "correct": 1,
+      "explanation": "Type II collagen (slippery) is found in cartilage, vitreous body, and nucleus pulposus — all 'slippery' structures. The nucleus pulposus is the gelatinous core of the intervertebral disc, surrounded by the fibrocartilaginous annulus fibrosus."
+    },
+    {
+      "id": "q_027",
+      "topic": "Muscle Tissue",
+      "type": "mcq",
+      "question": "Which feature is shared by BOTH skeletal and cardiac muscle but NOT smooth muscle?",
+      "options": [
+        "Voluntary control",
+        "Single central nucleus per cell",
+        "Striations",
+        "Intercalated discs"
+      ],
+      "correct": 2,
+      "explanation": "Both skeletal and cardiac muscle are striated (alternating dark and light bands) due to organized sarcomere structure. Smooth muscle lacks striations (hence 'smooth'). Voluntary control is unique to skeletal muscle. Single central nucleus is cardiac muscle's feature. Intercalated discs are unique to cardiac muscle."
+    },
+    {
+      "id": "q_028",
+      "topic": "Muscle Tissue",
+      "type": "mcq",
+      "question": "Intercalated discs are unique to cardiac muscle. What two junction types are found within them and what is their role?",
+      "options": [
+        "Tight junctions and desmosomes; prevent fluid leakage",
+        "Gap junctions and desmosomes; electrical and mechanical coupling",
+        "Hemidesmosomes and tight junctions; anchor to basement membrane",
+        "Adherens junctions and tight junctions; regulate paracellular flow"
+      ],
+      "correct": 1,
+      "explanation": "Intercalated discs contain gap junctions (connexons that allow electrical signals to pass between cardiomyocytes for coordinated contraction) and desmosomes (provide mechanical coupling so cells don't tear apart during contraction). This makes the heart function as a syncytium."
+    },
+    {
+      "id": "q_029",
+      "topic": "Muscle Tissue",
+      "type": "mcq",
+      "question": "A biopsy of visceral smooth muscle shows fusiform cells with one central nucleus and no striations. Which control mechanism governs this tissue?",
+      "options": [
+        "Voluntary (somatic motor neurons)",
+        "Involuntary (autonomic/enteric nervous system)",
+        "Voluntary when conscious; involuntary during sleep",
+        "Purely myogenic with no neural input"
+      ],
+      "correct": 1,
+      "explanation": "Smooth muscle is involuntary — it is governed by the autonomic and enteric nervous systems. It forms the walls of hollow organs (GI tract, bladder, blood vessels). It lacks striations and has one central nucleus per fusiform myocyte."
+    },
+    {
+      "id": "q_030",
+      "topic": "Nervous Tissue",
+      "type": "mcq",
+      "question": "Which cell type performs phagocytosis, provides nutrients to neurons, and regulates interstitial fluid surrounding neurons?",
+      "options": [
+        "Neurons",
+        "Neuroglia",
+        "Fibroblasts",
+        "Macrophages in CT"
+      ],
+      "correct": 1,
+      "explanation": "Neuroglia (glial cells) are the supporting cells of the nervous system. They maintain physical structure, repair tissue framework, perform phagocytosis (microglia), provide nutrients, and regulate interstitial fluid composition. Neurons are specialized for electrical signal transmission, not support functions."
+    },
+    {
+      "id": "q_031",
+      "topic": "Epithelial Tissue Types",
+      "type": "true_false",
+      "question": "Pseudostratified epithelium is classified as a type of simple epithelium because all cells contact the basement membrane.",
+      "correct": true,
+      "explanation": "True. Despite appearing multilayered (nuclei at different levels), pseudostratified epithelium has ALL cells touching the basement membrane — the defining criterion for 'simple' (single-layer) epithelium. The apparent stratification is due to nuclei at varying heights and cells of different shapes."
+    },
+    {
+      "id": "q_032",
+      "topic": "Cell Junctions",
+      "type": "true_false",
+      "question": "Hemidesmosomes connect adjacent epithelial cells to each other via keratin intermediate filaments.",
+      "correct": false,
+      "explanation": "False. Hemidesmosomes connect the BASAL CELLS to the BASEMENT MEMBRANE (not to adjacent cells). They use integrins as transmembrane proteins and attach to keratin in the cell. Desmosomes (Macula Adherens) connect adjacent epithelial cells to each other."
+    },
+    {
+      "id": "q_033",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "type": "true_false",
+      "question": "Reticular fibers are composed of Type III collagen.",
+      "correct": true,
+      "explanation": "True. Reticular fibers are formed by Type III collagen. They are thin, branching fibers that are strong and flexible, resisting force in many directions. They form the supportive stroma/framework of lymphoid organs (lymph nodes, spleen, thymus, bone marrow)."
+    },
+    {
+      "id": "q_034",
+      "topic": "Supporting Connective Tissues",
+      "type": "true_false",
+      "question": "Cartilage heals poorly because it is avascular (lacks blood vessels and nerves).",
+      "correct": true,
+      "explanation": "True. Cartilage has no blood vessels or nerves — it receives nutrients by diffusion through the matrix from the perichondrium. Without a blood supply, inflammatory and repair cells cannot reach damaged cartilage, severely limiting healing capacity. This is why articular cartilage damage is essentially permanent."
+    },
+    {
+      "id": "q_035",
+      "topic": "Clinical Correlates",
+      "type": "true_false",
+      "question": "In Pemphigus Vulgaris, the Nikolsky sign is negative because the blisters are deep (subepidermal).",
+      "correct": false,
+      "explanation": "False. The Nikolsky sign is POSITIVE in Pemphigus Vulgaris. PV targets desmosomes (desmoglein 3), causing intraepidermal (superficial) blisters that easily separate with slight friction. The Nikolsky sign is NEGATIVE in Bullous Pemphigoid because the subepidermal blisters are deeper and tenser."
+    },
+    {
+      "id": "q_036",
+      "topic": "Membranes & Glands",
+      "type": "true_false",
+      "question": "Endocrine glands secrete their products through ducts onto epithelial surfaces.",
+      "correct": false,
+      "explanation": "False. Endocrine glands are DUCTLESS — they secrete hormones directly into the bloodstream. Exocrine glands (sweat, salivary, pancreatic) maintain contact with epithelial surfaces via ducts."
+    },
+    {
+      "id": "q_037",
+      "topic": "Muscle Tissue",
+      "type": "true_false",
+      "question": "Skeletal muscle fibers contain a single, centrally placed nucleus.",
+      "correct": false,
+      "explanation": "False. Skeletal muscle fibers are multinucleate — they contain MULTIPLE nuclei located peripherally (adjacent to the plasma membrane). A single central nucleus is the feature of cardiac muscle cells (cardiomyocytes) and smooth muscle cells."
+    },
+    {
+      "id": "q_038",
+      "topic": "Connective Tissue Proper",
+      "type": "true_false",
+      "question": "All connective tissue is highly vascularized with a nerve supply.",
+      "correct": false,
+      "explanation": "False. While most connective tissue is highly vascularized, tendons and cartilage are notable EXCEPTIONS — they lack blood vessels and nerves. This is why both heal very slowly after injury."
+    },
+    {
+      "id": "q_039",
+      "topic": "Epithelial Tissue Types",
+      "type": "true_false",
+      "question": "The nonkeratinized stratified squamous epithelium of the esophagus can undergo metaplasia to become simple columnar epithelium in response to chronic acid reflux.",
+      "correct": true,
+      "explanation": "True. This describes Barrett's esophagus — a classic example of metaplasia. Chronic GERD causes the normal nonkeratinized stratified squamous epithelium to be replaced by intestinal-type simple columnar mucus-secreting epithelium as an adaptive response to chronic acid exposure. This is a precancerous condition."
+    },
+    {
+      "id": "q_040",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "type": "true_false",
+      "question": "Elastic fibers return to their original length after stretching and are composed of elastin and fibrillin.",
+      "correct": true,
+      "explanation": "True. Elastic fibers are composed of elastin (amorphous core) and fibrillin (microfibril scaffold). They are branched and wavy, and crucially, return to original length after stretching. This property is essential in the aorta (Windkessel effect) and elastic ligaments of the vertebrae."
+    },
+    {
+      "id": "q_041",
+      "topic": "Overview of Tissues",
+      "type": "true_false",
+      "question": "Mesenchyme, the embryonic stem cell tissue, is found throughout adult connective tissue.",
+      "correct": false,
+      "explanation": "False. Mesenchyme is NOT found in adults — it is embryonic connective tissue, the first connective tissue formed in embryos. It is derived from mesoderm and gives rise to all mature connective tissues. In adults, some mesenchymal stem cells persist in bone marrow but the tissue itself is not present."
+    },
+    {
+      "id": "q_042",
+      "topic": "Membranes & Glands",
+      "type": "true_false",
+      "question": "Brown fat is more vascularized than white fat and its adipocytes contain more mitochondria.",
+      "correct": true,
+      "explanation": "True. Brown fat is more vascularized than white fat and its adipocytes contain many mitochondria. When stimulated by the nervous system, fat breakdown accelerates and releases energy as heat (thermogenesis). This is particularly important in newborns and hibernating animals for maintaining body temperature."
+    },
+    {
+      "id": "q_043",
+      "topic": "Cell Junctions",
+      "type": "matching",
+      "question": "Match each cell junction to its Latin/alternate name.",
+      "pairs": [
+        {"term": "Tight junction", "match": "Zonula Occludens"},
+        {"term": "Adherens junction", "match": "Zonula Adherens"},
+        {"term": "Desmosome", "match": "Macula Adherens"},
+        {"term": "Gap junction", "match": "Communicating junction (connexons)"}
+      ],
+      "explanation": "Zonula = belt/girdle (encircles cell); Macula = spot/patch (localized). ZO = occluded zone; ZA = adherent zone. Desmosomes are patch-like, not circumferential. Gap junctions are held together by connexons (composed of connexins), allowing direct cell-cell communication."
+    },
+    {
+      "id": "q_044",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "type": "matching",
+      "question": "Match each collagen type to its mnemonic/key location.",
+      "pairs": [
+        {"term": "Type I collagen", "match": "Strong — bone, tendons, skin"},
+        {"term": "Type II collagen", "match": "Slippery — cartilage, nucleus pulposus"},
+        {"term": "Type III collagen", "match": "Bloody — blood vessels, granulation tissue"},
+        {"term": "Type IV collagen", "match": "BM — basement membrane, basal lamina"}
+      ],
+      "explanation": "The mnemonic I=Strong, II=Slippery, III=Bloody, IV=BM helps distinguish collagen types. Type I is most abundant and strongest. Type III is the first deposited in wound healing (granulation tissue), replaced by Type I in late wound repair."
+    },
+    {
+      "id": "q_045",
+      "topic": "Clinical Correlates",
+      "type": "matching",
+      "question": "Match each connective tissue disorder to its genetic defect.",
+      "pairs": [
+        {"term": "Osteogenesis Imperfecta", "match": "Type I collagen defect; fractures, blue sclerae"},
+        {"term": "Ehlers-Danlos Syndrome", "match": "Type III collagen defect; hyperextensible skin, hypermobile joints"},
+        {"term": "Marfan's Syndrome", "match": "Fibrillin-1 (FBN1) gene defect; aortic dissection, lens dislocation"},
+        {"term": "Bullous Pemphigoid", "match": "Anti-hemidesmosome antibodies; tense subepidermal blisters"}
+      ],
+      "explanation": "Each disorder targets a specific structural protein. OI = Type I collagen (most abundant in bone). EDS = Type III (in vessels/skin/granulation tissue). Marfan's = fibrillin-1 on chromosome 15 (elastic fiber scaffold). BP = autoimmune targeting hemidesmosomes."
+    },
+    {
+      "id": "q_046",
+      "topic": "Epithelial Tissue Types",
+      "type": "matching",
+      "question": "Match each epithelial type to its primary location.",
+      "pairs": [
+        {"term": "Simple squamous", "match": "Alveoli, glomeruli, endothelium"},
+        {"term": "Simple cuboidal", "match": "Kidney tubules, thyroid, salivary glands"},
+        {"term": "Simple columnar", "match": "GI tract lining, uterine tubes"},
+        {"term": "Pseudostratified ciliated columnar", "match": "Respiratory tract, male urethra"}
+      ],
+      "explanation": "Simple squamous = thin cells for diffusion/filtration. Simple cuboidal = secretion/absorption in glands. Simple columnar = absorption/secretion in GI tract (with goblet cells). Pseudostratified = mucus secretion and propulsion (cilia + goblet cells) in respiratory tract."
+    },
+    {
+      "id": "q_047",
+      "topic": "Muscle Tissue",
+      "type": "matching",
+      "question": "Match each muscle type to its key distinguishing features.",
+      "pairs": [
+        {"term": "Skeletal muscle", "match": "Multiple peripheral nuclei; voluntary; striated"},
+        {"term": "Cardiac muscle", "match": "One central nucleus; involuntary; intercalated discs"},
+        {"term": "Smooth muscle", "match": "One central nucleus; involuntary; no striations"},
+        {"term": "Both skeletal and cardiac", "match": "Striated; long cylindrical fibers with sarcomeres"}
+      ],
+      "explanation": "The key distinguishing features: Skeletal = multinucleate, peripheral nuclei, voluntary. Cardiac = single central nucleus, branched cells, intercalated discs, involuntary. Smooth = spindle-shaped fusiform cells, no striations, single central nucleus, involuntary. Only skeletal and cardiac are striated."
+    },
+    {
+      "id": "q_048",
+      "topic": "Supporting Connective Tissues",
+      "type": "matching",
+      "question": "Match each cartilage type to its distinguishing feature and location.",
+      "pairs": [
+        {"term": "Hyaline cartilage", "match": "Clear, glassy; articular surfaces, trachea, costal cartilage"},
+        {"term": "Elastic cartilage", "match": "Abundant elastic fibers; external ear, epiglottis"},
+        {"term": "Fibrocartilage", "match": "Coarse collagen bundles; intervertebral discs, menisci, pubic symphysis"},
+        {"term": "All cartilage types", "match": "Avascular; cells = chondrocytes in lacunae"}
+      ],
+      "explanation": "All cartilage is avascular and aneural with chondrocytes in lacunae. Hyaline has fine collagen (glassy appearance). Elastic has visible elastic fibers for flexibility. Fibrocartilage has the heaviest collagen content for shock absorption and compression resistance."
+    },
+    {
+      "id": "q_049",
+      "topic": "Membranes & Glands",
+      "type": "matching",
+      "question": "Match each exocrine secretion type to its mechanism and example.",
+      "pairs": [
+        {"term": "Merocrine (eccrine)", "match": "Exocytosis; cell intact; eccrine sweat glands, pancreas"},
+        {"term": "Apocrine", "match": "Apical cytoplasm pinches off; partial cell loss; mammary glands"},
+        {"term": "Holocrine", "match": "Entire cell ruptures; cell dies; sebaceous glands"},
+        {"term": "Endocrine", "match": "No duct; secretes hormones into blood; thyroid, adrenal"}
+      ],
+      "explanation": "Merocrine = most common/efficient; regulated secretion via exocytosis. Apocrine = allows complex product release (lipids + proteins). Holocrine = most destructive; entire cell is the secretory product. Endocrine = not exocrine but important contrast — ductless, secretes directly into bloodstream."
+    },
+    {
+      "id": "q_050",
+      "topic": "Cell Junctions",
+      "type": "fill_in_blank",
+      "question": "Tight junctions are also known as ________, and they prevent passage of water and solutes between cells by forming strands composed of claudins and occludins.",
+      "answer": "Zonula Occludens",
+      "acceptableAnswers": ["Zonula Occludens", "ZO", "zonula occludens"],
+      "explanation": "Zonula Occludens (ZO) is the Latin/formal name for tight junctions. They literally 'occlude' the intercellular space, preventing paracellular movement of substances. They also isolate luminal wastes."
+    },
+    {
+      "id": "q_051",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "type": "fill_in_blank",
+      "question": "Elastic fibers are composed of two proteins: an amorphous core called ________ and surrounding microfibrils called fibrillin.",
+      "answer": "elastin",
+      "acceptableAnswers": ["elastin", "Elastin"],
+      "explanation": "Elastic fibers consist of elastin (provides the elastic property — amorphous, rubber-like) surrounded by fibrillin microfibrils (structural scaffold). Defective fibrillin-1 is the cause of Marfan's syndrome."
+    },
+    {
+      "id": "q_052",
+      "topic": "Clinical Correlates",
+      "type": "fill_in_blank",
+      "question": "In Pemphigus Vulgaris, the ________ sign is positive, meaning that gentle rubbing of the skin causes separation of the epidermis.",
+      "answer": "Nikolsky",
+      "acceptableAnswers": ["Nikolsky", "Nikolsky sign", "nikolsky"],
+      "explanation": "The Nikolsky sign is positive in PV because antibodies destroy desmoglein 3 (desmosome component) within the epidermis, making the skin fragile. Gentle pressure or rubbing causes intraepidermal shearing. It is NEGATIVE in Bullous Pemphigoid where the deeper subepidermal split produces tenser blisters."
+    },
+    {
+      "id": "q_053",
+      "topic": "Epithelial Tissue Types",
+      "type": "fill_in_blank",
+      "question": "The process by which normal nonkeratinized stratified squamous epithelium of the esophagus is replaced by simple columnar mucus-secreting epithelium due to chronic GERD is called ________.",
+      "answer": "metaplasia",
+      "acceptableAnswers": ["metaplasia", "Metaplasia"],
+      "explanation": "Metaplasia is the reversible replacement of one mature, differentiated cell type with another in response to chronic stress. Barrett's esophagus is the classic example. If the stressor is removed early, metaplasia may reverse. If dysplasia supervenes, cancer risk increases significantly."
+    },
+    {
+      "id": "q_054",
+      "topic": "Supporting Connective Tissues",
+      "type": "fill_in_blank",
+      "question": "The functional unit of compact bone is the ________, a cylinder of concentric bone matrix lamellae surrounding a central canal containing blood vessels and nerves.",
+      "answer": "osteon",
+      "acceptableAnswers": ["osteon", "Osteon", "Haversian system"],
+      "explanation": "The osteon (Haversian system) is the structural unit of compact bone. Concentric lamellae surround the central (Haversian) canal. Osteocytes reside in lacunae between lamellae, connected by canaliculi for nutrient exchange."
+    },
+    {
+      "id": "q_055",
+      "topic": "Cell Junctions",
+      "type": "fill_in_blank",
+      "question": "Gap junctions are held together by channel proteins called ________, which are composed of six connexin subunits and form open channels between adjacent cells.",
+      "answer": "connexons",
+      "acceptableAnswers": ["connexons", "Connexons"],
+      "explanation": "Connexons are the protein channels that form gap junctions. Each connexon is composed of six connexin proteins arranged around a central pore. When aligned between adjacent cells, they create open channels for direct cytoplasmic communication, allowing passage of ions and small molecules."
+    },
+    {
+      "id": "q_056",
+      "topic": "Membranes & Glands",
+      "type": "fill_in_blank",
+      "question": "The ________ membrane is the only body membrane that lacks a true epithelial layer and is instead composed of modified connective tissue that secretes synovial fluid.",
+      "answer": "synovial",
+      "acceptableAnswers": ["synovial", "Synovial"],
+      "explanation": "Synovial membranes line articulating joint cavities and are composed of synoviocytes in an areolar connective tissue framework (with collagen fibers and adipocytes). They are unique because they lack epithelium, distinguishing them from all epithelial membranes (mucous, serous, cutaneous)."
+    },
+    {
+      "id": "q_057",
+      "topic": "Connective Tissue Proper",
+      "type": "fill_in_blank",
+      "question": "________ connective tissue is described as the 'packing material' of the body because it possesses all three fiber types and all six major cell types, and is found underlying epithelia and surrounding blood vessels and nerves.",
+      "answer": "Areolar",
+      "acceptableAnswers": ["Areolar", "areolar", "loose areolar"],
+      "explanation": "Areolar connective tissue is the most widespread loose connective tissue. Its loosely organized fibers, abundant ground substance, and rich blood supply make it ideal as 'packing material.' It provides support, diffusion pathways for nutrients, and immune defense."
+    },
+    {
+      "id": "q_058",
+      "topic": "Muscle Tissue",
+      "type": "fill_in_blank",
+      "question": "Cardiac muscle cells are joined end-to-end at specialized regions called ________, which contain gap junctions and desmosomes for electrical and mechanical coupling.",
+      "answer": "intercalated discs",
+      "acceptableAnswers": ["intercalated discs", "intercalated disk", "intercalated disc"],
+      "explanation": "Intercalated discs are unique structural features of cardiac muscle. Their gap junctions allow rapid electrical conduction between cardiomyocytes, enabling coordinated contraction. Desmosomes prevent mechanical tearing. This allows the heart to function as an electrical syncytium."
+    },
+    {
+      "id": "q_059",
+      "topic": "Overview of Tissues",
+      "type": "mcq",
+      "question": "Which of the following correctly pairs a tissue type with its primary function?",
+      "options": [
+        "Epithelial tissue — supports and binds tissues together",
+        "Connective tissue — forms boundaries and filters/secretes",
+        "Nervous tissue — internal communication",
+        "Muscle tissue — provides structural strength"
+      ],
+      "correct": 2,
+      "explanation": "Nervous tissue is specialized for internal communication (brain, spinal cord, nerves). Epithelial tissue forms boundaries, protects, secretes, absorbs, and filters. Connective tissue supports, protects, and binds tissues. Muscle tissue contracts to cause movement."
+    },
+    {
+      "id": "q_060",
+      "topic": "Epithelial Tissue Types",
+      "type": "mcq",
+      "question": "Which of the following epithelia would be LEAST appropriate to find lining the urinary bladder?",
+      "options": [
+        "Transitional epithelium (urothelium)",
+        "Pseudostratified columnar epithelium",
+        "Stratified squamous (nonkeratinized)",
+        "Simple cuboidal epithelium"
+      ],
+      "correct": 1,
+      "explanation": "The urinary bladder is lined by transitional epithelium, which uniquely accommodates distension. Pseudostratified columnar epithelium is characteristic of the respiratory tract and male urethra. It has no distension capability and would be inappropriate for the bladder. Simple cuboidal and nonkeratinized stratified squamous are also incorrect but pseudostratified is the most obviously wrong choice."
+    },
+    {
+      "id": "q_061",
+      "topic": "Epithelial Tissue Types",
+      "type": "mcq",
+      "question": "Which of the following correctly describes the epithelial lining of the GI tract?",
+      "options": [
+        "Stratified squamous with goblet cells",
+        "Simple columnar with goblet cells and a brush border",
+        "Pseudostratified columnar with cilia",
+        "Simple cuboidal with microvilli"
+      ],
+      "correct": 1,
+      "explanation": "The GI tract (beyond the esophagus) is lined by simple columnar epithelium with goblet cells (for mucus secretion) and a brush border of microvilli (for absorption). In some regions, cilia are also present. The esophagus, by contrast, is nonkeratinized stratified squamous."
+    },
+    {
+      "id": "q_062",
+      "topic": "Connective Tissue Proper",
+      "type": "mcq",
+      "question": "A patient's histology report describes dense connective tissue with randomly oriented collagen bundles and few cells. This tissue is most likely located in which of the following?",
+      "options": [
+        "Tendons",
+        "Dermis of the skin",
+        "Spleen",
+        "Lung alveoli"
+      ],
+      "correct": 1,
+      "explanation": "Dense IRREGULAR connective tissue has randomly arranged, densely packed collagen fibers that withstand unpredictable stresses from multiple directions. It is found in the deeper layer of skin (dermis) and capsules around organs. Dense REGULAR CT (tendons) has parallel fibers."
+    },
+    {
+      "id": "q_063",
+      "topic": "Connective Tissue Proper",
+      "type": "mcq",
+      "question": "Reticular connective tissue forms the supportive stroma of lymphatic organs. Which fiber type composes this tissue?",
+      "options": [
+        "Type I collagen (thick bundles)",
+        "Elastic fibers",
+        "Type III collagen (reticular fibers)",
+        "Type II collagen"
+      ],
+      "correct": 2,
+      "explanation": "Reticular tissue is composed of reticular fibers — thin, branching fibers of Type III collagen. These form the mesh-like framework (stroma) of the lymph nodes, spleen, thymus, and bone marrow, supporting the resident immune and hematopoietic cells."
+    },
+    {
+      "id": "q_064",
+      "topic": "Membranes & Glands",
+      "type": "mcq",
+      "question": "Which of the following gland types is correctly described?",
+      "options": [
+        "Compound tubular: Single unbranched duct; example = intestinal glands",
+        "Compound acinar (alveolar): Multiple acini; example = mammary glands",
+        "Simple coiled tubular: Branched duct; example = eccrine sweat glands",
+        "Compound tubuloalveolar: Branched duct + mixed secretory units; example = sebaceous glands"
+      ],
+      "correct": 1,
+      "explanation": "Compound alveolar (acinar) glands have a branching duct system with multiple rounded secretory acini. Mammary glands are the classic example. Salivary glands and pancreas are compound tubuloalveolar. Eccrine sweat glands are simple coiled tubular (not branched). Sebaceous glands are simple branched alveolar (holocrine)."
+    },
+    {
+      "id": "q_065",
+      "topic": "Membranes & Glands",
+      "type": "mcq",
+      "question": "A patient taking isotretinoin (Accutane) for severe acne has dramatically reduced sebum production. Isotretinoin's primary mechanism involves shrinking which gland type?",
+      "options": [
+        "Compound acinar merocrine glands",
+        "Simple coiled tubular merocrine glands",
+        "Simple branched alveolar holocrine glands",
+        "Compound tubular apocrine glands"
+      ],
+      "correct": 2,
+      "explanation": "Sebaceous glands are simple branched alveolar glands that use HOLOCRINE secretion. The entire cell ruptures to release sebum. Isotretinoin (a vitamin A derivative) shrinks sebaceous gland size and reduces sebum production. Eccrine sweat glands = simple coiled tubular merocrine; apocrine = simple coiled tubular."
+    },
+    {
+      "id": "q_066",
+      "topic": "Cell Junctions",
+      "type": "mcq",
+      "question": "A researcher studying intestinal permeability in Crohn's disease finds disrupted cell junctions at the apical region of enterocytes that normally prevent luminal bacteria from entering the paracellular space. Which junction type is disrupted?",
+      "options": [
+        "Desmosomes",
+        "Gap junctions",
+        "Tight junctions",
+        "Hemidesmosomes"
+      ],
+      "correct": 2,
+      "explanation": "Tight junctions (Zonula Occludens) at the apical region of epithelial cells create a physical barrier preventing paracellular movement of bacteria and antigens into the gut wall. Disruption of tight junctions ('leaky gut') is implicated in inflammatory bowel disease. Desmosomes provide structural anchoring; gap junctions allow communication."
+    },
+    {
+      "id": "q_067",
+      "topic": "Supporting Connective Tissues",
+      "type": "mcq",
+      "question": "Elastic cartilage differs from hyaline cartilage in that it contains abundant elastic fibers. Which of the following is correctly listed as a location for elastic cartilage?",
+      "options": [
+        "Tracheal rings",
+        "Articular surfaces of joints",
+        "External ear and epiglottis",
+        "Pubic symphysis"
+      ],
+      "correct": 2,
+      "explanation": "Elastic cartilage is found in the external ear (pinna) and epiglottis — structures requiring flexible elastic support. Tracheal rings and articular surfaces use hyaline cartilage. The pubic symphysis uses fibrocartilage."
+    },
+    {
+      "id": "q_068",
+      "topic": "Clinical Correlates",
+      "type": "mcq",
+      "question": "Which of the following best describes the cellular change in dysplasia?",
+      "options": [
+        "Increase in cell number due to increased proliferation",
+        "Reversible change in cell type due to chronic stress",
+        "Abnormal cell size, shape, and organization — precancerous",
+        "Decrease in cell size due to reduced demand"
+      ],
+      "correct": 2,
+      "explanation": "Dysplasia = disorganized growth with abnormal cell size, shape, and organization — a precancerous change (e.g., cervical dysplasia, colonic dysplasia). Hyperplasia = ↑ cell number. Metaplasia = cell type change. Atrophy (hypotrophy) = ↓ cell size."
+    },
+    {
+      "id": "q_069",
+      "topic": "Overview of Tissues",
+      "type": "mcq",
+      "question": "Which primary germ layer gives rise to BOTH the epidermis AND the nervous system?",
+      "options": [
+        "Endoderm",
+        "Mesoderm",
+        "Ectoderm",
+        "Mesenchyme"
+      ],
+      "correct": 2,
+      "explanation": "The ectoderm (outer germ layer) gives rise to the epidermis and the entire nervous system (brain, spinal cord, peripheral nerves). Endoderm = mucous membranes of GI/respiratory tracts and digestive glands. Mesoderm = cartilage, bone, blood, and muscle."
+    },
+    {
+      "id": "q_070",
+      "topic": "Epithelial Tissue Types",
+      "type": "mcq",
+      "question": "Simple cuboidal epithelium specialized for hormone synthesis and storage would most likely be found in which organ?",
+      "options": [
+        "Kidney tubules",
+        "Thyroid gland follicles",
+        "Urinary bladder",
+        "Large intestine"
+      ],
+      "correct": 1,
+      "explanation": "Thyroid gland follicles are lined by simple cuboidal epithelium that synthesizes and stores thyroid hormones (T3/T4) in colloid. Kidney tubules are also simple cuboidal (absorption/secretion). Urinary bladder has transitional epithelium. Large intestine has simple columnar epithelium."
+    },
+    {
+      "id": "q_071",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "type": "mcq",
+      "question": "A surgical resident is examining a patient's aorta during repair. The wavy elastic fibers visible in the tunica media are responsible for which physiological function?",
+      "options": [
+        "Preventing platelet adhesion",
+        "Providing tensile strength against shear forces",
+        "Allowing recoil after systolic pressure (Windkessel effect)",
+        "Anchoring smooth muscle cells to the vessel wall"
+      ],
+      "correct": 2,
+      "explanation": "Elastic lamellae in the aortic tunica media allow the vessel to expand during systole and recoil during diastole — the Windkessel effect — maintaining continuous blood flow. This is why the aorta is an 'elastic artery.' Defects in fibrillin (Marfan's) compromise this property, predisposing to aortic dissection."
+    },
+    {
+      "id": "q_072",
+      "topic": "Membranes & Glands",
+      "type": "mcq",
+      "question": "Which of the following correctly describes a mucous membrane?",
+      "options": [
+        "Lines cavities not open to the exterior; has parietal and visceral layers",
+        "Lines passageways with external connections; has a lamina propria of areolar tissue",
+        "Covers the surface of the body; is thick, dry, and waterproof",
+        "Lines articulating joint cavities; lacks true epithelium"
+      ],
+      "correct": 1,
+      "explanation": "Mucous membranes (mucosae) line passageways that communicate with the exterior (digestive, respiratory, urinary, reproductive tracts). Their surfaces must stay moist. The underlying connective tissue is the lamina propria (areolar tissue). Choice A describes serous membranes; C describes cutaneous membrane; D describes synovial membranes."
+    },
+    {
+      "id": "q_073",
+      "topic": "Nervous Tissue",
+      "type": "mcq",
+      "question": "A spinal cord section shows large cells with multiple branching processes extending from a central body containing a prominent nucleus. These cells transmit electrical signals. Which cell type is shown?",
+      "options": [
+        "Neuroglia",
+        "Fibroblasts",
+        "Neurons",
+        "Macrophages"
+      ],
+      "correct": 2,
+      "explanation": "Neurons have a cell body (soma) with a prominent nucleus, dendrites (multiple branching processes that receive input), and an axon (conducts output to other cells). Neuroglia are smaller supporting cells. The description of multiple branching processes from a central body containing a nucleus is classic neuron morphology."
+    },
+    {
+      "id": "q_074",
+      "topic": "Connective Tissue Proper",
+      "type": "mcq",
+      "question": "Which connective tissue is classified as a fluid connective tissue and functions primarily for transportation?",
+      "options": [
+        "Reticular tissue",
+        "Areolar tissue",
+        "Blood",
+        "Adipose tissue"
+      ],
+      "correct": 2,
+      "explanation": "Blood is a fluid connective tissue whose ground substance is plasma. It transports cells (erythrocytes, leukocytes, platelets) and dissolved substances. Reticular, areolar, and adipose are connective tissue proper."
+    },
+    {
+      "id": "q_075",
+      "topic": "Muscle Tissue",
+      "type": "mcq",
+      "question": "A patient has a myopathy affecting fusiform cells with a single central nucleus and no striations in the walls of hollow abdominal organs. Which muscle type is involved?",
+      "options": [
+        "Skeletal muscle",
+        "Cardiac muscle",
+        "Smooth muscle",
+        "Striated visceral muscle"
+      ],
+      "correct": 2,
+      "explanation": "Smooth (visceral) muscle is composed of fusiform myocytes with single central nuclei and NO striations. It forms walls of hollow organs (GI tract, bladder, blood vessels). It is involuntary. Skeletal = multinucleate, peripheral nuclei, striated. Cardiac = single central nucleus, striated, intercalated discs."
+    },
+    {
+      "id": "q_076",
+      "topic": "Overview of Tissues",
+      "type": "true_false",
+      "question": "Epithelial tissue is highly vascularized because it has numerous blood vessels running between the cells.",
+      "correct": false,
+      "explanation": "False. Epithelial tissue is AVASCULAR — it has NO blood vessels. Nutrients diffuse from the underlying connective tissue through the basement membrane. This is an important distinguishing feature: connective tissue is highly vascularized (except tendons and cartilage), while epithelium relies entirely on diffusion."
+    },
+    {
+      "id": "q_077",
+      "topic": "Epithelial Tissue Types",
+      "type": "true_false",
+      "question": "Stratified epithelia are named based on the shape of cells in the deepest (basal) layer.",
+      "correct": false,
+      "explanation": "False. Stratified epithelia are named based on the shape of the cells in the SURFACE (apical) layer, not the basal layer. For example, stratified squamous epithelium has flat surface cells even though basal cells are more cuboidal/columnar."
+    },
+    {
+      "id": "q_078",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "type": "true_false",
+      "question": "The first collagen deposited during wound healing is Type I, which is later replaced by stronger Type III collagen.",
+      "correct": false,
+      "explanation": "False. This is reversed. Type III collagen (reticular, 'bloody') is the FIRST collagen deposited during wound healing as granulation tissue forms. It is later remodeled and replaced by stronger Type I collagen during late wound repair (scar maturation), which provides greater tensile strength."
+    },
+    {
+      "id": "q_079",
+      "topic": "Membranes & Glands",
+      "type": "true_false",
+      "question": "The pancreas is an example of a gland with both endocrine and exocrine functions.",
+      "correct": true,
+      "explanation": "True. The pancreas is a compound acinar gland with BOTH functions. Its exocrine function (acinar cells) secretes digestive enzymes through the pancreatic duct into the duodenum. Its endocrine function (islets of Langerhans) secretes insulin and glucagon directly into the bloodstream."
+    },
+    {
+      "id": "q_080",
+      "topic": "Supporting Connective Tissues",
+      "type": "true_false",
+      "question": "Fibrocartilage is the only cartilage type found in articular surfaces of synovial joints.",
+      "correct": false,
+      "explanation": "False. HYALINE cartilage lines articular surfaces of synovial joints (articular cartilage). Fibrocartilage is found at the pubic symphysis, menisci, and intervertebral discs — fibrocartilaginous joints, not synovial joints. Articular hyaline cartilage notably lacks perichondrium."
+    },
+    {
+      "id": "q_081",
+      "topic": "Overview of Tissues",
+      "type": "mcq",
+      "question": "A histology student sees a tissue with abundant matrix, few cells dispersed throughout, no free surfaces, and visible blood vessels. Which tissue is most consistent with this description?",
+      "options": [
+        "Epithelial tissue",
+        "Connective tissue",
+        "Muscle tissue",
+        "Nervous tissue"
+      ],
+      "correct": 1,
+      "explanation": "Connective tissue is characterized by: (1) cells do NOT cover or line surfaces (no free surfaces), (2) abundant extracellular matrix, (3) cells dispersed in ECM, (4) highly vascularized. Epithelial tissue has no ECM and is avascular. Muscle and nervous tissues have more cells relative to matrix."
+    },
+    {
+      "id": "q_082",
+      "topic": "Epithelial Tissue Types",
+      "type": "mcq",
+      "question": "Stereocilia in the epididymis are best characterized as:",
+      "options": [
+        "Motile structures that propel sperm",
+        "Non-motile structures in the male reproductive tract",
+        "Modified cilia that create fluid currents",
+        "Microtubule-based organelles identical to cilia"
+      ],
+      "correct": 1,
+      "explanation": "Stereocilia are NON-MOTILE elongated microvilli found in the epididymis (male reproductive tract) and inner ear hair cells. Despite the name, they are NOT true cilia (cilia have a 9+2 axoneme structure and are motile). They increase surface area for absorption of fluid from the seminiferous tubules and facilitate sperm maturation."
+    },
+    {
+      "id": "q_083",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "type": "mcq",
+      "question": "On H&E staining, collagen fibers appear pink (acidophilic). A special silver stain is required to visualize which fiber type?",
+      "options": [
+        "Collagen fibers",
+        "Elastic fibers",
+        "Reticular fibers",
+        "Ground substance"
+      ],
+      "correct": 2,
+      "explanation": "Reticular fibers (Type III collagen) are argyrophilic — they selectively absorb silver stains, appearing dark brown/black. H&E stains make collagen appear pink. Elastic fibers can be stained with special elastic stains (e.g., Verhoeff-Van Gieson). Ground substance is unstained in routine H&E."
+    },
+    {
+      "id": "q_084",
+      "topic": "Clinical Correlates",
+      "type": "mcq",
+      "question": "A 3-year-old child is brought to the ER with multiple unexplained fractures in various stages of healing. The pediatrician notes blue sclerae. Child abuse must be ruled out. What genetic diagnosis is also on the differential?",
+      "options": [
+        "Ehlers-Danlos syndrome",
+        "Marfan's syndrome",
+        "Osteogenesis Imperfecta",
+        "Pemphigus Vulgaris"
+      ],
+      "correct": 2,
+      "explanation": "Osteogenesis Imperfecta (Type I collagen defect) causes fragile bones that fracture with minimal trauma. Blue sclerae result from thin sclerae allowing the underlying choroid to show through. OI can mimic child abuse, making it critical to consider when evaluating unexplained fractures in children."
+    },
+    {
+      "id": "q_085",
+      "topic": "Membranes & Glands",
+      "type": "mcq",
+      "question": "Which of the following accurately describes the lamina propria?",
+      "options": [
+        "The deep connective tissue layer of serous membranes",
+        "The areolar connective tissue underlying mucous membranes",
+        "The reticular fiber framework of lymphoid organs",
+        "The fibrous outer layer of cartilage"
+      ],
+      "correct": 1,
+      "explanation": "The lamina propria is the areolar connective tissue layer that directly underlies mucous membrane epithelium. It provides vascular support (nutrients/immune cells) to the avascular epithelium above. It is distinct from the submucosa, which lies deeper."
+    },
+    {
+      "id": "q_086",
+      "topic": "Cell Junctions",
+      "type": "mcq",
+      "question": "Which junction type is responsible for preventing passage of luminal gut bacteria into the bloodstream via the paracellular route?",
+      "options": [
+        "Gap junctions",
+        "Desmosomes",
+        "Tight junctions",
+        "Adherens junctions"
+      ],
+      "correct": 2,
+      "explanation": "Tight junctions (Zonula Occludens) at the apical end of enterocytes seal the paracellular space, preventing bacteria and antigens from passing between cells. This is the critical 'barrier' function of intestinal epithelium. Disruption leads to 'leaky gut' and may contribute to inflammatory conditions."
+    },
+    {
+      "id": "q_087",
+      "topic": "Supporting Connective Tissues",
+      "type": "mcq",
+      "question": "A footballer sustains a medial meniscus tear. The meniscus is composed of which cartilage type, and why does it heal poorly?",
+      "options": [
+        "Hyaline cartilage; no perichondrium",
+        "Fibrocartilage; avascular and aneural",
+        "Elastic cartilage; abundant elastic fibers prevent repair",
+        "Hyaline cartilage; lacks chondrocytes"
+      ],
+      "correct": 1,
+      "explanation": "The menisci are fibrocartilage — large coarse collagen bundles that resist compression and absorb shock. Like all cartilage, fibrocartilage is avascular and aneural, severely limiting its healing capacity. This is why meniscal tears often require surgical intervention."
+    },
+    {
+      "id": "q_088",
+      "topic": "Muscle Tissue",
+      "type": "true_false",
+      "question": "Cardiac muscle is classified as striated AND involuntary.",
+      "correct": true,
+      "explanation": "True. Cardiac muscle is the unique combination of striated AND involuntary. Skeletal muscle = striated + voluntary. Smooth muscle = non-striated + involuntary. Only cardiac muscle is both striated (organized sarcomeres) and involuntary (controlled by the SA node and autonomic nervous system)."
+    },
+    {
+      "id": "q_089",
+      "topic": "Epithelial Tissue Types",
+      "type": "mcq",
+      "question": "A tissue biopsy shows a single layer of tall, narrow cells with oval nuclei in the basal half of each cell, scattered goblet cells, and a prominent brush border. Which epithelial type is this?",
+      "options": [
+        "Pseudostratified columnar",
+        "Stratified columnar",
+        "Simple columnar",
+        "Simple cuboidal"
+      ],
+      "correct": 2,
+      "explanation": "Simple columnar epithelium features: single row of tall narrow cells, oval nuclei in the basal half, a brush border (microvilli), goblet cells (mucus secretion), and may have cilia. Found in the GI tract, uterus, uterine tubes, and kidney collecting ducts. Pseudostratified appears multilayered but all cells touch the basement membrane."
+    },
+    {
+      "id": "q_090",
+      "topic": "Connective Tissue Proper",
+      "type": "true_false",
+      "question": "Dense connective tissue contains fewer cells than loose connective tissue but has more abundant and closely packed fibers.",
+      "correct": true,
+      "explanation": "True. Dense connective tissue is characterized by more numerous, thicker, and denser (more closely packed) fibers with FEWER cells than loose connective tissue. The increased fiber density gives it greater tensile strength (dense regular for tendons) or multidirectional strength (dense irregular for dermis)."
+    },
+    {
+      "id": "q_091",
+      "topic": "Cell Junctions",
+      "type": "mcq",
+      "question": "Adherens junctions (Zonula Adherens) circle the entire epithelial cell and form an adhesion belt. Which two structural proteins are linked at this junction?",
+      "options": [
+        "Claudin and occludin",
+        "Integrin and laminin",
+        "Actin (cytoskeleton) and cadherins",
+        "Keratin and integrins"
+      ],
+      "correct": 2,
+      "explanation": "The adherens junction connects actin filaments from the cytoskeleton to cadherins (transmembrane adhesion proteins). This creates a circumferential adhesion belt that resists cell separation during contractile activities (e.g., intestinal peristalsis). Loss of cadherins promotes metastasis."
+    },
+    {
+      "id": "q_092",
+      "topic": "Supporting Connective Tissues",
+      "type": "fill_in_blank",
+      "question": "Hyaline cartilage has a clear, glassy appearance because of the fineness of its ________ fibers, which are not visible by light microscopy.",
+      "answer": "collagen",
+      "acceptableAnswers": ["collagen", "Type II collagen", "collagen type II"],
+      "explanation": "Hyaline cartilage contains Type II collagen fibers that are so fine they are not individually visible with standard light microscopy, giving the matrix a clear, homogeneous, 'glassy' (hyaline = Greek for glass) appearance. The collagen is still present — it just cannot be resolved with standard staining."
+    },
+    {
+      "id": "q_093",
+      "topic": "Overview of Tissues",
+      "type": "fill_in_blank",
+      "question": "The first connective tissue to form in embryos is called ________, derived from the mesoderm, and consists of embryonic stem cells in a gel matrix with wispy collagen fibers.",
+      "answer": "mesenchyme",
+      "acceptableAnswers": ["mesenchyme", "Mesenchyme"],
+      "explanation": "Mesenchyme is the embryonic stem cell-derived connective tissue (from mesoderm) that gives rise to all adult connective tissues. It consists of stellate cells in a gelatinous matrix with wispy collagen fibers and fibroblasts. It is not present in adults."
+    },
+    {
+      "id": "q_094",
+      "topic": "Epithelial Tissue Types",
+      "type": "fill_in_blank",
+      "question": "The process by which dead surface cells of stratified squamous epithelium flake off is called ________ or desquamation.",
+      "answer": "exfoliation",
+      "acceptableAnswers": ["exfoliation", "Exfoliation", "desquamation", "Desquamation"],
+      "explanation": "As cells in the deepest layers divide and migrate upward, surface cells eventually die and flake off — a process called exfoliation or desquamation. This is why Pap smears work (exfoliated cervical epithelial cells), and why forensic sampling from surfaces can recover epithelial cells."
+    },
+    {
+      "id": "q_095",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "type": "mcq",
+      "question": "Which of the following correctly describes the composition of the extracellular matrix (ECM) in connective tissue?",
+      "options": [
+        "Fibrous proteins only",
+        "Ground substance (fluid) only",
+        "Fibrous proteins and ground substance",
+        "Cells and fibrous proteins"
+      ],
+      "correct": 2,
+      "explanation": "The ECM of connective tissue is composed of: (1) fibrous proteins (collagen, elastic, reticular fibers) and (2) ground substance (clear, colorless, viscous gel = tissue fluid). Cells are not part of the ECM — they reside within or between the ECM."
+    },
+    {
+      "id": "q_096",
+      "topic": "Membranes & Glands",
+      "type": "mcq",
+      "question": "Which of the following correctly describes the mesothelium?",
+      "options": [
+        "Stratified squamous epithelium lining body cavities",
+        "Simple squamous epithelium forming the epithelial layer of serous membranes",
+        "Simple cuboidal epithelium lining glandular ducts",
+        "Pseudostratified epithelium of the respiratory tract"
+      ],
+      "correct": 1,
+      "explanation": "The mesothelium is simple squamous epithelium that forms the surface layer of serous membranes (pleura, peritoneum, pericardium). It secretes serous fluid that reduces friction between the parietal and visceral layers during organ movement."
+    },
+    {
+      "id": "q_097",
+      "topic": "Clinical Correlates",
+      "type": "mcq",
+      "question": "A patient is described as having anaplastic carcinoma. What does anaplasia imply about the tumor?",
+      "options": [
+        "The tumor cells are well-differentiated and easily identified",
+        "The tumor has fewer cells than normal (hypoplasia)",
+        "The cells are poorly differentiated; degree of anaplasia correlates with malignancy",
+        "The tumor shows orderly growth with normal cellular architecture"
+      ],
+      "correct": 2,
+      "explanation": "Anaplasia = loss of differentiation. Anaplastic tumor cells are poorly differentiated — they no longer resemble their tissue of origin. The degree of anaplasia correlates with malignancy; more anaplastic = higher grade = more aggressive cancer. Pleomorphism (variation in cell/nuclear size and shape) is a hallmark feature."
+    },
+    {
+      "id": "q_098",
+      "topic": "Connective Tissue Fibers & Matrix",
+      "type": "true_false",
+      "question": "Marfan's syndrome results from a defect in fibrillin-2 (FBN2) located on chromosome 5.",
+      "correct": false,
+      "explanation": "False. Marfan's syndrome is caused by a defect in fibrillin-1 (FBN1) located on chromosome 15. Fibrillin-2 (FBN2) mutations cause congenital contractural arachnodactyly (Beals syndrome), a different condition. The FBN1 defect leads to abnormal elastic tissue, causing the cardiovascular, skeletal, and ocular features of Marfan's."
+    },
+    {
+      "id": "q_099",
+      "topic": "Supporting Connective Tissues",
+      "type": "mcq",
+      "question": "What structural feature is responsible for compact bone's resistance to axial compression while maintaining some ability to tolerate bending forces?",
+      "options": [
+        "Trabecular network of spongy bone",
+        "Concentric lamellae of osteons around central canals",
+        "Abundance of reticular fibers in the bone matrix",
+        "High proportion of elastic fibers in the periosteum"
+      ],
+      "correct": 1,
+      "explanation": "The osteon system (Haversian system) of compact bone — concentric lamellae arranged in cylindrical units around central canals — provides mechanical strength. The alternating fiber orientations in successive lamellae distribute stress, resisting compression and torsional forces."
+    },
+    {
+      "id": "q_100",
+      "topic": "Cell Junctions",
+      "type": "mcq",
+      "question": "Which cell junction type is described as a 'basal specialization' that anchors epithelial cells to the basement membrane using integrin transmembrane proteins?",
+      "options": [
+        "Desmosome (Macula Adherens)",
+        "Hemidesmosome",
+        "Tight junction (Zonula Occludens)",
+        "Gap junction"
+      ],
+      "correct": 1,
+      "explanation": "Hemidesmosomes are basal specializations that anchor basal epithelial cells to the underlying basement membrane. They use integrins (not cadherins) as their transmembrane glycoproteins and connect keratin intermediate filaments intracellularly to the extracellular basement membrane. Desmosomes connect adjacent cells laterally."
+    }
+  ]
+}

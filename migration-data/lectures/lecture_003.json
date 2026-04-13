@@ -1,0 +1,1899 @@
+{
+  "id": "lecture_003",
+  "title": "Skin, Hair & Nails",
+  "subtitle": "Physical Diagnosis I — Winter 2026",
+  "color": "#7A9E87",
+  "icon": "🫧",
+  "topics": [
+    "Skin Anatomy & Physiology",
+    "Skin Examination Technique",
+    "Primary Lesions",
+    "Secondary Lesions",
+    "Moles, Malignancies & Mimics",
+    "Vascular Lesions",
+    "Hair Examination & Disorders",
+    "Nail Examination & Disorders"
+  ],
+  "slideImages": "slides/lecture_003/",
+  "flashcards": [
+    {
+      "id": "fc_001",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "What are the three layers of the skin?",
+      "answer": "1. Epidermis (outermost)\n2. Dermis (middle)\n3. Subcutaneous tissue / Hypodermis (deepest)",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_002",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "What percentage of body weight does skin account for, and what is its estimated surface area?",
+      "answer": "Skin is the heaviest single organ, accounting for approximately 16% of body weight, with an estimated surface area of 20 square feet.",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_003",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "How often does adult skin regenerate, and how does this differ across age groups?",
+      "answer": "Adult skin regenerates every 28–42 days.\n- Infants/children: regenerates faster (less time)\n- Adults >50 years: regenerates slower (more time)",
+      "slideRef": "slide_05.jpg",
+      "slideNumber": 5
+    },
+    {
+      "id": "fc_004",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "List the 8 functions of skin (the '8 Fs' mnemonic).",
+      "answer": "1. Maintain homeostasis\n2. Fight infection (protect against infection)\n3. Fight temperature changes (control body temperature)\n4. Fluid retention (prevent loss of body fluids)\n5. Feel (sensation)\n6. Fat excretion (excretion of oils and sweat)\n7. Form vitamin D\n8. Fight water penetration (water resistance)",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_005",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "What are the four pigments that determine skin color?",
+      "answer": "1. Melanin – determined by heredity; increases with sun exposure\n2. Carotene – yellow pigment in fat and keratinized structures\n3. Oxyhemoglobin – red/pink color from oxygenated blood in capillaries and arteries\n4. Deoxyhemoglobin – darker blue pigment due to deoxygenated blood",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_006",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "Describe the epidermis: thickness, vascularity, and its two layers.",
+      "answer": "- Thinnest layer of skin\n- Does NOT contain blood vessels\n- Two layers:\n  1. Outer horny layer (stratum corneum): dead keratinized cells\n  2. Inner cellular layer (stratum basale + stratum spinosum): where melanin and keratin are formed; cells migrate to stratum corneum over ~1 month",
+      "slideRef": "slide_09.jpg",
+      "slideNumber": 9
+    },
+    {
+      "id": "fc_007",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "What is the primary function of the epidermis?",
+      "answer": "The epidermis protects the body from invasion and infection, and helps to seal in moisture. It is constantly growing — new cells are produced at the base and old cells are pushed to the surface.",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_008",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "What does the dermis contain, and what is its most important function?",
+      "answer": "Contents: connective tissue, sebaceous glands, sweat glands, hair follicles, terminals of cutaneous nerves.\nMost important function: PERSPIRATION\nAlso: provides nutrition to the epidermis and determines skin tone.",
+      "slideRef": "slide_12.jpg",
+      "slideNumber": 12
+    },
+    {
+      "id": "fc_009",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "What is the subcutaneous tissue (hypodermis), and what are its functions?",
+      "answer": "Also called hypodermis, adipose tissue, or FAT.\nFunctions: generates heat, provides insulation, shock absorption, and serves as a caloric reserve.",
+      "slideRef": "slide_14.jpg",
+      "slideNumber": 14
+    },
+    {
+      "id": "fc_010",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "Compare eccrine and apocrine sweat glands.",
+      "answer": "Eccrine glands: widely distributed across skin surface\nApocrine glands: located in axillary and genital regions; empty into hair follicles onto skin surface; the primary source of body odor",
+      "slideRef": "slide_15.jpg",
+      "slideNumber": 15
+    },
+    {
+      "id": "fc_011",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "Where are sebaceous glands located, and where are they absent?",
+      "answer": "Sebaceous glands are located at hair follicles and produce a fatty substance (sebum) on all body surfaces EXCEPT the palms and soles.",
+      "slideRef": "slide_15.jpg",
+      "slideNumber": 15
+    },
+    {
+      "id": "fc_012",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "List five skin changes associated with aging.",
+      "answer": "1. Skin wrinkles, becomes lax, loses turgor\n2. Dermis loses vascularity\n3. Comedones appear around cheeks and eyes\n4. Back of hands/forearms: thin, fragile, loose, transparent skin with white depigmented patches (pseudoscars)\n5. Sun-exposed skin appears thickened, yellowed, and furrowed",
+      "slideRef": "slide_16.jpg",
+      "slideNumber": 16
+    },
+    {
+      "id": "fc_013",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "What are the two types of hair, and how do they differ?",
+      "answer": "1. Vellus hair: short, fine, relatively unpigmented (e.g., body hair)\n2. Terminal hair: coarser, thicker, pigmented (e.g., scalp, eyebrows)",
+      "slideRef": "slide_18.jpg",
+      "slideNumber": 18
+    },
+    {
+      "id": "fc_014",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "Describe nail anatomy: what gives the nail its pink color, and what covers the nail root?",
+      "answer": "- Nail plate pink color originates from the vascular nail bed\n- Nail root is covered by the proximal nail fold\n- The cuticle (eponychium) functions as a sealant to protect the nail root from external moisture",
+      "slideRef": "slide_19.jpg",
+      "slideNumber": 19
+    },
+    {
+      "id": "fc_015",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "What is the role of deoxyhemoglobin in skin color, and how does it differ from oxyhemoglobin?",
+      "answer": "- Oxyhemoglobin: bright red/pink pigment from oxygenated blood; increased blood flow = more redness\n- Deoxyhemoglobin: darker blue pigment due to loss of oxygen from blood vessels; responsible for cyanotic appearance",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_016",
+      "topic": "Skin Examination Technique",
+      "question": "What are the six components assessed during a physical examination of the skin?",
+      "answer": "1. Color\n2. Moisture\n3. Temperature\n4. Texture\n5. Turgor\n6. Lesions",
+      "slideRef": "slide_27.jpg",
+      "slideNumber": 27
+    },
+    {
+      "id": "fc_017",
+      "topic": "Skin Examination Technique",
+      "question": "What tools are needed for a complete skin examination?",
+      "answer": "- Adequate lighting (room light for initial exam; intense/focused light for abnormalities)\n- Measuring tape\n- Optional: dermatoscope",
+      "slideRef": "slide_27.jpg",
+      "slideNumber": 27
+    },
+    {
+      "id": "fc_018",
+      "topic": "Skin Examination Technique",
+      "question": "What are intertriginous areas, and why are they important to examine?",
+      "answer": "Intertriginous areas are where skin folds touch, creating warm, moist environments prone to rash, infection, and maceration.\nExamples: neck folds, axilla, inframammary, abdominal folds, groin, between fingers/toes, behind knees, between buttocks.",
+      "slideRef": "slide_28.jpg",
+      "slideNumber": 28
+    },
+    {
+      "id": "fc_019",
+      "topic": "Skin Examination Technique",
+      "question": "Describe the technique for assessing skin turgor.",
+      "answer": "Pinch the skin (commonly on the forearm or abdomen) and release. Assess:\n- Turgor: how quickly skin returns to normal ('tenting' = delayed return, suggests dehydration)\n- Mobility: how quickly the skin can be pulled up\nReflects the patient's hydration status.",
+      "slideRef": "slide_33.jpg",
+      "slideNumber": 33
+    },
+    {
+      "id": "fc_020",
+      "topic": "Skin Examination Technique",
+      "question": "How is skin temperature assessed during physical examination?",
+      "answer": "- Evaluated by palpation\n- Use the BACK of your hand/fingers (more sensitive to temperature differences)\n- Compare: side to side, distal to proximal, lesion to surrounding tissue, extremities to central body\n- Always note the temperature of red areas",
+      "slideRef": "slide_31.jpg",
+      "slideNumber": 31
+    },
+    {
+      "id": "fc_021",
+      "topic": "Skin Examination Technique",
+      "question": "What is the proper order for a full-body skin examination with the patient SEATED?",
+      "answer": "1. Inspect hair and scalp\n2. Inspect head, face, neck (check behind ears)\n3. Inspect upper back\n4. Inspect shoulders, arms, hands, nails (check between fingers)\n5. Inspect chest and abdomen\n6. Inspect anterior thighs and legs\n7. Inspect feet, toes, soles, intertriginous areas (between toes), nails",
+      "slideRef": "slide_26.jpg",
+      "slideNumber": 26
+    },
+    {
+      "id": "fc_022",
+      "topic": "Skin Examination Technique",
+      "question": "What areas are examined with the patient STANDING during a full-body skin exam?",
+      "answer": "- Lower back\n- Posterior thighs and legs\n- Buttocks, breasts, axillae, and genitalia\n- Axillary and pubic hair\nNote: female breasts, axillae, and genitalia are typically examined in supine or lithotomy position.",
+      "slideRef": "slide_26.jpg",
+      "slideNumber": 26
+    },
+    {
+      "id": "fc_023",
+      "topic": "Skin Examination Technique",
+      "question": "What HPI elements should be gathered when a patient presents with a skin complaint?",
+      "answer": "- Onset, progression, and location\n- Exposures\n- Changes over time (color, size, shape)\n- Associated symptoms (itching, pain)\n- Changes in hair and nails\n- Aggravating/alleviating factors\n- Treatments tried and results",
+      "slideRef": "slide_20.jpg",
+      "slideNumber": 20
+    },
+    {
+      "id": "fc_024",
+      "topic": "Skin Examination Technique",
+      "question": "What are possible causes of itching WITHOUT a visible rash?",
+      "answer": "Dry skin, pregnancy, uremia, jaundice, lymphomas/leukemias, drug reactions, thyroid disease, polycythemia vera",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_025",
+      "topic": "Skin Examination Technique",
+      "question": "When describing a skin lesion on physical exam, what 7 characteristics should be documented?",
+      "answer": "1. Number (single or multiple)\n2. Size (in centimeters)\n3. Shape/borders (round, ovoid, irregular)\n4. Color (black, blue, erythematous, etc.)\n5. Texture\n6. Location/distribution (face, trunk, extremities, etc.)\n7. Configuration (zosteriform, confluent, clustered)",
+      "slideRef": "slide_34.jpg",
+      "slideNumber": 34
+    },
+    {
+      "id": "fc_026",
+      "topic": "Skin Examination Technique",
+      "question": "What skin exam findings should be mentioned in the ROS for dermatology?",
+      "answer": "Pruritus, jaundice, abnormal lesions or lumps, rash, dryness, change in color, nail changes, hair changes (loss/gain/texture), bruising, mole changes, rate of skin healing",
+      "slideRef": "slide_23.jpg",
+      "slideNumber": 23
+    },
+    {
+      "id": "fc_027",
+      "topic": "Skin Examination Technique",
+      "question": "What is the difference between 'erythema that blanches' and 'erythema that does not blanch,' and what does non-blanching indicate?",
+      "answer": "- Blanching erythema: pressure causes the redness to temporarily disappear (blood is displaced from vessels); indicates vascular engorgement (e.g., inflammation)\n- Non-blanching erythema: redness persists under pressure; indicates blood is OUTSIDE the vessels (e.g., petechiae, purpura, vasculitis)",
+      "slideRef": "slide_56.jpg",
+      "slideNumber": 56
+    },
+    {
+      "id": "fc_028",
+      "topic": "Skin Examination Technique",
+      "question": "What technique is used to trans-illuminate a large skin swelling, and why?",
+      "answer": "A penlight is used to trans-illuminate large swellings. If light passes through, the lesion is fluid-filled (e.g., cyst). Solid masses will not trans-illuminate.",
+      "slideRef": "slide_35.jpg",
+      "slideNumber": 35
+    },
+    {
+      "id": "fc_029",
+      "topic": "Skin Examination Technique",
+      "question": "How should skin texture be assessed, and what findings might you describe?",
+      "answer": "Assessed with finger pads (palpation).\nDescriptors:\n- Smooth, soft, velvety (normal)\n- Leathery, rough\n- Dry\n- Doughy (due to edema)",
+      "slideRef": "slide_32.jpg",
+      "slideNumber": 32
+    },
+    {
+      "id": "fc_030",
+      "topic": "Skin Examination Technique",
+      "question": "What social history elements are important for a dermatology encounter?",
+      "answer": "- Occupation\n- Recreation and hobbies\n- Sunscreen use\n- Exposures (chemical, environmental, animal)",
+      "slideRef": "slide_22.jpg",
+      "slideNumber": 22
+    },
+    {
+      "id": "fc_031",
+      "topic": "Primary Lesions",
+      "question": "What is the definition of a primary skin lesion?",
+      "answer": "A primary lesion is a physical change in the skin considered to be caused DIRECTLY by the disease process (not from scratching, healing, or other secondary changes).",
+      "slideRef": "slide_36.jpg",
+      "slideNumber": 36
+    },
+    {
+      "id": "fc_032",
+      "topic": "Primary Lesions",
+      "question": "What is the difference between a macule and a patch?",
+      "answer": "Both are FLAT, non-palpable lesions:\n- Macule: <1 cm in diameter\n- Patch: >1 cm in diameter\nExamples: freckles, flat moles, port-wine stains, rashes from measles/rubella/RMSF",
+      "slideRef": "slide_37.jpg",
+      "slideNumber": 37
+    },
+    {
+      "id": "fc_033",
+      "topic": "Primary Lesions",
+      "question": "What is the difference between a papule and a nodule?",
+      "answer": "Both are RAISED, solid, palpable lesions:\n- Papule: <1 cm\n- Nodule: >1 cm\nExamples: nevi, warts, lichen planus, insect bites, seborrheic keratoses",
+      "slideRef": "slide_40.jpg",
+      "slideNumber": 40
+    },
+    {
+      "id": "fc_034",
+      "topic": "Primary Lesions",
+      "question": "Define a plaque and a wheal.",
+      "answer": "- Plaque: larger and flatter raised lesion; may be formed by coalesced (merged) papules. Examples: psoriasis\n- Wheal: area of edema in the upper epidermis; also called hives or urticaria. Associated with allergic reactions",
+      "slideRef": "slide_40.jpg",
+      "slideNumber": 40
+    },
+    {
+      "id": "fc_035",
+      "topic": "Primary Lesions",
+      "question": "What is the difference between a vesicle and a bulla?",
+      "answer": "Both are raised, fluid-filled palpable lesions:\n- Vesicle: <1 cm (small blister)\n- Bulla: >1 cm (large blister)\nExamples: shingles (vesicles), trauma blisters (may be bullae), insect bites",
+      "slideRef": "slide_42.jpg",
+      "slideNumber": 42
+    },
+    {
+      "id": "fc_036",
+      "topic": "Primary Lesions",
+      "question": "Define a pustule and how it differs from an abscess.",
+      "answer": "- Pustule: small, palpable, fluid-filled lesion containing neutrophils or keratin; appears WHITE\n- Abscess: deeper, larger (>1 cm) pus-filled pocket due to bacterial infection\nOrganisms: usually Staphylococcus",
+      "slideRef": "slide_43.jpg",
+      "slideNumber": 43
+    },
+    {
+      "id": "fc_037",
+      "topic": "Primary Lesions",
+      "question": "What is the difference between a closed and open comedo?",
+      "answer": "- Closed comedo (whitehead): blocked pore under the skin; contents are not exposed to air\n- Open comedo (blackhead): pore is open to the skin's surface; melanin or oxidation causes darkening of the contents",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_038",
+      "topic": "Primary Lesions",
+      "question": "What is a furuncle, and how does it differ from a carbuncle?",
+      "answer": "- Furuncle (boil): an abscess involving an inflamed hair follicle\n- Carbuncle: multiple furuncles together (a cluster of boils)\nBoth are usually caused by Staphylococcus bacteria",
+      "slideRef": "slide_45.jpg",
+      "slideNumber": 45
+    },
+    {
+      "id": "fc_039",
+      "topic": "Primary Lesions",
+      "question": "Define milia and a cyst.",
+      "answer": "- Milia: keratin-filled cysts (small, white, benign)\n- Cyst: balloon-like lesion filled with fluid, air, or semi-solid material; caused by trauma, blocked oil or sweat gland",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_040",
+      "topic": "Primary Lesions",
+      "question": "Define a burrow and telangiectasia as primary lesions.",
+      "answer": "- Burrow: linear lesion produced by tunnels formed under the skin's surface (classic example: scabies)\n- Telangiectasia: dilation of superficial blood vessels appearing as fine, red lines; associated with rosacea, aging, and spider veins",
+      "slideRef": "slide_47.jpg",
+      "slideNumber": 47
+    },
+    {
+      "id": "fc_041",
+      "topic": "Primary Lesions",
+      "question": "What is a verrucous lesion? Give three examples.",
+      "answer": "A verrucous lesion has a warty appearance (rough, papillomatous surface).\nExamples:\n1. Plantar wart\n2. Condyloma acuminata (genital warts, HPV-related)\n3. Finger wart",
+      "slideRef": "slide_46.jpg",
+      "slideNumber": 46
+    },
+    {
+      "id": "fc_042",
+      "topic": "Primary Lesions",
+      "question": "Name five diseases or conditions that commonly present with flat (macular/patch) lesions.",
+      "answer": "1. Freckles (macules)\n2. Flat moles\n3. Port-wine stains\n4. Measles rash\n5. Rubella rash\n(Also: rickettsial infections such as Rocky Mountain Spotted Fever or ehrlichiosis)",
+      "slideRef": "slide_38.jpg",
+      "slideNumber": 38
+    },
+    {
+      "id": "fc_043",
+      "topic": "Primary Lesions",
+      "question": "List five diseases that present with raised solid (papular/nodular/plaque) lesions.",
+      "answer": "1. Nevi (moles)\n2. Warts\n3. Lichen planus\n4. Psoriasis (plaques)\n5. Seborrheic keratoses\n(Also: insect bites, some acne lesions, skin cancers, hives/urticaria)",
+      "slideRef": "slide_39.jpg",
+      "slideNumber": 39
+    },
+    {
+      "id": "fc_044",
+      "topic": "Primary Lesions",
+      "question": "What raised fluid-filled lesion is classically associated with shingles (herpes zoster)?",
+      "answer": "Vesicles (<1 cm, fluid-filled) appearing in a dermatomal (zosteriform) distribution — unilateral, band-like pattern following a single dermatome.",
+      "slideRef": "slide_41.jpg",
+      "slideNumber": 41
+    },
+    {
+      "id": "fc_045",
+      "topic": "Primary Lesions",
+      "question": "What are the lesion color descriptors used in dermatology?",
+      "answer": "- Violaceous (purplish)\n- Erythematous (red or pink) — test for blanching\n- Blue\n- Brown\n- Variegated (multiple colors/irregular pigmentation)\n- Skin-colored\nKey point: vascular lesions do NOT blanch with pressure",
+      "slideRef": "slide_56.jpg",
+      "slideNumber": 56
+    },
+    {
+      "id": "fc_046",
+      "topic": "Secondary Lesions",
+      "question": "What is a secondary skin lesion, and what causes them?",
+      "answer": "Secondary lesions evolve from primary lesions OR are caused by external forces such as scratching, trauma, infection, or the healing process. The distinction between primary and secondary is not always clear.",
+      "slideRef": "slide_48.jpg",
+      "slideNumber": 48
+    },
+    {
+      "id": "fc_047",
+      "topic": "Secondary Lesions",
+      "question": "Define scaling and crusting as secondary lesions, with associated conditions.",
+      "answer": "- Scaling: shedding of the epidermis. Associated with eczema, psoriasis, seborrheic dermatitis\n- Crusting: formation of a protective scab from dried blood, pus, or serum (also called 'crust' = dried exudate). Associated with wound healing, impetigo, eczema, cradle cap",
+      "slideRef": "slide_49.jpg",
+      "slideNumber": 49
+    },
+    {
+      "id": "fc_048",
+      "topic": "Secondary Lesions",
+      "question": "What is the difference between erosion and ulceration?",
+      "answer": "- Erosion: PARTIAL loss of epithelial/mucosal surface (superficial). Causes: cuts, scrapes, inflammation. Usually heals WITHOUT scarring.\n- Ulcer: FULL THICKNESS loss of epithelial/mucosal surface. Causes: peripheral artery/venous disease, pressure (bedsores), nerve damage (neuropathic), infection, diabetes",
+      "slideRef": "slide_51.jpg",
+      "slideNumber": 51
+    },
+    {
+      "id": "fc_049",
+      "topic": "Secondary Lesions",
+      "question": "Define excoriation and fissure, and list their common causes.",
+      "answer": "- Excoriation: abrasions caused by scratching or rubbing. Causes: insect bites, eczema, allergic dermatitis, diabetes, chronic kidney disease, generalized pruritus\n- Fissure: a crack in the skin. Causes: excessive moisture, friction, loss of skin elasticity (dryness), diabetes, thyroid disease, frequent handwashing",
+      "slideRef": "slide_52.jpg",
+      "slideNumber": 52
+    },
+    {
+      "id": "fc_050",
+      "topic": "Secondary Lesions",
+      "question": "Compare petechiae, purpura, and ecchymosis.",
+      "answer": "All represent blood outside of vessels:\n- Petechiae: deep red/purple, 1–3 mm; may indicate bleeding disorder, vasculitis, or emboli\n- Purpura: deep red/purple, larger than petechiae, >3 mm; similar significance\n- Ecchymosis (bruise): purple/purplish-blue, largest of the three (>3 mm); often from trauma; also seen in bleeding disorders\nNone blanch with pressure.",
+      "slideRef": "slide_54.jpg",
+      "slideNumber": 54
+    },
+    {
+      "id": "fc_051",
+      "topic": "Secondary Lesions",
+      "question": "Define keloid and lichenification, and distinguish them from a scar.",
+      "answer": "- Scar: permanent fibrotic change of skin following damage to the dermis (trauma, surgery). Normal tissue response.\n- Keloid: EXAGGERATED tissue response to skin injury; extends beyond wound borders. Associated with piercings, trauma.\n- Lichenification: leathery thickening of skin from CHRONIC SCRATCHING. Associated with eczema, OCD, psoriasis, xerosis.",
+      "slideRef": "slide_55.jpg",
+      "slideNumber": 55
+    },
+    {
+      "id": "fc_052",
+      "topic": "Secondary Lesions",
+      "question": "What are the lesion shape descriptors used in dermatology?",
+      "answer": "Annular (ring-shaped), arcuate, circinate, confluent, discoid, eczematoid, grouped, iris, keratotic, linear, reticulated, serpiginous, telangiectatic, zosteriform",
+      "slideRef": "slide_57.jpg",
+      "slideNumber": 57
+    },
+    {
+      "id": "fc_053",
+      "topic": "Secondary Lesions",
+      "question": "What is a zosteriform lesion, and what is the classic condition that causes it?",
+      "answer": "Zosteriform: lesions appearing in a unilateral, band-like pattern that follows a dermatome.\nClassic condition: Herpes Zoster (shingles)",
+      "slideRef": "slide_61.jpg",
+      "slideNumber": 61
+    },
+    {
+      "id": "fc_054",
+      "topic": "Secondary Lesions",
+      "question": "Differentiate confluent from clustered lesion patterns, and give an example of each.",
+      "answer": "- Confluent: individual lesions BLEND or MERGE to form larger, continuous areas. Example: measles rash.\n- Clustered: multiple separate lesions close together in one area but remaining DISTINCT. Examples: molluscum contagiosum, herpes simplex",
+      "slideRef": "slide_61.jpg",
+      "slideNumber": 61
+    },
+    {
+      "id": "fc_055",
+      "topic": "Secondary Lesions",
+      "question": "What lesion shape is described as 'ring-shaped with central clearing,' and what three infections can cause it?",
+      "answer": "Annular lesion pattern.\nCauses:\n1. Tinea (ringworm)\n2. Lyme disease (erythema migrans)\n3. Secondary syphilis",
+      "slideRef": "slide_60.jpg",
+      "slideNumber": 60
+    },
+    {
+      "id": "fc_056",
+      "topic": "Secondary Lesions",
+      "question": "What is a serpiginous lesion pattern, and what types of conditions cause it?",
+      "answer": "Serpiginous lesions wander as though following the track of a snake (wavy border).\nCauses: parasitic infections, fungal infections, drug reactions",
+      "slideRef": "slide_58.jpg",
+      "slideNumber": 58
+    },
+    {
+      "id": "fc_057",
+      "topic": "Secondary Lesions",
+      "question": "Define a reticular lesion pattern and give two examples.",
+      "answer": "Reticular: net-like lesion appearance.\nExamples:\n1. Livedo reticularis – mottled net-like pattern due to cold exposure\n2. Fifth disease (erythema infectiosum) – slapped cheek and net-like rash on extremities",
+      "slideRef": "slide_60.jpg",
+      "slideNumber": 60
+    },
+    {
+      "id": "fc_058",
+      "topic": "Secondary Lesions",
+      "question": "What is a linear lesion and what are five conditions that cause linear skin lesions?",
+      "answer": "Linear lesions occur in a straight line.\nCauses:\n1. Contact dermatitis (e.g., poison ivy or oak)\n2. Insect bites\n3. Lymphangitis\n4. Excoriations\n5. Striae (stretch marks)\n6. Fissures",
+      "slideRef": "slide_58.jpg",
+      "slideNumber": 58
+    },
+    {
+      "id": "fc_059",
+      "topic": "Secondary Lesions",
+      "question": "What is a nummular lesion, and what two conditions are associated with this pattern?",
+      "answer": "Nummular: round or 'coin-shaped' lesion pattern.\nConditions:\n1. Discoid lupus erythematosus\n2. Nummular eczema",
+      "slideRef": "slide_59.jpg",
+      "slideNumber": 59
+    },
+    {
+      "id": "fc_060",
+      "topic": "Secondary Lesions",
+      "question": "What is geographic tongue, and how does it relate to lesion shape terminology?",
+      "answer": "Geographic tongue (benign migratory glossitis) is an example of a GEOGRAPHIC lesion — a well-defined, sharply demarcated area of altered surface on the tongue. The lesion looks like a geographic map.",
+      "slideRef": "slide_59.jpg",
+      "slideNumber": 59
+    },
+    {
+      "id": "fc_061",
+      "topic": "Moles, Malignancies & Mimics",
+      "question": "What does the ABCDE mnemonic stand for in melanoma evaluation?",
+      "answer": "A – Asymmetry (halves don't match)\nB – Border (uneven, crusty, or notched edges)\nC – Color (variety of colors; white and/or blue is concerning)\nD – Diameter (usually >6 mm, about the size of a pencil eraser)\nE – Evolving (changes in size, shape, or color; begins to bleed or scab)",
+      "slideRef": "slide_66.jpg",
+      "slideNumber": 66
+    },
+    {
+      "id": "fc_062",
+      "topic": "Moles, Malignancies & Mimics",
+      "question": "What is actinic keratosis, and what is its clinical significance?",
+      "answer": "Actinic keratosis is a precancerous rough skin lesion caused by sun damage. It is the direct precursor to squamous cell carcinoma (SCC) and should be treated to prevent malignant transformation.",
+      "slideRef": "slide_67.jpg",
+      "slideNumber": 67
+    },
+    {
+      "id": "fc_063",
+      "topic": "Moles, Malignancies & Mimics",
+      "question": "What is a seborrheic keratosis, and why is it clinically important to distinguish from melanoma?",
+      "answer": "Seborrheic keratosis is a benign, stuck-on, verrucous plaque that can appear brown to black. It is a common benign mimic of melanoma. It does not have malignant potential but must be distinguished from melanoma or pigmented BCC by its 'waxy, stuck-on' appearance.",
+      "slideRef": "slide_67.jpg",
+      "slideNumber": 67
+    },
+    {
+      "id": "fc_064",
+      "topic": "Moles, Malignancies & Mimics",
+      "question": "Compare superficial basal cell carcinoma (BCC) and nodular BCC in appearance.",
+      "answer": "- Superficial BCC: flat or slightly raised pink lesion, often with a pearly border; may look like eczema or psoriasis\n- Nodular BCC: raised, translucent, pearly papule or nodule with rolled edges; commonly on the nose. Classic mimic: fibrous papule",
+      "slideRef": "slide_68.jpg",
+      "slideNumber": 68
+    },
+    {
+      "id": "fc_065",
+      "topic": "Moles, Malignancies & Mimics",
+      "question": "What is amelanotic melanoma, and why is it particularly dangerous?",
+      "answer": "Amelanotic melanoma is a subtype of melanoma that lacks pigmentation (appears pink or flesh-colored). It is dangerous because it does NOT display typical ABCDE criteria and can be easily mistaken for a benign lesion (e.g., dermal nevus, skin tag).",
+      "slideRef": "slide_69.jpg",
+      "slideNumber": 69
+    },
+    {
+      "id": "fc_066",
+      "topic": "Moles, Malignancies & Mimics",
+      "question": "What is a dysplastic nevus and why is it clinically significant?",
+      "answer": "A dysplastic (atypical) nevus is a pigmented lesion with irregular features (asymmetry, irregular borders, varied color) that resembles melanoma but is not malignant. It is a risk marker for melanoma — patients with dysplastic nevi require regular surveillance.",
+      "slideRef": "slide_70.jpg",
+      "slideNumber": 70
+    },
+    {
+      "id": "fc_067",
+      "topic": "Moles, Malignancies & Mimics",
+      "question": "What is a blue nevus, and what malignancy can it mimic?",
+      "answer": "A blue nevus is a benign pigmented lesion that appears blue-gray due to deeply located melanocytes. It can mimic melanoma with blue-black areas. Key differentiator: blue nevi are uniform in color and stable over time.",
+      "slideRef": "slide_70.jpg",
+      "slideNumber": 70
+    },
+    {
+      "id": "fc_068",
+      "topic": "Moles, Malignancies & Mimics",
+      "question": "What PMH elements should be gathered when a patient presents with a new lesion suspicious for skin cancer?",
+      "answer": "- Personal and family history of skin cancer\n- Type, location, and date of any previous skin cancer\n- History of blistering sunburns\n- Tolerance to sunlight\n- Use of sunscreen and self-skin exam practices",
+      "slideRef": "slide_21.jpg",
+      "slideNumber": 21
+    },
+    {
+      "id": "fc_069",
+      "topic": "Moles, Malignancies & Mimics",
+      "question": "What is 'E' in the ABCDE melanoma mnemonic, and what changes are clinically concerning?",
+      "answer": "E = Evolving\nConcerning changes: change in size, shape, or color; begins to bleed or scab. ANY change in an existing mole warrants evaluation.",
+      "slideRef": "slide_66.jpg",
+      "slideNumber": 66
+    },
+    {
+      "id": "fc_070",
+      "topic": "Moles, Malignancies & Mimics",
+      "question": "What skin cancers are associated with 'rough' lesions, and what are their benign mimics?",
+      "answer": "Malignant rough lesions:\n- Actinic keratosis (precancerous)\n- Squamous cell carcinoma\n\nBenign mimics:\n- Superficial xerosis (dry skin)\n- Seborrheic dermatitis\n- Seborrheic keratosis",
+      "slideRef": "slide_67.jpg",
+      "slideNumber": 67
+    },
+    {
+      "id": "fc_071",
+      "topic": "Vascular Lesions",
+      "question": "What is a spider angioma, and what diseases are associated with multiple spider angiomas?",
+      "answer": "- Color: fiery red, from very small to 2 cm\n- Shape: central body with radiating legs (like a spider)\n- Pulsatile; blanches with pressure on central body\n- Distribution: face, neck, arms, upper trunk; almost never below the waist\n- Single spider angiomas are NORMAL; multiple are associated with PREGNANCY and LIVER DISEASE",
+      "slideRef": "slide_72.jpg",
+      "slideNumber": 72
+    },
+    {
+      "id": "fc_072",
+      "topic": "Vascular Lesions",
+      "question": "Describe a cherry angioma and its clinical significance.",
+      "answer": "- Color: bright or ruby red; may turn purplish with age\n- Size: 1–3 mm\n- Shape: round, flat, or slightly raised; may have a pale halo\n- May show partial blanching with pressure\n- Distribution: trunk; also extremities\n- Significance: NONE clinically; increases in number and size with aging (benign)",
+      "slideRef": "slide_72.jpg",
+      "slideNumber": 72
+    },
+    {
+      "id": "fc_073",
+      "topic": "Vascular Lesions",
+      "question": "Compare spider veins (venous telangiectasias) to spider angiomas.",
+      "answer": "Spider Vein:\n- Bluish; variable size\n- No pulsatility; pressure over center does NOT cause blanching, but diffuse pressure blanches the veins\n- Found mostly on legs near veins; also anterior chest\n- Often accompanies increased pressure in superficial veins (varicose veins)\n\nSpider Angioma:\n- Fiery red; pulsatile central body that blanches\n- Face, neck, arms, upper trunk",
+      "slideRef": "slide_72.jpg",
+      "slideNumber": 72
+    },
+    {
+      "id": "fc_074",
+      "topic": "Vascular Lesions",
+      "question": "How do petechiae and ecchymosis differ in their relationship to pressure?",
+      "answer": "Both are PURPURIC lesions (blood outside vessels):\n- Petechiae/Purpura: ABSENT effect from pressure — do not blanch\n- Ecchymosis: ABSENT effect from pressure — do not blanch\nKey clinical point: ALL purpuric lesions (petechiae, purpura, ecchymosis) are NON-BLANCHING.",
+      "slideRef": "slide_72.jpg",
+      "slideNumber": 72
+    },
+    {
+      "id": "fc_075",
+      "topic": "Vascular Lesions",
+      "question": "What is the clinical significance of palpable purpura?",
+      "answer": "Palpable purpura indicates blood outside vessels with an inflammatory component (vasculitis). It may suggest a bleeding disorder, septic emboli to skin, or VASCULITIS — and warrants urgent evaluation.",
+      "slideRef": "slide_72.jpg",
+      "slideNumber": 72
+    },
+    {
+      "id": "fc_076",
+      "topic": "Vascular Lesions",
+      "question": "Describe the color progression of ecchymosis over time.",
+      "answer": "Ecchymosis (bruise) progresses through predictable color changes due to hemoglobin breakdown:\n- Initial: purple or purplish-blue\n- Over time: fades to green, then yellow, then brown\nSize is larger than petechiae (>3 mm); often secondary to trauma or bleeding disorders",
+      "slideRef": "slide_72.jpg",
+      "slideNumber": 72
+    },
+    {
+      "id": "fc_077",
+      "topic": "Vascular Lesions",
+      "question": "What is livedo reticularis and what causes it?",
+      "answer": "Livedo reticularis is a reticular (net-like) mottled discoloration of the skin caused by sluggish blood flow in superficial vessels.\nCause: commonly due to cold exposure (physiologic); also seen in autoimmune conditions (e.g., antiphospholipid syndrome)",
+      "slideRef": "slide_60.jpg",
+      "slideNumber": 60
+    },
+    {
+      "id": "fc_078",
+      "topic": "Vascular Lesions",
+      "question": "How is a spider angioma tested during physical examination?",
+      "answer": "Apply pressure with a glass slide or fingertip directly to the CENTRAL BODY of the spider angioma. A true spider angioma will BLANCH and PULSATE — when pressure is released, it refills from the center outward.",
+      "slideRef": "slide_72.jpg",
+      "slideNumber": 72
+    },
+    {
+      "id": "fc_079",
+      "topic": "Hair Examination & Disorders",
+      "question": "What does the hair pull test assess, how is it performed, and what result suggests telogen effluvium?",
+      "answer": "- Purpose: assess whether hair is shedding from ROOTS\n- Technique: grasp 50–60 hairs and pull firmly\n- Positive result: hairs come out with TELOGEN BULBS (club-shaped roots) → suggests TELOGEN EFFLUVIUM (temporary hair loss from stress, hormonal changes, medications, or nutritional deficiencies)",
+      "slideRef": "slide_74.jpg",
+      "slideNumber": 74
+    },
+    {
+      "id": "fc_080",
+      "topic": "Hair Examination & Disorders",
+      "question": "What does the hair tug test assess, how is it performed, and what is an abnormal result?",
+      "answer": "- Purpose: assess HAIR FRAGILITY (shaft integrity)\n- Technique: hold a group of hairs in one hand; pull along the shaft with the other hand\n- Abnormal result: hair breakage along the shaft (not at roots)\n- Suggests: tinea capitis or damage from hair care products/appliances",
+      "slideRef": "slide_74.jpg",
+      "slideNumber": 74
+    },
+    {
+      "id": "fc_081",
+      "topic": "Hair Examination & Disorders",
+      "question": "Describe the typical pattern of male pattern baldness vs. female pattern hair loss.",
+      "answer": "- Male pattern baldness (androgenetic alopecia): FRONTAL HAIRLINE REGRESSION and thinning on the posterior vertex (crown). Affects over half of men by age 50.\n- Female pattern hair loss: THINNING spreading from the CROWN without hairline regression. Affects over half of women by age 80.",
+      "slideRef": "slide_76.jpg",
+      "slideNumber": 76
+    },
+    {
+      "id": "fc_082",
+      "topic": "Hair Examination & Disorders",
+      "question": "Compare telogen effluvium and anagen effluvium.",
+      "answer": "- Telogen Effluvium: scalp and hair distribution appear NORMAL; hair pull test POSITIVE for telogen bulbs (hair sheds from roots in resting phase). Triggered by stress, illness, hormonal change.\n- Anagen Effluvium: DIFFUSE hair loss from roots during active growth phase; hair pull test NEGATIVE for telogen bulbs. Classic cause: chemotherapy.",
+      "slideRef": "slide_76.jpg",
+      "slideNumber": 76
+    },
+    {
+      "id": "fc_083",
+      "topic": "Hair Examination & Disorders",
+      "question": "Describe alopecia areata and its classic presentation.",
+      "answer": "- Sudden onset\n- Clearly demarcated, oval or round patches of COMPLETE hair loss\n- NO erythema or scale (differentiates from tinea capitis)\n- Can affect scalp, eyebrows, eyelashes, beard\n- Autoimmune etiology",
+      "slideRef": "slide_76.jpg",
+      "slideNumber": 76
+    },
+    {
+      "id": "fc_084",
+      "topic": "Hair Examination & Disorders",
+      "question": "What is tinea capitis, and what is a kerion?",
+      "answer": "- Tinea capitis: fungal infection (ringworm) of the scalp causing round, SCALING patches of alopecia; may see black dots from broken hairs\n- Kerion: boggy, inflamed plaque that is a severe inflammatory reaction to tinea capitis; may require oral antifungal treatment",
+      "slideRef": "slide_76.jpg",
+      "slideNumber": 76
+    },
+    {
+      "id": "fc_085",
+      "topic": "Hair Examination & Disorders",
+      "question": "What is hirsutism, and what is its underlying cause?",
+      "answer": "Hirsutism: increased hair growth in a MALE PATTERN (face, chest, abdomen) in a FEMALE.\nCause: increased androgen activity (e.g., PCOS, adrenal hyperplasia, androgen-secreting tumors)",
+      "slideRef": "slide_75.jpg",
+      "slideNumber": 75
+    },
+    {
+      "id": "fc_086",
+      "topic": "Hair Examination & Disorders",
+      "question": "What is scarring alopecia, and when should it prompt a dermatology referral?",
+      "answer": "Scarring alopecia: shiny skin with COMPLETE LOSS OF HAIR FOLLICLES and discoloration; caused by permanent destruction of follicles.\nExamples: central centrifugal scarring alopecia, discoid lupus scarring alopecia.\nPrompt DERMATOLOGY REFERRAL for biopsy if treatment is desired.",
+      "slideRef": "slide_77.jpg",
+      "slideNumber": 77
+    },
+    {
+      "id": "fc_087",
+      "topic": "Hair Examination & Disorders",
+      "question": "What common systemic conditions cause nonscarring hair shedding (telogen effluvium) in young women?",
+      "answer": "- Iron deficiency anemia\n- Thyroid disease (hypo- or hyperthyroidism)\nThese should be investigated in any young woman with diffuse hair shedding.",
+      "slideRef": "slide_74.jpg",
+      "slideNumber": 74
+    },
+    {
+      "id": "fc_088",
+      "topic": "Hair Examination & Disorders",
+      "question": "What three parameters are assessed during hair examination (besides diagnostic tests)?",
+      "answer": "1. Quantity (normal, increased, decreased)\n2. Distribution (diffuse, patchy, total, dermatomal)\n3. Texture (fine, coarse, brittle, normal)",
+      "slideRef": "slide_74.jpg",
+      "slideNumber": 74
+    },
+    {
+      "id": "fc_089",
+      "topic": "Nail Examination & Disorders",
+      "question": "What is capillary refill time, how is it tested, and what is normal vs. abnormal?",
+      "answer": "- Test: press firmly on fingernail or toenail until it blanches; release pressure and time how long it takes to 'pink up'\n- Normal: <2 seconds\n- Prolonged (>2 seconds): suggests shock, poor perfusion, peripheral arterial disease, or dehydration",
+      "slideRef": "slide_86.jpg",
+      "slideNumber": 86
+    },
+    {
+      "id": "fc_090",
+      "topic": "Nail Examination & Disorders",
+      "question": "What is nail clubbing, how is it detected (Schamroth's sign), and what diseases cause it?",
+      "answer": "- Definition: bulbous swelling of soft tissue at nail base with loss of normal angle between nail and proximal nail fold\n- Schamroth's sign: normally a diamond-shaped window appears when opposing fingernails are placed together; in clubbing, this window is OBLITERATED\n- Causes: congenital heart disease, interstitial or chronic lung disease, lung cancer, other malignancies, inflammatory bowel disease",
+      "slideRef": "slide_81.jpg",
+      "slideNumber": 81
+    },
+    {
+      "id": "fc_091",
+      "topic": "Nail Examination & Disorders",
+      "question": "What is onycholysis and what causes it?",
+      "answer": "Onycholysis: separation of the nail plate from the nail bed.\nCauses: trauma, fungal infection (onychomycosis), psoriasis, thyroid disease, certain medications",
+      "slideRef": "slide_81.jpg",
+      "slideNumber": 81
+    },
+    {
+      "id": "fc_092",
+      "topic": "Nail Examination & Disorders",
+      "question": "What is paronychia, and what is its clinical presentation?",
+      "answer": "Paronychia: superficial infection of the proximal and lateral nail folds adjacent to the nail plate.\n- Presentation: red, swollen, tender nail folds\n- It is the MOST COMMON INFECTION OF THE HAND",
+      "slideRef": "slide_82.jpg",
+      "slideNumber": 82
+    },
+    {
+      "id": "fc_093",
+      "topic": "Nail Examination & Disorders",
+      "question": "What is nail pitting and what diseases cause it?",
+      "answer": "Nail pitting: small punctate (dot-like) depressions in the nail surface.\nCauses:\n- Psoriasis (most common cause)\n- Alopecia areata",
+      "slideRef": "slide_82.jpg",
+      "slideNumber": 82
+    },
+    {
+      "id": "fc_094",
+      "topic": "Nail Examination & Disorders",
+      "question": "Describe Terry nails: appearance and associated conditions.",
+      "answer": "Terry nails: nail plate turns WHITE with a distal band of REDDISH-BROWN, and the lunula is obliterated.\nAssociated conditions: liver disease/cirrhosis, heart failure, diabetes",
+      "slideRef": "slide_83.jpg",
+      "slideNumber": 83
+    },
+    {
+      "id": "fc_095",
+      "topic": "Nail Examination & Disorders",
+      "question": "What are Beau lines and what causes them?",
+      "answer": "Beau lines: transverse (horizontal) depressions in the nail plate caused by TEMPORARY DISRUPTION of proximal nail growth.\nCauses: severe illness, trauma, cold exposure in the presence of Raynaud disease\nMechanism: the nail stops growing during illness and resumes later, leaving a visible groove.",
+      "slideRef": "slide_84.jpg",
+      "slideNumber": 84
+    },
+    {
+      "id": "fc_096",
+      "topic": "Nail Examination & Disorders",
+      "question": "What is melanonychia, and when is it benign vs. a red flag for subungual melanoma?",
+      "answer": "Melanonychia: increased pigmentation (dark streak) in the nail matrix.\n- BENIGN: multiple nails affected; more common as a normal ethnic variation (particularly in darker skin tones)\n- RED FLAG: growing, irregular, or widening dark streak in a SINGLE nail → may be SUBUNGUAL MELANOMA",
+      "slideRef": "slide_84.jpg",
+      "slideNumber": 84
+    },
+    {
+      "id": "fc_097",
+      "topic": "Nail Examination & Disorders",
+      "question": "What is onychomycosis, and how does it appear on examination?",
+      "answer": "Onychomycosis: fungal infection of the nail.\nAppearance: nail thickening, discoloration (yellow-brown), crumbling, and separation from nail bed (onycholysis)\nMost common organism: Trichophyton species",
+      "slideRef": "slide_83.jpg",
+      "slideNumber": 83
+    },
+    {
+      "id": "fc_098",
+      "topic": "Nail Examination & Disorders",
+      "question": "What are splinter hemorrhages, and what condition are they classically associated with?",
+      "answer": "Splinter hemorrhages: longitudinal (vertical) petechiae in the nail bed that look like splinters under the nail.\n- Multiple splinter hemorrhages: classically associated with INFECTIVE ENDOCARDITIS\n- Single/few: may be from trauma",
+      "slideRef": "slide_83.jpg",
+      "slideNumber": 83
+    },
+    {
+      "id": "fc_099",
+      "topic": "Nail Examination & Disorders",
+      "question": "What parameters are examined during a nail examination?",
+      "answer": "- Color (normal pink, yellow, white, brown/black streaks)\n- Shape (normal, clubbing, koilonychia/spoon nails)\n- Surrounding areas (paronychia, cuticle changes)\n- Adherence to nail bed (onycholysis)\n- Vascularity (capillary refill)\n- Look for changes in all nails vs. isolated changes",
+      "slideRef": "slide_79.jpg",
+      "slideNumber": 79
+    },
+    {
+      "id": "fc_100",
+      "topic": "Skin Examination Technique",
+      "question": "Provide an example of proper documentation for a normal skin examination.",
+      "answer": "Example: 'Skin warm and dry. Nails without clubbing or cyanosis. Approximately 20 brown, round macules on upper back, chest, and arms; all symmetric in pigmentation, none suspicious. No rash, petechiae, or ecchymoses.'\nKey elements: skin temperature/moisture, nail description, lesion count/color/shape/location/symmetry, and mention of absent abnormal findings.",
+      "slideRef": "slide_87.jpg",
+      "slideNumber": 87
+    },
+    {
+      "id": "fc_101",
+      "topic": "Skin Anatomy & Physiology",
+      "question": "Which skin layer is responsible for perspiration, and what structures does it contain?",
+      "answer": "The DERMIS is responsible for perspiration (its most important function). It contains connective tissue, sebaceous glands, sweat glands, hair follicles, and terminals of cutaneous nerves.",
+      "slideRef": "slide_12.jpg",
+      "slideNumber": 12
+    },
+    {
+      "id": "fc_102",
+      "topic": "Primary Lesions",
+      "question": "What is the lesion size cutoff (in cm) that distinguishes a macule from a patch, and a papule from a nodule, and a vesicle from a bulla?",
+      "answer": "All cutoffs are at 1 cm:\n- Macule (<1 cm) → Patch (>1 cm): FLAT lesions\n- Papule (<1 cm) → Nodule (>1 cm): RAISED SOLID lesions\n- Vesicle (<1 cm) → Bulla (>1 cm): RAISED FLUID-FILLED lesions",
+      "slideRef": "slide_40.jpg",
+      "slideNumber": 40
+    },
+    {
+      "id": "fc_103",
+      "topic": "Moles, Malignancies & Mimics",
+      "question": "What is 'B' in the ABCDE melanoma mnemonic, and what border features are concerning?",
+      "answer": "B = Border\nConcerning features: UNEVEN, CRUSTY, or NOTCHED edges. A benign mole should have smooth, well-defined borders. Irregular or scalloped borders are a warning sign.",
+      "slideRef": "slide_66.jpg",
+      "slideNumber": 66
+    },
+    {
+      "id": "fc_104",
+      "topic": "Vascular Lesions",
+      "question": "What is the key distinguishing feature between a vascular lesion and a purpuric/hemorrhagic lesion when examined with pressure?",
+      "answer": "VASCULAR lesions (e.g., cherry angioma, spider angioma, erythema): blood is WITHIN vessels → lesion BLANCHES with pressure.\nPURPURIC lesions (petechiae, purpura, ecchymosis): blood is OUTSIDE vessels → lesion does NOT blanch with pressure.",
+      "slideRef": "slide_56.jpg",
+      "slideNumber": 56
+    },
+    {
+      "id": "fc_105",
+      "topic": "Hair Examination & Disorders",
+      "question": "What hair finding distinguishes alopecia areata from tinea capitis?",
+      "answer": "- Alopecia areata: NO erythema, NO scaling — just smooth, complete hair loss patches\n- Tinea capitis: SCALING present, may see BLACK DOTS of broken hairs; boggy plaques (kerions) may form\nBoth cause focal/patchy hair loss.",
+      "slideRef": "slide_76.jpg",
+      "slideNumber": 76
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "q_001",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "mcq",
+      "question": "A 3rd-year medical student is reviewing the layers of the skin. Which layer does NOT contain blood vessels and is the thinnest layer?",
+      "options": ["Dermis", "Hypodermis", "Epidermis", "Subcutaneous tissue"],
+      "correct": 2,
+      "explanation": "The epidermis is the thinnest layer of skin and does NOT contain blood vessels. It receives nutrients by diffusion from the underlying dermis. The dermis is vascular and contains capillaries, sweat glands, and hair follicles."
+    },
+    {
+      "id": "q_002",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "mcq",
+      "question": "A patient asks their physician why their skin looks bluish around their lips after being out in the cold. Which pigment is responsible for this bluish discoloration?",
+      "options": ["Carotene", "Melanin", "Oxyhemoglobin", "Deoxyhemoglobin"],
+      "correct": 3,
+      "explanation": "Deoxyhemoglobin produces a darker, blue pigment due to blood vessels losing oxygen. Cold exposure causes vasoconstriction and decreased oxygen delivery, increasing the proportion of deoxyhemoglobin and producing cyanosis (bluish color). Oxyhemoglobin gives a red/pink color; melanin gives brown; carotene gives yellow."
+    },
+    {
+      "id": "q_003",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "mcq",
+      "question": "A 65-year-old woman notices thin, fragile skin on the back of her hands with white depigmented patches. This finding is most consistent with which age-related skin change?",
+      "options": ["Comedone formation", "Pseudoscars", "Keloid formation", "Lichenification"],
+      "correct": 1,
+      "explanation": "In aging skin, the back of the hands and forearms develops thin, fragile, loose, transparent skin with white depigmented patches known as pseudoscars. These occur due to decreased dermal vascularity, loss of collagen, and minor trauma. Comedones appear around cheeks and eyes with aging, not the hands."
+    },
+    {
+      "id": "q_004",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "mcq",
+      "question": "Which sweat gland type is responsible for body odor and is located primarily in axillary and genital regions?",
+      "options": ["Eccrine glands", "Sebaceous glands", "Apocrine glands", "Merocrine glands"],
+      "correct": 2,
+      "explanation": "Apocrine glands are located in axillary and genital regions. They empty into hair follicles and onto the skin surface. Their secretions, when broken down by skin bacteria, produce body odor. Eccrine glands are widely distributed and produce odorless sweat for thermoregulation. Sebaceous glands produce sebum, not sweat."
+    },
+    {
+      "id": "q_005",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "mcq",
+      "question": "Which of the following correctly describes the function of the subcutaneous tissue (hypodermis)?",
+      "options": [
+        "Produces vitamin D and maintains homeostasis",
+        "Generates heat, provides insulation, shock absorption, and caloric reserve",
+        "Protects against infection and seals in moisture",
+        "Produces perspiration and provides nutrition to the epidermis"
+      ],
+      "correct": 1,
+      "explanation": "The subcutaneous tissue (hypodermis/adipose layer) generates heat, provides insulation, acts as shock absorption, and serves as a caloric reserve. Vitamin D production is a whole-skin function. Infection protection and moisture sealing are epidermal functions. Perspiration is a dermal function."
+    },
+    {
+      "id": "q_006",
+      "topic": "Skin Examination Technique",
+      "type": "mcq",
+      "question": "A first-year PA student is performing a skin examination. Which body part is used to assess skin temperature, and why?",
+      "options": [
+        "Fingertips, because they have the highest concentration of touch receptors",
+        "Palm of the hand, because it has the thickest skin",
+        "Back of the hand/fingers, because they are more sensitive to temperature differences",
+        "Forearm, because it has the most consistent baseline temperature"
+      ],
+      "correct": 2,
+      "explanation": "The BACK of the hand/fingers is used to assess skin temperature because the skin here is thinner and more sensitive to temperature differences than the palm (which has thick callused skin). This technique allows the examiner to detect subtle temperature asymmetries between areas."
+    },
+    {
+      "id": "q_007",
+      "topic": "Skin Examination Technique",
+      "type": "mcq",
+      "question": "A patient has an erythematous lesion on her forearm. You press a glass slide against it, and the redness disappears. What does this finding indicate?",
+      "options": [
+        "Blood is outside the vessels (purpura)",
+        "The lesion is malignant",
+        "Blood is within the vessels and can be displaced",
+        "The lesion is infected"
+      ],
+      "correct": 2,
+      "explanation": "Blanching with pressure indicates blood is WITHIN the vessels and can be mechanically displaced. Non-blanching erythema (blood outside vessels) indicates purpura, petechiae, or ecchymosis — findings that suggest hemorrhage or vasculitis. Blanching vs. non-blanching is a critical distinction in skin examination."
+    },
+    {
+      "id": "q_008",
+      "topic": "Skin Examination Technique",
+      "type": "mcq",
+      "question": "During a skin exam, 'tenting' of the skin when pinched is most indicative of which underlying condition?",
+      "options": ["Infection", "Edema", "Dehydration", "Malignancy"],
+      "correct": 2,
+      "explanation": "Skin tenting — where the skin remains elevated after being pinched instead of quickly returning to normal — indicates decreased skin turgor, which is a sign of DEHYDRATION. In edema, the skin is doughy but turgor is maintained. Infection and malignancy are not directly assessed by skin turgor."
+    },
+    {
+      "id": "q_009",
+      "topic": "Skin Examination Technique",
+      "type": "mcq",
+      "question": "Which of the following is NOT a component routinely assessed during the physical examination of skin?",
+      "options": ["Moisture", "Turgor", "Capillary refill at all sites", "Color"],
+      "correct": 2,
+      "explanation": "The six components of the skin exam are: color, moisture, temperature, texture, turgor, and lesions. Capillary refill is tested at specific sites (fingernails, toenails) and is part of the nail exam, not routinely performed 'at all sites' as a skin exam component."
+    },
+    {
+      "id": "q_010",
+      "topic": "Primary Lesions",
+      "type": "mcq",
+      "question": "A 25-year-old presents with a 0.7 cm flat, brown lesion on his cheek that has been present since childhood. How would you classify this lesion?",
+      "options": ["Patch", "Macule", "Papule", "Plaque"],
+      "correct": 1,
+      "explanation": "A flat, non-palpable lesion <1 cm is a MACULE. A patch is also flat and non-palpable but >1 cm. A papule is raised and solid. A plaque is a larger, flat-topped raised lesion. The childhood onset and brown color suggest a flat mole (nevus), which is a macule."
+    },
+    {
+      "id": "q_011",
+      "topic": "Primary Lesions",
+      "type": "mcq",
+      "question": "A 45-year-old man presents with multiple 2 cm raised, scaly, salmon-colored plaques on his elbows and knees. The best lesion descriptor for the individual units before they merged would be:",
+      "options": ["Wheals", "Bullae", "Papules", "Macules"],
+      "correct": 2,
+      "explanation": "Plaques can form when papules coalesce (merge). Papules are raised, solid, <1 cm lesions. In psoriasis, individual papules with scale merge to form larger plaques on extensor surfaces. Wheals are edematous, transient lesions (hives). Bullae are fluid-filled. Macules are flat."
+    },
+    {
+      "id": "q_012",
+      "topic": "Primary Lesions",
+      "type": "mcq",
+      "question": "A 7-year-old child develops grouped vesicles on an erythematous base on her trunk that then rupture and crust over. This presentation is most consistent with which condition?",
+      "options": ["Impetigo", "Psoriasis", "Varicella (chickenpox)", "Tinea corporis"],
+      "correct": 2,
+      "explanation": "Varicella (chickenpox) classically presents with crops of VESICLES (<1 cm, fluid-filled) on an erythematous base that progress to papules, vesicles, pustules, and crusts simultaneously. The grouped distribution on the trunk supports this. Impetigo presents with honey-colored crusts. Psoriasis causes plaques. Tinea causes scaling annular patches."
+    },
+    {
+      "id": "q_013",
+      "topic": "Primary Lesions",
+      "type": "mcq",
+      "question": "Which primary lesion type is defined as an area of EDEMA in the upper epidermis, and is also known as urticaria?",
+      "options": ["Vesicle", "Pustule", "Wheal", "Plaque"],
+      "correct": 2,
+      "explanation": "A wheal (urticaria/hive) is an area of edema in the upper epidermis causing a raised, irregular lesion. It is transient and blanches. Wheals are caused by histamine release in allergic reactions. Vesicles are fluid-filled. Pustules contain neutrophils/pus. Plaques are flat-topped raised lesions."
+    },
+    {
+      "id": "q_014",
+      "topic": "Primary Lesions",
+      "type": "mcq",
+      "question": "A patient with a history of IV drug use presents with a painful, fluctuant, 3 cm erythematous mass on his forearm. Which primary lesion classification best describes this finding?",
+      "options": ["Furuncle", "Abscess", "Pustule", "Carbuncle"],
+      "correct": 1,
+      "explanation": "An ABSCESS is a pus-filled pocket due to bacterial infection, typically deeper and larger (>1 cm) than a pustule. It is fluctuant on palpation. A furuncle is an abscess specifically involving an inflamed hair follicle (boil). A carbuncle is multiple furuncles together. A pustule is small (<1 cm) and superficial."
+    },
+    {
+      "id": "q_015",
+      "topic": "Secondary Lesions",
+      "type": "mcq",
+      "question": "A patient with chronic eczema has thick, leathery skin over both antecubital fossae from years of scratching. This finding is classified as:",
+      "options": ["Excoriation", "Lichenification", "Fissure", "Keloid"],
+      "correct": 1,
+      "explanation": "LICHENIFICATION is leathery thickening of the skin from CHRONIC SCRATCHING. It is a hallmark of chronic eczema. Excoriation is acute abrasion from scratching. A fissure is a crack in skin. A keloid is exaggerated fibrous response to skin injury, not to scratching."
+    },
+    {
+      "id": "q_016",
+      "topic": "Secondary Lesions",
+      "type": "mcq",
+      "question": "A diabetic patient has a 2 cm painful wound on his right heel with full thickness loss of the epithelium. The base is covered with granulation tissue. How is this classified?",
+      "options": ["Erosion", "Fissure", "Ulcer", "Excoriation"],
+      "correct": 2,
+      "explanation": "An ULCER is a full-thickness loss of epithelial or mucosal surface. Diabetes causes neuropathy (neuropathic ulcers) and vascular disease. An erosion is only a PARTIAL thickness loss and typically heals without scarring. A fissure is a crack in dry skin. Excoriation is caused by scratching."
+    },
+    {
+      "id": "q_017",
+      "topic": "Secondary Lesions",
+      "type": "mcq",
+      "question": "A 22-year-old woman with pelvic inflammatory disease is started on antibiotics. Two days later she develops multiple 1–2 mm non-blanching red/purple pinpoint dots on her lower legs. These are best described as:",
+      "options": ["Ecchymoses", "Cherry angiomas", "Petechiae", "Spider angiomas"],
+      "correct": 2,
+      "explanation": "PETECHIAE are deep red or purple, 1–3 mm, non-blanching lesions due to blood outside vessels. They may suggest a bleeding disorder, septic emboli, or vasculitis. Ecchymoses are larger bruises. Cherry angiomas are vascular tumors that may partially blanch. Spider angiomas are pulsatile vascular lesions that blanch."
+    },
+    {
+      "id": "q_018",
+      "topic": "Moles, Malignancies & Mimics",
+      "type": "mcq",
+      "question": "A 55-year-old fair-skinned man presents with a pearly, translucent papule with rolled edges and telangiectatic vessels on his nose. The most likely diagnosis is:",
+      "options": ["Seborrheic keratosis", "Actinic keratosis", "Nodular basal cell carcinoma", "Fibrous papule"],
+      "correct": 2,
+      "explanation": "Nodular BASAL CELL CARCINOMA (BCC) classically appears as a pearly, translucent papule/nodule with rolled edges and overlying telangiectasias, typically on the nose, face, or neck. Fibrous papule looks similar but lacks the telangiectasias and malignant potential. Seborrheic keratosis is 'stuck-on' and waxy. Actinic keratosis is rough and scaly."
+    },
+    {
+      "id": "q_019",
+      "topic": "Moles, Malignancies & Mimics",
+      "type": "mcq",
+      "question": "Which ABCDE criterion refers to the most important warning sign for melanoma — a mole that bleeds or changes over time?",
+      "options": ["A – Asymmetry", "B – Border", "C – Color", "E – Evolving"],
+      "correct": 3,
+      "explanation": "E = EVOLVING is the criterion that identifies change in a lesion over time — change in size, shape, color, or any new symptoms like bleeding or crusting. It is considered the most dynamic and clinically concerning of the ABCDE criteria."
+    },
+    {
+      "id": "q_020",
+      "topic": "Moles, Malignancies & Mimics",
+      "type": "mcq",
+      "question": "A 40-year-old woman with multiple dysplastic nevi presents for a skin check. Which statement about dysplastic nevi is MOST accurate?",
+      "options": [
+        "They are always malignant and require biopsy",
+        "They are risk markers for melanoma requiring surveillance",
+        "They have a characteristic waxy stuck-on appearance",
+        "They are associated exclusively with sun-protected areas"
+      ],
+      "correct": 1,
+      "explanation": "Dysplastic (atypical) nevi are NOT malignant but are RISK MARKERS for melanoma. Patients with multiple dysplastic nevi require regular dermatologic surveillance. They appear clinically similar to melanoma (asymmetric, irregular borders, varied color) but lack malignant transformation. The 'stuck-on' waxy appearance describes seborrheic keratosis."
+    },
+    {
+      "id": "q_021",
+      "topic": "Vascular Lesions",
+      "type": "mcq",
+      "question": "A 28-year-old woman presents at 20 weeks gestation with multiple small, red, star-shaped lesions on her upper chest and arms that pulsate and blanch with central pressure. What is the most likely diagnosis, and when does it typically resolve?",
+      "options": [
+        "Cherry angiomas — benign, persist indefinitely",
+        "Spider angiomas — normal in pregnancy, often resolve postpartum",
+        "Petechiae — indicates thrombocytopenia, requires workup",
+        "Purpura — suggests vasculitis requiring treatment"
+      ],
+      "correct": 1,
+      "explanation": "SPIDER ANGIOMAS with a pulsatile central body that blanches are normal in pregnancy (and liver disease). They appear on the face, neck, arms, and upper trunk. In pregnancy, they are caused by elevated estrogen levels and typically resolve after delivery. Petechiae and purpura are non-blanching and would indicate a pathological process."
+    },
+    {
+      "id": "q_022",
+      "topic": "Vascular Lesions",
+      "type": "mcq",
+      "question": "Which of the following vascular lesions would you expect to find predominantly on the LOWER LEGS near veins and is associated with varicose veins?",
+      "options": ["Spider angioma", "Cherry angioma", "Spider veins (telangiectasias)", "Petechiae"],
+      "correct": 2,
+      "explanation": "SPIDER VEINS (venous telangiectasias) are most often found on the legs near veins and also the anterior chest. They are bluish, variable in size, and associated with increased pressure in superficial veins (varicose veins). Spider angiomas are found on the upper body, above the waist. Cherry angiomas are on the trunk."
+    },
+    {
+      "id": "q_023",
+      "topic": "Vascular Lesions",
+      "type": "mcq",
+      "question": "A 55-year-old man with alcoholic cirrhosis presents with multiple red, star-shaped lesions on his face and upper chest. Which of the following statements about this finding is TRUE?",
+      "options": [
+        "Single lesions are abnormal and require biopsy",
+        "These lesions are typically found below the waist",
+        "Multiple spider angiomas are associated with pregnancy and liver disease",
+        "These lesions represent purpuric disease and do not blanch"
+      ],
+      "correct": 2,
+      "explanation": "Multiple SPIDER ANGIOMAS are associated with liver disease (cirrhosis) and pregnancy due to altered estrogen metabolism. A single spider angioma is NORMAL and common on the face and chest. They are almost NEVER found below the waist. Spider angiomas are VASCULAR (not purpuric) and DO blanch with pressure on the central body."
+    },
+    {
+      "id": "q_024",
+      "topic": "Hair Examination & Disorders",
+      "type": "mcq",
+      "question": "A 35-year-old woman presents with diffuse hair shedding 3 months after delivering her first child. Her scalp and hair distribution appear normal. The hair pull test is positive with telogen bulbs noted. What is the most likely diagnosis?",
+      "options": ["Alopecia areata", "Anagen effluvium", "Telogen effluvium", "Tinea capitis"],
+      "correct": 2,
+      "explanation": "TELOGEN EFFLUVIUM is temporary hair loss due to a physiologic stressor (in this case, postpartum hormonal changes). The scalp appears NORMAL, but the hair pull test is POSITIVE showing telogen bulbs (club-shaped roots). It typically occurs 2–4 months after the triggering event. Anagen effluvium (e.g., from chemotherapy) causes diffuse loss from roots without telogen bulbs."
+    },
+    {
+      "id": "q_025",
+      "topic": "Hair Examination & Disorders",
+      "type": "mcq",
+      "question": "A 10-year-old boy presents with round patches of hair loss on his scalp. On examination, scaling is noted, and you can see black dots where hairs have broken off. What is the most likely diagnosis?",
+      "options": ["Alopecia areata", "Male pattern baldness", "Tinea capitis", "Scarring alopecia"],
+      "correct": 2,
+      "explanation": "TINEA CAPITIS (ringworm of the scalp) presents with round, SCALING patches of alopecia, often with black dots from broken hair shafts. This is a fungal infection requiring oral antifungal treatment. Alopecia areata causes smooth, complete hair loss WITHOUT scaling. Male pattern baldness affects adults. Scarring alopecia shows shiny skin with absent follicles."
+    },
+    {
+      "id": "q_026",
+      "topic": "Nail Examination & Disorders",
+      "type": "mcq",
+      "question": "A 60-year-old man with a 40 pack-year smoking history presents with digital clubbing on examination. Which condition is LEAST commonly associated with nail clubbing?",
+      "options": ["Chronic lung disease", "Lung cancer", "Inflammatory bowel disease", "Diabetes mellitus"],
+      "correct": 3,
+      "explanation": "Nail CLUBBING is associated with: congenital heart disease, interstitial/chronic LUNG DISEASE, LUNG CANCER and other malignancies, and INFLAMMATORY BOWEL DISEASE. Diabetes mellitus is associated with nail changes such as onychomycosis and Terry nails, but NOT typically clubbing. When you see clubbing, think cardiac/pulmonary/GI malignancies or IBD."
+    },
+    {
+      "id": "q_027",
+      "topic": "Nail Examination & Disorders",
+      "type": "mcq",
+      "question": "A 70-year-old man with cirrhosis presents for follow-up. His nails appear almost entirely white with a distal band of reddish-brown, and the lunulae are obliterated. This finding is consistent with:",
+      "options": ["Beau lines", "Splinter hemorrhages", "Terry nails", "Melanonychia"],
+      "correct": 2,
+      "explanation": "TERRY NAILS: nail plate turns WHITE with a distal band of REDDISH-BROWN with obliteration of the lunula. Associated with LIVER DISEASE/CIRRHOSIS, heart failure, and diabetes. Beau lines are transverse grooves. Splinter hemorrhages are longitudinal petechiae. Melanonychia is dark pigmentation streaks in the nail."
+    },
+    {
+      "id": "q_028",
+      "topic": "Nail Examination & Disorders",
+      "type": "mcq",
+      "question": "A patient with a recent hospitalization for sepsis is noted to have horizontal depressions (grooves) across all of her fingernails. These most likely represent:",
+      "options": ["Nail pitting from psoriasis", "Splinter hemorrhages", "Onycholysis", "Beau lines"],
+      "correct": 3,
+      "explanation": "BEAU LINES are transverse (horizontal) depressions in the nail caused by TEMPORARY DISRUPTION of nail growth during a severe illness. When ALL nails are affected simultaneously, the causative event (illness, hospitalization) occurred at the same time. They help time the onset of the severe illness. Nail pitting causes tiny punctate depressions. Splinter hemorrhages are longitudinal."
+    },
+    {
+      "id": "q_029",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "true_false",
+      "question": "The epidermis is the thickest layer of skin and contains the hair follicles and sweat glands.",
+      "correct": false,
+      "explanation": "FALSE. The EPIDERMIS is the THINNEST layer of skin and does NOT contain blood vessels, hair follicles, or sweat glands. Hair follicles and sweat glands are found in the DERMIS. The epidermis functions primarily as a protective barrier."
+    },
+    {
+      "id": "q_030",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "true_false",
+      "question": "Sebaceous glands produce a fatty substance on all skin surfaces including the palms and soles.",
+      "correct": false,
+      "explanation": "FALSE. Sebaceous glands produce fatty sebum on all skin surfaces EXCEPT the palms and soles. The palms and soles lack sebaceous glands (they also lack hair follicles), which is why these areas do not become oily and can become particularly dry."
+    },
+    {
+      "id": "q_031",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "true_false",
+      "question": "Adult skin regenerates every 28 to 42 days, with older adults (>50 years) taking more time than infants.",
+      "correct": true,
+      "explanation": "TRUE. Adult skin regenerates every 28–42 days. The rate DECREASES with age — infants and children regenerate faster, while adults over 50 take MORE time. This explains why skin heals more slowly in older patients."
+    },
+    {
+      "id": "q_032",
+      "topic": "Primary Lesions",
+      "type": "true_false",
+      "question": "A bulla is a raised, fluid-filled lesion smaller than 1 cm in diameter.",
+      "correct": false,
+      "explanation": "FALSE. A bulla is a raised, fluid-filled lesion LARGER than 1 cm. The smaller (<1 cm) fluid-filled lesion is called a VESICLE. Remember the rule: both vesicle and bulla use the same 1 cm cutoff as macule/patch and papule/nodule."
+    },
+    {
+      "id": "q_033",
+      "topic": "Primary Lesions",
+      "type": "true_false",
+      "question": "A pustule is defined as a small, palpable collection of neutrophils or keratin that appears white.",
+      "correct": true,
+      "explanation": "TRUE. A pustule is a raised, fluid-filled lesion containing neutrophils or keratin — appearing white or yellow. Examples include acne pustules, folliculitis, and impetigo. Contrast with an abscess, which is deeper and larger (>1 cm)."
+    },
+    {
+      "id": "q_034",
+      "topic": "Secondary Lesions",
+      "type": "true_false",
+      "question": "Erosions typically result in permanent scarring because they involve full-thickness loss of the epithelial surface.",
+      "correct": false,
+      "explanation": "FALSE. Erosions involve only PARTIAL thickness loss of epithelial surface, and they USUALLY HEAL WITHOUT SCARRING. It is ULCERS (full-thickness loss) that are more likely to heal with scarring. This distinction is clinically important."
+    },
+    {
+      "id": "q_035",
+      "topic": "Secondary Lesions",
+      "type": "true_false",
+      "question": "Petechiae, purpura, and ecchymosis all represent blood outside of vessels and do not blanch with pressure.",
+      "correct": true,
+      "explanation": "TRUE. All three are purpuric lesions where blood has extravasated (leaked) OUTSIDE of blood vessels into the skin. Because the blood is no longer intravascular, applying pressure cannot displace it, so these lesions DO NOT BLANCH. This non-blanching quality distinguishes them from vascular lesions."
+    },
+    {
+      "id": "q_036",
+      "topic": "Moles, Malignancies & Mimics",
+      "type": "true_false",
+      "question": "Amelanotic melanoma is a type of melanoma that lacks pigmentation and therefore does not display typical ABCDE criteria.",
+      "correct": true,
+      "explanation": "TRUE. Amelanotic melanoma lacks the typical pigmentation, appearing pink or flesh-colored. This makes it particularly dangerous as it may not trigger concern based on standard ABCDE criteria (color and border may appear unremarkable). High clinical suspicion is needed for any evolving pink lesion."
+    },
+    {
+      "id": "q_037",
+      "topic": "Moles, Malignancies & Mimics",
+      "type": "true_false",
+      "question": "A single spider angioma on the face is always pathological and requires workup for liver disease.",
+      "correct": false,
+      "explanation": "FALSE. A SINGLE spider angioma is NORMAL and commonly found on the face and chest. MULTIPLE spider angiomas are associated with pregnancy and liver disease. Therefore, a single spider angioma should not prompt liver disease workup on its own."
+    },
+    {
+      "id": "q_038",
+      "topic": "Vascular Lesions",
+      "type": "true_false",
+      "question": "Spider veins (venous telangiectasias) are most commonly found on the legs and are associated with increased pressure in superficial veins.",
+      "correct": true,
+      "explanation": "TRUE. Spider veins (telangiectasias) are most often found on the LEGS near veins, and also the anterior chest. They often accompany INCREASED PRESSURE in the superficial veins, as in varicose veins. They are bluish-colored and variable in size."
+    },
+    {
+      "id": "q_039",
+      "topic": "Nail Examination & Disorders",
+      "type": "true_false",
+      "question": "Paronychia is the most common infection of the hand and presents with redness, swelling, and tenderness of the nail folds.",
+      "correct": true,
+      "explanation": "TRUE. Paronychia is a superficial infection of the PROXIMAL AND LATERAL NAIL FOLDS adjacent to the nail plate. It presents with the classic signs of infection: redness (erythema), swelling, and tenderness. It is indeed the MOST COMMON INFECTION OF THE HAND."
+    },
+    {
+      "id": "q_040",
+      "topic": "Hair Examination & Disorders",
+      "type": "true_false",
+      "question": "Hair breakage during the hair tug test is considered a normal finding.",
+      "correct": false,
+      "explanation": "FALSE. Hair BREAKAGE along the shaft during the hair tug test is considered ABNORMAL. It suggests problems with hair shaft integrity, such as tinea capitis or damage from hair care products (heat, chemicals). Normal hair should stretch slightly but not break when the shaft is pulled."
+    },
+    {
+      "id": "q_041",
+      "topic": "Skin Examination Technique",
+      "type": "true_false",
+      "question": "During a full-body skin exam, it is acceptable to skip the intertriginous areas if no chief complaint involves those regions.",
+      "correct": false,
+      "explanation": "FALSE. Intertriginous areas (where skin folds touch) must ALWAYS be examined during a full-body skin exam. These areas are prone to rash, fungal infections, and skin cancer that patients may be unaware of. Examples: axillae, groin, inframammary folds, between toes."
+    },
+    {
+      "id": "q_042",
+      "topic": "Nail Examination & Disorders",
+      "type": "true_false",
+      "question": "Melanonychia affecting multiple nails simultaneously is a normal ethnic variation, whereas a single widening or irregular streak should raise concern for subungual melanoma.",
+      "correct": true,
+      "explanation": "TRUE. MELANONYCHIA (dark nail streaks) affecting MULTIPLE nails is a NORMAL ETHNIC VARIATION, particularly common in individuals with darker skin tones. However, a SINGLE nail with a GROWING or IRREGULAR dark streak should raise concern for SUBUNGUAL MELANOMA and warrants dermatologic evaluation."
+    },
+    {
+      "id": "q_043",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "matching",
+      "question": "Match each skin layer with its primary function or key characteristic.",
+      "pairs": [
+        {"term": "Epidermis", "match": "Thinnest layer; no blood vessels; protects and seals in moisture"},
+        {"term": "Dermis", "match": "Contains hair follicles, sweat glands; most important function is perspiration"},
+        {"term": "Subcutaneous tissue (Hypodermis)", "match": "Adipose layer; provides insulation, heat, shock absorption, caloric reserve"},
+        {"term": "Stratum corneum", "match": "Outer horny layer of dead keratinized cells"}
+      ]
+    },
+    {
+      "id": "q_044",
+      "topic": "Primary Lesions",
+      "type": "matching",
+      "question": "Match each primary lesion type with its correct definition.",
+      "pairs": [
+        {"term": "Macule", "match": "Flat, non-palpable lesion <1 cm"},
+        {"term": "Bulla", "match": "Raised, fluid-filled lesion >1 cm"},
+        {"term": "Nodule", "match": "Raised, solid, palpable lesion >1 cm"},
+        {"term": "Wheal", "match": "Area of edema in upper epidermis (urticaria)"}
+      ]
+    },
+    {
+      "id": "q_045",
+      "topic": "Secondary Lesions",
+      "type": "matching",
+      "question": "Match each secondary lesion with its defining characteristic.",
+      "pairs": [
+        {"term": "Lichenification", "match": "Leathery skin thickening from chronic scratching"},
+        {"term": "Keloid", "match": "Exaggerated fibrotic response extending beyond original wound"},
+        {"term": "Erosion", "match": "Partial thickness epithelial loss; heals without scarring"},
+        {"term": "Ulcer", "match": "Full thickness epithelial loss; associated with diabetes, PAD, pressure"}
+      ]
+    },
+    {
+      "id": "q_046",
+      "topic": "Moles, Malignancies & Mimics",
+      "type": "matching",
+      "question": "Match each skin lesion with its clinical description or key differentiating feature.",
+      "pairs": [
+        {"term": "Actinic keratosis", "match": "Rough, scaly precancerous lesion; precursor to SCC"},
+        {"term": "Seborrheic keratosis", "match": "Benign 'stuck-on' waxy verrucous plaque; mimics melanoma"},
+        {"term": "Nodular BCC", "match": "Pearly papule with rolled edges and telangiectasias; usually on nose"},
+        {"term": "Amelanotic melanoma", "match": "Pink/flesh-colored melanoma without pigmentation; does not show classic ABCDE"}
+      ]
+    },
+    {
+      "id": "q_047",
+      "topic": "Vascular Lesions",
+      "type": "matching",
+      "question": "Match each vascular/purpuric lesion with its key distinguishing feature.",
+      "pairs": [
+        {"term": "Spider angioma", "match": "Fiery red, pulsatile, blanches with central pressure; associated with liver disease/pregnancy"},
+        {"term": "Cherry angioma", "match": "Ruby red, 1–3 mm, on trunk; increases with aging; no clinical significance"},
+        {"term": "Petechiae", "match": "1–3 mm, non-blanching, deep red; suggests bleeding disorder or vasculitis"},
+        {"term": "Ecchymosis", "match": "Larger bruise >3 mm; fades green to yellow; often from trauma"}
+      ]
+    },
+    {
+      "id": "q_048",
+      "topic": "Hair Examination & Disorders",
+      "type": "matching",
+      "question": "Match each type of hair loss with its defining features.",
+      "pairs": [
+        {"term": "Telogen effluvium", "match": "Normal scalp appearance; positive hair pull test with telogen bulbs; triggered by stress/hormones"},
+        {"term": "Alopecia areata", "match": "Sudden onset, smooth round patches of complete hair loss; no erythema or scale"},
+        {"term": "Tinea capitis", "match": "Round scaling patches of alopecia with black dots; boggy kerions may form"},
+        {"term": "Scarring alopecia", "match": "Shiny skin with complete loss of hair follicles; permanent; requires dermatology referral"}
+      ]
+    },
+    {
+      "id": "q_049",
+      "topic": "Nail Examination & Disorders",
+      "type": "matching",
+      "question": "Match each abnormal nail finding with its associated condition or definition.",
+      "pairs": [
+        {"term": "Terry nails", "match": "White nail with distal reddish-brown band; associated with cirrhosis, heart failure, diabetes"},
+        {"term": "Beau lines", "match": "Transverse grooves from temporary nail growth arrest; caused by severe illness"},
+        {"term": "Nail pitting", "match": "Small punctate depressions in nail; associated with psoriasis and alopecia areata"},
+        {"term": "Splinter hemorrhages", "match": "Longitudinal petechiae under the nail; classic association with infective endocarditis"}
+      ]
+    },
+    {
+      "id": "q_050",
+      "topic": "Skin Examination Technique",
+      "type": "matching",
+      "question": "Match each lesion shape pattern with its associated clinical condition.",
+      "pairs": [
+        {"term": "Zosteriform", "match": "Unilateral dermatomal pattern — herpes zoster (shingles)"},
+        {"term": "Annular", "match": "Ring-shaped with central clearing — Lyme disease, ringworm, syphilis"},
+        {"term": "Confluent", "match": "Lesions blend to form continuous areas — measles rash"},
+        {"term": "Serpiginous", "match": "Snake-like wandering pattern — parasitic or fungal infections"}
+      ]
+    },
+    {
+      "id": "q_051",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "fill_blank",
+      "question": "The outer horny layer of the epidermis, made up of dead keratinized cells, is called the ________.",
+      "answer": "stratum corneum",
+      "acceptableAnswers": ["stratum corneum", "horny layer", "outer horny layer"]
+    },
+    {
+      "id": "q_052",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "fill_blank",
+      "question": "Skin accounts for approximately ________ percent of total body weight.",
+      "answer": "16",
+      "acceptableAnswers": ["16", "16%", "sixteen"]
+    },
+    {
+      "id": "q_053",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "fill_blank",
+      "question": "The ________ pigment is yellow in color and is located in fat and heavily keratinized structures.",
+      "answer": "carotene",
+      "acceptableAnswers": ["carotene", "carotenoid"]
+    },
+    {
+      "id": "q_054",
+      "topic": "Primary Lesions",
+      "type": "fill_blank",
+      "question": "A raised, flat-topped lesion that may form when papules coalesce is called a ________.",
+      "answer": "plaque",
+      "acceptableAnswers": ["plaque", "skin plaque"]
+    },
+    {
+      "id": "q_055",
+      "topic": "Primary Lesions",
+      "type": "fill_blank",
+      "question": "A ________ is a linear lesion produced by tunnels formed under the skin's surface, classically associated with scabies.",
+      "answer": "burrow",
+      "acceptableAnswers": ["burrow", "skin burrow"]
+    },
+    {
+      "id": "q_056",
+      "topic": "Secondary Lesions",
+      "type": "fill_blank",
+      "question": "Transverse depressions in the nail plate caused by temporary disruption of nail growth during severe illness are called ________ lines.",
+      "answer": "Beau",
+      "acceptableAnswers": ["Beau", "beau", "Beau's"]
+    },
+    {
+      "id": "q_057",
+      "topic": "Secondary Lesions",
+      "type": "fill_blank",
+      "question": "A ________ is an exaggerated fibrotic tissue response to skin injury that extends beyond the original wound borders, commonly associated with piercings.",
+      "answer": "keloid",
+      "acceptableAnswers": ["keloid", "keloid scar"]
+    },
+    {
+      "id": "q_058",
+      "topic": "Moles, Malignancies & Mimics",
+      "type": "fill_blank",
+      "question": "The ABCDE criteria for evaluating melanoma stands for Asymmetry, Border, Color, Diameter, and ________.",
+      "answer": "Evolving",
+      "acceptableAnswers": ["Evolving", "Evolution", "evolving", "E - evolving"]
+    },
+    {
+      "id": "q_059",
+      "topic": "Nail Examination & Disorders",
+      "type": "fill_blank",
+      "question": "Normal capillary refill time should be less than ________ seconds.",
+      "answer": "2",
+      "acceptableAnswers": ["2", "two", "2 seconds", "<2"]
+    },
+    {
+      "id": "q_060",
+      "topic": "Nail Examination & Disorders",
+      "type": "fill_blank",
+      "question": "Separation of the nail plate from the nail bed is called ________.",
+      "answer": "onycholysis",
+      "acceptableAnswers": ["onycholysis", "onycholysis (nail separation)"]
+    },
+    {
+      "id": "q_061",
+      "topic": "Hair Examination & Disorders",
+      "type": "fill_blank",
+      "question": "The hair pull test is performed by grasping ________ to ________ hairs and pulling firmly to assess for root shedding.",
+      "answer": "50 to 60",
+      "acceptableAnswers": ["50 to 60", "50-60", "50 or 60"]
+    },
+    {
+      "id": "q_062",
+      "topic": "Vascular Lesions",
+      "type": "fill_blank",
+      "question": "Nail bed petechiae that appear as dark longitudinal lines resembling splinters under the nail are called ________ hemorrhages.",
+      "answer": "splinter",
+      "acceptableAnswers": ["splinter", "splinter hemorrhages"]
+    },
+    {
+      "id": "q_063",
+      "topic": "Skin Examination Technique",
+      "type": "fill_blank",
+      "question": "The two primary physical examination techniques used to evaluate the skin are inspection and ________.",
+      "answer": "palpation",
+      "acceptableAnswers": ["palpation", "Palpation"]
+    },
+    {
+      "id": "q_064",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "fill_blank",
+      "question": "Increased hair growth in a male pattern due to increased androgen activity in a female is called ________.",
+      "answer": "hirsutism",
+      "acceptableAnswers": ["hirsutism", "hirsutisim"]
+    },
+    {
+      "id": "q_065",
+      "topic": "Secondary Lesions",
+      "type": "fill_blank",
+      "question": "Fungal infection of the nail causing thickening and discoloration is called ________.",
+      "answer": "onychomycosis",
+      "acceptableAnswers": ["onychomycosis", "nail fungus", "tinea unguium"]
+    },
+    {
+      "id": "q_066",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "mcq",
+      "question": "A student is trying to remember which skin glands are absent on the palms and soles. Which of the following is ABSENT from these areas?",
+      "options": ["Eccrine sweat glands", "Apocrine glands", "Sebaceous glands", "Merocrine glands"],
+      "correct": 2,
+      "explanation": "SEBACEOUS GLANDS are present on all skin surfaces EXCEPT the palms and soles. Eccrine (merocrine) sweat glands ARE present on the palms and soles — in fact, the palms and soles have a high density of eccrine glands. Apocrine glands are limited to axillary and genital regions."
+    },
+    {
+      "id": "q_067",
+      "topic": "Skin Examination Technique",
+      "type": "mcq",
+      "question": "A 50-year-old man presents with a chief complaint of itching. On examination, no rash is visible. Which of the following is NOT listed as a cause of pruritus without rash?",
+      "options": ["Uremia", "Polycythemia vera", "Psoriasis", "Thyroid disease"],
+      "correct": 2,
+      "explanation": "PSORIASIS causes itching WITH a rash (plaques). Causes of itching WITHOUT visible rash include: dry skin, pregnancy, uremia, jaundice, lymphomas/leukemias, drug reactions, thyroid disease, and polycythemia vera. When a patient itches without a rash, systemic causes must be investigated."
+    },
+    {
+      "id": "q_068",
+      "topic": "Primary Lesions",
+      "type": "mcq",
+      "question": "A 35-year-old hiker returns from camping in the woods with a 4 cm erythematous, annular lesion with central clearing on his thigh. Which organism and disease does this pattern suggest?",
+      "options": ["Staphylococcus aureus — cellulitis", "Borrelia burgdorferi — Lyme disease", "Tinea corporis — ringworm", "Herpes zoster — shingles"],
+      "correct": 1,
+      "explanation": "An ANNULAR lesion with CENTRAL CLEARING (bull's-eye or target pattern) on a hiker after outdoor exposure is classic for ERYTHEMA MIGRANS of LYME DISEASE, caused by Borrelia burgdorferi transmitted by deer ticks. Tinea also causes annular lesions but typically has scale. Cellulitis is not annular. Shingles is zosteriform (dermatomal)."
+    },
+    {
+      "id": "q_069",
+      "topic": "Secondary Lesions",
+      "type": "mcq",
+      "question": "Which of the following secondary lesions forms as a result of dried exudate (blood, pus, or serum) on the skin surface?",
+      "options": ["Scale", "Crust", "Erosion", "Lichenification"],
+      "correct": 1,
+      "explanation": "A CRUST is formed from drying of exudate (blood, pus, or serum) on the skin surface. This is classically seen in impetigo (honey-colored crusts), wound healing, and seborrheic dermatitis. A scale is shed epidermis without exudate. An erosion is a tissue defect. Lichenification is skin thickening from chronic scratching."
+    },
+    {
+      "id": "q_070",
+      "topic": "Nail Examination & Disorders",
+      "type": "mcq",
+      "question": "A patient with psoriasis asks about the dots on her nails. Nail pitting is MOST associated with which two conditions?",
+      "options": [
+        "Liver disease and heart failure",
+        "Psoriasis and alopecia areata",
+        "Diabetes and chronic kidney disease",
+        "Lung cancer and IBD"
+      ],
+      "correct": 1,
+      "explanation": "NAIL PITTING (small punctate depressions) is classically associated with PSORIASIS and ALOPECIA AREATA. It results from psoriatic changes in the nail matrix (proximal nail fold). Liver disease causes Terry nails. Lung cancer causes clubbing. CKD can cause half-and-half nails."
+    },
+    {
+      "id": "q_071",
+      "topic": "Moles, Malignancies & Mimics",
+      "type": "mcq",
+      "question": "A 55-year-old farmer presents with a rough, scaly, erythematous lesion on his forehead. Biopsy is recommended as it is considered pre-malignant. What lesion does this description represent, and what malignancy can it progress to?",
+      "options": [
+        "Seborrheic keratosis; basal cell carcinoma",
+        "Actinic keratosis; squamous cell carcinoma",
+        "Dysplastic nevus; melanoma",
+        "Superficial BCC; nodular BCC"
+      ],
+      "correct": 1,
+      "explanation": "ACTINIC KERATOSIS is a rough, scaly, erythematous lesion on sun-exposed skin (face, forearms, hands) caused by UV damage. It is the direct PRECURSOR to SQUAMOUS CELL CARCINOMA (SCC). Treatment (cryotherapy, topical 5-FU, etc.) is recommended to prevent malignant transformation."
+    },
+    {
+      "id": "q_072",
+      "topic": "Hair Examination & Disorders",
+      "type": "mcq",
+      "question": "A 22-year-old woman presents with sudden onset of three perfectly smooth, oval bald patches on her scalp, each about 3 cm in diameter. There is no scaling, erythema, or broken hairs. What is the most likely diagnosis?",
+      "answer": "Alopecia areata",
+      "options": ["Telogen effluvium", "Tinea capitis", "Alopecia areata", "Scarring alopecia"],
+      "correct": 2,
+      "explanation": "ALOPECIA AREATA presents with sudden onset of clearly demarcated, OVAL/ROUND patches of COMPLETE hair loss, with NO erythema and NO scaling. It is autoimmune in etiology. Tinea capitis has scale and black dots. Telogen effluvium is diffuse, not patchy. Scarring alopecia shows shiny skin with permanent follicle loss."
+    },
+    {
+      "id": "q_073",
+      "topic": "Skin Examination Technique",
+      "type": "mcq",
+      "question": "Which aspect of the skin history is captured under the 'Social History' component specifically relevant to skin cancer risk?",
+      "options": [
+        "History of blistering sunburns",
+        "Family history of melanoma",
+        "Sunscreen use and outdoor hobbies",
+        "Previous skin biopsies"
+      ],
+      "correct": 2,
+      "explanation": "SUNSCREEN USE, OCCUPATION, RECREATION/HOBBIES, and EXPOSURES are captured in the Social History for skin exam. History of blistering sunburns and tolerance to sunlight are PMH elements. Family history of melanoma is Family History. Previous skin biopsies/conditions are PMH."
+    },
+    {
+      "id": "q_074",
+      "topic": "Vascular Lesions",
+      "type": "mcq",
+      "question": "Cherry angiomas are best described as which of the following?",
+      "options": [
+        "Blue-colored lesions on the legs associated with venous hypertension",
+        "Bright ruby-red, 1–3 mm lesions on the trunk with no clinical significance, increasing with age",
+        "Pulsatile lesions associated with liver disease found above the waist",
+        "Non-blanching purpuric lesions suggesting a bleeding disorder"
+      ],
+      "correct": 1,
+      "explanation": "CHERRY ANGIOMAS are bright or ruby red, 1–3 mm, round, slightly raised lesions found primarily on the TRUNK and extremities. They have NO clinical significance but increase in number and size with aging. They may show PARTIAL blanching with pressure. Blue lesions on legs = spider veins. Pulsatile upper body = spider angiomas. Non-blanching = purpura."
+    },
+    {
+      "id": "q_075",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "mcq",
+      "question": "Which of the following best describes the function of the cuticle (eponychium)?",
+      "options": [
+        "Gives the nail plate its pink color by underlying vasculature",
+        "Protects the nail root from external moisture by acting as a sealant",
+        "Supports the nail plate on the lateral sides",
+        "Produces new nail cells at the nail matrix"
+      ],
+      "correct": 1,
+      "explanation": "The CUTICLE (eponychium) functions as a SEALANT to protect the nail root from external moisture and pathogens. Disrupting the cuticle (e.g., manicures) can allow entry of microorganisms, leading to paronychia. The nail plate's pink color comes from the vascular NAIL BED. New nail cells are produced at the nail MATRIX."
+    },
+    {
+      "id": "q_076",
+      "topic": "Primary Lesions",
+      "type": "mcq",
+      "question": "A 30-year-old man develops intensely pruritic, raised, irregularly shaped erythematous lesions over his trunk and arms within 30 minutes of eating shellfish. The lesions are transient and disappear within 2 hours. What type of primary lesion is this?",
+      "options": ["Vesicle", "Papule", "Wheal", "Bulla"],
+      "correct": 2,
+      "explanation": "WHEALS (urticaria/hives) are transient areas of dermal edema caused by histamine release (allergic reaction). They are raised, irregularly shaped, intensely pruritic, and typically resolve within 24 hours. The rapid onset after allergen exposure (shellfish) and transient nature are characteristic of anaphylactic urticaria. Vesicles and bullae are fluid-filled. Papules are solid."
+    },
+    {
+      "id": "q_077",
+      "topic": "Secondary Lesions",
+      "type": "mcq",
+      "question": "A 5-year-old child presents with honey-colored crusted lesions around the mouth and nose. This is classic for which condition?",
+      "options": ["Eczema", "Impetigo", "Herpes labialis", "Tinea faciei"],
+      "correct": 1,
+      "explanation": "IMPETIGO classically presents with honey-colored (amber/yellow) CRUSTING around the mouth and nose in children. It is a superficial bacterial skin infection caused by Staphylococcus aureus and/or Streptococcus pyogenes. Eczema causes scaling and lichenification. Herpes causes vesicles. Tinea causes scaling and erythema."
+    },
+    {
+      "id": "q_078",
+      "topic": "Nail Examination & Disorders",
+      "type": "mcq",
+      "question": "A patient with a history of infective endocarditis from IV drug use is examined. Which nail finding is classically associated with this diagnosis?",
+      "options": ["Beau lines", "Nail pitting", "Splinter hemorrhages", "Terry nails"],
+      "correct": 2,
+      "explanation": "SPLINTER HEMORRHAGES are longitudinal petechiae in the nail bed that look like splinters. They are classically associated with INFECTIVE ENDOCARDITIS (septic emboli to distal vessels). Single splinter hemorrhages may be from trauma, but MULTIPLE splinter hemorrhages should prompt endocarditis evaluation. Beau lines = severe illness. Terry nails = liver/cardiac disease."
+    },
+    {
+      "id": "q_079",
+      "topic": "Skin Examination Technique",
+      "type": "mcq",
+      "question": "When documenting an abnormal skin lesion on physical exam, a student writes: 'Single 1.2 × 1.6 cm asymmetric dark brown and black plaque with erythematous, uneven border, on left upper arm.' Which element is MISSING from this documentation?",
+      "options": ["Color", "Size", "Shape/borders", "Texture"],
+      "correct": 3,
+      "explanation": "The documentation includes color (dark brown and black), size (1.2 × 1.6 cm), shape/borders (asymmetric, uneven), and location (left upper arm). TEXTURE is not mentioned. A complete lesion description should include number, size, shape/borders, color, texture, and location/distribution/configuration."
+    },
+    {
+      "id": "q_080",
+      "topic": "Moles, Malignancies & Mimics",
+      "type": "mcq",
+      "question": "When comparing a dysplastic nevus to melanoma, which feature is MOST helpful in differentiating the two on clinical examination?",
+      "options": [
+        "Color variation",
+        "Irregular border",
+        "Asymmetry",
+        "History of stability vs. change over time (evolving)"
+      ],
+      "correct": 3,
+      "explanation": "Dysplastic nevi and melanoma can look very similar clinically (asymmetric, irregular borders, varied color). The most distinguishing clinical feature is whether the lesion is EVOLVING (changing in size, shape, color, or bleeding) — the 'E' of ABCDE. Melanoma evolves; a stable dysplastic nevus may look identical but remains unchanged. Any change warrants biopsy."
+    },
+    {
+      "id": "q_081",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "mcq",
+      "question": "In the epidermis, where are melanin and keratin formed, and how long does it take for these cells to migrate to the surface?",
+      "options": [
+        "Stratum corneum; 2 weeks",
+        "Stratum basale and stratum spinosum; approximately 1 month",
+        "Dermis; 28 to 42 days",
+        "Hypodermis; 1 week"
+      ],
+      "correct": 1,
+      "explanation": "Melanin and keratin are formed in the INNER CELLULAR LAYER of the epidermis — specifically the STRATUM BASALE (basal cell layer) and STRATUM SPINOSUM. These cells gradually migrate outward to the stratum corneum over approximately ONE MONTH. This cycle is the basis for skin cell turnover and explains why some skin conditions respond slowly to treatment."
+    },
+    {
+      "id": "q_082",
+      "topic": "Hair Examination & Disorders",
+      "type": "mcq",
+      "question": "A 60-year-old woman presents with thinning hair spreading from the crown of her scalp, but her hairline is preserved. This pattern is most consistent with:",
+      "options": [
+        "Male pattern baldness",
+        "Alopecia areata",
+        "Female pattern hair loss",
+        "Telogen effluvium"
+      ],
+      "correct": 2,
+      "explanation": "FEMALE PATTERN HAIR LOSS (androgenetic alopecia in women) causes THINNING spreading from the CROWN WITHOUT HAIRLINE REGRESSION. In contrast, MALE PATTERN BALDNESS begins with FRONTAL hairline regression and thinning at the posterior vertex. Alopecia areata causes patchy discrete areas of loss. Telogen effluvium is diffuse and usually temporary."
+    },
+    {
+      "id": "q_083",
+      "topic": "Nail Examination & Disorders",
+      "type": "mcq",
+      "question": "Using Schamroth's sign, how is clubbing identified?",
+      "options": [
+        "The nail angle exceeds 180 degrees when measured directly",
+        "A diamond-shaped window is visible when opposing nails are placed together — this window is present in clubbing",
+        "The diamond-shaped window is OBLITERATED when opposing clubbed nails are placed together",
+        "The nail separates from the nail bed when pressed firmly"
+      ],
+      "correct": 2,
+      "explanation": "SCHAMROTH'S SIGN: When the DORSAL surfaces of corresponding fingers are placed together, a small diamond-shaped window is normally visible between the nail bases. In CLUBBING, this window is OBLITERATED because the angle between the nail and proximal fold is lost. Option B is the OPPOSITE of the correct interpretation."
+    },
+    {
+      "id": "q_084",
+      "topic": "Primary Lesions",
+      "type": "mcq",
+      "question": "Which of the following lesions is associated with Staphylococcus bacteria and is defined as an abscess involving an inflamed hair follicle?",
+      "options": ["Carbuncle", "Furuncle", "Milia", "Cyst"],
+      "correct": 1,
+      "explanation": "A FURUNCLE (boil) is specifically an abscess involving an INFLAMED HAIR FOLLICLE, usually caused by Staphylococcus aureus. A carbuncle is multiple furuncles together (cluster of boils). Milia are small keratin-filled cysts. A regular cyst is filled with fluid, air, or semi-solid material and is not necessarily infectious."
+    },
+    {
+      "id": "q_085",
+      "topic": "Skin Examination Technique",
+      "type": "mcq",
+      "question": "A PA student is asked to perform a comprehensive skin examination. In which patient position should she inspect the lower back and posterior thighs?",
+      "options": ["Supine", "Seated", "Standing", "Lateral decubitus"],
+      "correct": 2,
+      "explanation": "According to the full-body skin exam technique, the lower back and posterior thighs/legs are inspected with the patient STANDING. The anterior body (chest, abdomen, anterior thighs/legs, arms) and upper body (head, neck, scalp, upper back) are examined SEATED. Female breasts, axillae, and genitalia may be examined in supine/lithotomy position."
+    },
+    {
+      "id": "q_086",
+      "topic": "Vascular Lesions",
+      "type": "true_false",
+      "question": "Ecchymoses are caused by blood outside the vessels and do not blanch with applied pressure.",
+      "correct": true,
+      "explanation": "TRUE. Ecchymosis (bruising) occurs when blood extravasates OUTSIDE blood vessels into the skin and subcutaneous tissue. Since the blood is no longer intravascular, pressure cannot displace it, so ecchymoses are NON-BLANCHING. This non-blanching quality distinguishes ALL purpuric lesions from inflammatory erythema."
+    },
+    {
+      "id": "q_087",
+      "topic": "Skin Examination Technique",
+      "type": "true_false",
+      "question": "A 'doughy' skin texture is associated with dehydration.",
+      "correct": false,
+      "explanation": "FALSE. 'Doughy' texture is associated with EDEMA — excess fluid in the tissue making skin feel soft and spongy. DEHYDRATION is associated with decreased skin turgor ('tenting'). These are opposite findings and important to differentiate."
+    },
+    {
+      "id": "q_088",
+      "topic": "Primary Lesions",
+      "type": "true_false",
+      "question": "A port-wine stain is classified as a patch because it is a flat lesion larger than 1 cm.",
+      "correct": true,
+      "explanation": "TRUE. A PATCH is a flat, non-palpable lesion >1 cm in diameter. A port-wine stain (nevus flammeus) is a congenital vascular malformation producing a flat, well-demarcated area of discoloration that is typically >1 cm — meeting the definition of a PATCH. Freckles (smaller) are macules."
+    },
+    {
+      "id": "q_089",
+      "topic": "Moles, Malignancies & Mimics",
+      "type": "true_false",
+      "question": "Melanomas are always >6 mm in diameter at the time of first presentation.",
+      "correct": false,
+      "explanation": "FALSE. While melanomas are USUALLY larger in diameter than a pencil eraser (~6 mm), they CAN BE SMALLER. The ABCDE criteria state that melanomas are 'usually larger in diameter than a pencil eraser, although they can be smaller.' Early-stage melanomas may be <6 mm, which is why EVOLVING (change over time) is often the most important criterion."
+    },
+    {
+      "id": "q_090",
+      "topic": "Hair Examination & Disorders",
+      "type": "true_false",
+      "question": "Anagen effluvium results in diffuse hair loss from the roots, and the hair pull test is NEGATIVE for telogen bulbs.",
+      "correct": true,
+      "explanation": "TRUE. In ANAGEN EFFLUVIUM (e.g., from chemotherapy), hair loss occurs during the ACTIVE GROWTH PHASE (anagen). The hair pull test is NEGATIVE for telogen bulbs because hairs are not entering the resting phase — they are being destroyed during active growth. In contrast, TELOGEN EFFLUVIUM shows positive telogen bulbs on the hair pull test."
+    },
+    {
+      "id": "q_091",
+      "topic": "Nail Examination & Disorders",
+      "type": "true_false",
+      "question": "A capillary refill time of 3 seconds is considered normal.",
+      "correct": false,
+      "explanation": "FALSE. Normal capillary refill time is LESS THAN 2 SECONDS. A refill time >2 seconds is prolonged and may indicate shock, poor perfusion, peripheral arterial disease, or dehydration — all conditions that reduce blood flow to the distal extremities."
+    },
+    {
+      "id": "q_092",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "true_false",
+      "question": "Increased blood flow to the skin increases redness because more oxygenated blood (oxyhemoglobin) is delivered to capillaries near the surface.",
+      "correct": true,
+      "explanation": "TRUE. OXYHEMOGLOBIN gives blood its bright red color. When blood flow to superficial capillaries increases (e.g., with inflammation, fever, or exercise), more oxyhemoglobin is present near the skin surface, causing increased redness. This is the mechanism behind erythema in inflammation or blushing."
+    },
+    {
+      "id": "q_093",
+      "topic": "Secondary Lesions",
+      "type": "mcq",
+      "question": "A student examines a patient's skin and notes 'abrasions caused by scratching' over the patient's shin. What is the correct dermatologic term for this finding?",
+      "options": ["Fissure", "Excoriation", "Erosion", "Scaling"],
+      "correct": 1,
+      "explanation": "EXCORIATION refers to abrasions caused specifically by SCRATCHING or RUBBING. They are linear or punctate marks on the skin surface. Common causes include intense pruritus from eczema, insect bites, scabies, uremia, or chronic kidney disease. A fissure is a crack. An erosion is epithelial loss from other causes. Scaling is shedding of epidermis."
+    },
+    {
+      "id": "q_094",
+      "topic": "Vascular Lesions",
+      "type": "mcq",
+      "question": "Which of the following correctly describes how to differentiate a spider angioma from spider veins on physical examination?",
+      "options": [
+        "Spider angiomas are bluish; spider veins are red",
+        "Spider angiomas are found on the legs; spider veins are found on the face",
+        "Spider angiomas have a pulsatile center that blanches; spider veins do not pulsate",
+        "Spider veins blanch completely with central pressure; spider angiomas do not"
+      ],
+      "correct": 2,
+      "explanation": "The key distinguishing feature: SPIDER ANGIOMAS have a PULSATILE CENTRAL BODY that BLANCHES when pressure is applied directly to the center. SPIDER VEINS have NO pulsatility and do not blanch from central pressure (though diffuse pressure blanches the veins). Spider angiomas are fiery RED; spider veins are BLUISH. Spider angiomas are on the upper body; spider veins are on the legs."
+    },
+    {
+      "id": "q_095",
+      "topic": "Skin Examination Technique",
+      "type": "mcq",
+      "question": "A physician is documenting a patient's skin examination and writes: 'Facial plethora. Skin icteric. Many telangiectatic mats on chest and abdomen. Single 5-mm pearly papule with rolled border on left zygomatic cheek. Nails with clubbing but no cyanosis.' Which lesion on the cheek should be referred for evaluation?",
+      "options": [
+        "Telangiectatic mats",
+        "The facial plethora",
+        "The 5-mm pearly papule with rolled border",
+        "The nail clubbing"
+      ],
+      "correct": 2,
+      "explanation": "A PEARLY PAPULE WITH ROLLED BORDER on the face is the classic description of NODULAR BASAL CELL CARCINOMA (BCC). This requires urgent dermatology referral and biopsy. Telangiectatic mats may be associated with the underlying condition. Plethora is diffuse redness. Clubbing may be from an underlying systemic condition but is not directly in need of referral from this note."
+    },
+    {
+      "id": "q_096",
+      "topic": "Primary Lesions",
+      "type": "mcq",
+      "question": "During an examination, you note a lesion described as 'telangiectasia' on a patient's nose. This finding represents:",
+      "options": [
+        "Tunnels under the skin from mite infestation",
+        "Dilation of superficial blood vessels",
+        "Full-thickness skin loss from pressure",
+        "Thickening of skin from chronic inflammation"
+      ],
+      "correct": 1,
+      "explanation": "TELANGIECTASIA is the DILATION of superficial blood vessels, producing fine, red, thread-like vascular lines visible on the skin surface. On the nose, it is commonly associated with ROSACEA. It can also occur with aging, systemic diseases (hepatic, connective tissue), and radiation. Mite tunnels = burrows. Full-thickness loss = ulcer. Skin thickening = lichenification."
+    },
+    {
+      "id": "q_097",
+      "topic": "Secondary Lesions",
+      "type": "matching",
+      "question": "Match each lesion shape with the disease most classically associated with it.",
+      "pairs": [
+        {"term": "Linear", "match": "Poison ivy contact dermatitis"},
+        {"term": "Annular with central clearing", "match": "Erythema migrans (Lyme disease)"},
+        {"term": "Nummular (coin-shaped)", "match": "Nummular eczema"},
+        {"term": "Zosteriform (dermatomal)", "match": "Herpes zoster (shingles)"}
+      ]
+    },
+    {
+      "id": "q_098",
+      "topic": "Nail Examination & Disorders",
+      "type": "mcq",
+      "question": "Which of the following nail findings indicates increased pigmentation in the nail matrix, and when should it raise concern for subungual melanoma?",
+      "options": [
+        "Terry nails — concerning when the reddish-brown band widens",
+        "Melanonychia — concerning when a single nail has a growing or irregular dark streak",
+        "Onycholysis — concerning when the nail plate separates further",
+        "Nail pitting — concerning when pits increase in number"
+      ],
+      "correct": 1,
+      "explanation": "MELANONYCHIA is increased pigmentation (dark streak) in the nail matrix. When affecting MULTIPLE nails, it is likely a NORMAL ETHNIC VARIATION. When a SINGLE nail has a GROWING, WIDENING, or IRREGULAR dark streak, it raises concern for SUBUNGUAL MELANOMA and warrants urgent dermatologic evaluation. The other findings are not related to nail pigmentation changes."
+    },
+    {
+      "id": "q_099",
+      "topic": "Skin Anatomy & Physiology",
+      "type": "mcq",
+      "question": "A patient asks why the skin on her palm does not produce oil and never gets acne. Which statement correctly explains this?",
+      "options": [
+        "The epidermis is thicker on the palms and prevents oil from reaching the surface",
+        "Sebaceous glands are absent from the palms and soles",
+        "Eccrine glands on the palms neutralize sebum production",
+        "Apocrine glands replace sebaceous gland function on the palms"
+      ],
+      "correct": 1,
+      "explanation": "SEBACEOUS GLANDS are absent from the PALMS AND SOLES. Because sebum production is what causes oily skin and contributes to acne (when pores become blocked), areas without sebaceous glands (palms and soles) do not produce oil and do not develop acne. Instead, these areas can become very dry."
+    },
+    {
+      "id": "q_100",
+      "topic": "Hair Examination & Disorders",
+      "type": "mcq",
+      "question": "A young woman presents with hair breakage along the shafts. She uses relaxers and heat tools regularly. Which condition should be in the differential, and what test would support a hair SHAFT disorder versus root shedding?",
+      "options": [
+        "Telogen effluvium; hair pull test positive for telogen bulbs",
+        "Tinea capitis or hair care damage; hair TUG test showing shaft breakage",
+        "Alopecia areata; absence of erythema and scale on scalp",
+        "Scarring alopecia; shiny skin with absent follicles"
+      ],
+      "correct": 1,
+      "explanation": "HAIR BREAKAGE ALONG THE SHAFT (not at roots) suggests a SHAFT DISORDER from tinea capitis or HAIR CARE DAMAGE (chemical relaxers, heat). The HAIR TUG TEST is used to assess shaft integrity — abnormal if hair BREAKS mid-shaft during the tug. This is distinct from the HAIR PULL TEST (which assesses ROOT shedding). Alopecia areata has no shaft breakage and no scale. Telogen effluvium causes root shedding."
+    },
+    {
+      "id": "q_101",
+      "topic": "Skin Examination Technique",
+      "type": "fill_blank",
+      "question": "The six components assessed during the physical examination of skin are color, moisture, temperature, texture, turgor, and ________.",
+      "answer": "lesions",
+      "acceptableAnswers": ["lesions", "skin lesions"]
+    },
+    {
+      "id": "q_102",
+      "topic": "Moles, Malignancies & Mimics",
+      "type": "fill_blank",
+      "question": "In the ABCDE criteria for melanoma, 'C' stands for ________, and a variety of colors including white and/or blue is concerning.",
+      "answer": "Color",
+      "acceptableAnswers": ["Color", "color", "C - Color"]
+    },
+    {
+      "id": "q_103",
+      "topic": "Hair Examination & Disorders",
+      "type": "fill_blank",
+      "question": "Male pattern baldness affects over half of men by age ________ and female pattern hair loss affects over half of women by age 80.",
+      "answer": "50",
+      "acceptableAnswers": ["50", "fifty", "age 50"]
+    },
+    {
+      "id": "q_104",
+      "topic": "Nail Examination & Disorders",
+      "type": "fill_blank",
+      "question": "Nail thickening as a result of fungal infection is called ________.",
+      "answer": "onychomycosis",
+      "acceptableAnswers": ["onychomycosis", "tinea unguium", "nail fungus"]
+    },
+    {
+      "id": "q_105",
+      "topic": "Vascular Lesions",
+      "type": "fill_blank",
+      "question": "Cherry angiomas are bright or ruby red, ________ mm in size, and have NO clinical significance.",
+      "answer": "1-3",
+      "acceptableAnswers": ["1-3", "1 to 3", "1–3"]
+    }
+  ]
+}

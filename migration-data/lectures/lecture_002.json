@@ -1,0 +1,2033 @@
+{
+  "id": "lecture_002",
+  "title": "Vital Signs",
+  "subtitle": "Height, Weight, BMI, Blood Pressure, Pulse, Respirations, Temperature, O2 Saturation, and Pain",
+  "course": "Physical Diagnosis I",
+  "color": "#2E7D32",
+  "icon": "🩺",
+  "topics": [
+    "Height, Weight, and BMI",
+    "Blood Pressure Technique",
+    "Blood Pressure Errors and Cuff Selection",
+    "Hypertension Classification and Complications",
+    "Heart Rate and Rhythm",
+    "Respiratory Rate",
+    "Temperature Measurement",
+    "Oxygen Saturation and Pain"
+  ],
+  "slideImages": "slides/lecture_002/",
+  "flashcards": [
+    {
+      "id": "fc_001",
+      "topic": "Height, Weight, and BMI",
+      "question": "What are the six core vital signs measured in clinical practice?",
+      "answer": "1. Temperature\n2. Pulse (heart rate)\n3. Respirations (breathing rate)\n4. Blood pressure\n5. Oxygen saturation\n6. Pain\n\nHeight, weight, and BMI are crucial health indicators measured alongside vitals but are technically separate.",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_002",
+      "topic": "Height, Weight, and BMI",
+      "question": "What is the formula for Body Mass Index (BMI) in metric units?",
+      "answer": "BMI = weight (kg) / height (m²)\n\nAlternatively in imperial: BMI = [weight (lbs) / height (in²)] × 703\nUnits: kg/m²",
+      "slideRef": "slide_11.jpg",
+      "slideNumber": 11
+    },
+    {
+      "id": "fc_003",
+      "topic": "Height, Weight, and BMI",
+      "question": "What BMI ranges correspond to each nutritional status category?",
+      "answer": "Underweight: < 18.5\nNormal weight: 18.5 – 24.9\nOverweight: 25.0 – 29.9\nObese Class I: 30.0 – 34.9\nObese Class II: 35.0 – 39.9\nObese Class III (Extreme): ≥ 40.0",
+      "slideRef": "slide_13.jpg",
+      "slideNumber": 13
+    },
+    {
+      "id": "fc_004",
+      "topic": "Height, Weight, and BMI",
+      "question": "What waist circumference values indicate increased risk of diabetes, hypertension, and cardiovascular disease?",
+      "answer": "Women: ≥ 35 inches\nMen: ≥ 40 inches\n\nWaist is measured just above the hips. Risk of diabetes, hypertension, and cardiovascular disease increases significantly at these thresholds.",
+      "slideRef": "slide_14.jpg",
+      "slideNumber": 14
+    },
+    {
+      "id": "fc_005",
+      "topic": "Height, Weight, and BMI",
+      "question": "What is the Waist-to-Hip Ratio (WHR) formula and what values indicate increased cardiovascular risk?",
+      "answer": "WHR = waist circumference / hip circumference\n\nIncreased risk thresholds:\n• Males: WHR > 0.95\n• Females: WHR > 0.8\n\nMay be a better predictor of risk than BMI in individuals over 75 years old.",
+      "slideRef": "slide_16.jpg",
+      "slideNumber": 16
+    },
+    {
+      "id": "fc_006",
+      "topic": "Height, Weight, and BMI",
+      "question": "What conditions are associated with very short stature?",
+      "answer": "• Turner syndrome\n• Childhood renal failure\n• Dwarfism (achondroplastic or hypopituitarism)",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_007",
+      "topic": "Height, Weight, and BMI",
+      "question": "What conditions are associated with long limbs in proportion to the trunk?",
+      "answer": "• Hypogonadism\n• Marfan syndrome",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_008",
+      "topic": "Height, Weight, and BMI",
+      "question": "What conditions are associated with height loss over time?",
+      "answer": "• Osteoporosis\n• Compression fractures\n\nNote: Spinal compression throughout the day also causes slight diurnal height decrease, which is why serial measurements should be taken at the same time each day.",
+      "slideRef": "slide_06.jpg",
+      "slideNumber": 6
+    },
+    {
+      "id": "fc_009",
+      "topic": "Height, Weight, and BMI",
+      "question": "What is the correct patient positioning when measuring height on a stadiometer?",
+      "answer": "• Face forward, stand straight and tall\n• Arms hanging loosely at sides\n• Feet flat on baseplate, slightly apart, in line with hips\n• Knees straight\n• Buttocks AND shoulders touching the stadiometer\n• Head in midline position\n• Bring headplate down to crown of head\n• Measure to the nearest 1 cm",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_010",
+      "topic": "Height, Weight, and BMI",
+      "question": "Why should serial height measurements be taken at the same time each day?",
+      "answer": "Spinal compression from gravitational loading throughout the day causes measurable height decrease. Taking measurements at the same time (ideally morning) minimizes this confounding variable and ensures valid comparisons.",
+      "slideRef": "slide_07.jpg",
+      "slideNumber": 7
+    },
+    {
+      "id": "fc_011",
+      "topic": "Height, Weight, and BMI",
+      "question": "What conditions are associated with truncal fat with thin limbs?",
+      "answer": "• Cushing syndrome\n• Metabolic syndrome\n\nThis fat distribution pattern (central obesity, thin extremities) is distinct from generalized obesity (simple obesity), which causes even fat distribution throughout the body.",
+      "slideRef": "slide_09.jpg",
+      "slideNumber": 9
+    },
+    {
+      "id": "fc_012",
+      "topic": "Height, Weight, and BMI",
+      "question": "What are the common causes of unintentional weight loss?",
+      "answer": "• Malignancy\n• Diabetes mellitus\n• Hyperthyroidism\n• Chronic infection\n• Depression\n• Diuresis\n• Dieting",
+      "slideRef": "slide_09.jpg",
+      "slideNumber": 9
+    },
+    {
+      "id": "fc_013",
+      "topic": "Height, Weight, and BMI",
+      "question": "What is the clinical significance of rapid weight gain?",
+      "answer": "Rapid weight gain is most commonly caused by fluid retention, which is a warning sign for:\n• Decompensated heart failure\n• Renal disease (nephrotic syndrome)\n• Cirrhosis with ascites\n• Lymphedema\n\nTracking serial weights is critical in managing these conditions.",
+      "slideRef": "slide_09.jpg",
+      "slideNumber": 9
+    },
+    {
+      "id": "fc_014",
+      "topic": "Height, Weight, and BMI",
+      "question": "What are the correct steps for measuring a patient's weight accurately?",
+      "answer": "• Remove shoes and heavy garments\n• Empty catheter or stoma bags as needed\n• Balance scales to zero before measurement\n• Patient remains as still as possible\n• Body weight not supported by any external object\n• Clothing must not touch the scale or surroundings\n• Record weight immediately\n• For serial weights: patient wears similar clothing each time",
+      "slideRef": "slide_10.jpg",
+      "slideNumber": 10
+    },
+    {
+      "id": "fc_015",
+      "topic": "Height, Weight, and BMI",
+      "question": "Why is BMI considered more accurate than weight alone, and what is a key limitation?",
+      "answer": "Advantage: BMI incorporates estimated measures of body fat by accounting for both weight and height — more accurate than weight alone.\n\nKey limitation: BMI does not distinguish between fat mass and lean muscle mass. A highly muscular individual may have an elevated BMI without elevated body fat, while a sedentary person with the same BMI may have much higher fat percentage.",
+      "slideRef": "slide_11.jpg",
+      "slideNumber": 11
+    },
+    {
+      "id": "fc_016",
+      "topic": "Height, Weight, and BMI",
+      "question": "What additional clinical assessments should be performed when BMI is ≥ 25 kg/m²?",
+      "answer": "• Assess patient for additional risk factors for heart disease and obesity-related conditions\n• Measure waist circumference just above the hips\n• Compare to thresholds: ≥ 35 in (women) or ≥ 40 in (men)\n\nRisk of diabetes, hypertension, and cardiovascular disease increases significantly at BMI ≥ 25.",
+      "slideRef": "slide_14.jpg",
+      "slideNumber": 14
+    },
+    {
+      "id": "fc_017",
+      "topic": "Height, Weight, and BMI",
+      "question": "What are the recommended strategies to promote weight loss in overweight patients?",
+      "answer": "• Combine realistic weight loss goals with exercise and behavioral reinforcements\n• Walk 30–60 min/day, 5+ days/week (total ≥ 150 min/week)\n• Pedometers help match steps to calories burned\n• Target calorie deficit of 500–1,000 kcal/day (more important than diet type)\n• Support patient-preferred diet as long as reasonable\n• Consider low-fat diets for patients with dyslipidemias\n• Encourage portion control, meal planning, food diaries, activity records\n• Pharmacologic therapy for high-weight patients with morbidities who don't respond to conventional treatment",
+      "slideRef": "slide_17.jpg",
+      "slideNumber": 17
+    },
+    {
+      "id": "fc_018",
+      "topic": "Height, Weight, and BMI",
+      "question": "What body proportion patterns should be noted during height and weight assessment?",
+      "answer": "Note:\n• Any changes in height or weight over time\n• General body proportions (unusually short or tall; build: slender, stocky, muscular; symmetry)\n• Weight and fat distribution: emaciated, slender, overweight, or obese\n• If obese, note whether fat is evenly distributed or concentrated in one area (upper body, abdomen, hips)",
+      "slideRef": "slide_04.jpg",
+      "slideNumber": 4
+    },
+    {
+      "id": "fc_019",
+      "topic": "Blood Pressure Technique",
+      "question": "What instruments are required to measure blood pressure manually?",
+      "answer": "1. Sphygmomanometer (manual: mercury or aneroid; or digital)\n   - Sphygmos = beating heart/pulse\n   - Manometer = device for measuring pressure\n   - Should be calibrated every 6 months, especially aneroid\n2. Stethoscope (used with manual equipment)",
+      "slideRef": "slide_20.jpg",
+      "slideNumber": 20
+    },
+    {
+      "id": "fc_020",
+      "topic": "Blood Pressure Technique",
+      "question": "What is the correct patient preparation before blood pressure measurement?",
+      "answer": "• Quiet, comfortably warm exam room\n• Patient seated with back supported and legs uncrossed\n• No smoking, caffeine, or exercise for 30 minutes prior\n• Patient rests for 5 minutes before measurement\n• Selected arm: free of clothing, no AV fistulas, no scarring, no lymphedema",
+      "slideRef": "slide_21.jpg",
+      "slideNumber": 21
+    },
+    {
+      "id": "fc_021",
+      "topic": "Blood Pressure Technique",
+      "question": "How is the target cuff inflation level determined before measuring blood pressure?",
+      "answer": "Steps:\n1. Palpate the radial pulse\n2. Rapidly inflate the cuff until the radial pulse disappears\n3. Note the pressure at which the pulse disappears\n4. Add 30 mmHg to this number = target inflation level\n5. Wait 15–30 seconds before measuring\n\nPurpose: Prevents discomfort from unnecessarily high pressures AND avoids error from the auscultatory gap.",
+      "slideRef": "slide_27.jpg",
+      "slideNumber": 27
+    },
+    {
+      "id": "fc_022",
+      "topic": "Blood Pressure Technique",
+      "question": "What is the auscultatory gap and what is its clinical significance?",
+      "answer": "Definition: A silent interval that may be present between the systolic and diastolic pressures during BP auscultation.\n\nSignificance:\n• May lead to serious underestimation of systolic blood pressure\n• Associated with arterial stiffness and atherosclerotic disease\n\nIf found, record completely: e.g., '200/98 mmHg with auscultatory gap from 170 to 150 mmHg'",
+      "slideRef": "slide_28.jpg",
+      "slideNumber": 28
+    },
+    {
+      "id": "fc_023",
+      "topic": "Blood Pressure Technique",
+      "question": "What are the five Korotkoff phases and what do they represent?",
+      "answer": "Phase I: First 2 consecutive faint tapping sounds → SYSTOLIC BP\nPhase II & III: Sounds soften ('swishy'), then become crisp again\nPhase IV: Sounds become muffled\nPhase V: Sounds disappear → DIASTOLIC BP\n\nNote: Sounds may not completely disappear in certain conditions (e.g., aortic regurgitation).",
+      "slideRef": "slide_31.jpg",
+      "slideNumber": 31
+    },
+    {
+      "id": "fc_024",
+      "topic": "Blood Pressure Technique",
+      "question": "What does systolic blood pressure represent and how is it identified during auscultation?",
+      "answer": "Systolic pressure (top number) = contraction of the heart pushing blood through the body.\n\nIdentified by: the ONSET of the first two consecutive Korotkoff sounds (Phase I) as the cuff deflates.\n\nDO NOT use the upward deflections of the aneroid needle to measure systolic BP.",
+      "slideRef": "slide_32.jpg",
+      "slideNumber": 32
+    },
+    {
+      "id": "fc_025",
+      "topic": "Blood Pressure Technique",
+      "question": "What does diastolic blood pressure represent and how is it identified?",
+      "answer": "Diastolic pressure (bottom number) = pressure in the arteries when the heart rests between beats.\n\nIdentified by: the DISAPPEARANCE of Korotkoff sounds (Phase V).\n\nContinue listening for an additional 10–20 mmHg after sounds disappear to confirm disappearance, then quickly deflate the cuff to zero.",
+      "slideRef": "slide_32.jpg",
+      "slideNumber": 32
+    },
+    {
+      "id": "fc_026",
+      "topic": "Blood Pressure Technique",
+      "question": "How should the stethoscope be positioned during BP measurement?",
+      "answer": "• Place diaphragm or bell LIGHTLY over the brachial artery\n• Make a good seal with the full rim of the diaphragm\n• Stethoscope should fit within the 2–3 cm space between the lower edge of the cuff and the antecubital fossa\n• Do not tuck the stethoscope under the cuff",
+      "slideRef": "slide_29.jpg",
+      "slideNumber": 29
+    },
+    {
+      "id": "fc_027",
+      "topic": "Blood Pressure Technique",
+      "question": "What is the correct technique for cuff inflation and deflation during BP measurement?",
+      "answer": "Inflation: Inflate cuff RAPIDLY to the predetermined level\n\nDeflation: Deflate SLOWLY — no faster than 2–3 mmHg per second\n\nAvoid slow or repetitive inflations:\n• Causes venous congestion → sounds less audible\n• Results in artificially LOW systolic and HIGH diastolic pressures",
+      "slideRef": "slide_30.jpg",
+      "slideNumber": 30
+    },
+    {
+      "id": "fc_028",
+      "topic": "Blood Pressure Technique",
+      "question": "Where and how should the BP cuff be applied to the arm?",
+      "answer": "• Center the bladder with the artery marker over the brachial artery (just medial to the biceps tendon)\n• Lower border approximately 2.5 cm (1 inch) proximal to the antecubital crease\n• Secure snugly (not too tight or too loose)\n• Flex elbow slightly\n• Arm should be bare",
+      "slideRef": "slide_26.jpg",
+      "slideNumber": 26
+    },
+    {
+      "id": "fc_029",
+      "topic": "Blood Pressure Technique",
+      "question": "What is the correct arm position for an accurate blood pressure reading?",
+      "answer": "• Antecubital crease at heart level\n• Arm rested or supported on a surface\n• Upper arm bare\n• Feet flat on the floor\n• Back supported\n• Legs uncrossed\n\nArm below heart level → falsely elevated BP\nArm above heart level → falsely decreased BP",
+      "slideRef": "slide_24.jpg",
+      "slideNumber": 24
+    },
+    {
+      "id": "fc_030",
+      "topic": "Blood Pressure Technique",
+      "question": "What is pulse pressure and what clinical conditions alter it?",
+      "answer": "Definition: Pulse pressure = Systolic BP − Diastolic BP\n\nLow pulse pressure (narrow): suggests decreased stroke volume\n→ Think: blood loss, heart failure\n\nWidened pulse pressure: seen after exercise, hyperthyroidism, aortic regurgitation",
+      "slideRef": "slide_34.jpg",
+      "slideNumber": 34
+    },
+    {
+      "id": "fc_031",
+      "topic": "Blood Pressure Technique",
+      "question": "How should blood pressure readings be documented?",
+      "answer": "• Record measurements immediately after taking them\n• Measure to the nearest 2 mmHg (manual)\n• Record arm used AND patient position (e.g., 'left arm, sitting')\n• On first visit, measure BOTH arms — can differ by up to 5–10 mmHg\n• Always document auscultatory gap if present\n  Example: 166/94 mmHg (AG from 158 to 142)",
+      "slideRef": "slide_40.jpg",
+      "slideNumber": 40
+    },
+    {
+      "id": "fc_032",
+      "topic": "Blood Pressure Technique",
+      "question": "What is orthostatic blood pressure and how is it measured?",
+      "answer": "Definition: BP measured in at least 2 positions to detect postural changes\n\nTechnique:\n• Supine: allow patient to rest 3–10 minutes before measuring\n• Standing: measure within 3 minutes of position change\n\nOrthostatic hypotension = systolic drop ≥ 20 mmHg OR diastolic drop ≥ 10 mmHg within 3 minutes of standing",
+      "slideRef": "slide_41.jpg",
+      "slideNumber": 41
+    },
+    {
+      "id": "fc_033",
+      "topic": "Blood Pressure Technique",
+      "question": "What is the normal physiologic response when moving from supine to standing?",
+      "answer": "• Systolic BP: decreases slightly OR remains unchanged\n• Diastolic BP: rises slightly\n\nThis is due to baroreceptor-mediated compensatory vasoconstriction.\n\nAbnormal response (orthostatic hypotension) = systolic drop ≥ 20 mmHg OR diastolic drop ≥ 10 mmHg.",
+      "slideRef": "slide_41.jpg",
+      "slideNumber": 41
+    },
+    {
+      "id": "fc_034",
+      "topic": "Blood Pressure Technique",
+      "question": "What are common causes of orthostatic hypotension?",
+      "answer": "Common in older adults. Other causes:\n• Drugs (antihypertensives, diuretics, alpha-blockers)\n• Dehydration\n• Blood loss\n• Prolonged bed rest\n• Autonomic nervous system disease",
+      "slideRef": "slide_41.jpg",
+      "slideNumber": 41
+    },
+    {
+      "id": "fc_035",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "question": "What are the correct dimensions for a BP cuff bladder relative to arm circumference?",
+      "answer": "• Width: approximately 40% of upper arm circumference\n• Length: approximately 80% of upper arm circumference\n\nProper sizing is critical — wrong size directly causes measurement errors.",
+      "slideRef": "slide_22.jpg",
+      "slideNumber": 22
+    },
+    {
+      "id": "fc_036",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "question": "What are the adult BP cuff sizes and their corresponding arm circumference ranges?",
+      "answer": "Adult Small: 20–25 cm\nAdult Regular: 25.1–32 cm\nAdult Large: 32.1–40 cm\nAdult XL: 40.1–55 cm\n\nMeasure arm circumference midway between the elbow and shoulder to select the correct cuff.",
+      "slideRef": "slide_23.jpg",
+      "slideNumber": 23
+    },
+    {
+      "id": "fc_037",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "question": "What is the effect of using a cuff that is too small on BP measurement?",
+      "answer": "A cuff that is TOO SMALL → Falsely ELEVATED (HIGH) blood pressure reading\n\nReason: The small bladder requires higher pressure to compress the larger arm, causing overestimation of the actual arterial pressure.",
+      "slideRef": "slide_39.jpg",
+      "slideNumber": 39
+    },
+    {
+      "id": "fc_038",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "question": "What is the effect of using a cuff that is too large or loose on BP measurement?",
+      "answer": "A cuff that is TOO LARGE or TOO LOOSE → Falsely DECREASED (LOW) blood pressure reading\n\nReason: The large bladder occludes the artery at a lower inflation pressure than required, leading to underestimation.",
+      "slideRef": "slide_39.jpg",
+      "slideNumber": 39
+    },
+    {
+      "id": "fc_039",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "question": "List all factors that falsely ELEVATE blood pressure readings.",
+      "answer": "• Anxiety\n• Cuff size too small\n• Arm positioned BELOW heart level\n• Muscle contraction\n• Smoking, caffeine, or exercise right before measurement\n• Pain\n• Crossed legs\n• White coat hypertension",
+      "slideRef": "slide_37.jpg",
+      "slideNumber": 37
+    },
+    {
+      "id": "fc_040",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "question": "List all factors that falsely DECREASE blood pressure readings.",
+      "answer": "• Arm positioned ABOVE heart level\n• Cuff size too large or loose\n• Failure to recognize an auscultatory gap\n• Eating a meal or drinking alcohol right before measurement",
+      "slideRef": "slide_38.jpg",
+      "slideNumber": 38
+    },
+    {
+      "id": "fc_041",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "question": "What factors related to poor technique may affect blood pressure accuracy?",
+      "answer": "• Not recognizing an auscultatory gap\n• Slow or repetitive inflations of the cuff\n• Measuring only one arm, one time\n• Not allowing the patient to rest prior to measurement",
+      "slideRef": "slide_36.jpg",
+      "slideNumber": 36
+    },
+    {
+      "id": "fc_042",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "question": "Why do slow or repetitive cuff inflations produce inaccurate BP readings?",
+      "answer": "Slow or repetitive inflations cause VENOUS CONGESTION in the arm, which:\n• Makes Korotkoff sounds less audible\n• Results in artificially LOW systolic pressure\n• Results in artificially HIGH diastolic pressure\n\nAlways inflate rapidly to the target level and deflate slowly at 2–3 mmHg/sec.",
+      "slideRef": "slide_30.jpg",
+      "slideNumber": 30
+    },
+    {
+      "id": "fc_043",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "question": "What arm conditions contraindicate using that arm for BP measurement?",
+      "answer": "• AV fistulas (abnormal connection between an artery and vein — common in dialysis patients)\n• Scarring\n• Lymphedema\n\nThese conditions can produce inaccurate readings or cause patient harm. Use the contralateral arm.",
+      "slideRef": "slide_21.jpg",
+      "slideNumber": 21
+    },
+    {
+      "id": "fc_044",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "question": "What is the effect of crossed legs on blood pressure measurement?",
+      "answer": "Crossed legs → Falsely ELEVATED blood pressure\n\nMechanism: Leg crossing compresses veins, increases venous return and peripheral vascular resistance, raising BP.\n\nPatients should sit with feet flat on the floor and legs uncrossed.",
+      "slideRef": "slide_37.jpg",
+      "slideNumber": 37
+    },
+    {
+      "id": "fc_045",
+      "topic": "Hypertension Classification and Complications",
+      "question": "What are the blood pressure categories per current guidelines?",
+      "answer": "Normal: Systolic < 120 AND Diastolic < 80\nElevated: Systolic 120–129 AND Diastolic < 80\nStage 1 HTN: Systolic 130–139 OR Diastolic 80–89\nStage 2 HTN: Systolic ≥ 140 OR Diastolic ≥ 90\nSevere HTN: > 180 and/or > 120 (no symptoms) → call health care professional\nHTN Emergency: > 180 and/or > 120 WITH symptoms → call 911",
+      "slideRef": "slide_35.jpg",
+      "slideNumber": 35
+    },
+    {
+      "id": "fc_046",
+      "topic": "Hypertension Classification and Complications",
+      "question": "What are the chronic disease complications of hypertension?",
+      "answer": "• Cognitive decline and dementia\n• Stroke, MI, CAD, heart failure, atrial fibrillation\n• Peripheral artery disease\n• Chronic kidney disease\n• Retinal disease / vision loss\n• Preeclampsia in pregnancy",
+      "slideRef": "slide_35.jpg",
+      "slideNumber": 35
+    },
+    {
+      "id": "fc_047",
+      "topic": "Hypertension Classification and Complications",
+      "question": "What is the difference between Severe Hypertension and Hypertensive Emergency?",
+      "answer": "Both = BP > 180 systolic and/or > 120 diastolic\n\nSevere Hypertension: NO symptoms → contact health care professional\n\nHypertensive Emergency: WITH symptoms (chest pain, shortness of breath, neurologic changes, vision changes) → CALL 911 immediately",
+      "slideRef": "slide_35.jpg",
+      "slideNumber": 35
+    },
+    {
+      "id": "fc_048",
+      "topic": "Hypertension Classification and Complications",
+      "question": "What is white coat hypertension and how prevalent is it?",
+      "answer": "Definition: BP ≥ 140/90 in the office AND mean awake ambulatory readings < 135/85\n\n• Reported in up to 20% of patients with elevated office BP\n• Attributed to a conditioned anxiety response to the clinical environment\n• Can be reduced by using automated devices that make multiple readings with the patient seated alone in a quiet room",
+      "slideRef": "slide_42.jpg",
+      "slideNumber": 42
+    },
+    {
+      "id": "fc_049",
+      "topic": "Hypertension Classification and Complications",
+      "question": "What is masked hypertension and what is its clinical significance?",
+      "answer": "Definition: Office BP < 140/90 BUT elevated daytime BP > 135/85 on home or ambulatory testing\n\n• Estimated to affect 10–30% of the population\n• Associated with increased risk for cardiovascular disease and end-organ damage\n• Cannot be detected by office measurement alone — requires home or ambulatory monitoring",
+      "slideRef": "slide_42.jpg",
+      "slideNumber": 42
+    },
+    {
+      "id": "fc_050",
+      "topic": "Hypertension Classification and Complications",
+      "question": "What BP value classifies as 'Elevated' and why is it clinically important?",
+      "answer": "Elevated BP: Systolic 120–129 AND Diastolic < 80 mmHg\n\nClinical importance:\n• Does not yet meet criteria for hypertension but represents significantly increased lifetime risk\n• Previously called 'prehypertension'\n• Lifestyle modifications at this stage can prevent progression to Stage 1 HTN",
+      "slideRef": "slide_35.jpg",
+      "slideNumber": 35
+    },
+    {
+      "id": "fc_051",
+      "topic": "Hypertension Classification and Complications",
+      "question": "How do white coat hypertension and masked hypertension differ in their measurement patterns?",
+      "answer": "White coat HTN:\n• Office BP: HIGH (≥ 140/90)\n• Home/ambulatory BP: NORMAL (< 135/85)\n• Risk: anxiety response; office measurements overestimate true BP\n\nMasked HTN:\n• Office BP: NORMAL (< 140/90)\n• Home/ambulatory BP: HIGH (> 135/85)\n• Risk: cardiovascular disease and end-organ damage; office measurements underestimate true BP",
+      "slideRef": "slide_42.jpg",
+      "slideNumber": 42
+    },
+    {
+      "id": "fc_052",
+      "topic": "Heart Rate and Rhythm",
+      "question": "What is the normal adult heart rate range?",
+      "answer": "Normal: 60–100 beats per minute (bpm)\nBradycardia: < 60 bpm\nTachycardia: > 100 bpm",
+      "slideRef": "slide_45.jpg",
+      "slideNumber": 45
+    },
+    {
+      "id": "fc_053",
+      "topic": "Heart Rate and Rhythm",
+      "question": "What is the correct technique for measuring the radial pulse?",
+      "answer": "• Apply GENTLE pressure to the radial artery\n• Use pads of the INDEX and MIDDLE fingers (NOT the thumb)\n• Feel for both rate AND rhythm\n• Count beats for 30 seconds × 2 = rate per minute\n• Count for a full 60 seconds if the pulse is irregular\n• Normal adult: 60–100 bpm",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_054",
+      "topic": "Heart Rate and Rhythm",
+      "question": "Why should the thumb NOT be used when palpating a pulse?",
+      "answer": "The thumb has its own pulsation (from the princeps pollicis artery), which can be mistaken for the patient's pulse. Using the pads of the index and middle fingers ensures only the patient's pulse is detected.",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_055",
+      "topic": "Heart Rate and Rhythm",
+      "question": "What are the three types of heart rhythm patterns assessed on palpation?",
+      "answer": "1. Regular: all beats evenly spaced\n2. Regularly irregular: pattern to the irregularity (e.g., sinus arrhythmia)\n3. Irregularly irregular: no discernible pattern (classic = atrial fibrillation)",
+      "slideRef": "slide_45.jpg",
+      "slideNumber": 45
+    },
+    {
+      "id": "fc_056",
+      "topic": "Heart Rate and Rhythm",
+      "question": "What is sinus arrhythmia and is it a normal finding?",
+      "answer": "Sinus arrhythmia: Heart rate increases with INSPIRATION and decreases with EXPIRATION.\n\n• Produces a REGULARLY IRREGULAR rhythm\n• This is a NORMAL finding, especially in children and young adults\n• Caused by changes in intrathoracic pressure and vagal tone with the respiratory cycle",
+      "slideRef": "slide_45.jpg",
+      "slideNumber": 45
+    },
+    {
+      "id": "fc_057",
+      "topic": "Heart Rate and Rhythm",
+      "question": "What clinical finding suggests an irregularly irregular rhythm and what is the classic associated condition?",
+      "answer": "Irregularly irregular rhythm: No discernible pattern to beat spacing.\n\nClassic association: Atrial fibrillation (A-fib)\n\nWhen this rhythm is detected:\n• Count for a full 60 seconds\n• ECG is needed for confirmation\n• Evaluate for thromboembolic risk and underlying structural heart disease",
+      "slideRef": "slide_45.jpg",
+      "slideNumber": 45
+    },
+    {
+      "id": "fc_058",
+      "topic": "Heart Rate and Rhythm",
+      "question": "Why must the pulse be counted for a full 60 seconds when the rhythm is irregular?",
+      "answer": "Irregular rhythms cannot be accurately extrapolated from a 30-second count, because the rate may vary unpredictably during different intervals. A full 60-second count captures more complete data and provides a more accurate average rate.",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_059",
+      "topic": "Respiratory Rate",
+      "question": "What is the normal adult respiratory rate?",
+      "answer": "Normal adult: 12–20 respirations per minute\n\nBradypnea: < 12 breaths/min\nTachypnea: > 20 breaths/min (rapid and shallow)\nHyperpnea/Hyperventilation: > 20 breaths/min (rapid and deep)",
+      "slideRef": "slide_47.jpg",
+      "slideNumber": 47
+    },
+    {
+      "id": "fc_060",
+      "topic": "Respiratory Rate",
+      "question": "What four dimensions should be observed when assessing respirations?",
+      "answer": "1. Rate (breaths per minute)\n2. Rhythm (regular, irregular, cyclical patterns)\n3. Depth (shallow, normal, deep/hyperpneic)\n4. Effort (labored? accessory muscle use? nasal flaring?)",
+      "slideRef": "slide_47.jpg",
+      "slideNumber": 47
+    },
+    {
+      "id": "fc_061",
+      "topic": "Respiratory Rate",
+      "question": "Why should respiratory rate be counted while appearing to still measure the pulse?",
+      "answer": "Patients tend to consciously alter their breathing pattern when they know it is being observed — often slowing or deepening breaths. By continuing to hold the wrist as if still measuring the pulse, the clinician obtains a more accurate and unguarded respiratory rate.",
+      "slideRef": "slide_47.jpg",
+      "slideNumber": 47
+    },
+    {
+      "id": "fc_062",
+      "topic": "Respiratory Rate",
+      "question": "What is bradypnea and what conditions cause it?",
+      "answer": "Bradypnea: Respiratory rate < 12 breaths per minute\n\nCauses:\n• Coma\n• Medications (opioids, sedatives, barbiturates)\n• Deep sleep",
+      "slideRef": "slide_48.jpg",
+      "slideNumber": 48
+    },
+    {
+      "id": "fc_063",
+      "topic": "Respiratory Rate",
+      "question": "How does tachypnea differ from hyperpnea/hyperventilation?",
+      "answer": "Tachypnea: Rate > 20 bpm, RAPID and SHALLOW\n• Causes: heart or lung disease, pleuritic chest pain\n\nHyperpnea/Hyperventilation: Rate > 20 bpm, RAPID and DEEP\n• Causes: exercise, anxiety, metabolic demand (e.g., DKA — Kussmaul breathing)\n\nKey distinction: DEPTH of breaths differentiates them.",
+      "slideRef": "slide_48.jpg",
+      "slideNumber": 48
+    },
+    {
+      "id": "fc_064",
+      "topic": "Respiratory Rate",
+      "question": "What is Cheyne-Stokes breathing and what conditions cause it?",
+      "answer": "Definition: Periods of HYPERPNEA alternating with periods of APNEA (no breathing)\n\nCauses:\n• Sleep (can be normal)\n• Brain injury\n• Drug-induced respiratory depression\n• Uremia\n• Heart failure",
+      "slideRef": "slide_48.jpg",
+      "slideNumber": 48
+    },
+    {
+      "id": "fc_065",
+      "topic": "Respiratory Rate",
+      "question": "What signs of increased work of breathing should be observed during respiratory assessment?",
+      "answer": "• Use of accessory muscles (sternocleidomastoid, scalenes, intercostals)\n• Nasal flaring\n• Paradoxical breathing\n• Changes in depth or rhythm\n\nThese signs indicate respiratory distress and require urgent evaluation.",
+      "slideRef": "slide_47.jpg",
+      "slideNumber": 47
+    },
+    {
+      "id": "fc_066",
+      "topic": "Temperature Measurement",
+      "question": "What is the normal core body temperature and how does it fluctuate diurnally?",
+      "answer": "Normal: ~98.6°F (37°C)\n\nFluctuates approximately 1°C over the course of the day:\n• LOWEST: early morning\n• HIGHEST: afternoon and evening",
+      "slideRef": "slide_50.jpg",
+      "slideNumber": 50
+    },
+    {
+      "id": "fc_067",
+      "topic": "Temperature Measurement",
+      "question": "Define fever (pyrexia), hyperpyrexia, and hypothermia with their temperature thresholds.",
+      "answer": "Fever (pyrexia): Body temp ≥ 100.4°F (38°C)\n• Causes: illness, trauma, malignancy, drug reactions\n\nHyperpyrexia: > 106°F (41.1°C) — extreme elevation, medical emergency\n\nHypothermia: < 95°F (35°C)\n• Causes: cold exposure, paralysis, excess alcohol, starvation, hypothyroidism",
+      "slideRef": "slide_50.jpg",
+      "slideNumber": 50
+    },
+    {
+      "id": "fc_068",
+      "topic": "Temperature Measurement",
+      "question": "What are the five methods of body temperature measurement?",
+      "answer": "1. Oral\n2. Rectal\n3. Axillary\n4. Tympanic membrane\n5. Temporal artery\n\nEach method has different normal values relative to oral temperature.",
+      "slideRef": "slide_50.jpg",
+      "slideNumber": 50
+    },
+    {
+      "id": "fc_069",
+      "topic": "Temperature Measurement",
+      "question": "How does oral temperature compare to rectal, tympanic, and axillary temperatures?",
+      "answer": "Hierarchy from highest to lowest:\nRectal: +0.7–0.8°F above oral\nTympanic: +0.5–1.0°F above oral\nOral: REFERENCE (98.6°F / 37°C)\nAxillary: ~1.8°F BELOW oral\n\nMemory aid: Rectal > Tympanic > Oral > Axillary",
+      "slideRef": "slide_51.jpg",
+      "slideNumber": 51
+    },
+    {
+      "id": "fc_070",
+      "topic": "Temperature Measurement",
+      "question": "What is the correct technique for oral temperature measurement?",
+      "answer": "• Place disposable probe cover over the probe\n• Insert under the tongue as far back as possible on either side of the frenulum\n• Patient closes both lips around the probe\n• Wait 3–5 minutes (glass-mercury) or 10 seconds (electronic)\n• Wait 10–15 minutes after hot/cold liquids, smoking, or chewing gum\n\nOral temperature is generally LOWER than core and HIGHER than axillary (~1.8°F difference).",
+      "slideRef": "slide_51.jpg",
+      "slideNumber": 51
+    },
+    {
+      "id": "fc_071",
+      "topic": "Temperature Measurement",
+      "question": "What is the correct technique for rectal temperature measurement?",
+      "answer": "• Use lubrication and probe cover\n• Patient lies on side with hip flexed\n• Insert probe 3–4 cm directed TOWARD THE UMBILICUS\n• Reads 0.7–0.8°F (0.4–0.5°C) HIGHER than oral\n\nRectal temperature is the closest to true core body temperature.",
+      "slideRef": "slide_52.jpg",
+      "slideNumber": 52
+    },
+    {
+      "id": "fc_072",
+      "topic": "Temperature Measurement",
+      "question": "When is axillary temperature appropriate, and what are its limitations?",
+      "answer": "Appropriate for: young children who CANNOT cooperate with oral measurement AND who do NOT appear febrile.\n\nLimitations:\n• Poor correlation with rectal temperature\n• Considered LESS accurate than other methods\n• ~1.8°F LOWER than oral\n\nIf fever is suspected in a child: use rectal, oral, or temporal artery reading instead.",
+      "slideRef": "slide_53.jpg",
+      "slideNumber": 53
+    },
+    {
+      "id": "fc_073",
+      "topic": "Temperature Measurement",
+      "question": "What is the correct technique for tympanic membrane temperature measurement?",
+      "answer": "• Stabilize patient's head\n• Children < 1 year: pull ear STRAIGHT BACK\n• Children and adults: pull ear UP and BACK\n• Aim infrared beam at the tympanic membrane\n• Takes up to 3 seconds to register\n• Must remove cerumen first\n• Reads 0.5–1.0°F (0.3–0.6°C) HIGHER than oral\n• More variable than oral or rectal",
+      "slideRef": "slide_54.jpg",
+      "slideNumber": 54
+    },
+    {
+      "id": "fc_074",
+      "topic": "Temperature Measurement",
+      "question": "What is the technique for temporal artery temperature measurement?",
+      "answer": "• Place probe against center of forehead\n• Press scanning button\n• Brush device across forehead, down the cheek, and behind the earlobe\n• Measures the HIGHEST temperature detected along the scan path\n\nThis method reflects temperature of blood flowing through the temporal artery, closely correlating with core temperature.",
+      "slideRef": "slide_55.jpg",
+      "slideNumber": 55
+    },
+    {
+      "id": "fc_075",
+      "topic": "Temperature Measurement",
+      "question": "What conditions cause hypothermia?",
+      "answer": "Hypothermia (< 95°F / 35°C) is caused by:\n• Cold exposure\n• Paralysis\n• Excess alcohol consumption\n• Starvation\n• Hypothyroidism",
+      "slideRef": "slide_50.jpg",
+      "slideNumber": 50
+    },
+    {
+      "id": "fc_076",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "What does oxygen saturation (SpO2) measure and what is considered normal?",
+      "answer": "SpO2: Non-invasive measurement of red blood cell oxygen-carrying capacity and gas exchange.\n\n• Provides information about cardiopulmonary dysfunction\n• Detects hypoxia BEFORE the patient becomes clinically cyanotic\n• Considered by many to be the fifth vital sign\n\nNormal: ≥ 95%",
+      "slideRef": "slide_57.jpg",
+      "slideNumber": 57
+    },
+    {
+      "id": "fc_077",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "Why is pulse oximetry clinically valuable and what is a key advantage over visual assessment?",
+      "answer": "Key advantage: Detects hypoxia BEFORE clinical cyanosis develops.\n\nCyanosis only appears when deoxyhemoglobin reaches ~5 g/dL, which may not occur until SpO2 is 75–85%. Pulse oximetry catches dangerous oxygen desaturation early, allowing timely intervention.\n\nAlso provides information about cardiopulmonary dysfunction non-invasively.",
+      "slideRef": "slide_57.jpg",
+      "slideNumber": 57
+    },
+    {
+      "id": "fc_078",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "What factors can interfere with accurate pulse oximetry readings?",
+      "answer": "• Fingernail polish, gel nails, or acrylics (block the photodetector)\n• Poor peripheral perfusion (vasoconstriction, shock)\n• Severe anemia\n• Carbon monoxide poisoning (falsely NORMAL reading)\n• Motion artifact\n• Dark skin pigmentation (may underestimate in some devices)",
+      "slideRef": "slide_57.jpg",
+      "slideNumber": 57
+    },
+    {
+      "id": "fc_079",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "Define acute pain and chronic pain.",
+      "answer": "Acute Pain:\n• Typical duration: 3–6 months\n• Associated with surgery, trauma, or illness\n• May serve a protective function\n\nChronic Pain:\n• Duration > 3–6 months (if not associated with cancer or other medical conditions)\n• Lasting > 1 month beyond course of acute illness or injury\n• May recur at intervals of months or years",
+      "slideRef": "slide_59.jpg",
+      "slideNumber": 59
+    },
+    {
+      "id": "fc_080",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "What are the most common causes of pain as a presenting complaint?",
+      "answer": "• Low back pain\n• Headache/migraine\n• Knee pain\n• Neck pain\n\nPain is one of the most common presenting problems in clinical practice.",
+      "slideRef": "slide_59.jpg",
+      "slideNumber": 59
+    },
+    {
+      "id": "fc_081",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "What is nociceptive (somatic) pain and what are its characteristics?",
+      "answer": "Definition: Pain from damage to tissue, skin, MSK system, or viscera with an intact sensory nervous system.\n\n• May be acute or chronic\n• Character: dull, pressing, pulling, throbbing, boring, spasmodic, colicky\n• Examples: arthritis, ankle sprain, burn, appendicitis",
+      "slideRef": "slide_60.jpg",
+      "slideNumber": 60
+    },
+    {
+      "id": "fc_082",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "What is neuropathic pain and what are its characteristics?",
+      "answer": "Definition: Pain due to a lesion or disease of the SOMATOSENSORY system.\n\n• May persist AFTER the original injury heals\n• Character: electric shock-like, stabbing, burning, pins and needles\n• Associated with: CNS/spinal cord injury, entrapment of spinal nerves, referred pain syndromes, diabetes",
+      "slideRef": "slide_60.jpg",
+      "slideNumber": 60
+    },
+    {
+      "id": "fc_083",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "What are the key components of a comprehensive pain assessment?",
+      "answer": "• Location and radiation\n• Intensity (0–10 numeric scale)\n• Quality (sharp, dull, throbbing, burning, etc.)\n• Pattern: onset, progression, duration, cyclical/constant/intermittent\n• Aggravating factors (what makes it worse?)\n• Alleviating factors (what makes it better?)\n• Impact on function and activities of daily living\n• Behavioral responses: grimacing, crying, guarding, posture changes",
+      "slideRef": "slide_61.jpg",
+      "slideNumber": 61
+    },
+    {
+      "id": "fc_084",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "What pain assessment scales are commonly used in clinical practice?",
+      "answer": "1. Numeric Rating Scale (NRS): 0–10\n   • 0 = no pain\n   • 1–3 = mild\n   • 4–6 = moderate\n   • 7–9 = very severe\n   • 10 = worst pain possible\n\n2. Wong-Baker FACES Pain Rating Scale: facial expressions from smiling (0) to crying (10)\n   • Especially useful for children, cognitively impaired, or language-barrier patients",
+      "slideRef": "slide_62.jpg",
+      "slideNumber": 62
+    },
+    {
+      "id": "fc_085",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "What behavioral indicators are used to assess pain in patients who cannot verbalize it?",
+      "answer": "• Grimacing\n• Crying\n• Guarding (protecting a body area)\n• Changes in physical activity\n• Changes in posture\n\nParticularly important in infants, young children, non-verbal patients, and cognitively impaired patients.",
+      "slideRef": "slide_61.jpg",
+      "slideNumber": 61
+    },
+    {
+      "id": "fc_086",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "How do nociceptive and neuropathic pain differ in treatment approach?",
+      "answer": "Nociceptive pain:\n• Responds well to NSAIDs and opioids\n• Addresses the source of tissue damage\n\nNeuropathic pain:\n• Responds poorly to standard analgesics\n• Requires neuropathic agents: gabapentin, pregabalin, TCAs (amitriptyline), SNRIs (duloxetine)\n• May persist after the original injury heals",
+      "slideRef": "slide_60.jpg",
+      "slideNumber": 60
+    },
+    {
+      "id": "fc_087",
+      "topic": "Blood Pressure Technique",
+      "question": "What example documentation is shown for a healthy patient's general survey and vital signs?",
+      "answer": "Ms. Garcia — young, healthy-appearing female, well-groomed, fit, cheerful:\n• Height: 5 ft 4 in\n• Weight: 135 lb\n• BMI: 24 kg/m²\n• BP: 120/74 mmHg, right and left arms, seated\n• HR: 72 bpm, regular\n• RR: 15, regular and nonlabored\n• Temperature: 37.5°C",
+      "slideRef": "slide_63.jpg",
+      "slideNumber": 63
+    },
+    {
+      "id": "fc_088",
+      "topic": "Blood Pressure Technique",
+      "question": "What vital sign findings are documented in the case of Mrs. Augustus?",
+      "answer": "Mrs. Augustus — 65-year-old female, thin, frail, chronically ill appearance:\n• BP: 88/54 mmHg (hypotension)\n• HR: 112 bpm (tachycardia)\n• RR: 24 breaths/min (tachypnea)\n• Temperature: 35.8°C / 96.4°F (hypothermia)\n• SpO2: 91% on room air (hypoxemia)\n• Additional: pale, dry skin, visible muscle wasting, alert but fatigued",
+      "slideRef": "slide_63.jpg",
+      "slideNumber": 63
+    },
+    {
+      "id": "fc_089",
+      "topic": "Hypertension Classification and Complications",
+      "question": "What is the clinical significance of detecting masked hypertension?",
+      "answer": "Masked hypertension is clinically dangerous because:\n• Office BP appears NORMAL (< 140/90), giving false reassurance\n• True daytime BP is elevated (> 135/85) causing ongoing end-organ damage\n• Affects 10–30% of the population\n• Associated with increased cardiovascular events and end-organ damage\n• Requires home BP monitoring or ambulatory BP monitoring to detect",
+      "slideRef": "slide_42.jpg",
+      "slideNumber": 42
+    },
+    {
+      "id": "fc_090",
+      "topic": "Heart Rate and Rhythm",
+      "question": "What is heart rate defined as in physiologic terms?",
+      "answer": "Heart rate = the number of cardiac cycles (heartbeats) per minute.\n\nEach cardiac cycle consists of:\n• Systole (ventricular contraction)\n• Diastole (ventricular relaxation)\n\nNormal adult range: 60–100 bpm",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    },
+    {
+      "id": "fc_091",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "question": "Why should the clinician not use upward deflections of the aneroid needle to measure systolic BP?",
+      "answer": "The upward deflections of the aneroid needle are mechanical artifacts caused by arterial pulsation against the cuff. They do not reliably correspond to the first audible Korotkoff sound.\n\nSystolic BP must be identified by AUSCULTATION of the first two consecutive Korotkoff sounds — not by visual observation of the needle.",
+      "slideRef": "slide_31.jpg",
+      "slideNumber": 31
+    },
+    {
+      "id": "fc_092",
+      "topic": "Height, Weight, and BMI",
+      "question": "What is a WHR example calculation and what does it indicate?",
+      "answer": "Example from lecture:\n27 inch waist ÷ 36 inch hip = WHR of 0.75\n\nInterpretation:\n• Male threshold for increased risk: WHR > 0.95\n• Female threshold for increased risk: WHR > 0.8\n\nA WHR of 0.75 in a female would be below the risk threshold (< 0.8).",
+      "slideRef": "slide_16.jpg",
+      "slideNumber": 16
+    },
+    {
+      "id": "fc_093",
+      "topic": "Temperature Measurement",
+      "question": "What is the clinical importance of recognizing hyperpyrexia (temperature > 106°F)?",
+      "answer": "Hyperpyrexia (> 106°F / 41.1°C) is a medical emergency because:\n• Risk of protein denaturation and cellular injury\n• Brain damage, seizures, and multi-organ failure can occur\n• Associated with: severe infections, heat stroke, neuroleptic malignant syndrome, serotonin syndrome\n• Requires immediate aggressive cooling and treatment",
+      "slideRef": "slide_50.jpg",
+      "slideNumber": 50
+    },
+    {
+      "id": "fc_094",
+      "topic": "Respiratory Rate",
+      "question": "What conditions are associated with tachypnea (rapid, shallow breathing)?",
+      "answer": "Tachypnea (> 20 bpm, rapid and shallow) is associated with:\n• Heart disease (pulmonary edema, heart failure)\n• Lung disease (pneumonia, COPD, PE, asthma)\n• Pleuritic chest pain (splinting)\n\nDistinguish from hyperpnea, which is rapid and DEEP due to metabolic demand.",
+      "slideRef": "slide_48.jpg",
+      "slideNumber": 48
+    },
+    {
+      "id": "fc_095",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "question": "What is the correct amount to add to the disappearance-of-radial-pulse pressure when determining cuff inflation target?",
+      "answer": "Add 30 mmHg to the pressure at which the radial pulse disappears.\n\nThis margin:\n1. Ensures inflation exceeds the true systolic pressure\n2. Provides enough range to detect an auscultatory gap that may begin just below true systolic\n\nAfter this palpatory estimate, wait 15–30 seconds before proceeding with auscultatory measurement.",
+      "slideRef": "slide_27.jpg",
+      "slideNumber": 27
+    },
+    {
+      "id": "fc_096",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "Why is pain classified as a vital sign?",
+      "answer": "Pain is assessed as a vital sign because:\n• It is a universal and common indicator of patient status\n• Uncontrolled pain significantly impacts outcomes and quality of life\n• Early identification and quantification guide treatment decisions\n• It is routinely assessed alongside temperature, HR, RR, BP, and SpO2\n\nNote from lecture: The instructor starred pain, emphasizing it is an important vital sign to know.",
+      "slideRef": "slide_03.jpg",
+      "slideNumber": 3
+    },
+    {
+      "id": "fc_097",
+      "topic": "Hypertension Classification and Complications",
+      "question": "How should a Stage 1 hypertension patient be differentiated from a Stage 2 hypertension patient?",
+      "answer": "Stage 1 HTN: Systolic 130–139 OR Diastolic 80–89 mmHg\n• Often managed with lifestyle modification first\n• Medications added based on cardiovascular risk\n\nStage 2 HTN: Systolic ≥ 140 OR Diastolic ≥ 90 mmHg\n• Usually requires pharmacologic treatment in addition to lifestyle changes",
+      "slideRef": "slide_35.jpg",
+      "slideNumber": 35
+    },
+    {
+      "id": "fc_098",
+      "topic": "Blood Pressure Technique",
+      "question": "What is the purpose of continuing to listen for 10–20 mmHg after Korotkoff sounds disappear?",
+      "answer": "Continuing to listen for 10–20 mmHg after initial disappearance confirms the sounds have truly stopped and are not merely entering another auscultatory gap.\n\nAfter confirming disappearance, quickly deflate the cuff to zero to minimize patient discomfort.",
+      "slideRef": "slide_31.jpg",
+      "slideNumber": 31
+    },
+    {
+      "id": "fc_099",
+      "topic": "Height, Weight, and BMI",
+      "question": "What does generalizing fat distribution (generalized obesity) suggest on physical exam?",
+      "answer": "Generalized fat distribution: Even distribution of fat throughout the body → suggests SIMPLE OBESITY\n\nContrast with:\n• Truncal fat + thin limbs → Cushing syndrome or metabolic syndrome\n• Central/abdominal predominance → metabolic syndrome, increased CVD risk\n\nAlways note WHERE fat is concentrated: upper body, abdomen, or hips.",
+      "slideRef": "slide_09.jpg",
+      "slideNumber": 9
+    },
+    {
+      "id": "fc_100",
+      "topic": "Temperature Measurement",
+      "question": "Why must cerumen be removed before tympanic membrane temperature measurement?",
+      "answer": "The tympanic thermometer uses infrared technology — it measures the heat emitted by the tympanic membrane. Cerumen (earwax) blocks the infrared beam from reaching the membrane, leading to falsely LOW or erroneous readings.\n\nThe canal must be clear for the infrared beam to accurately reflect tympanic membrane temperature.",
+      "slideRef": "slide_54.jpg",
+      "slideNumber": 54
+    },
+    {
+      "id": "fc_101",
+      "topic": "Hypertension Classification and Complications",
+      "question": "What strategy can reduce white coat hypertension in the clinical setting?",
+      "answer": "Replacing manual office measurements with AUTOMATED devices that:\n• Make several readings\n• With the patient seated ALONE in a QUIET ROOM\n\nThis removes the conditioned anxiety response associated with the presence of a clinician, which is the proposed mechanism of white coat hypertension.",
+      "slideRef": "slide_42.jpg",
+      "slideNumber": 42
+    },
+    {
+      "id": "fc_102",
+      "topic": "Oxygen Saturation and Pain",
+      "question": "What pain sites and questions are key to assessing during a pain evaluation?",
+      "answer": "Location and radiation:\n• Where exactly is the pain? Does it radiate anywhere?\n\nPattern:\n• When did it start? Is it constant, intermittent, or cyclical? How has it progressed?\n\nQuality:\n• What does it feel like (sharp, dull, burning, stabbing)?\n\nIntensity:\n• Rate 0–10\n\nAggravating/alleviating factors:\n• What makes it worse? Better?\n\nFunctional impact:\n• How does it affect daily activities?",
+      "slideRef": "slide_61.jpg",
+      "slideNumber": 61
+    },
+    {
+      "id": "fc_103",
+      "topic": "Heart Rate and Rhythm",
+      "question": "What is the difference between rate and rhythm when assessing the pulse?",
+      "answer": "Heart RATE: Quantitative — the number of beats per minute (e.g., 80 bpm)\n\nHeart RHYTHM: Qualitative — the pattern and spacing of beats (regular, regularly irregular, irregularly irregular)\n\nImportant: A normal rate does NOT mean the rhythm is normal. Atrial fibrillation can occur at a 'normal' ventricular rate of 70–80 bpm but with an irregularly irregular rhythm.",
+      "slideRef": "slide_44.jpg",
+      "slideNumber": 44
+    }
+  ],
+  "examQuestions": [
+    {
+      "id": "q_001",
+      "topic": "Height, Weight, and BMI",
+      "type": "mcq",
+      "question": "A 45-year-old man has a BMI of 32 kg/m² with fat distributed evenly throughout his body. Which nutritional category and fat distribution pattern does this represent?",
+      "options": [
+        "Overweight — simple obesity pattern",
+        "Obese Class I — simple obesity pattern",
+        "Obese Class II — Cushing syndrome pattern",
+        "Obese Class I — metabolic syndrome pattern"
+      ],
+      "correct": 1,
+      "explanation": "BMI 30–34.9 = Obese Class I. Generalized (even) fat distribution is characteristic of simple obesity, as opposed to truncal fat with thin limbs (Cushing syndrome or metabolic syndrome) or central/abdominal predominance (metabolic syndrome)."
+    },
+    {
+      "id": "q_002",
+      "topic": "Height, Weight, and BMI",
+      "type": "mcq",
+      "question": "A 68-year-old woman reports that she used to be 5'6\" but now measures 5'3\". She denies any trauma. Which two conditions should be highest on the differential?",
+      "options": [
+        "Turner syndrome and childhood renal failure",
+        "Hypogonadism and Marfan syndrome",
+        "Osteoporosis and compression fractures",
+        "Cushing syndrome and metabolic syndrome"
+      ],
+      "correct": 2,
+      "explanation": "Progressive height loss over time in older adults is most commonly caused by osteoporosis and vertebral compression fractures. The vertebral bodies collapse, reducing standing height. Turner syndrome and childhood renal failure cause short stature (not acquired height loss). Marfan syndrome and hypogonadism cause disproportionately long limbs."
+    },
+    {
+      "id": "q_003",
+      "topic": "Height, Weight, and BMI",
+      "type": "mcq",
+      "question": "A patient with a BMI of 27 kg/m² has a waist circumference of 38 inches (female). Which statement is most accurate?",
+      "options": [
+        "No additional workup is needed as BMI < 30",
+        "Waist circumference exceeds the threshold (≥35 in women), indicating increased cardiometabolic risk",
+        "A waist of 38 inches only becomes concerning if BMI exceeds 30",
+        "The waist-to-hip ratio is more important and should be calculated before drawing any conclusions"
+      ],
+      "correct": 1,
+      "explanation": "For women, waist circumference ≥ 35 inches indicates excess body fat and significantly increased risk of diabetes, hypertension, and cardiovascular disease — regardless of BMI. At 38 inches, this patient exceeds the threshold. Action includes assessing for additional cardiovascular risk factors."
+    },
+    {
+      "id": "q_004",
+      "topic": "Height, Weight, and BMI",
+      "type": "true_false",
+      "question": "True or False: BMI is a definitive diagnostic measure of body fat that can independently predict obesity-related disease risk in all patient populations.",
+      "correct": false,
+      "explanation": "BMI is a SCREENING tool, not a diagnostic one. Its primary limitation is inability to distinguish fat mass from lean muscle mass. A muscular athlete with the same BMI as a sedentary individual may have far less body fat and much lower cardiometabolic risk. Waist circumference, WHR, and clinical context must be incorporated alongside BMI."
+    },
+    {
+      "id": "q_005",
+      "topic": "Height, Weight, and BMI",
+      "type": "fill_blank",
+      "question": "The waist-to-hip ratio threshold indicating increased cardiovascular risk in females is greater than ________.",
+      "answer": "0.8",
+      "acceptableAnswers": ["0.8", "> 0.8", "greater than 0.8", "0.80"]
+    },
+    {
+      "id": "q_006",
+      "topic": "Height, Weight, and BMI",
+      "type": "mcq",
+      "question": "A patient has disproportionately long limbs relative to the trunk, with an increased arm span-to-height ratio. Which conditions should be considered in the differential?",
+      "options": [
+        "Cushing syndrome and metabolic syndrome",
+        "Hypogonadism and Marfan syndrome",
+        "Turner syndrome and childhood renal failure",
+        "Osteoporosis and hypothyroidism"
+      ],
+      "correct": 1,
+      "explanation": "Long limbs in proportion to the trunk are associated with hypogonadism and Marfan syndrome. Cushing syndrome causes truncal obesity. Turner syndrome and childhood renal failure cause short stature. Osteoporosis causes height loss, not disproportionate limb length."
+    },
+    {
+      "id": "q_007",
+      "topic": "Height, Weight, and BMI",
+      "type": "true_false",
+      "question": "True or False: When conducting serial height measurements on the same patient, measurements should be taken at the same time each day because spinal compression causes height to decrease throughout the day.",
+      "correct": true,
+      "explanation": "Gravitational loading compresses the intervertebral discs throughout the day, causing measurable height reduction — often 1–2 cm by evening compared to morning. Measuring at the same time of day (ideally morning) eliminates this diurnal confounding variable and allows valid comparison between serial measurements."
+    },
+    {
+      "id": "q_008",
+      "topic": "Height, Weight, and BMI",
+      "type": "fill_blank",
+      "question": "A patient with a 27-inch waist and 36-inch hip measurement has a waist-to-hip ratio of ________.",
+      "answer": "0.75",
+      "acceptableAnswers": ["0.75", "0.750", "0.75 (no increased risk)", "75%"]
+    },
+    {
+      "id": "q_009",
+      "topic": "Height, Weight, and BMI",
+      "type": "mcq",
+      "question": "A patient gains 9 pounds in 10 days with no change in diet or physical activity. What is the most clinically concerning explanation?",
+      "options": [
+        "Normal weight fluctuation from fluid intake",
+        "Increased muscle mass from recent exercise",
+        "Fluid retention from heart failure, renal, or liver disease",
+        "Increased caloric intake from unmeasured snacking"
+      ],
+      "correct": 2,
+      "explanation": "Rapid, unexpected weight gain — especially within days — is most commonly caused by fluid retention. Key causes include decompensated heart failure, nephrotic syndrome, cirrhosis, and chronic kidney disease. This is a red flag finding requiring urgent clinical evaluation."
+    },
+    {
+      "id": "q_010",
+      "topic": "Height, Weight, and BMI",
+      "type": "matching",
+      "question": "Match each body composition pattern with its associated condition.",
+      "pairs": [
+        {"left": "Generalized (even) fat distribution", "right": "Simple obesity"},
+        {"left": "Truncal fat with thin limbs", "right": "Cushing syndrome or metabolic syndrome"},
+        {"left": "Disproportionately long limbs relative to trunk", "right": "Marfan syndrome or hypogonadism"},
+        {"left": "Very short stature", "right": "Turner syndrome or childhood renal failure"}
+      ]
+    },
+    {
+      "id": "q_011",
+      "topic": "Height, Weight, and BMI",
+      "type": "mcq",
+      "question": "Two male patients are 6'0\" and 210 lbs (BMI = 28). One is a competitive bodybuilder; the other has a sedentary lifestyle. Which statement is TRUE regarding their BMI?",
+      "options": [
+        "BMI of 28 in both men confirms identical body fat percentages",
+        "The sedentary man likely has much higher body fat despite the same BMI",
+        "BMI accurately distinguishes fat mass from lean mass",
+        "Both men have identical cardiometabolic risk based on BMI alone"
+      ],
+      "correct": 1,
+      "explanation": "BMI does not differentiate fat mass from lean (muscle) mass. The bodybuilder's high weight reflects muscle, while the sedentary person's similar weight reflects fat. Despite identical BMIs, their body composition — and therefore cardiometabolic risk — differs substantially. This is a key limitation of BMI as a screening tool."
+    },
+    {
+      "id": "q_012",
+      "topic": "Height, Weight, and BMI",
+      "type": "fill_blank",
+      "question": "According to lecture guidelines, when BMI is ≥ ________ kg/m², the clinician should assess for additional risk factors and measure waist circumference.",
+      "answer": "25",
+      "acceptableAnswers": ["25", "25 kg/m²", "twenty-five"]
+    },
+    {
+      "id": "q_013",
+      "topic": "Blood Pressure Technique",
+      "type": "mcq",
+      "question": "A clinician inflates the BP cuff to only 130 mmHg without first performing the radial pulse estimation. The patient's true systolic is 178 mmHg, with an auscultatory gap from 155 to 130 mmHg. What systolic reading will likely be recorded?",
+      "options": [
+        "178 mmHg — the correct systolic",
+        "155 mmHg — the top of the auscultatory gap",
+        "130 mmHg — a serious underestimate due to entering at the bottom of the gap",
+        "No reading — sounds will not be heard at all"
+      ],
+      "correct": 2,
+      "explanation": "If the cuff is only inflated to 130 mmHg (bottom of the auscultatory gap), the clinician misses the true systolic (178 mmHg) entirely. Sounds begin at 130 mmHg as the gap ends, leading to a dangerously incorrect systolic reading. The radial pulse estimation + 30 mmHg method prevents this error by ensuring inflation exceeds the true systolic."
+    },
+    {
+      "id": "q_014",
+      "topic": "Blood Pressure Technique",
+      "type": "mcq",
+      "question": "The DIASTOLIC blood pressure corresponds to which event during auscultatory blood pressure measurement?",
+      "options": [
+        "The first two consecutive tapping sounds heard",
+        "The point at which sounds become muffled",
+        "The complete disappearance of Korotkoff sounds (Phase V)",
+        "The upward deflection of the aneroid gauge needle"
+      ],
+      "correct": 2,
+      "explanation": "Diastolic BP = Phase V Korotkoff sounds = complete DISAPPEARANCE of sounds. Phase I (first 2 consecutive tapping sounds) = systolic. Phase IV (muffling) is sometimes used in special circumstances (e.g., aortic regurgitation where sounds never disappear). Aneroid needle deflections should not be used to identify BP values."
+    },
+    {
+      "id": "q_015",
+      "topic": "Blood Pressure Technique",
+      "type": "fill_blank",
+      "question": "The lower border of the BP cuff should be placed approximately ________ proximal to the antecubital crease.",
+      "answer": "2.5 cm",
+      "acceptableAnswers": ["2.5 cm", "1 inch", "one inch", "2.5 centimeters"]
+    },
+    {
+      "id": "q_016",
+      "topic": "Blood Pressure Technique",
+      "type": "true_false",
+      "question": "True or False: Slow, repetitive cuff inflations during blood pressure measurement cause artificially HIGH systolic and LOW diastolic blood pressure readings.",
+      "correct": false,
+      "explanation": "Slow or repetitive inflations cause venous congestion in the arm, which makes Korotkoff sounds less audible. The result is artificially LOW systolic (sounds heard later) and HIGH diastolic (sounds persist longer) pressures — the OPPOSITE of what this statement claims. Always inflate rapidly to target and deflate slowly at 2–3 mmHg/sec."
+    },
+    {
+      "id": "q_017",
+      "topic": "Blood Pressure Technique",
+      "type": "mcq",
+      "question": "What is the correct sequence of steps to determine the target cuff inflation level before measuring blood pressure?",
+      "options": [
+        "Inflate to 200 mmHg as a standard starting point for all patients",
+        "Palpate the radial pulse, inflate until pulse disappears, add 30 mmHg to that pressure",
+        "Ask the patient their last known BP and inflate 20 mmHg above that",
+        "Inflate to 150 mmHg and increase by 10 mmHg increments until Korotkoff sounds are heard"
+      ],
+      "correct": 1,
+      "explanation": "The correct technique: (1) palpate the radial pulse, (2) rapidly inflate until the pulse disappears, (3) note that pressure, (4) add 30 mmHg. This 30 mmHg margin prevents both excessive patient discomfort and failure to detect auscultatory gaps that may begin just below the true systolic pressure."
+    },
+    {
+      "id": "q_018",
+      "topic": "Blood Pressure Technique",
+      "type": "mcq",
+      "question": "A patient's arm hangs at their side below heart level during blood pressure measurement. What effect will this have on the reading?",
+      "options": [
+        "No effect — arm position below heart level does not influence BP readings",
+        "Falsely decreased readings due to reduced arterial pressure",
+        "Falsely elevated readings due to hydrostatic pressure being added",
+        "Falsely decreased systolic only, with diastolic unaffected"
+      ],
+      "correct": 2,
+      "explanation": "Arm positioned BELOW heart level adds hydrostatic pressure to the measurement, causing falsely ELEVATED readings. Conversely, arm ABOVE heart level reduces hydrostatic pressure, causing falsely decreased readings. The antecubital crease should be at heart level for accurate measurement."
+    },
+    {
+      "id": "q_019",
+      "topic": "Blood Pressure Technique",
+      "type": "true_false",
+      "question": "True or False: On a patient's first visit, blood pressure should be measured in both arms, as readings can physiologically differ by up to 5–10 mmHg.",
+      "correct": true,
+      "explanation": "Bilateral BP measurement on the first visit is standard practice because readings can normally differ up to 5–10 mmHg between arms. A difference > 10–15 mmHg may suggest subclavian stenosis, aortic dissection, or peripheral vascular disease and warrants further investigation."
+    },
+    {
+      "id": "q_020",
+      "topic": "Blood Pressure Technique",
+      "type": "fill_blank",
+      "question": "Manual blood pressure readings should be documented to the nearest ________ mmHg.",
+      "answer": "2",
+      "acceptableAnswers": ["2", "2 mmHg", "two", "every 2 mmHg"]
+    },
+    {
+      "id": "q_021",
+      "topic": "Blood Pressure Technique",
+      "type": "mcq",
+      "question": "What is the correct documentation format when an auscultatory gap is identified during BP measurement?",
+      "options": [
+        "Record only the systolic and diastolic; auscultatory gap need not be documented",
+        "Document the pressure at which sounds first appeared as the systolic BP",
+        "Record full BP and note the gap: e.g., '166/94 mmHg (AG from 158 to 142)'",
+        "Repeat measurement until no gap is detected before documenting"
+      ],
+      "correct": 2,
+      "explanation": "The auscultatory gap MUST always be documented in full — recording only the BP values without noting the gap provides incomplete clinical information. Complete documentation: true systolic / true diastolic mmHg (AG from [top of gap] to [bottom of gap]). This informs future clinicians and helps track arterial stiffness."
+    },
+    {
+      "id": "q_022",
+      "topic": "Blood Pressure Technique",
+      "type": "mcq",
+      "question": "A patient with end-stage renal disease has an arteriovenous fistula in the left arm. Where should you measure blood pressure?",
+      "options": [
+        "Left arm — AV fistulas do not affect BP accuracy",
+        "Right arm — avoid the arm with the AV fistula",
+        "Lower extremity via thigh cuff",
+        "Either arm — alternate between visits"
+      ],
+      "correct": 1,
+      "explanation": "Blood pressure should NEVER be measured in an arm with an AV fistula. Cuff compression can damage the fistula, impair blood flow, and produce inaccurate readings. The selected arm should also be free of scarring and lymphedema. Always use the contralateral arm."
+    },
+    {
+      "id": "q_023",
+      "topic": "Blood Pressure Technique",
+      "type": "matching",
+      "question": "Match each BP measurement step with the correct technique detail.",
+      "pairs": [
+        {"left": "Cuff application", "right": "Lower border 2.5 cm above antecubital crease, artery marker over brachial artery"},
+        {"left": "Determining inflation target", "right": "Palpate radial pulse, inflate until pulse disappears, add 30 mmHg"},
+        {"left": "Cuff deflation rate", "right": "No faster than 2–3 mmHg per second"},
+        {"left": "Systolic identification", "right": "First 2 consecutive Korotkoff sounds heard"}
+      ]
+    },
+    {
+      "id": "q_024",
+      "topic": "Blood Pressure Technique",
+      "type": "mcq",
+      "question": "A patient with aortic regurgitation has BP measured and Korotkoff sounds are present even at very low cuff pressures and never fully disappear. How should diastolic be recorded?",
+      "options": [
+        "Keep deflating until 0 mmHg and record that as diastolic",
+        "Record Phase IV (muffling of sounds) as diastolic; note that sounds did not disappear",
+        "Discard the reading and use a different arm",
+        "Record Phase II as diastolic"
+      ],
+      "correct": 1,
+      "explanation": "In conditions like aortic regurgitation, Korotkoff sounds may not completely disappear (Phase V may not occur). In these cases, Phase IV (muffling of sounds) is used as the diastolic reading, and the clinician should document that sounds did not disappear. This is specifically noted in the lecture as an exception to the standard rule."
+    },
+    {
+      "id": "q_025",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "type": "mcq",
+      "question": "A patient with an arm circumference of 36 cm presents for blood pressure measurement. Which cuff size should be selected?",
+      "options": [
+        "Adult Small (20–25 cm)",
+        "Adult Regular (25.1–32 cm)",
+        "Adult Large (32.1–40 cm)",
+        "Adult XL (40.1–55 cm)"
+      ],
+      "correct": 2,
+      "explanation": "Adult Large is indicated for arm circumferences of 32.1–40 cm. A 36 cm circumference falls within this range. The bladder width should be approximately 40% and length approximately 80% of the arm circumference. Using a cuff that is too small (Regular for a 36 cm arm) would falsely ELEVATE the BP reading."
+    },
+    {
+      "id": "q_026",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "type": "true_false",
+      "question": "True or False: Using a blood pressure cuff that is too small will produce a falsely elevated reading because greater pressure is required to compress the larger arm.",
+      "correct": true,
+      "explanation": "A cuff that is too small does not cover adequate tissue to accurately transmit pressure. The bladder must exert more pressure than the true arterial pressure to occlude the artery, leading to a falsely HIGH reading. This is why the cuff bladder width (40%) and length (80%) must be proportional to arm circumference."
+    },
+    {
+      "id": "q_027",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "type": "fill_blank",
+      "question": "The bladder width of a BP cuff should be approximately ________% of the upper arm circumference.",
+      "answer": "40",
+      "acceptableAnswers": ["40", "40%", "forty", "forty percent"]
+    },
+    {
+      "id": "q_028",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "type": "mcq",
+      "question": "Which of the following factors will produce a falsely DECREASED blood pressure reading?",
+      "options": [
+        "Crossed legs during measurement",
+        "Cuff too small for the arm",
+        "Arm positioned above heart level",
+        "Anxiety in the patient"
+      ],
+      "correct": 2,
+      "explanation": "Arm positioned ABOVE heart level reduces hydrostatic pressure at the cuff, producing falsely DECREASED readings. Crossed legs, a cuff too small, and anxiety all falsely ELEVATE BP readings. Eating a meal, drinking alcohol, and cuff too large also cause false decreases."
+    },
+    {
+      "id": "q_029",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "type": "matching",
+      "question": "Match each blood pressure measurement error with its effect on the reading.",
+      "pairs": [
+        {"left": "Cuff too small", "right": "Falsely HIGH reading"},
+        {"left": "Cuff too large or loose", "right": "Falsely LOW reading"},
+        {"left": "Arm below heart level", "right": "Falsely HIGH reading"},
+        {"left": "Failure to recognize auscultatory gap", "right": "Underestimation of true systolic BP"}
+      ]
+    },
+    {
+      "id": "q_030",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "type": "mcq",
+      "question": "A patient smoked a cigarette and drank a cup of coffee 20 minutes before a blood pressure measurement. What is the most appropriate action?",
+      "options": [
+        "Proceed immediately and document that the patient smoked and had coffee",
+        "Ask the patient to wait at least 30 minutes total since last smoking or caffeine",
+        "Measure only diastolic BP since systolic will be unreliable",
+        "Use the lower-extremity thigh cuff to avoid the effect of smoking on arm circulation"
+      ],
+      "correct": 1,
+      "explanation": "Smoking and caffeine are both factors that falsely ELEVATE blood pressure. Standard protocol requires no smoking, caffeine, or exercise for 30 minutes before BP measurement. Since only 20 minutes have passed, the patient should wait at least 10 more minutes before measurement."
+    },
+    {
+      "id": "q_031",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "type": "true_false",
+      "question": "True or False: White coat hypertension is caused by arterial stiffness and is an intrinsic vascular abnormality unique to the clinical setting.",
+      "correct": false,
+      "explanation": "White coat hypertension is NOT a vascular abnormality — it is a CONDITIONED ANXIETY RESPONSE to the clinical environment. The elevated BP returns to normal on ambulatory or home monitoring. Arterial stiffness is associated with the auscultatory gap, not white coat hypertension."
+    },
+    {
+      "id": "q_032",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "type": "fill_blank",
+      "question": "Eating a meal or drinking alcohol before BP measurement may falsely ________ blood pressure readings.",
+      "answer": "decrease",
+      "acceptableAnswers": ["decrease", "lower", "reduce", "falsely decrease"]
+    },
+    {
+      "id": "q_033",
+      "topic": "Hypertension Classification and Complications",
+      "type": "mcq",
+      "question": "A 52-year-old man has BP readings of 134/86 mmHg on three separate clinic visits. How should this be classified per current guidelines?",
+      "options": [
+        "Normal blood pressure",
+        "Elevated blood pressure",
+        "Stage 1 Hypertension",
+        "Stage 2 Hypertension"
+      ],
+      "correct": 2,
+      "explanation": "Stage 1 Hypertension = systolic 130–139 OR diastolic 80–89 mmHg. With systolic of 134 (in range) and diastolic of 86 (in range), this patient clearly meets Stage 1 criteria. Normal = < 120/80. Elevated = 120–129/< 80. Stage 2 = ≥ 140/≥ 90."
+    },
+    {
+      "id": "q_034",
+      "topic": "Hypertension Classification and Complications",
+      "type": "mcq",
+      "question": "A 60-year-old woman has normal BP readings consistently at home (average 128/82 mmHg) but consistently elevated readings in the clinic (148/94 mmHg). What diagnosis best describes this pattern?",
+      "options": [
+        "Masked hypertension",
+        "Stage 2 hypertension",
+        "White coat hypertension",
+        "Labile hypertension"
+      ],
+      "correct": 2,
+      "explanation": "White coat hypertension: BP ≥ 140/90 in the office but mean awake ambulatory readings < 135/85. This patient has office readings of 148/94 (elevated) but home readings of 128/82 (normal range), fitting the definition. It is attributed to a conditioned anxiety response and affects up to 20% of patients with elevated office BP."
+    },
+    {
+      "id": "q_035",
+      "topic": "Hypertension Classification and Complications",
+      "type": "fill_blank",
+      "question": "Hypertensive Emergency is defined as BP > 180 and/or > 120 mmHg WITH ________, requiring immediate call to 911.",
+      "answer": "symptoms",
+      "acceptableAnswers": ["symptoms", "symptomatic", "clinical symptoms", "signs and symptoms"]
+    },
+    {
+      "id": "q_036",
+      "topic": "Hypertension Classification and Complications",
+      "type": "mcq",
+      "question": "A patient's office BP is 125/78 mmHg consistently, but ambulatory monitoring shows daytime average of 142/90 mmHg. What does this pattern represent?",
+      "options": [
+        "White coat hypertension",
+        "Stage 1 hypertension diagnosed in the office",
+        "Masked hypertension",
+        "Normal variation between settings"
+      ],
+      "correct": 2,
+      "explanation": "Masked hypertension = office BP < 140/90 but elevated daytime ambulatory BP > 135/85. With office reading of 125/78 (normal) and ambulatory average of 142/90 (hypertensive), this patient has masked hypertension. It affects 10–30% of the population and carries increased cardiovascular risk despite normal office readings."
+    },
+    {
+      "id": "q_037",
+      "topic": "Hypertension Classification and Complications",
+      "type": "true_false",
+      "question": "True or False: Masked hypertension can be detected through routine office blood pressure measurement alone.",
+      "correct": false,
+      "explanation": "Masked hypertension CANNOT be detected by office BP measurement alone — by definition, office readings are normal (< 140/90). Detection requires home BP monitoring or ambulatory BP monitoring (ABPM). This is why masked hypertension is clinically dangerous: patients appear normotensive in the office while sustaining ongoing end-organ damage."
+    },
+    {
+      "id": "q_038",
+      "topic": "Hypertension Classification and Complications",
+      "type": "mcq",
+      "question": "Which of the following is NOT a recognized complication of chronic hypertension?",
+      "options": [
+        "Chronic kidney disease",
+        "Retinal disease and vision loss",
+        "Hyperthyroidism",
+        "Atrial fibrillation"
+      ],
+      "correct": 2,
+      "explanation": "Hyperthyroidism is a CAUSE of hypertension and tachycardia — not a complication of it. Recognized HTN complications include cognitive decline, stroke, MI, CAD, heart failure, atrial fibrillation, peripheral artery disease, CKD, retinal disease, and preeclampsia in pregnancy."
+    },
+    {
+      "id": "q_039",
+      "topic": "Hypertension Classification and Complications",
+      "type": "matching",
+      "question": "Match each blood pressure category with its systolic and diastolic criteria.",
+      "pairs": [
+        {"left": "Normal", "right": "Systolic < 120 AND Diastolic < 80"},
+        {"left": "Elevated", "right": "Systolic 120–129 AND Diastolic < 80"},
+        {"left": "Stage 1 Hypertension", "right": "Systolic 130–139 OR Diastolic 80–89"},
+        {"left": "Stage 2 Hypertension", "right": "Systolic ≥ 140 OR Diastolic ≥ 90"}
+      ]
+    },
+    {
+      "id": "q_040",
+      "topic": "Hypertension Classification and Complications",
+      "type": "fill_blank",
+      "question": "White coat hypertension is reported in up to ________% of patients with elevated office blood pressure.",
+      "answer": "20",
+      "acceptableAnswers": ["20", "20%", "twenty", "twenty percent"]
+    },
+    {
+      "id": "q_041",
+      "topic": "Hypertension Classification and Complications",
+      "type": "mcq",
+      "question": "An 80-year-old man becomes dizzy and lightheaded each time he stands. His supine BP is 142/88 mmHg. Two minutes after standing, his BP is 116/74 mmHg. What is the correct diagnosis?",
+      "options": [
+        "Normal physiologic response to standing in an elderly patient",
+        "Stage 1 hypertension only",
+        "Orthostatic hypotension",
+        "Masked hypertension"
+      ],
+      "correct": 2,
+      "explanation": "Orthostatic hypotension = systolic drop ≥ 20 mmHg OR diastolic drop ≥ 10 mmHg within 3 minutes of standing. Systolic dropped from 142 to 116 = 26 mmHg, meeting criteria. Normal physiology produces a slight decrease or no change in systolic and a slight increase in diastolic. Orthostatic hypotension is common in older adults and can cause dangerous falls."
+    },
+    {
+      "id": "q_042",
+      "topic": "Hypertension Classification and Complications",
+      "type": "true_false",
+      "question": "True or False: The normal physiologic response when moving from supine to standing is for diastolic blood pressure to rise slightly while systolic blood pressure decreases slightly or remains unchanged.",
+      "correct": true,
+      "explanation": "When moving from supine to standing, baroreceptors detect reduced venous return and trigger sympathetic activation, causing peripheral vasoconstriction. This raises diastolic BP slightly while systolic BP decreases slightly or remains the same. This is normal. Orthostatic hypotension represents failure of this compensatory mechanism."
+    },
+    {
+      "id": "q_043",
+      "topic": "Heart Rate and Rhythm",
+      "type": "mcq",
+      "question": "A nurse counts a patient's radial pulse for 30 seconds and counts 26 beats. What is the heart rate and how is it classified?",
+      "options": [
+        "26 bpm — bradycardia",
+        "52 bpm — bradycardia",
+        "52 bpm — normal",
+        "26 bpm — normal"
+      ],
+      "correct": 1,
+      "explanation": "Heart rate = beats counted in 30 seconds × 2 = 26 × 2 = 52 bpm. A rate of 52 bpm is below the normal range of 60–100 bpm, classifying it as bradycardia (< 60 bpm). Clinical correlation is needed — in an asymptomatic athlete, this may be physiologic; in other patients it may indicate pathology."
+    },
+    {
+      "id": "q_044",
+      "topic": "Heart Rate and Rhythm",
+      "type": "true_false",
+      "question": "True or False: The thumb should be used to palpate a patient's radial pulse because it is the most sensitive digit for detecting pulsations.",
+      "correct": false,
+      "explanation": "The thumb should NEVER be used to palpate a pulse. The thumb has its own pulsation (from the princeps pollicis artery), which can be mistaken for the patient's pulse, leading to inaccurate rate and rhythm assessment. The pads of the INDEX and MIDDLE fingers should be used."
+    },
+    {
+      "id": "q_045",
+      "topic": "Heart Rate and Rhythm",
+      "type": "fill_blank",
+      "question": "When a patient's pulse is irregular, beats must be counted for a full ________ seconds rather than the standard 30 seconds.",
+      "answer": "60",
+      "acceptableAnswers": ["60", "sixty", "60 seconds", "one minute"]
+    },
+    {
+      "id": "q_046",
+      "topic": "Heart Rate and Rhythm",
+      "type": "mcq",
+      "question": "A 22-year-old patient's pulse speeds up when they inhale and slows down when they exhale, in a repeating pattern. How should this rhythm be classified?",
+      "options": [
+        "Irregularly irregular — suspect atrial fibrillation",
+        "Regularly irregular — sinus arrhythmia, a normal finding",
+        "Regularly irregular — concerning for second-degree AV block",
+        "Regular — this is normal sinus rhythm"
+      ],
+      "correct": 1,
+      "explanation": "Sinus arrhythmia produces a regularly irregular rhythm that varies predictably with the respiratory cycle — rate increases with inspiration (increased venous return) and decreases with expiration. It is a NORMAL finding, especially in children and young adults, and does not require workup in an asymptomatic patient."
+    },
+    {
+      "id": "q_047",
+      "topic": "Heart Rate and Rhythm",
+      "type": "mcq",
+      "question": "A patient has a pulse with no discernible pattern — beats are completely random in their spacing and intensity. What condition is classically associated with this finding?",
+      "options": [
+        "Sinus arrhythmia",
+        "Sinus tachycardia",
+        "Atrial fibrillation",
+        "First-degree AV block"
+      ],
+      "correct": 2,
+      "explanation": "An IRREGULARLY IRREGULAR rhythm — with absolutely no pattern to the beat spacing — is the classic description of atrial fibrillation (A-fib). Sinus arrhythmia is regularly irregular (respiratory pattern). First-degree AV block has a regular rhythm. Sinus tachycardia is fast but regular."
+    },
+    {
+      "id": "q_048",
+      "topic": "Heart Rate and Rhythm",
+      "type": "true_false",
+      "question": "True or False: A heart rate of 65 bpm with evenly spaced beats represents sinus bradycardia.",
+      "correct": false,
+      "explanation": "A heart rate of 65 bpm falls WITHIN the normal range of 60–100 bpm. This represents normal sinus rhythm — not bradycardia. Sinus bradycardia is defined as heart rate < 60 bpm with otherwise normal, evenly spaced complexes."
+    },
+    {
+      "id": "q_049",
+      "topic": "Heart Rate and Rhythm",
+      "type": "matching",
+      "question": "Match each rhythm description with its correct classification.",
+      "pairs": [
+        {"left": "All complexes evenly spaced at 75 bpm", "right": "Normal sinus rhythm"},
+        {"left": "All complexes normal, evenly spaced at 46 bpm", "right": "Sinus bradycardia"},
+        {"left": "All complexes normal, evenly spaced at 108 bpm", "right": "Sinus tachycardia"},
+        {"left": "Complexes normal but rate varies predictably with respirations", "right": "Sinus arrhythmia"}
+      ]
+    },
+    {
+      "id": "q_050",
+      "topic": "Heart Rate and Rhythm",
+      "type": "fill_blank",
+      "question": "Tachycardia in adults is defined as a heart rate greater than ________ beats per minute.",
+      "answer": "100",
+      "acceptableAnswers": ["100", "100 bpm", "one hundred", "100 beats per minute"]
+    },
+    {
+      "id": "q_051",
+      "topic": "Respiratory Rate",
+      "type": "mcq",
+      "question": "A patient with COPD exacerbation is breathing at 26 breaths per minute with visible use of accessory muscles and shallow depth. What is the BEST characterization of this respiratory pattern?",
+      "options": [
+        "Bradypnea from air trapping",
+        "Tachypnea — rapid and shallow",
+        "Hyperpnea — rapid and deep",
+        "Cheyne-Stokes breathing"
+      ],
+      "correct": 1,
+      "explanation": "Tachypnea = rate > 20 bpm with RAPID and SHALLOW breathing. This pattern is associated with heart or lung disease and pleuritic chest pain. Hyperpnea is rapid but DEEP. Cheyne-Stokes alternates between hyperpnea and apnea. The key distinguishing feature is depth — this patient is breathing shallowly."
+    },
+    {
+      "id": "q_052",
+      "topic": "Respiratory Rate",
+      "type": "fill_blank",
+      "question": "Normal adult respiratory rate is ________ to ________ breaths per minute.",
+      "answer": "12 to 20",
+      "acceptableAnswers": ["12 to 20", "12-20", "12–20", "twelve to twenty"]
+    },
+    {
+      "id": "q_053",
+      "topic": "Respiratory Rate",
+      "type": "true_false",
+      "question": "True or False: Respiratory rate should be counted while still appearing to measure the pulse to prevent patients from consciously altering their breathing.",
+      "correct": true,
+      "explanation": "Patients tend to consciously alter their breathing pattern when they know it is being observed — often slowing or deepening breaths to appear normal. By continuing to hold the wrist as if measuring the pulse, the clinician obtains a more natural and accurate respiratory rate without alerting the patient."
+    },
+    {
+      "id": "q_054",
+      "topic": "Respiratory Rate",
+      "type": "mcq",
+      "question": "A patient with a heroin overdose is found unconscious with a respiratory rate of 7 breaths per minute. This is classified as:",
+      "options": [
+        "Tachypnea",
+        "Hyperpnea",
+        "Bradypnea",
+        "Cheyne-Stokes breathing"
+      ],
+      "correct": 2,
+      "explanation": "Bradypnea = respiratory rate < 12 breaths per minute. At 7 bpm, this patient has severe bradypnea. Opioids (heroin) are a classic cause of bradypnea through CNS respiratory depression. This is a medical emergency requiring naloxone and respiratory support."
+    },
+    {
+      "id": "q_055",
+      "topic": "Respiratory Rate",
+      "type": "mcq",
+      "question": "A patient with diabetic ketoacidosis is observed breathing at 30 breaths per minute with deep, labored breaths. This pattern is BEST described as:",
+      "options": [
+        "Tachypnea — rapid and shallow",
+        "Bradypnea",
+        "Hyperpnea/Hyperventilation — rapid and deep",
+        "Cheyne-Stokes breathing"
+      ],
+      "correct": 2,
+      "explanation": "Hyperpnea/Hyperventilation = rate > 20 bpm, RAPID and DEEP. In DKA, this is called Kussmaul breathing — the body compensates for metabolic acidosis by blowing off CO2 through deep, rapid breathing. Tachypnea is rapid and SHALLOW (lung/heart disease). The depth is the key distinguishing feature."
+    },
+    {
+      "id": "q_056",
+      "topic": "Respiratory Rate",
+      "type": "mcq",
+      "question": "A hospice patient is observed to take several deep breaths over 30 seconds, followed by complete cessation of breathing for 15 seconds, then resumes deep breathing. This pattern is:",
+      "options": [
+        "Tachypnea from anxiety",
+        "Hyperpnea from metabolic demand",
+        "Cheyne-Stokes breathing",
+        "Normal respiratory variation during sleep"
+      ],
+      "correct": 2,
+      "explanation": "Cheyne-Stokes breathing = cyclical periods of HYPERPNEA alternating with APNEA (no breathing). It is associated with heart failure, brain injury, uremia, drug-induced respiratory depression, and advanced illness. The waxing-and-waning pattern with intervening apnea is pathognomonic."
+    },
+    {
+      "id": "q_057",
+      "topic": "Respiratory Rate",
+      "type": "true_false",
+      "question": "True or False: Nasal flaring in a resting adult is a normal finding and does not warrant clinical concern.",
+      "correct": false,
+      "explanation": "Nasal flaring in a resting adult is a sign of increased work of breathing and potential respiratory distress. It results from contraction of the nasal alae to widen the airway and reduce resistance. In adults, it indicates significant respiratory compromise and requires urgent assessment — not dismissal as normal."
+    },
+    {
+      "id": "q_058",
+      "topic": "Respiratory Rate",
+      "type": "matching",
+      "question": "Match each abnormal respiratory pattern with its description and primary associated causes.",
+      "pairs": [
+        {"left": "Bradypnea", "right": "Rate < 12 bpm; coma, opioids, deep sleep"},
+        {"left": "Tachypnea", "right": "Rate > 20 bpm, rapid and shallow; lung/heart disease, pleuritic pain"},
+        {"left": "Hyperpnea", "right": "Rate > 20 bpm, rapid and deep; exercise, anxiety, metabolic acidosis"},
+        {"left": "Cheyne-Stokes", "right": "Hyperpnea alternating with apnea; heart failure, brain injury, uremia"}
+      ]
+    },
+    {
+      "id": "q_059",
+      "topic": "Respiratory Rate",
+      "type": "fill_blank",
+      "question": "Bradypnea is defined as a respiratory rate less than ________ breaths per minute.",
+      "answer": "12",
+      "acceptableAnswers": ["12", "twelve", "12 breaths per minute", "12 bpm"]
+    },
+    {
+      "id": "q_060",
+      "topic": "Temperature Measurement",
+      "type": "mcq",
+      "question": "A rectal temperature of 99.8°F is recorded in an adult patient. Approximately what would the equivalent ORAL temperature be?",
+      "options": [
+        "100.5–100.6°F",
+        "99.0–99.1°F",
+        "98.1–98.2°F",
+        "99.8°F — rectal and oral are equivalent"
+      ],
+      "correct": 1,
+      "explanation": "Rectal temperature reads approximately 0.7–0.8°F HIGHER than oral. Therefore: oral = 99.8 − 0.7 to 0.8 ≈ 99.0–99.1°F. This would be below the fever threshold of 100.4°F orally, but the rectal temperature of 99.8°F is also below the fever threshold (rectal fever = ≥ 100.4 + ~0.7 = ≥ ~101.1°F rectally)."
+    },
+    {
+      "id": "q_061",
+      "topic": "Temperature Measurement",
+      "type": "fill_blank",
+      "question": "Fever (pyrexia) is defined as a body temperature ≥ ________ °F (38°C).",
+      "answer": "100.4",
+      "acceptableAnswers": ["100.4", "100.4°F", "one hundred point four", "38°C"]
+    },
+    {
+      "id": "q_062",
+      "topic": "Temperature Measurement",
+      "type": "true_false",
+      "question": "True or False: Core body temperature is highest in the early morning and lowest in the late afternoon and evening.",
+      "correct": false,
+      "explanation": "This is REVERSED. Core body temperature follows a circadian rhythm and is LOWEST in the early morning (approximately 4–6 AM) and HIGHEST in the afternoon and evening (approximately 4–8 PM). The daily fluctuation is approximately 1°C. This is clinically relevant — a temperature of 99°F in the morning may be more significant than the same reading in the evening."
+    },
+    {
+      "id": "q_063",
+      "topic": "Temperature Measurement",
+      "type": "mcq",
+      "question": "A 2-year-old child is brought in appearing well with no signs of distress. The parent cannot get the child to hold still for an oral thermometer. Which temperature method is MOST appropriate?",
+      "options": [
+        "Rectal — most accurate for all pediatric patients",
+        "Axillary — appropriate for young children who do not appear febrile and cannot cooperate with oral measurement",
+        "Tympanic — easiest and most reliable in all age groups",
+        "Forgo temperature measurement in a child who appears well"
+      ],
+      "correct": 1,
+      "explanation": "Axillary temperature is most appropriate when: (1) the child cannot cooperate with oral measurement AND (2) the child does NOT appear febrile. If fever IS suspected, a rectal, oral, or temporal artery reading is recommended due to axillary temperature's poor correlation with rectal temperature and reduced accuracy."
+    },
+    {
+      "id": "q_064",
+      "topic": "Temperature Measurement",
+      "type": "mcq",
+      "question": "How should the ear be manipulated before inserting a tympanic thermometer probe in a 5-year-old child?",
+      "options": [
+        "Pull the ear straight forward",
+        "Pull the ear straight BACK (as in infants < 1 year)",
+        "Pull the ear UP and BACK",
+        "No manipulation needed"
+      ],
+      "correct": 2,
+      "explanation": "For CHILDREN and ADULTS, pull the ear UP and BACK to straighten the ear canal and align the infrared beam with the tympanic membrane. For INFANTS under 1 year, pull the ear straight BACK (the canal is shorter and positioned differently). Proper positioning is essential for accurate measurement."
+    },
+    {
+      "id": "q_065",
+      "topic": "Temperature Measurement",
+      "type": "mcq",
+      "question": "A patient reports she just finished a hot tea and a cigarette 5 minutes ago. How long should you wait before measuring an oral temperature?",
+      "options": [
+        "2–3 minutes — enough time for the mouth to normalize",
+        "5 minutes — the standard waiting period",
+        "10–15 minutes — required after hot liquids, smoking, or chewing gum",
+        "30 minutes — same as for blood pressure"
+      ],
+      "correct": 2,
+      "explanation": "Wait 10–15 minutes after ingestion of hot or cold liquids, smoking, or chewing gum before taking an oral temperature. These activities alter sublingual temperature and can produce inaccurate readings. This is specific to oral temperature and differs from the 30-minute restriction on BP measurement."
+    },
+    {
+      "id": "q_066",
+      "topic": "Temperature Measurement",
+      "type": "matching",
+      "question": "Match each temperature measurement method with its value relative to oral temperature.",
+      "pairs": [
+        {"left": "Rectal", "right": "0.7–0.8°F HIGHER than oral"},
+        {"left": "Axillary", "right": "~1.8°F LOWER than oral"},
+        {"left": "Tympanic", "right": "0.5–1.0°F HIGHER than oral"},
+        {"left": "Oral", "right": "Reference: ~98.6°F / 37°C"}
+      ]
+    },
+    {
+      "id": "q_067",
+      "topic": "Temperature Measurement",
+      "type": "fill_blank",
+      "question": "Hypothermia is defined as body temperature below ________ °F (35°C).",
+      "answer": "95",
+      "acceptableAnswers": ["95", "95°F", "ninety-five", "35°C"]
+    },
+    {
+      "id": "q_068",
+      "topic": "Temperature Measurement",
+      "type": "mcq",
+      "question": "A 72-year-old woman with known hypothyroidism presents confused and cold to touch. Temperature measured orally is 93.5°F. What condition does this represent?",
+      "options": [
+        "Normal variation — within acceptable range",
+        "Mild fever from infection",
+        "Hypothermia",
+        "Hyperpyrexia"
+      ],
+      "correct": 2,
+      "explanation": "Hypothermia = body temperature < 95°F (35°C). At 93.5°F, this patient meets the definition of hypothermia. Hypothyroidism is a recognized cause (reduced basal metabolic rate → decreased thermogenesis). Other causes include cold exposure, excess alcohol, starvation, and paralysis. This can be life-threatening — myxedema coma is a severe complication."
+    },
+    {
+      "id": "q_069",
+      "topic": "Temperature Measurement",
+      "type": "true_false",
+      "question": "True or False: Tympanic membrane temperature is more variable than oral or rectal temperature and cerumen must be removed before measurement for accurate results.",
+      "correct": true,
+      "explanation": "Both statements are correct. Tympanic temperature is acknowledged as more variable than oral or rectal methods. Additionally, cerumen (earwax) in the ear canal blocks the infrared beam from reaching the tympanic membrane, leading to falsely low or erroneous readings. Proper technique (pulling ear up and back, ensuring clear canal) is essential."
+    },
+    {
+      "id": "q_070",
+      "topic": "Temperature Measurement",
+      "type": "mcq",
+      "question": "Which temperature measurement method scans across the forehead, down the cheek, and behind the earlobe to measure the highest detected temperature?",
+      "options": [
+        "Oral thermometry",
+        "Axillary thermometry",
+        "Tympanic thermometry",
+        "Temporal artery thermometry"
+      ],
+      "correct": 3,
+      "explanation": "The temporal artery thermometer is swept across the forehead, down the cheek, and behind the earlobe while continuously scanning for the highest infrared emission corresponding to temporal artery blood temperature. It measures the HIGHEST temperature detected along this scan path, closely reflecting core temperature."
+    },
+    {
+      "id": "q_071",
+      "topic": "Temperature Measurement",
+      "type": "fill_blank",
+      "question": "During rectal temperature measurement, the probe is inserted ________ cm directed toward the umbilicus.",
+      "answer": "3 to 4",
+      "acceptableAnswers": ["3 to 4", "3-4", "3–4", "3 to 4 cm"]
+    },
+    {
+      "id": "q_072",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "mcq",
+      "question": "A patient with COPD has an SpO2 reading of 91% on room air. Which statement best characterizes this finding?",
+      "options": [
+        "This is a normal SpO2 — no intervention required",
+        "SpO2 of 91% indicates hypoxemia — below the normal threshold of ≥ 95%",
+        "Pulse oximetry is unreliable in COPD patients and should be disregarded",
+        "SpO2 below 95% only becomes significant when cyanosis is visibly present"
+      ],
+      "correct": 1,
+      "explanation": "Normal SpO2 is ≥ 95%. A reading of 91% is below normal and indicates hypoxemia, requiring clinical evaluation. A key advantage of pulse oximetry is detecting hypoxia BEFORE cyanosis develops — cyanosis does not appear until deoxyhemoglobin reaches ~5 g/dL, which occurs at much lower saturation levels (~75–85%)."
+    },
+    {
+      "id": "q_073",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "fill_blank",
+      "question": "Normal SpO2 (oxygen saturation) is ≥ ________%.",
+      "answer": "95",
+      "acceptableAnswers": ["95", "95%", "ninety-five", "ninety-five percent"]
+    },
+    {
+      "id": "q_074",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "true_false",
+      "question": "True or False: Pulse oximetry can detect hypoxia before the patient becomes clinically cyanotic, making it clinically valuable as an early warning tool.",
+      "correct": true,
+      "explanation": "This is a key clinical advantage of pulse oximetry. Cyanosis only becomes visible when deoxyhemoglobin reaches approximately 5 g/dL in capillary blood, which may not occur until SpO2 is around 75–85%. Pulse oximetry detects dangerous oxygen desaturation much earlier, allowing timely intervention before visible cyanosis develops."
+    },
+    {
+      "id": "q_075",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "mcq",
+      "question": "A 60-year-old diabetic patient reports bilateral foot pain described as burning, electric shock-like, and pins and needles — present for 18 months and persistent even at rest with no current tissue injury. What type of pain is this?",
+      "options": [
+        "Acute nociceptive pain",
+        "Visceral nociceptive pain",
+        "Neuropathic pain",
+        "Referred pain only"
+      ],
+      "correct": 2,
+      "explanation": "Burning, electric shock-like, and pins-and-needles sensations are the hallmark characteristics of neuropathic pain from somatosensory system disease. Diabetes is a classic cause of peripheral neuropathy producing neuropathic pain. Crucially, this pain persists without current tissue injury — a defining feature of neuropathic pain that distinguishes it from nociceptive pain."
+    },
+    {
+      "id": "q_076",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "mcq",
+      "question": "A patient with appendicitis rates their pain as 8/10 — dull, crampy, and progressively worsening. What type of pain is this?",
+      "options": [
+        "Neuropathic pain",
+        "Nociceptive (somatic/visceral) pain",
+        "Phantom limb pain",
+        "Psychogenic pain"
+      ],
+      "correct": 1,
+      "explanation": "Appendicitis causes nociceptive visceral pain from tissue inflammation with an intact sensory system. The classic quality — dull, crampy, progressive — is characteristic of nociceptive visceral pain. Appendicitis is specifically listed in the lecture as an example of nociceptive pain. Neuropathic pain is burning/electric shock-like and occurs without acute tissue injury."
+    },
+    {
+      "id": "q_077",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "true_false",
+      "question": "True or False: Neuropathic pain always resolves when the original injury heals.",
+      "correct": false,
+      "explanation": "A defining characteristic of neuropathic pain is that it MAY PERSIST even after the original injury has healed. This is because the pain arises from a lesion or disease of the somatosensory nervous system itself, not from ongoing tissue damage. This persistence is what makes neuropathic pain particularly challenging to manage clinically."
+    },
+    {
+      "id": "q_078",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "mcq",
+      "question": "A patient rates their pain as 5/10 on the Numeric Rating Scale (NRS). How should this intensity be classified?",
+      "options": [
+        "Mild (1–3)",
+        "Moderate (4–6)",
+        "Severe (7–9)",
+        "Worst possible pain (10)"
+      ],
+      "correct": 1,
+      "explanation": "On the 0–10 NRS: 0 = no pain, 1–3 = mild, 4–6 = moderate, 7–9 = very severe, 10 = worst pain possible. A score of 5 falls within the moderate range (4–6). Understanding these ranges guides pain management decisions — moderate pain typically warrants active treatment."
+    },
+    {
+      "id": "q_079",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "matching",
+      "question": "Match each pain type with its corresponding mechanism and quality.",
+      "pairs": [
+        {"left": "Nociceptive pain", "right": "Tissue damage, intact sensory system; dull, throbbing, colicky"},
+        {"left": "Neuropathic pain", "right": "Somatosensory lesion; burning, electric shock, pins and needles"},
+        {"left": "Acute pain", "right": "Duration < 3–6 months; surgery, trauma, illness; protective function"},
+        {"left": "Chronic pain", "right": "Duration > 3–6 months (non-cancer); recurs at intervals; outlasts injury"}
+      ]
+    },
+    {
+      "id": "q_080",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "fill_blank",
+      "question": "Chronic pain is defined as pain lasting more than ________ months when not associated with cancer or another medical condition.",
+      "answer": "3 to 6",
+      "acceptableAnswers": ["3 to 6", "3-6", "3–6", "six", "3 or 6"]
+    },
+    {
+      "id": "q_081",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "mcq",
+      "question": "Which pain assessment scale uses facial expression images ranging from smiling to crying and is especially appropriate for pediatric patients or those who cannot verbalize pain?",
+      "options": [
+        "Numeric Rating Scale (NRS)",
+        "Visual Analog Scale (VAS)",
+        "Wong-Baker FACES Pain Rating Scale",
+        "McGill Pain Questionnaire"
+      ],
+      "correct": 2,
+      "explanation": "The Wong-Baker FACES Pain Rating Scale uses a series of facial expressions from smiling (0 = no pain) to crying (10 = worst pain) to help patients communicate pain intensity. It is particularly valuable for children, elderly patients, patients with cognitive impairment, and those with language barriers who cannot accurately use a numeric scale."
+    },
+    {
+      "id": "q_082",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "true_false",
+      "question": "True or False: Oxygen saturation is considered by many clinicians to be the fifth vital sign.",
+      "correct": true,
+      "explanation": "SpO2 measured via pulse oximetry is widely accepted as the 'fifth vital sign' because it provides critical cardiopulmonary information non-invasively and routinely. It detects hypoxia before visible cyanosis, making it an essential component of the standard vital sign assessment alongside temperature, HR, RR, and BP."
+    },
+    {
+      "id": "q_083",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "mcq",
+      "question": "Why might fingernail polish interfere with pulse oximetry accuracy?",
+      "options": [
+        "It changes blood viscosity at the capillary level",
+        "It blocks the photodetector from accurately receiving transmitted light signals",
+        "It causes vasoconstriction in the distal digit",
+        "It reflects infrared light back to the emitter, elevating the reading"
+      ],
+      "correct": 1,
+      "explanation": "Pulse oximetry works by emitting red and infrared light through a translucent tissue bed (typically the fingertip) and measuring light absorption. Opaque fingernail polish blocks the photodetector from accurately receiving transmitted light, potentially producing falsely low or erroneous SpO2 readings. Gel nails and acrylics have the same effect."
+    },
+    {
+      "id": "q_084",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "mcq",
+      "question": "A post-operative patient is grimacing and guarding her abdomen. She is unable to verbalize a pain score due to sedation. Which approach is most appropriate for pain assessment?",
+      "options": [
+        "Delay pain assessment until patient can speak",
+        "Assume pain is minimal since the patient is not crying loudly",
+        "Use behavioral indicators such as grimacing and guarding to estimate pain level",
+        "Use SpO2 as the only pain indicator"
+      ],
+      "correct": 2,
+      "explanation": "Behavioral indicators — grimacing, crying, guarding, posture changes, and altered physical activity — are essential pain assessment tools for patients who cannot verbalize pain (sedated, cognitively impaired, intubated, or pediatric patients). Observing and documenting these behaviors is part of a complete pain assessment."
+    },
+    {
+      "id": "q_085",
+      "topic": "Blood Pressure Technique",
+      "type": "mcq",
+      "question": "What is the auscultatory gap associated with, and what is its pathophysiologic basis?",
+      "options": [
+        "Increased cardiac output causing inconsistent Korotkoff sound production",
+        "Arterial stiffness and atherosclerotic disease causing silent intervals during BP auscultation",
+        "Cuff deflation that is too rapid, causing missed sounds",
+        "Normal variation in BP that occurs in approximately 50% of adults"
+      ],
+      "correct": 1,
+      "explanation": "The auscultatory gap is associated with arterial stiffness and atherosclerotic disease. In these conditions, turbulent blood flow may transiently disappear and then reappear during cuff deflation, producing a silent interval between systolic and diastolic pressures. Failure to recognize it leads to serious underestimation of true systolic BP."
+    },
+    {
+      "id": "q_086",
+      "topic": "Hypertension Classification and Complications",
+      "type": "mcq",
+      "question": "A patient has a BP of 194/118 mmHg with a severe occipital headache, blurred vision, and confusion. What is the correct classification and immediate action?",
+      "options": [
+        "Severe Hypertension — call the healthcare professional for same-day management",
+        "Stage 2 Hypertension — initiate antihypertensive medication and recheck in 1 hour",
+        "Hypertensive Emergency — CALL 911 immediately",
+        "Elevated BP — advise lifestyle changes and recheck in 1 month"
+      ],
+      "correct": 2,
+      "explanation": "BP > 180 systolic and/or > 120 diastolic WITH symptoms (headache, vision changes, neurologic changes) = Hypertensive Emergency → call 911 immediately. Without symptoms, this would be Severe Hypertension, managed by contacting a healthcare professional. The presence of symptoms is the critical differentiator."
+    },
+    {
+      "id": "q_087",
+      "topic": "Temperature Measurement",
+      "type": "mcq",
+      "question": "A patient presents with confusion, cold intolerance, weight gain, and a temperature of 34.2°C measured rectally. What condition is most likely and what is the rectal temperature in Fahrenheit relative to the normal threshold?",
+      "options": [
+        "Fever (pyrexia) — rectal readings are always elevated above oral",
+        "Hypothermia — 34.2°C is below the 35°C (95°F) threshold, likely due to hypothyroidism",
+        "Normal variant — 34.2°C falls within the normal circadian range",
+        "Hyperpyrexia — the patient is critically overheating"
+      ],
+      "correct": 1,
+      "explanation": "Hypothermia is defined as < 35°C (< 95°F). At 34.2°C (~93.6°F), this patient has hypothermia. The clinical triad of confusion, cold intolerance, and weight gain strongly suggests hypothyroidism, which causes hypothermia through reduced basal metabolic rate. Rectal temperature best reflects core temperature — this value is dangerously low regardless of method."
+    },
+    {
+      "id": "q_088",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "type": "mcq",
+      "question": "A patient has a BP of 148/92 mmHg measured with an Adult Regular cuff. Their arm circumference is later found to be 35 cm. How does this affect the recorded reading?",
+      "options": [
+        "No effect — cuff size only matters for pediatric patients",
+        "The reading is falsely LOW because the cuff was too large",
+        "The reading is falsely HIGH because the cuff was too small (Regular covers up to 32 cm)",
+        "The reading is accurate because the Regular cuff is most commonly used"
+      ],
+      "correct": 2,
+      "explanation": "Adult Regular cuff covers arm circumferences of 25.1–32 cm. For a 35 cm arm, the correct cuff is Adult Large (32.1–40 cm). Using a cuff that is too SMALL produces falsely ELEVATED readings because the undersized bladder must exert more pressure than the actual arterial pressure to compress the arm. This could lead to overdiagnosis of hypertension."
+    },
+    {
+      "id": "q_089",
+      "topic": "Heart Rate and Rhythm",
+      "type": "mcq",
+      "question": "A 28-year-old woman's resting heart rate is 52 bpm with a regular rhythm. She runs 40 miles per week. How should this finding be interpreted?",
+      "options": [
+        "This is clinically significant bradycardia requiring a cardiology referral",
+        "This is an artifact — counts should always be repeated",
+        "This is likely physiologic bradycardia from high vagal tone in a trained athlete",
+        "A rate of 52 bpm in an adult female always indicates sick sinus syndrome"
+      ],
+      "correct": 2,
+      "explanation": "Bradycardia (< 60 bpm) in a trained athlete is often physiologic — the result of cardiac adaptation to aerobic training, producing increased stroke volume and elevated vagal tone. In an asymptomatic, otherwise healthy runner, a resting HR of 52 bpm does not warrant workup. Context and symptoms must always guide interpretation."
+    },
+    {
+      "id": "q_090",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "mcq",
+      "question": "Which question specifically addresses the 'alleviating factors' component of a comprehensive pain assessment?",
+      "options": [
+        "'On a scale of 0–10, how severe is your pain?'",
+        "'Does the pain stay in one place or travel anywhere?'",
+        "'Is there anything that makes the pain worse?'",
+        "'Does rest or ice or any medication help reduce the pain?'"
+      ],
+      "correct": 3,
+      "explanation": "Alleviating factors = what makes the pain BETTER. Asking about rest, ice, positioning, and medications directly addresses this component. 'Scale of 0–10' assesses intensity. 'Stay or travel' assesses location/radiation. 'Makes pain worse' assesses aggravating factors — the complementary component to alleviating factors."
+    },
+    {
+      "id": "q_091",
+      "topic": "Blood Pressure Technique",
+      "type": "mcq",
+      "question": "A first-year PA student is learning BP measurement. After applying the cuff, she inflates to 140 mmHg without performing the radial pulse estimation. Why is this problematic?",
+      "options": [
+        "140 mmHg is always too low regardless of technique used",
+        "Without estimating systolic by palpation first, she risks missing sounds above 140 mmHg and may miss an auscultatory gap",
+        "The cuff will damage the brachial artery at 140 mmHg",
+        "She should always inflate to 200 mmHg regardless of technique"
+      ],
+      "correct": 1,
+      "explanation": "Without the palpatory pre-estimation, the clinician does not know the patient's true systolic pressure. If systolic is above 140 mmHg, sounds will not be heard — leading to underestimation. If an auscultatory gap exists near or above 140 mmHg, it will be entirely missed. The radial pulse method + 30 mmHg ensures inflation above the true systolic with an adequate safety margin."
+    },
+    {
+      "id": "q_092",
+      "topic": "Respiratory Rate",
+      "type": "mcq",
+      "question": "Which component of respiratory assessment specifically captures information about the patient's work of breathing?",
+      "options": [
+        "Rate (breaths per minute)",
+        "Rhythm (regular vs irregular pattern)",
+        "Effort (accessory muscle use, nasal flaring)",
+        "Depth (shallow vs deep)"
+      ],
+      "correct": 2,
+      "explanation": "EFFORT specifically captures work of breathing — use of accessory muscles (sternocleidomastoid, scalenes, intercostals), nasal flaring, and paradoxical breathing. Rate, rhythm, and depth are the other three components. Increased effort indicates that the patient is working harder than normal to breathe, suggesting cardiopulmonary compromise."
+    },
+    {
+      "id": "q_093",
+      "topic": "Hypertension Classification and Complications",
+      "type": "fill_blank",
+      "question": "Masked hypertension is estimated to affect ________ to ________% of the general population.",
+      "answer": "10 to 30",
+      "acceptableAnswers": ["10 to 30", "10-30", "10–30", "10% to 30%"]
+    },
+    {
+      "id": "q_094",
+      "topic": "Blood Pressure Errors and Cuff Selection",
+      "type": "mcq",
+      "question": "A clinician inflates the BP cuff slowly and repeats inflations twice before successfully obtaining a reading. What error was made and what inaccuracy does this produce?",
+      "options": [
+        "No error — repetitive inflations improve accuracy",
+        "Venous congestion produced — leads to falsely LOW systolic and HIGH diastolic readings",
+        "Venous congestion produced — leads to falsely HIGH systolic and LOW diastolic readings",
+        "Arterial spasm produced — leads to artificially elevated diastolic readings only"
+      ],
+      "correct": 1,
+      "explanation": "Slow or repetitive cuff inflations cause VENOUS CONGESTION in the arm by repeatedly trapping venous blood. This makes Korotkoff sounds less audible, resulting in: artificially LOW systolic (sounds heard later than actual) and artificially HIGH diastolic (sounds persist longer than actual). Always inflate rapidly to target and deflate slowly."
+    },
+    {
+      "id": "q_095",
+      "topic": "Temperature Measurement",
+      "type": "true_false",
+      "question": "True or False: Axillary temperature has poor correlation with rectal temperature and is considered less accurate than oral, rectal, or tympanic measurement methods.",
+      "correct": true,
+      "explanation": "Axillary temperature is acknowledged as LESS accurate than other methods and has poor correlation with rectal temperature. It is influenced by environmental temperature, sweat, and imperfect probe placement. It is appropriate only for young children who cannot cooperate with oral measurement and who do not appear febrile. When fever is clinically suspected, a more accurate method must be used."
+    },
+    {
+      "id": "q_096",
+      "topic": "Hypertension Classification and Complications",
+      "type": "mcq",
+      "question": "A patient's BP is recorded as 127/76 mmHg. How should this be classified?",
+      "options": [
+        "Normal — systolic < 120 AND diastolic < 80",
+        "Elevated — systolic 120–129 AND diastolic < 80",
+        "Stage 1 Hypertension",
+        "Stage 2 Hypertension"
+      ],
+      "correct": 1,
+      "explanation": "Elevated BP = systolic 120–129 AND diastolic < 80. With systolic of 127 (in range 120–129) and diastolic of 76 (< 80), this is correctly classified as Elevated. This is NOT yet hypertension but warrants lifestyle intervention to prevent progression. Previously termed 'prehypertension.'"
+    },
+    {
+      "id": "q_097",
+      "topic": "Heart Rate and Rhythm",
+      "type": "true_false",
+      "question": "True or False: A normal heart rate guarantees a normal heart rhythm.",
+      "correct": false,
+      "explanation": "Rate and rhythm are INDEPENDENT assessments. A patient with atrial fibrillation may have a ventricular rate of 70–80 bpm (numerically normal) but an irregularly irregular rhythm — which is abnormal. Always assess both rate (quantitative: beats per minute) AND rhythm (qualitative: spacing pattern) independently when evaluating the pulse."
+    },
+    {
+      "id": "q_098",
+      "topic": "Oxygen Saturation and Pain",
+      "type": "mcq",
+      "question": "A patient has carbon monoxide poisoning with a carboxyhemoglobin level of 25%. Their pulse oximeter shows SpO2 of 98%. How should this reading be interpreted?",
+      "options": [
+        "SpO2 of 98% confirms adequate oxygenation — no concern",
+        "SpO2 is falsely normal — CO binds hemoglobin similarly to oxygen, causing the pulse oximeter to read falsely high",
+        "The pulse oximeter is malfunctioning and should be replaced",
+        "SpO2 of 98% with CO poisoning indicates only mild toxicity"
+      ],
+      "correct": 1,
+      "explanation": "Pulse oximetry is a key limitation with carbon monoxide poisoning. Standard pulse oximeters cannot distinguish oxyhemoglobin from carboxyhemoglobin because both absorb light similarly. Therefore, SpO2 reads falsely NORMAL (or elevated) despite severe tissue hypoxia. Co-oximetry (arterial blood gas with co-oximeter) is required for accurate measurement in CO poisoning."
+    },
+    {
+      "id": "q_099",
+      "topic": "Blood Pressure Technique",
+      "type": "fill_blank",
+      "question": "After adding 30 mmHg to the estimated systolic, the clinician should wait ________ seconds before proceeding with auscultatory BP measurement.",
+      "answer": "15 to 30",
+      "acceptableAnswers": ["15 to 30", "15-30", "15–30", "15 to 30 seconds", "30"]
+    },
+    {
+      "id": "q_100",
+      "topic": "Height, Weight, and BMI",
+      "type": "mcq",
+      "question": "A male patient has a waist circumference of 38 inches and a hip circumference of 44 inches. What is his WHR and does it indicate increased cardiovascular risk?",
+      "options": [
+        "WHR = 0.86; no increased risk for males (threshold is > 0.95)",
+        "WHR = 0.86; increased risk — this exceeds the male threshold",
+        "WHR = 1.16; no increased risk for males",
+        "WHR = 0.86; below the female threshold of 0.8, so no risk applies"
+      ],
+      "correct": 0,
+      "explanation": "WHR = waist / hip = 38 / 44 ≈ 0.86. For males, the increased cardiovascular risk threshold is WHR > 0.95. At 0.86, this patient's WHR does not meet the male risk threshold. Note: a waist of 38 inches is below the male waist circumference alert of ≥ 40 inches. However, clinicians should still consider the full clinical picture including BMI."
+    },
+    {
+      "id": "q_101",
+      "topic": "Temperature Measurement",
+      "type": "mcq",
+      "question": "A patient's oral temperature is 98.4°F. Based on the hierarchy of temperature measurement methods, what is the approximate rectal equivalent?",
+      "options": [
+        "97.6–97.7°F",
+        "98.4°F — rectal and oral are identical",
+        "99.1–99.2°F",
+        "100.2°F"
+      ],
+      "correct": 2,
+      "explanation": "Rectal temperature reads approximately 0.7–0.8°F HIGHER than oral. Therefore: rectal = 98.4 + 0.7 to 0.8 ≈ 99.1–99.2°F. This would remain below the fever threshold. Understanding these conversions is clinically important when comparing temperatures taken by different methods across visits."
+    },
+    {
+      "id": "q_102",
+      "topic": "Respiratory Rate",
+      "type": "true_false",
+      "question": "True or False: Hyperpnea and tachypnea both involve a respiratory rate greater than 20 breaths per minute, but they are distinguished by the depth of breathing.",
+      "correct": true,
+      "explanation": "Both tachypnea and hyperpnea/hyperventilation involve rates > 20 bpm — but DEPTH distinguishes them. Tachypnea = rapid and SHALLOW (heart/lung disease, pleuritic pain). Hyperpnea = rapid and DEEP (exercise, anxiety, metabolic acidosis like DKA). Accurate characterization guides clinical management."
+    },
+    {
+      "id": "q_103",
+      "topic": "Hypertension Classification and Complications",
+      "type": "mcq",
+      "question": "A 55-year-old woman with longstanding poorly controlled hypertension develops sudden loss of vision in her right eye. Which HTN-related complication does this most likely represent?",
+      "options": [
+        "Peripheral artery disease",
+        "Chronic kidney disease",
+        "Retinal disease from hypertension causing vision loss",
+        "Orthostatic hypotension"
+      ],
+      "correct": 2,
+      "explanation": "Hypertension is a major risk factor for retinal disease, including hypertensive retinopathy and retinal vascular occlusion, which can cause sudden vision loss. Other HTN complications include cognitive decline, stroke, MI, CAD, heart failure, A-fib, peripheral artery disease, CKD, and preeclampsia. Vision loss is explicitly listed in the lecture as an HTN complication."
+    }
+  ]
+}
