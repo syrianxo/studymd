@@ -29,7 +29,6 @@ export default function Header({
   const [settingsOpen, setSettingsOpen] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
 
-  // Close settings dropdown on outside click
   useEffect(() => {
     function onDown(e: MouseEvent) {
       if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
@@ -63,7 +62,7 @@ export default function Header({
           </div>
         </Link>
 
-        {/* ── Right controls: Upload · Settings · Sign Out ── */}
+        {/* ── Right controls: Upload · ⚙ ── */}
         <div className="smd-header-right">
 
           {/* 1. Upload */}
@@ -83,37 +82,54 @@ export default function Header({
             </button>
           )}
 
-          {/* 2. Settings gear → dropdown with theme picker */}
+          {/* 2. Gear — icon only, no text, no border; opens settings panel */}
           <div className="smd-hdr-settings-wrap" ref={settingsRef}>
             <button
-              className="smd-hdr-btn smd-hdr-settings"
+              className="smd-hdr-gear"
               onClick={() => setSettingsOpen(o => !o)}
               aria-label="Settings"
               title="Settings"
               aria-expanded={settingsOpen}
             >
-              <span className="smd-hdr-icon" aria-hidden="true">⚙</span>
-              <span className="smd-hdr-desktop smd-hdr-btn-label">Settings</span>
+              <svg
+                className="smd-hdr-gear-icon"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
+                />
+              </svg>
             </button>
 
             {settingsOpen && (
-              <div className="smd-hdr-settings-panel" role="dialog" aria-label="Settings panel">
-                <div className="smd-hdr-settings-label">Theme</div>
-                <ThemePicker userId={userId} initialTheme={initialTheme} />
+              <div className="smd-hdr-settings-panel" role="dialog" aria-label="Settings">
+
+                {/* Theme section */}
+                <div className="smd-hdr-panel-label">Theme</div>
+                <ThemePicker
+                  userId={userId}
+                  initialTheme={initialTheme}
+                  variant="panel"
+                />
+
+                {/* Divider */}
+                <div className="smd-hdr-panel-divider" />
+
+                {/* Sign out */}
+                <button
+                  className="smd-hdr-panel-signout"
+                  onClick={handleSignOut}
+                >
+                  Sign out
+                </button>
+
               </div>
             )}
           </div>
-
-          {/* 3. Sign out */}
-          <button
-            className="smd-hdr-btn smd-hdr-signout"
-            onClick={handleSignOut}
-            aria-label="Sign out"
-            title="Sign out"
-          >
-            <span className="smd-hdr-icon" aria-hidden="true">↪</span>
-            <span className="smd-hdr-desktop smd-hdr-btn-label">Sign out</span>
-          </button>
 
         </div>
       </header>
@@ -122,7 +138,7 @@ export default function Header({
 }
 
 const headerCss = `
-/* ── Logo link ────────────────────────────────────────────────────────── */
+/* ── Logo link ─────────────────────────────────────────────────────── */
 .smd-header-logo-link {
   display: flex;
   flex-direction: column;
@@ -135,19 +151,14 @@ const headerCss = `
   border-radius: 4px;
 }
 
-/* ── Right row ────────────────────────────────────────────────────────── */
+/* ── Right row ─────────────────────────────────────────────────────── */
 .smd-header-right {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.smd-hdr-tool {
-  display: flex;
-  align-items: center;
-}
-
-/* ── Shared button base ──────────────────────────────────────────────── */
+/* ── Upload button ─────────────────────────────────────────────────── */
 .smd-hdr-btn {
   display: inline-flex;
   align-items: center;
@@ -160,30 +171,18 @@ const headerCss = `
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
-  /* Desktop: comfortable padding */
   padding: 7px 14px;
   min-height: 40px;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   white-space: nowrap;
 }
-
 .smd-hdr-upload:hover {
   background: rgba(91,141,238,0.12);
   border-color: rgba(91,141,238,0.35);
   color: var(--accent, #5b8dee);
 }
-
-.smd-hdr-settings:hover, .smd-hdr-settings[aria-expanded="true"] {
-  background: rgba(255,255,255,0.06);
-  border-color: rgba(255,255,255,0.18);
-  color: var(--text, #e8eaf0);
-}
-.smd-hdr-signout:hover {
-  background: rgba(255,255,255,0.05);
-  border-color: rgba(255,255,255,0.18);
-  color: var(--text, #e8eaf0);
-}
-.smd-hdr-icon { font-size: 15px; line-height: 1; flex-shrink: 0; }
+.smd-hdr-icon    { font-size: 15px; line-height: 1; flex-shrink: 0; }
+.smd-hdr-desktop { display: inline; }
 .smd-hdr-spinner {
   display: inline-block;
   width: 15px; height: 15px;
@@ -194,40 +193,99 @@ const headerCss = `
   flex-shrink: 0;
 }
 @keyframes smd-spin { to { transform: rotate(360deg); } }
-.smd-hdr-desktop { display: inline; }
 
-/* ── Settings dropdown panel ─────────────────────────────────────────── */
+/* ── Gear button — borderless, icon only ───────────────────────────── */
+.smd-hdr-gear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 44px;   /* touch target */
+  min-height: 44px;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  color: var(--text-muted, #6b7280);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  padding: 0;
+}
+.smd-hdr-gear:hover,
+.smd-hdr-gear[aria-expanded="true"] {
+  color: var(--text, #e8eaf0);
+  background: rgba(255,255,255,0.06);
+}
+.smd-hdr-gear-icon {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.35s ease;
+}
+.smd-hdr-gear[aria-expanded="true"] .smd-hdr-gear-icon {
+  transform: rotate(45deg);
+}
+
+/* ── Settings dropdown panel ───────────────────────────────────────── */
 .smd-hdr-settings-wrap { position: relative; }
 .smd-hdr-settings-panel {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
   background: var(--surface, #13161d);
-  border: 1px solid rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: 14px;
-  padding: 16px 18px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  padding: 14px 12px 10px;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.55);
   z-index: 9999;
-  min-width: 160px;
+  min-width: 190px;
   animation: smd-panel-in 0.14s ease;
 }
 @keyframes smd-panel-in {
   from { opacity: 0; transform: translateY(-6px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-.smd-hdr-settings-label {
+.smd-hdr-panel-label {
   font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 700;
   color: var(--text-muted, #6b7280);
-  margin-bottom: 12px;
+  margin-bottom: 6px;
+  padding: 0 10px;
   font-family: 'DM Mono', monospace;
 }
+.smd-hdr-panel-divider {
+  height: 1px;
+  background: rgba(255,255,255,0.07);
+  margin: 8px 0;
+}
+.smd-hdr-panel-signout {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 8px 10px;
+  min-height: 44px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+  cursor: pointer;
+  transition: background 0.13s, color 0.13s;
+  text-align: left;
+}
+.smd-hdr-panel-signout:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text, #e8eaf0);
+}
 
+/* ── Mobile (< 768px) ──────────────────────────────────────────────── */
 @media (max-width: 767px) {
   .smd-hdr-desktop { display: none !important; }
   .smd-header { padding: 10px 16px; }
+  /* Upload collapses to icon-only square */
   .smd-hdr-btn {
     padding: 0;
     width: 44px; min-width: 44px; min-height: 44px;
@@ -236,6 +294,6 @@ const headerCss = `
   }
   .smd-hdr-icon { font-size: 18px; }
   .smd-header-right { gap: 6px; }
-  .smd-hdr-settings-panel { right: 0; left: auto; min-width: 180px; }
+  .smd-hdr-settings-panel { right: 0; left: auto; min-width: 200px; }
 }
 `;
