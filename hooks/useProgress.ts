@@ -29,6 +29,7 @@ export interface GlobalStats {
   totalSessions: number;
   bestExamScore: number | null;
   avgExamScore: number | null;
+  studyStreak: number;   // consecutive days studied — full impl in v2.5
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -57,7 +58,7 @@ function recordToProgress(r: ProgressRecord, totalCards?: number): LectureProgre
 function deriveGlobalStats(byLecture: Record<string, LectureProgress>): GlobalStats {
   const entries = Object.values(byLecture);
   if (entries.length === 0) {
-    return { totalSessions: 0, bestExamScore: null, avgExamScore: null };
+    return { totalSessions: 0, bestExamScore: null, avgExamScore: null, studyStreak: 0 };
   }
 
   const totalSessions = entries.reduce(
@@ -74,6 +75,7 @@ function deriveGlobalStats(byLecture: Record<string, LectureProgress>): GlobalSt
       avgScores.length > 0
         ? Math.round(avgScores.reduce((a, b) => a + b, 0) / avgScores.length)
         : null,
+    studyStreak: 0,  // placeholder — full streak tracking in v2.5 Phase 1
   };
 }
 
