@@ -60,7 +60,7 @@ export default function Dashboard({
   useEffect(() => {
     try {
       const stored = localStorage.getItem('studymd_theme') as Theme | null;
-      if (stored === 'midnight' || stored === 'lavender' || stored === 'forest') {
+      if (stored === 'midnight' || stored === 'pink' || stored === 'forest') {
         setTheme(stored);
       }
     } catch {}
