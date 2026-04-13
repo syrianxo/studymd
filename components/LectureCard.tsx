@@ -24,6 +24,7 @@ const cardCss = `
   padding: 20px;
   cursor: pointer;
   transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+  /* overflow: visible is essential — never set overflow:hidden here */
   overflow: visible;
   user-select: none;
 }
@@ -42,6 +43,10 @@ const cardCss = `
 .lc-card.lc-archived {
   opacity: 0.55;
   border-style: dashed;
+}
+/* Elevate card above siblings when its menu is open */
+.lc-card.lc-menu-open {
+  z-index: 200;
 }
 
 /* Color accent bar at top */
@@ -176,7 +181,7 @@ const cardCss = `
   border-radius: 6px;
   opacity: 0;
   transition: opacity 0.15s, background 0.15s;
-  z-index: 5;
+  z-index: 6;
   min-width: 32px;
   min-height: 32px;
   display: flex;
@@ -200,24 +205,42 @@ const cardCss = `
   }
 }
 
-/* Kebab dropdown */
+/* ─── Kebab dropdown ───────────────────────────────────────────────────────
+   CRITICAL: overflow must be VISIBLE so the submenu can escape the box.
+   Use a clip wrapper (.lc-menu-clip) around items that need background
+   containment if needed, but the outer shell must never clip. */
 .lc-menu {
   position: absolute;
-  top: 36px;
-  right: 12px;
+  top: 44px;
+  right: 8px;
   background: var(--surface2, #1a1e27);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.45);
-  z-index: 99;
-  min-width: 180px;
-  overflow: hidden;
+  z-index: 300;
+  min-width: 190px;
+  /* MUST be visible — overflow:hidden clips absolutely-positioned submenus */
+  overflow: visible;
   animation: lc-menu-in 0.12s ease;
 }
 @keyframes lc-menu-in {
   from { opacity: 0; transform: translateY(-6px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* Each row in the main dropdown */
+.lc-menu-row {
+  position: relative;
+}
+/* Clip only the visual background of the top-level rows, not their children */
+.lc-menu-row-inner {
+  overflow: hidden;
+  border-radius: 0;
+}
+/* First and last rows get rounded corners to match the container */
+.lc-menu > .lc-menu-row:first-child .lc-menu-row-inner { border-radius: 9px 9px 0 0; }
+.lc-menu > .lc-menu-row:last-child .lc-menu-row-inner  { border-radius: 0 0 9px 9px; }
+
 .lc-menu-item {
   display: flex;
   align-items: center;
@@ -233,8 +256,10 @@ const cardCss = `
   width: 100%;
   text-align: left;
   min-height: 40px;
+  white-space: nowrap;
 }
 .lc-menu-item:hover { background: rgba(255,255,255,0.06); }
+.lc-menu-item.active { background: rgba(255,255,255,0.04); }
 .lc-menu-item.danger { color: #f87171; }
 .lc-menu-divider {
   height: 1px;
@@ -245,36 +270,47 @@ const cardCss = `
   .lc-menu-item { min-height: 44px; font-size: 14px; padding: 10px 18px; }
 }
 
-/* Sub-menu for course change — flies left on desktop, drops inline on mobile */
+/* ─── Sub-menu ─────────────────────────────────────────────────────────────
+   Desktop: float to the LEFT of the parent menu row.
+   Mobile (≤639px): expand inline below the trigger row.  */
 .lc-submenu {
   position: absolute;
+  /* Align top with the trigger row */
   top: 0;
+  /* Float LEFT: right edge of submenu = left edge of menu - 4px gap */
   right: calc(100% + 4px);
   background: var(--surface2, #1a1e27);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.45);
-  z-index: 100;
-  min-width: 200px;
+  z-index: 400;
+  min-width: 210px;
   overflow: hidden;
   animation: lc-menu-in 0.1s ease;
 }
+
 @media (max-width: 639px) {
   .lc-submenu {
+    /* Switch to inline below the trigger */
     position: static;
     right: auto;
     top: auto;
     box-shadow: none;
-    border-left: 2px solid rgba(255,255,255,0.08);
-    border-radius: 0 0 8px 8px;
-    border-top: none;
+    border: none;
+    border-left: 2px solid rgba(255,255,255,0.1);
+    border-radius: 0;
     min-width: 0;
     width: 100%;
     animation: none;
+    background: rgba(255,255,255,0.02);
+  }
+  /* Indent submenu items on mobile */
+  .lc-submenu .lc-menu-item {
+    padding-left: 32px;
   }
 }
 
-/* Color picker mini */
+/* Color picker */
 .lc-color-row {
   display: flex;
   gap: 8px;
@@ -288,15 +324,16 @@ const cardCss = `
   cursor: pointer;
   border: 2px solid transparent;
   transition: transform 0.12s, border-color 0.12s;
+  flex-shrink: 0;
 }
-.lc-color-swatch:hover { transform: scale(1.15); }
-.lc-color-swatch.selected { border-color: rgba(255,255,255,0.6); }
+.lc-color-swatch:hover { transform: scale(1.18); }
+.lc-color-swatch.selected { border-color: rgba(255,255,255,0.7); box-shadow: 0 0 0 1px rgba(255,255,255,0.3); }
 @media (max-width: 639px) {
   .lc-color-swatch { width: 36px; height: 36px; }
   .lc-color-row { gap: 10px; padding: 12px 18px; }
 }
 
-/* Restore button (archived) */
+/* Restore button (archived/hidden) */
 .lc-restore-btn {
   display: block;
   width: 100%;
@@ -362,22 +399,30 @@ function KebabMenu({
 
   return (
     <div className="lc-menu" ref={menuRef} role="menu">
-      <button className="lc-menu-item" onClick={onEditTags} role="menuitem">
-        <span>🏷</span> Edit Tags
-      </button>
 
-      {/* Change Course */}
-      <div style={{ position: 'relative' }}>
-        <button
-          className="lc-menu-item"
-          onClick={() => { setShowCourse((v) => !v); setShowColor(false); }}
-          role="menuitem"
-          aria-haspopup="true"
-          aria-expanded={showCourse}
-        >
-          <span>📚</span> Change Course
-          <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showCourse ? '▾' : '›'}</span>
-        </button>
+      {/* Edit Tags */}
+      <div className="lc-menu-row">
+        <div className="lc-menu-row-inner">
+          <button className="lc-menu-item" onClick={onEditTags} role="menuitem">
+            <span>🏷</span> Edit Tags
+          </button>
+        </div>
+      </div>
+
+      {/* Change Course — row wraps both trigger and submenu */}
+      <div className="lc-menu-row">
+        <div className="lc-menu-row-inner">
+          <button
+            className={`lc-menu-item${showCourse ? ' active' : ''}`}
+            onClick={() => { setShowCourse((v) => !v); setShowColor(false); }}
+            role="menuitem"
+            aria-haspopup="true"
+            aria-expanded={showCourse}
+          >
+            <span>📚</span> Change Course
+            <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showCourse ? '▾' : '›'}</span>
+          </button>
+        </div>
         {showCourse && (
           <div className="lc-submenu">
             {COURSES.map((c) => (
@@ -387,7 +432,7 @@ function KebabMenu({
                 onClick={() => { onChangeCourse(c); onClose(); }}
                 role="menuitem"
               >
-                {c === lecture.display_course ? '✓ ' : '  '}{c}
+                <span style={{ opacity: c === lecture.display_course ? 1 : 0 }}>✓</span> {c}
               </button>
             ))}
           </div>
@@ -395,19 +440,21 @@ function KebabMenu({
       </div>
 
       {/* Change Color */}
-      <div style={{ position: 'relative' }}>
-        <button
-          className="lc-menu-item"
-          onClick={() => { setShowColor((v) => !v); setShowCourse(false); }}
-          role="menuitem"
-          aria-haspopup="true"
-          aria-expanded={showColor}
-        >
-          <span>🎨</span> Change Color
-          <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showColor ? '▾' : '›'}</span>
-        </button>
+      <div className="lc-menu-row">
+        <div className="lc-menu-row-inner">
+          <button
+            className={`lc-menu-item${showColor ? ' active' : ''}`}
+            onClick={() => { setShowColor((v) => !v); setShowCourse(false); }}
+            role="menuitem"
+            aria-haspopup="true"
+            aria-expanded={showColor}
+          >
+            <span>🎨</span> Change Color
+            <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showColor ? '▾' : '›'}</span>
+          </button>
+        </div>
         {showColor && (
-          <div className="lc-submenu" style={{ padding: '4px 0' }}>
+          <div className="lc-submenu">
             <div className="lc-color-row">
               {PRESET_COLORS.map((c) => (
                 <button
@@ -425,22 +472,39 @@ function KebabMenu({
 
       <div className="lc-menu-divider" />
 
+      {/* Hide / Archive / Restore */}
       {settings.archived ? (
-        <button className="lc-menu-item" onClick={() => { onRestore(); onClose(); }} role="menuitem">
-          <span>↩️</span> Restore
-        </button>
+        <div className="lc-menu-row">
+          <div className="lc-menu-row-inner">
+            <button className="lc-menu-item" onClick={() => { onRestore(); onClose(); }} role="menuitem">
+              <span>↩️</span> Restore
+            </button>
+          </div>
+        </div>
       ) : !settings.visible ? (
-        <button className="lc-menu-item" onClick={() => { onRestore(); onClose(); }} role="menuitem">
-          <span>👁</span> Unhide
-        </button>
+        <div className="lc-menu-row">
+          <div className="lc-menu-row-inner">
+            <button className="lc-menu-item" onClick={() => { onRestore(); onClose(); }} role="menuitem">
+              <span>👁</span> Unhide
+            </button>
+          </div>
+        </div>
       ) : (
         <>
-          <button className="lc-menu-item" onClick={() => { onHide(); onClose(); }} role="menuitem">
-            <span>👁</span> Hide
-          </button>
-          <button className="lc-menu-item danger" onClick={() => { onArchive(); onClose(); }} role="menuitem">
-            <span>📦</span> Archive
-          </button>
+          <div className="lc-menu-row">
+            <div className="lc-menu-row-inner">
+              <button className="lc-menu-item" onClick={() => { onHide(); onClose(); }} role="menuitem">
+                <span>👁</span> Hide
+              </button>
+            </div>
+          </div>
+          <div className="lc-menu-row">
+            <div className="lc-menu-row-inner">
+              <button className="lc-menu-item danger" onClick={() => { onArchive(); onClose(); }} role="menuitem">
+                <span>📦</span> Archive
+              </button>
+            </div>
+          </div>
         </>
       )}
     </div>
@@ -452,8 +516,8 @@ function KebabMenu({
 interface LectureCardProps {
   lecture: LectureWithSettings;
   isManageMode: boolean;
-  flashcardProgress?: number; // 0–100
-  examProgress?: number;       // 0–100
+  flashcardProgress?: number;
+  examProgress?: number;
   onOpen?: () => void;
   onHide: () => void;
   onArchive: () => void;
@@ -490,6 +554,8 @@ export function LectureCard({
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
+    // Elevate above siblings when menu is open so dropdown is never clipped
+    zIndex: menuOpen ? 200 : undefined,
   };
 
   const classNames = [
@@ -497,6 +563,7 @@ export function LectureCard({
     isManageMode ? 'lc-manage-mode' : '',
     isDragging ? 'lc-dragging' : '',
     lecture.settings.archived ? 'lc-archived' : '',
+    menuOpen ? 'lc-menu-open' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -559,7 +626,7 @@ export function LectureCard({
           />
         )}
 
-        {/* Card content */}
+        {/* Card body */}
         <div className="lc-header" style={{ paddingLeft: isManageMode ? 20 : 0 }}>
           <div className="lc-icon">{lecture.icon}</div>
           <div className="lc-title-block">
@@ -576,18 +643,13 @@ export function LectureCard({
           </div>
         </div>
 
-        {/* Progress bars */}
         <div className="lc-progress-row">
           <div className="lc-progress-item">
             <span>Flashcards</span>
             <div className="lc-progress-bar-bg">
               <div
                 className="lc-progress-bar-fill"
-                style={{
-                  width: `${flashcardProgress}%`,
-                  background: lecture.display_color,
-                  opacity: 0.75,
-                }}
+                style={{ width: `${flashcardProgress}%`, background: lecture.display_color, opacity: 0.75 }}
               />
             </div>
           </div>
@@ -596,17 +658,12 @@ export function LectureCard({
             <div className="lc-progress-bar-bg">
               <div
                 className="lc-progress-bar-fill"
-                style={{
-                  width: `${examProgress}%`,
-                  background: lecture.display_color,
-                  opacity: 0.75,
-                }}
+                style={{ width: `${examProgress}%`, background: lecture.display_color, opacity: 0.75 }}
               />
             </div>
           </div>
         </div>
 
-        {/* Tags */}
         {lecture.settings.tags.length > 0 && (
           <div className="lc-tags" aria-label="Tags">
             {lecture.settings.tags.map((tag) => (
@@ -615,17 +672,14 @@ export function LectureCard({
           </div>
         )}
 
-        {/* Slide count */}
         <div className="lc-slide-count">{lecture.slide_count} slides</div>
 
-        {/* Restore button for archived cards */}
         {lecture.settings.archived && (
           <button className="lc-restore-btn" onClick={(e) => { e.stopPropagation(); onRestore(); }}>
             ↩ Restore
           </button>
         )}
 
-        {/* Unhide button for hidden (non-archived) cards */}
         {!lecture.settings.visible && !lecture.settings.archived && (
           <button className="lc-restore-btn" onClick={(e) => { e.stopPropagation(); onRestore(); }}>
             👁 Unhide

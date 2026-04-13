@@ -133,7 +133,14 @@ function SimpleLectureCard({
   const hasKebab = !!(onChangeCourse || onChangeColor);
 
   return (
-    <div className="smd-lecture-card" style={{ position: 'relative' }}>
+    <div
+      className="smd-lecture-card"
+      style={{
+        position: 'relative',
+        // Elevate above siblings when menu is open — prevents other cards from covering the dropdown
+        zIndex: menuOpen ? 200 : undefined,
+      }}
+    >
       {/* Accent bar */}
       <div
         style={{
@@ -142,11 +149,16 @@ function SimpleLectureCard({
         }}
       />
 
-      {/* Kebab button — only if handlers are provided */}
+      {/* Kebab button */}
       {hasKebab && (
         <button
           className="slc-kebab-btn"
-          onClick={(e) => { e.stopPropagation(); setMenuOpen((v) => !v); setShowCourse(false); setShowColor(false); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setMenuOpen((v) => !v);
+            setShowCourse(false);
+            setShowColor(false);
+          }}
           aria-label="Lecture options"
           aria-haspopup="true"
           aria-expanded={menuOpen}
@@ -155,22 +167,25 @@ function SimpleLectureCard({
         </button>
       )}
 
-      {/* Kebab dropdown */}
+      {/* Dropdown */}
       {menuOpen && hasKebab && (
         <div className="slc-menu" ref={menuRef} role="menu">
+
           {/* Change Course */}
           {onChangeCourse && (
-            <div style={{ position: 'relative' }}>
-              <button
-                className="slc-menu-item"
-                onClick={() => { setShowCourse((v) => !v); setShowColor(false); }}
-                role="menuitem"
-                aria-haspopup="true"
-                aria-expanded={showCourse}
-              >
-                <span>📚</span> Change Course
-                <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showCourse ? '▾' : '›'}</span>
-              </button>
+            <div className="slc-menu-row">
+              <div className="slc-menu-row-inner">
+                <button
+                  className={`slc-menu-item${showCourse ? ' active' : ''}`}
+                  onClick={() => { setShowCourse((v) => !v); setShowColor(false); }}
+                  role="menuitem"
+                  aria-haspopup="true"
+                  aria-expanded={showCourse}
+                >
+                  <span>📚</span> Change Course
+                  <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showCourse ? '▾' : '›'}</span>
+                </button>
+              </div>
               {showCourse && (
                 <div className="slc-submenu">
                   {COURSES.map((c) => (
@@ -180,7 +195,7 @@ function SimpleLectureCard({
                       onClick={() => { onChangeCourse(c); setMenuOpen(false); setShowCourse(false); }}
                       role="menuitem"
                     >
-                      {c === displayCourse ? '✓ ' : '  '}{c}
+                      <span style={{ opacity: c === displayCourse ? 1 : 0 }}>✓</span> {c}
                     </button>
                   ))}
                 </div>
@@ -190,19 +205,21 @@ function SimpleLectureCard({
 
           {/* Change Color */}
           {onChangeColor && (
-            <div style={{ position: 'relative' }}>
-              <button
-                className="slc-menu-item"
-                onClick={() => { setShowColor((v) => !v); setShowCourse(false); }}
-                role="menuitem"
-                aria-haspopup="true"
-                aria-expanded={showColor}
-              >
-                <span>🎨</span> Change Color
-                <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showColor ? '▾' : '›'}</span>
-              </button>
+            <div className="slc-menu-row">
+              <div className="slc-menu-row-inner">
+                <button
+                  className={`slc-menu-item${showColor ? ' active' : ''}`}
+                  onClick={() => { setShowColor((v) => !v); setShowCourse(false); }}
+                  role="menuitem"
+                  aria-haspopup="true"
+                  aria-expanded={showColor}
+                >
+                  <span>🎨</span> Change Color
+                  <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showColor ? '▾' : '›'}</span>
+                </button>
+              </div>
               {showColor && (
-                <div className="slc-submenu" style={{ padding: '4px 0' }}>
+                <div className="slc-submenu">
                   <div className="slc-color-row">
                     {PRESET_COLORS.map((c) => (
                       <button
@@ -295,7 +312,7 @@ function SimpleLectureCard({
   );
 }
 
-// ─── Loading skeleton ─────────────────────────────────────────────────────────
+// ─── Skeleton ────────────────────────────────────────────────────────────────
 
 function SkeletonCard() {
   return (
@@ -326,10 +343,10 @@ function SkeletonCard() {
   );
 }
 
-// ─── CSS for kebab in simple card ────────────────────────────────────────────
+// ─── CSS ─────────────────────────────────────────────────────────────────────
 
 const gridCss = `
-/* Kebab button on simple cards */
+/* Kebab button */
 .slc-kebab-btn {
   position: absolute;
   top: 12px;
@@ -338,13 +355,12 @@ const gridCss = `
   border: none;
   color: var(--text-muted, #6b7280);
   font-size: 18px;
-  line-height: 1;
   cursor: pointer;
   padding: 4px 6px;
   border-radius: 6px;
   opacity: 0;
   transition: opacity 0.15s, background 0.15s;
-  z-index: 5;
+  z-index: 6;
   min-width: 32px;
   min-height: 32px;
   display: flex;
@@ -364,24 +380,37 @@ const gridCss = `
   }
 }
 
-/* Dropdown menu */
+/* ── Dropdown shell ────────────────────────────────────────────────────────
+   overflow: visible is REQUIRED — hidden would clip the submenu.        */
 .slc-menu {
   position: absolute;
   top: 48px;
-  right: 12px;
+  right: 8px;
   background: var(--surface2, #1a1e27);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.45);
-  z-index: 99;
-  min-width: 180px;
-  overflow: hidden;
+  z-index: 300;
+  min-width: 190px;
+  overflow: visible;
   animation: slc-menu-in 0.12s ease;
 }
 @keyframes slc-menu-in {
   from { opacity: 0; transform: translateY(-6px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* Row = relative wrapper that allows the submenu to fly out */
+.slc-menu-row {
+  position: relative;
+}
+/* Inner clip = contains the hover background without clipping the submenu */
+.slc-menu-row-inner {
+  overflow: hidden;
+}
+.slc-menu > .slc-menu-row:first-child .slc-menu-row-inner { border-radius: 9px 9px 0 0; }
+.slc-menu > .slc-menu-row:last-child  .slc-menu-row-inner { border-radius: 0 0 9px 9px; }
+
 .slc-menu-item {
   display: flex;
   align-items: center;
@@ -397,13 +426,15 @@ const gridCss = `
   width: 100%;
   text-align: left;
   min-height: 40px;
+  white-space: nowrap;
 }
 .slc-menu-item:hover { background: rgba(255,255,255,0.06); }
+.slc-menu-item.active { background: rgba(255,255,255,0.04); }
 @media (max-width: 639px) {
   .slc-menu-item { min-height: 44px; font-size: 14px; padding: 10px 18px; }
 }
 
-/* Submenu — left-fly on desktop, inline on mobile */
+/* ── Submenu — flies LEFT on desktop, expands inline on mobile ── */
 .slc-submenu {
   position: absolute;
   top: 0;
@@ -412,8 +443,8 @@ const gridCss = `
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 10px;
   box-shadow: 0 8px 28px rgba(0,0,0,0.45);
-  z-index: 100;
-  min-width: 200px;
+  z-index: 400;
+  min-width: 210px;
   overflow: hidden;
   animation: slc-menu-in 0.1s ease;
 }
@@ -423,12 +454,16 @@ const gridCss = `
     right: auto;
     top: auto;
     box-shadow: none;
-    border-left: 2px solid rgba(255,255,255,0.08);
-    border-radius: 0 0 8px 8px;
-    border-top: none;
+    border: none;
+    border-left: 2px solid rgba(255,255,255,0.1);
+    border-radius: 0;
     min-width: 0;
     width: 100%;
     animation: none;
+    background: rgba(255,255,255,0.02);
+  }
+  .slc-submenu .slc-menu-item {
+    padding-left: 32px;
   }
 }
 
@@ -446,9 +481,13 @@ const gridCss = `
   cursor: pointer;
   border: 2px solid transparent;
   transition: transform 0.12s, border-color 0.12s;
+  flex-shrink: 0;
 }
-.slc-color-swatch:hover { transform: scale(1.15); }
-.slc-color-swatch.selected { border-color: rgba(255,255,255,0.6); }
+.slc-color-swatch:hover { transform: scale(1.18); }
+.slc-color-swatch.selected {
+  border-color: rgba(255,255,255,0.7);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.3);
+}
 @media (max-width: 639px) {
   .slc-color-swatch { width: 36px; height: 36px; }
   .slc-color-row { gap: 10px; padding: 12px 18px; }
