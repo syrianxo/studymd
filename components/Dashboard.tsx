@@ -11,14 +11,10 @@ import CustomSessionModal, { type CustomSessionConfig } from './CustomSessionMod
 import { useUserLectures } from '@/hooks/useUserLectures';
 import { useProgress } from '@/hooks/useProgress';
 import { createClient } from '@/lib/supabase';
-import UploadModal from "@/components/UploadModal";
+import UploadModal from '@/components/UploadModal';
 import type { Course, Theme } from '@/types';
 
 interface DashboardProps {
-  /**
-   * The authenticated user's first name, shown in the hero greeting.
-   * Falls back to "Haley" if not provided (keeping the original spirit 🩵).
-   */
   userName?: string;
 }
 
@@ -49,15 +45,12 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [theme, setTheme] = useState<Theme>('midnight');
 
-
-  // Fetch userId once on mount for ManageMode
   useEffect(() => {
     createClient().auth.getUser().then(({ data }) => {
       if (data.user) setUserId(data.user.id);
     });
   }, []);
 
-  // Read theme from localStorage on mount
   useEffect(() => {
     try {
       const stored = localStorage.getItem('studymd_theme') as Theme | null;
@@ -67,7 +60,6 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
     } catch {}
   }, []);
 
-  // ── Filtered lectures ──────────────────────────────────────────────────
   const visibleLectures = useMemo(
     () =>
       lectures.filter((l) => {
@@ -78,7 +70,6 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
     [lectures, filter.courses]
   );
 
-  // ── Study launch handlers ─────────────────────────────────────────────
   function handleStartFlash(lectureId: string) {
     window.location.href = `/app/study/flash?lecture=${lectureId}`;
   }
@@ -103,11 +94,36 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
     refetch();
   }
 
-  // ── Error state ────────────────────────────────────────────────────────
+  // Callbacks for course/color changes from the main grid
+  async function handleChangeCourse(internalId: string, course: Course) {
+    await fetch('/api/lectures/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ internalId, updates: { courseOverride: course } }),
+    });
+    refetch();
+  }
+
+  async function handleChangeColor(internalId: string, color: string) {
+    await fetch('/api/lectures/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ internalId, updates: { colorOverride: color } }),
+    });
+    refetch();
+  }
+
   if (lecturesError) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Header globalStats={globalStats} lectureCount={0} loading userId={userId ?? ''} initialTheme={theme} />
+        <Header
+          globalStats={globalStats}
+          lectureCount={0}
+          loading
+          userId={userId ?? ''}
+          initialTheme={theme}
+          onUploadClick={() => setShowUploadModal(true)}
+        />
         <div
           style={{
             flex: 1,
@@ -121,23 +137,11 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
           }}
         >
           <div style={{ fontSize: 42 }}>⚠️</div>
-          <div
-            style={{
-              fontFamily: "'Fraunces', serif",
-              fontSize: 22,
-              fontWeight: 700,
-              color: 'var(--text)',
-            }}
-          >
+          <div style={{ fontFamily: "'Fraunces', serif", fontSize: 22, fontWeight: 700, color: 'var(--text)' }}>
             Couldn't load lectures
           </div>
-          <p style={{ color: 'var(--text-muted)', fontSize: 14, maxWidth: 360 }}>
-            {lecturesError}
-          </p>
-          <button
-            className="btn btn-primary"
-            onClick={() => window.location.reload()}
-          >
+          <p style={{ color: 'var(--text-muted)', fontSize: 14, maxWidth: 360 }}>{lecturesError}</p>
+          <button className="btn btn-primary" onClick={() => window.location.reload()}>
             Retry
           </button>
         </div>
@@ -147,6 +151,8 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
 
   return (
     <>
+      <style>{dashboardMobileCss}</style>
+
       {/* ── Header (sticky) ──────────────────────────────────────────── */}
       <Header
         globalStats={globalStats}
@@ -154,6 +160,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
         loading={lecturesLoading}
         userId={userId ?? ''}
         initialTheme={theme}
+        onUploadClick={() => setShowUploadModal(true)}
       />
 
       {/* ── Main dashboard ───────────────────────────────────────────── */}
@@ -171,7 +178,6 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
               yourself with a custom practice exam.
             </p>
           </div>
-          {/* Pomodoro lives inside Header to keep timer state alive across re-renders */}
         </div>
 
         {/* Stats row */}
@@ -183,28 +189,37 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
 
         {/* Section header */}
         <div className="smd-section-header">
+          <div className="smd-section-title">
+            Your Lectures
+            {!lecturesLoading && (
+              <span className="smd-lecture-count-badge">
+                {visibleLectures.length}
+              </span>
+            )}
+          </div>
+
+          {/* Desktop: Upload in section header; Mobile: Upload is in Header */}
+          <div className="smd-section-actions">
             <button
-              className="btn btn-ghost"
+              className="btn btn-ghost smd-upload-section-btn"
               style={{ fontSize: 12, padding: '9px 16px' }}
               onClick={() => setShowUploadModal(true)}
             >
               ⬆ Upload Lecture
             </button>
-          <div className="smd-section-title">Your Lectures</div>
-          <div style={{ display: 'flex', gap: 8 }}>
             <button
               className="btn btn-ghost"
               style={{ fontSize: 12, padding: '9px 16px' }}
               onClick={() => setManageOpen((v) => !v)}
             >
-              {manageOpen ? '✓ Done Managing' : '✏️ Manage'}
+              {manageOpen ? '✓ Done' : '✏️ Manage'}
             </button>
             <button
-              className="btn btn-primary"
+              className="btn btn-primary smd-custom-session-btn"
               style={{ fontSize: 12, padding: '9px 16px' }}
               onClick={() => setCustomModalOpen(true)}
             >
-              ✦ Custom Study Session
+              ✦ Custom Study
             </button>
           </div>
         </div>
@@ -256,11 +271,13 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
             loading={lecturesLoading}
             onStartFlash={handleStartFlash}
             onStartExam={handleStartExam}
+            onChangeCourse={handleChangeCourse}
+            onChangeColor={handleChangeColor}
           />
         )}
       </main>
 
-      {/* ── Custom Session Modal ──────────────────────────────────────── */}
+      {/* ── Modals ───────────────────────────────────────────────────── */}
       <CustomSessionModal
         isOpen={customModalOpen}
         lectures={lectures}
@@ -278,3 +295,56 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
     </>
   );
 }
+
+// Mobile-specific dashboard layout overrides
+const dashboardMobileCss = `
+/* Lecture count badge in section title */
+.smd-lecture-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--text-muted, #6b7280);
+  background: rgba(255,255,255,0.07);
+  border-radius: 100px;
+  padding: 1px 8px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* Section actions container */
+.smd-section-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* On mobile: Upload is in the Header, hide it from section bar */
+@media (max-width: 767px) {
+  .smd-upload-section-btn {
+    display: none;
+  }
+
+  /* Section header: title left, actions right but compressed */
+  .smd-section-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  /* Shorten "Custom Study Session" label */
+  .smd-custom-session-btn::before {
+    content: '✦ Custom';
+  }
+
+  /* Stack the action buttons below the title if very narrow */
+  @media (max-width: 479px) {
+    .smd-section-actions {
+      width: 100%;
+      justify-content: flex-end;
+    }
+  }
+}
+`;

@@ -161,7 +161,7 @@ const cardCss = `
 .lc-manage-mode .lc-drag-handle { display: block; }
 .lc-manage-mode .lc-drag-handle:hover { opacity: 1; }
 
-/* Kebab menu */
+/* Kebab menu button */
 .lc-kebab-btn {
   position: absolute;
   top: 12px;
@@ -177,12 +177,28 @@ const cardCss = `
   opacity: 0;
   transition: opacity 0.15s, background 0.15s;
   z-index: 5;
+  min-width: 32px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 .lc-manage-mode .lc-kebab-btn,
 .lc-card:hover .lc-kebab-btn {
   opacity: 0.7;
 }
 .lc-kebab-btn:hover { opacity: 1 !important; background: rgba(255,255,255,0.07); }
+/* On mobile: always visible, full 44px touch target */
+@media (max-width: 639px) {
+  .lc-kebab-btn {
+    opacity: 0.6;
+    min-width: 44px;
+    min-height: 44px;
+    top: 6px;
+    right: 6px;
+    font-size: 20px;
+  }
+}
 
 /* Kebab dropdown */
 .lc-menu {
@@ -216,6 +232,7 @@ const cardCss = `
   background: none;
   width: 100%;
   text-align: left;
+  min-height: 40px;
 }
 .lc-menu-item:hover { background: rgba(255,255,255,0.06); }
 .lc-menu-item.danger { color: #f87171; }
@@ -224,8 +241,11 @@ const cardCss = `
   background: rgba(255,255,255,0.06);
   margin: 2px 0;
 }
+@media (max-width: 639px) {
+  .lc-menu-item { min-height: 44px; font-size: 14px; padding: 10px 18px; }
+}
 
-/* Sub-menu for course change */
+/* Sub-menu for course change — flies left on desktop, drops inline on mobile */
 .lc-submenu {
   position: absolute;
   top: 0;
@@ -239,6 +259,20 @@ const cardCss = `
   overflow: hidden;
   animation: lc-menu-in 0.1s ease;
 }
+@media (max-width: 639px) {
+  .lc-submenu {
+    position: static;
+    right: auto;
+    top: auto;
+    box-shadow: none;
+    border-left: 2px solid rgba(255,255,255,0.08);
+    border-radius: 0 0 8px 8px;
+    border-top: none;
+    min-width: 0;
+    width: 100%;
+    animation: none;
+  }
+}
 
 /* Color picker mini */
 .lc-color-row {
@@ -248,8 +282,8 @@ const cardCss = `
   flex-wrap: wrap;
 }
 .lc-color-swatch {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   cursor: pointer;
   border: 2px solid transparent;
@@ -257,6 +291,10 @@ const cardCss = `
 }
 .lc-color-swatch:hover { transform: scale(1.15); }
 .lc-color-swatch.selected { border-color: rgba(255,255,255,0.6); }
+@media (max-width: 639px) {
+  .lc-color-swatch { width: 36px; height: 36px; }
+  .lc-color-row { gap: 10px; padding: 12px 18px; }
+}
 
 /* Restore button (archived) */
 .lc-restore-btn {
@@ -333,13 +371,12 @@ function KebabMenu({
         <button
           className="lc-menu-item"
           onClick={() => { setShowCourse((v) => !v); setShowColor(false); }}
-          onMouseEnter={() => { setShowCourse(true); setShowColor(false); }}
           role="menuitem"
           aria-haspopup="true"
           aria-expanded={showCourse}
         >
           <span>📚</span> Change Course
-          <span style={{ marginLeft: 'auto', opacity: 0.5 }}>›</span>
+          <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showCourse ? '▾' : '›'}</span>
         </button>
         {showCourse && (
           <div className="lc-submenu">
@@ -362,13 +399,12 @@ function KebabMenu({
         <button
           className="lc-menu-item"
           onClick={() => { setShowColor((v) => !v); setShowCourse(false); }}
-          onMouseEnter={() => { setShowColor(true); setShowCourse(false); }}
           role="menuitem"
           aria-haspopup="true"
           aria-expanded={showColor}
         >
           <span>🎨</span> Change Color
-          <span style={{ marginLeft: 'auto', opacity: 0.5 }}>›</span>
+          <span style={{ marginLeft: 'auto', opacity: 0.5 }}>{showColor ? '▾' : '›'}</span>
         </button>
         {showColor && (
           <div className="lc-submenu" style={{ padding: '4px 0' }}>
