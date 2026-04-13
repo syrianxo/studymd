@@ -1,10 +1,10 @@
 // components/Header.tsx
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
-import PomodoroTimer from './PomodoroTimer';
 import { ThemePicker } from './ThemePicker';
 import type { Theme } from '@/types';
 
@@ -14,12 +14,11 @@ interface HeaderProps {
   userId: string;
   initialTheme: Theme;
   onUploadClick?: () => void;
-  /** Optional: shown as a small spinner next to the upload button when true */
   isProcessing?: boolean;
 }
 
 export default function Header({
-  lectureCount: _lectureCount,   // reserved for future display use
+  lectureCount: _lectureCount,
   loading: _loading = false,
   userId,
   initialTheme,
@@ -27,6 +26,19 @@ export default function Header({
   isProcessing = false,
 }: HeaderProps) {
   const router = useRouter();
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const settingsRef = useRef<HTMLDivElement>(null);
+
+  // Close settings dropdown on outside click
+  useEffect(() => {
+    function onDown(e: MouseEvent) {
+      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
+        setSettingsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', onDown);
+    return () => document.removeEventListener('mousedown', onDown);
+  }, []);
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -51,10 +63,10 @@ export default function Header({
           </div>
         </Link>
 
-        {/* ── Right controls ── */}
+        {/* ── Right controls: Upload · Settings · Sign Out ── */}
         <div className="smd-header-right">
 
-          {/* Upload — text+icon on desktop, icon-only on mobile */}
+          {/* 1. Upload */}
           {onUploadClick && (
             <button
               className="smd-hdr-btn smd-hdr-upload"
@@ -62,31 +74,37 @@ export default function Header({
               aria-label="Upload lecture"
               title="Upload Lecture"
             >
-              {isProcessing ? (
-                <span className="smd-hdr-spinner" aria-hidden="true" />
-              ) : (
-                <span className="smd-hdr-icon" aria-hidden="true">⬆</span>
-              )}
-              <span className="smd-hdr-desktop smd-hdr-btn-label">Upload</span>
-              {isProcessing && (
-                <span className="smd-hdr-desktop smd-hdr-btn-label" style={{ fontSize: 11, opacity: 0.7 }}>
-                  Processing…
-                </span>
-              )}
+              {isProcessing
+                ? <span className="smd-hdr-spinner" aria-hidden="true" />
+                : <span className="smd-hdr-icon" aria-hidden="true">⬆</span>}
+              <span className="smd-hdr-desktop smd-hdr-btn-label">
+                {isProcessing ? 'Processing…' : 'Upload'}
+              </span>
             </button>
           )}
 
-          {/* Theme picker — delegated to ThemePicker component */}
-          <div className="smd-hdr-tool">
-            <ThemePicker userId={userId} initialTheme={initialTheme} />
+          {/* 2. Settings gear → dropdown with theme picker */}
+          <div className="smd-hdr-settings-wrap" ref={settingsRef}>
+            <button
+              className="smd-hdr-btn smd-hdr-settings"
+              onClick={() => setSettingsOpen(o => !o)}
+              aria-label="Settings"
+              title="Settings"
+              aria-expanded={settingsOpen}
+            >
+              <span className="smd-hdr-icon" aria-hidden="true">⚙</span>
+              <span className="smd-hdr-desktop smd-hdr-btn-label">Settings</span>
+            </button>
+
+            {settingsOpen && (
+              <div className="smd-hdr-settings-panel" role="dialog" aria-label="Settings panel">
+                <div className="smd-hdr-settings-label">Theme</div>
+                <ThemePicker userId={userId} initialTheme={initialTheme} />
+              </div>
+            )}
           </div>
 
-          {/* Pomodoro timer */}
-          <div className="smd-hdr-tool">
-            <PomodoroTimer />
-          </div>
-
-          {/* Sign out */}
+          {/* 3. Sign out */}
           <button
             className="smd-hdr-btn smd-hdr-signout"
             onClick={handleSignOut}
@@ -155,24 +173,20 @@ const headerCss = `
   color: var(--accent, #5b8dee);
 }
 
+.smd-hdr-settings:hover, .smd-hdr-settings[aria-expanded="true"] {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.18);
+  color: var(--text, #e8eaf0);
+}
 .smd-hdr-signout:hover {
   background: rgba(255,255,255,0.05);
   border-color: rgba(255,255,255,0.18);
   color: var(--text, #e8eaf0);
 }
-
-/* ── Icon inside button ────────────────────────────────────────────── */
-.smd-hdr-icon {
-  font-size: 15px;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-/* ── Processing spinner ────────────────────────────────────────────── */
+.smd-hdr-icon { font-size: 15px; line-height: 1; flex-shrink: 0; }
 .smd-hdr-spinner {
   display: inline-block;
-  width: 15px;
-  height: 15px;
+  width: 15px; height: 15px;
   border: 2px solid rgba(255,255,255,0.15);
   border-top-color: var(--accent, #5b8dee);
   border-radius: 50%;
@@ -180,35 +194,48 @@ const headerCss = `
   flex-shrink: 0;
 }
 @keyframes smd-spin { to { transform: rotate(360deg); } }
-
-/* ── Desktop-only label ────────────────────────────────────────────── */
 .smd-hdr-desktop { display: inline; }
 
-/* ═══════════════════════════════════════════════════════════════════
-   MOBILE  (< 768px)
-   — icon-only buttons, tighter gap, 44 × 44 minimum touch targets
-═══════════════════════════════════════════════════════════════════ */
+/* ── Settings dropdown panel ─────────────────────────────────────────── */
+.smd-hdr-settings-wrap { position: relative; }
+.smd-hdr-settings-panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--surface, #13161d);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px;
+  padding: 16px 18px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+  z-index: 9999;
+  min-width: 160px;
+  animation: smd-panel-in 0.14s ease;
+}
+@keyframes smd-panel-in {
+  from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.smd-hdr-settings-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--text-muted, #6b7280);
+  margin-bottom: 12px;
+  font-family: 'DM Mono', monospace;
+}
+
 @media (max-width: 767px) {
-  /* Hide all text labels */
   .smd-hdr-desktop { display: none !important; }
-
-  /* Header itself */
   .smd-header { padding: 10px 16px; }
-
-  /* Icon buttons become square, 44 px */
   .smd-hdr-btn {
     padding: 0;
-    width: 44px;
-    min-width: 44px;
-    min-height: 44px;
+    width: 44px; min-width: 44px; min-height: 44px;
     justify-content: center;
     border-radius: 10px;
   }
-
-  /* Slightly larger icon at mobile size */
   .smd-hdr-icon { font-size: 18px; }
-
-  /* Tighter gap between controls */
   .smd-header-right { gap: 6px; }
+  .smd-hdr-settings-panel { right: 0; left: auto; min-width: 180px; }
 }
 `;

@@ -12,6 +12,7 @@ import { useUserLectures } from '@/hooks/useUserLectures';
 import { useProgress } from '@/hooks/useProgress';
 import { createClient } from '@/lib/supabase';
 import UploadModal from '@/components/UploadModal';
+import PomodoroTimer from '@/components/PomodoroTimer';
 import type { Course, Theme } from '@/types';
 
 interface DashboardProps {
@@ -214,6 +215,10 @@ export default function Dashboard({
           </div>
 
           <div className="smd-hero-right">
+            {/* Pomodoro timer — sits above stats */}
+            <div className="smd-hero-pomodoro">
+              <PomodoroTimer />
+            </div>
             {/* Compact inline stats */}
             <div className="smd-hero-stats">
               <div className="smd-hero-stat">
@@ -250,12 +255,6 @@ export default function Dashboard({
           </div>
 
           <div className="smd-section-actions">
-            <button
-              className="btn btn-ghost smd-upload-section-btn"
-              onClick={() => setShowUploadModal(true)}
-            >
-              ⬆ Upload
-            </button>
             <button
               className="btn btn-ghost"
               onClick={() => setManageOpen((v) => !v)}
@@ -484,12 +483,21 @@ const dashboardCss = `
   transform: translateX(3px);
 }
 
-/* Hero right: compact stats */
+/* Hero right: pomodoro + compact stats stacked */
 .smd-hero-right {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 12px;
   padding-top: 8px;
   flex-shrink: 0;
+}
+
+.smd-hero-pomodoro {
+  /* Aligns the pill to the right edge, matching stats card width */
+  align-self: stretch;
+  display: flex;
+  justify-content: flex-end;
 }
 
 .smd-hero-stats {
@@ -710,18 +718,20 @@ const dashboardCss = `
 
 /* ── Mobile overrides ────────────────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  /* Hero stacks vertically */
+  /* Hero stacks vertically; right column goes full-width */
   .smd-hero {
     flex-direction: column;
     gap: 20px;
     margin-bottom: 28px;
   }
-
   .smd-hero-right {
     width: 100%;
     padding-top: 0;
+    align-items: stretch;
   }
-
+  .smd-hero-pomodoro {
+    justify-content: center;
+  }
   .smd-hero-stats {
     width: 100%;
     justify-content: center;
@@ -730,9 +740,6 @@ const dashboardCss = `
   }
 
   .smd-hero-stat-value { font-size: 17px; }
-
-  /* Section actions collapse on very small screens */
-  .smd-upload-section-btn { display: none; }
 
   @media (max-width: 479px) {
     .smd-section-actions {
