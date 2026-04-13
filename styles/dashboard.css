@@ -1197,15 +1197,33 @@ body::before {
   .smd-progress-pill { padding: 6px 12px; font-size: 12px; }
   .smd-dashboard { padding: 22px 15px 48px; }
 
-  /* Hero: stack vertically */
+  /* Hero: stack vertically, centred */
   .smd-hero {
     flex-direction: column;
-    gap: 20px;
-    margin-bottom: 28px;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
   }
+  .smd-hero-left {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .smd-hero-heading { letter-spacing: -0.5px; }
+  .smd-hero-sub { text-align: center; max-width: 100%; }
+  .smd-continue-btn { align-self: center; }
   .smd-hero-right {
     width: 100%;
     padding-top: 0;
+    align-items: center;
+    flex-direction: column;
+  }
+  .smd-hero-pomodoro {
+    display: flex;
+    justify-content: center;
+    width: 100%;
   }
   .smd-hero-stats {
     width: 100%;
@@ -1237,7 +1255,18 @@ body::before {
   .smd-modal { border-radius: 20px 20px 0 0; padding: 18px 16px 34px; max-height: 93vh; }
   .smd-modal-actions { flex-direction: column; }
   .smd-modal-actions .btn-lg { width: 100%; justify-content: center; }
-  .pomo-panel { right: -10px; width: calc(100vw - 32px); max-width: 300px; }
+  /* Pomodoro panel: centre on viewport so it never clips off-screen */
+  .pomo-panel {
+    position: fixed !important;
+    left: 50% !important;
+    right: auto !important;
+    transform: translateX(-50%);
+    top: auto !important;
+    bottom: 80px;
+    width: calc(100vw - 32px);
+    max-width: 300px;
+    z-index: 9999;
+  }
 }
 
 /* Very small screens — section-actions wraps under title */
