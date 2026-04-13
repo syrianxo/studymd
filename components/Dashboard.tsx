@@ -16,9 +16,10 @@ import type { Course, Theme } from '@/types';
 
 interface DashboardProps {
   userName?: string;
+  initialTheme?: Theme;
 }
 
-export default function Dashboard({ userName = 'there' }: DashboardProps) {
+export default function Dashboard({ userName = 'there', initialTheme: initialThemeProp = 'midnight' }: DashboardProps) {
   const {
     lectures,
     courses,
@@ -43,7 +44,7 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
   const [manageOpen, setManageOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [theme, setTheme] = useState<Theme>('midnight');
+  const [theme, setTheme] = useState<Theme>(initialThemeProp);
 
   useEffect(() => {
     createClient().auth.getUser().then(({ data }) => {
@@ -51,6 +52,9 @@ export default function Dashboard({ userName = 'there' }: DashboardProps) {
     });
   }, []);
 
+  // Sync theme from localStorage only — the SSR-provided initialThemeProp
+  // is the authoritative initial value. localStorage is kept in sync by
+  // applyTheme() in ThemePicker so it stays current after user changes.
   useEffect(() => {
     try {
       const stored = localStorage.getItem('studymd_theme') as Theme | null;
