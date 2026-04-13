@@ -317,8 +317,11 @@ function ContextMenu({
 }
 
 // ─── KebabMenu (manage mode only) ────────────────────────────────────────────
+// Rendered via createPortal so it is fixed to the viewport and does NOT
+// scroll with the card when the user scrolls the page.
 
 interface KebabMenuProps {
+  anchorRect: DOMRect;            // bounding rect of the ⋮ button
   lecture: LectureWithSettings;
   onHide: () => void; onArchive: () => void; onRestore: () => void;
   onEditTags: () => void;
@@ -327,29 +330,83 @@ interface KebabMenuProps {
   onClose: () => void;
 }
 
-function KebabMenu({ lecture, onHide, onArchive, onRestore, onEditTags, onChangeCourse, onChangeColor, onClose }: KebabMenuProps) {
+function KebabMenu({ anchorRect, lecture, onHide, onArchive, onRestore, onEditTags, onChangeCourse, onChangeColor, onClose }: KebabMenuProps) {
   const [showCourse, setShowCourse] = useState(false);
   const [showColor, setShowColor] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
+  // Position: open below the button, clamp to viewport edges
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  useEffect(() => {
+    const menuEl = menuRef.current;
+    if (!menuEl) {
+      // Initial position before we know menu height — right-align to button
+      setPos({
+        top: anchorRect.bottom + 6,
+        left: anchorRect.right - 200, // min-width of menu
+      });
+      return;
+    }
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const mw = menuEl.offsetWidth || 200;
+    const mh = menuEl.offsetHeight || 160;
+    let left = anchorRect.right - mw;
+    let top  = anchorRect.bottom + 6;
+    if (left < 8) left = 8;
+    if (left + mw > vw - 8) left = vw - mw - 8;
+    if (top + mh > vh - 8) top = anchorRect.top - mh - 6;
+    setPos({ top, left });
+  }, [anchorRect]);
+
+  // Close on outside click, scroll, or Escape
   useEffect(() => {
     const onDown = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) onClose();
     };
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const onKey  = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const onScroll = () => onClose();
     document.addEventListener('mousedown', onDown);
     document.addEventListener('keydown', onKey);
-    return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey); };
+    window.addEventListener('scroll', onScroll, { passive: true, capture: true });
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('scroll', onScroll, { capture: true } as EventListenerOptions);
+    };
   }, [onClose]);
 
-  const { settings } = lecture;
-  return (
-    <div className="lc-menu" ref={menuRef} role="menu">
+  // Recalculate position after first paint once we know the menu height
+  useEffect(() => {
+    if (!menuRef.current || !pos) return;
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const mw = menuRef.current.offsetWidth;
+    const mh = menuRef.current.offsetHeight;
+    let left = anchorRect.right - mw;
+    let top  = anchorRect.bottom + 6;
+    if (left < 8) left = 8;
+    if (left + mw > vw - 8) left = vw - mw - 8;
+    if (top + mh > vh - 8) top = anchorRect.top - mh - 6;
+    setPos({ top, left });
+  // Only run after the ref is populated — dep array intentionally minimal
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [menuRef.current]);
+
+  if (typeof document === 'undefined' || !pos) return null;
+
+  const menu = (
+    <div
+      className="lc-menu"
+      ref={menuRef}
+      role="menu"
+      style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 99999 }}
+    >
       <div className="lc-menu-row"><div className="lc-menu-row-inner">
         <button className="lc-menu-item" onClick={onEditTags} role="menuitem"><span>🏷</span> Edit Tags</button>
       </div></div>
 
-      {/* Change Course — opens on click OR hover */}
+      {/* Change Course */}
       <div className="lc-menu-row"
         onMouseEnter={() => { setShowCourse(true); setShowColor(false); }}
         onMouseLeave={() => setShowCourse(false)}>
@@ -373,7 +430,7 @@ function KebabMenu({ lecture, onHide, onArchive, onRestore, onEditTags, onChange
         )}
       </div>
 
-      {/* Change Color — opens on click OR hover */}
+      {/* Change Color */}
       <div className="lc-menu-row"
         onMouseEnter={() => { setShowColor(true); setShowCourse(false); }}
         onMouseLeave={() => setShowColor(false)}>
@@ -401,11 +458,11 @@ function KebabMenu({ lecture, onHide, onArchive, onRestore, onEditTags, onChange
 
       <div className="lc-menu-divider" />
 
-      {settings.archived ? (
+      {lecture.settings.archived ? (
         <div className="lc-menu-row"><div className="lc-menu-row-inner">
           <button className="lc-menu-item" onClick={() => { onRestore(); onClose(); }} role="menuitem"><span>↩️</span> Restore</button>
         </div></div>
-      ) : !settings.visible ? (
+      ) : !lecture.settings.visible ? (
         <div className="lc-menu-row"><div className="lc-menu-row-inner">
           <button className="lc-menu-item" onClick={() => { onRestore(); onClose(); }} role="menuitem"><span>👁</span> Unhide</button>
         </div></div>
@@ -421,6 +478,8 @@ function KebabMenu({ lecture, onHide, onArchive, onRestore, onEditTags, onChange
       )}
     </div>
   );
+
+  return createPortal(menu, document.body);
 }
 
 // ─── LectureCard ──────────────────────────────────────────────────────────────
@@ -443,6 +502,8 @@ export function LectureCard({
   onChangeCourse, onChangeColor,
 }: LectureCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [kebabRect, setKebabRect] = useState<DOMRect | null>(null);
+  const kebabRef = useRef<HTMLButtonElement>(null);
 
   const [localColor, setLocalColor] = useState<string | null>(null);
   const [localCourse, setLocalCourse] = useState<Course | null>(null);
@@ -511,11 +572,18 @@ export function LectureCard({
         )}
 
         <button className="lc-kebab-btn"
-          onClick={(e) => { e.stopPropagation(); setMenuOpen(v => !v); }}
+          ref={kebabRef}
+          onClick={(e) => {
+            e.stopPropagation();
+            const rect = kebabRef.current?.getBoundingClientRect() ?? null;
+            setKebabRect(rect);
+            setMenuOpen(v => !v);
+          }}
           aria-label="Lecture options" aria-haspopup="true" aria-expanded={menuOpen}>⋮</button>
 
-        {menuOpen && (
+        {menuOpen && kebabRect && (
           <KebabMenu
+            anchorRect={kebabRect}
             lecture={{ ...lecture, display_color: displayColor, display_course: displayCourse }}
             onHide={onHide} onArchive={onArchive} onRestore={onRestore}
             onEditTags={onEditTags}
