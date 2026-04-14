@@ -426,6 +426,23 @@ export function ManageMode({
     []
   );
 
+  // fix #8: title rename in manage mode
+  const handleRenameTitle = useCallback(
+    (id: string, title: string) => {
+      setLectures((ls) =>
+        ls.map((l) =>
+          l.internal_id === id
+            ? { ...l, display_title: title, settings: { ...l.settings, custom_title: title } }
+            : l
+        )
+      );
+      updateLectureSettings(userId, id, { custom_title: title }).catch(() =>
+        showError('Failed to rename lecture.')
+      );
+    },
+    [userId, showError]
+  );
+
   // ── Derive all unique courses from current lecture list ────────────────────
   const allCourses = Array.from(
     new Set(lectures.map((l) => l.display_course))
@@ -499,6 +516,7 @@ export function ManageMode({
                 onEditTags={() => setTagEditorLecture(lecture)}
                 onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
                 onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
+                onRenameTitle={(title) => handleRenameTitle(lecture.internal_id, title)}
               />
             ))}
           </div>

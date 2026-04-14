@@ -179,7 +179,7 @@ export default function Dashboard({
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ internalId, updates: { courseOverride: course } }),
-    }).catch(console.error);
+    }).then(() => refetch()).catch(console.error); // fix #5: refetch after course change
   }
 
   function handleChangeColor(internalId: string, color: string) {

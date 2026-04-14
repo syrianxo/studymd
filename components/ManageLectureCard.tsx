@@ -267,7 +267,8 @@ const cardCss = `
 .lc-menu {
   position: absolute; top: 44px; right: 8px; background: var(--surface2, #1a1e27);
   border: 1px solid rgba(255,255,255,0.1); border-radius: 10px;
-  box-shadow: 0 8px 28px rgba(0,0,0,0.45); z-index: 300; min-width: 200px;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45); z-index: 300;
+  min-width: 200px; max-width: 260px; width: max-content;
   overflow: visible; animation: lc-menu-in 0.12s ease;
 }
 @keyframes lc-menu-in {

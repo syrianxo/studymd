@@ -833,19 +833,52 @@ body::before {
   touch-action: manipulation;
 }
 
-.btn-flash {
-  background: rgba(91,141,238,0.15);
-  color: var(--accent);
-  border: 1px solid rgba(91,141,238,0.25);
+/* ─── LECTURE CARD UNIFORM HEIGHT (fix #7) ────────────────────────────── */
+/* Cards use flex-column so action buttons are always at the same height */
+.smd-lecture-card .smd-card-summary {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 240px;
 }
-.btn-flash:hover { background: rgba(91,141,238,0.25); border-color: var(--accent); }
+.smd-lecture-card .smd-card-title {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-height: 2.4em; /* reserves space for 2 lines */
+}
+.smd-lecture-card .smd-card-subtitle {
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  min-height: 1em;
+}
+/* Spacer pushes progress + buttons to the bottom */
+.smd-lecture-card .smd-card-progress { margin-top: auto; margin-bottom: 12px; }
+.smd-lecture-card .smd-card-actions  { margin-top: 0; }
+
+/* Theme-aware Flashcard / Exam button hover (fix #2 & #3) */
+.btn-flash {
+  background: var(--btn-flash-hover, rgba(91,141,238,0.15));
+  color: var(--accent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.btn-flash:hover {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  border-color: var(--accent);
+}
 
 .btn-exam {
-  background: rgba(139,92,246,0.15);
-  color: var(--accent2);
-  border: 1px solid rgba(139,92,246,0.25);
+  background: var(--btn-exam-hover, rgba(139,92,246,0.15));
+  color: var(--accent2, #8b5cf6);
+  border: 1px solid color-mix(in srgb, var(--accent2, #8b5cf6) 35%, transparent);
 }
-.btn-exam:hover { background: rgba(139,92,246,0.25); border-color: var(--accent2); }
+.btn-exam:hover {
+  background: color-mix(in srgb, var(--accent2, #8b5cf6) 22%, transparent);
+  border-color: var(--accent2, #8b5cf6);
+}
 
 .btn-primary { background: var(--accent); color: #fff; border: 1px solid transparent; }
 .btn-primary:hover { background: color-mix(in srgb, var(--accent) 80%, black); transform: translateY(-1px); }

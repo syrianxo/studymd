@@ -41,10 +41,18 @@
   --shadow-md:   0 8px 24px rgba(0, 0, 0, 0.4);
   --shadow-lg:   0 24px 64px rgba(0, 0, 0, 0.6);
 
-  /* Course accent colors (consistent across themes) */
+  /* Course accent colors */
   --course-pd:   #5b8dee;   /* Physical Diagnosis I */
   --course-ap:   #10b981;   /* Anatomy & Physiology */
   --course-ld:   #f59e0b;   /* Laboratory Diagnosis */
+
+  /* Lecture card color palette (8 colors matching preset swatches) */
+  --card-c1: #5b8dee; --card-c2: #8b5cf6; --card-c3: #10b981; --card-c4: #f59e0b;
+  --card-c5: #ef4444; --card-c6: #ec4899; --card-c7: #06b6d4; --card-c8: #84cc16;
+
+  /* Button hover muted bg */
+  --btn-flash-hover: rgba(91,141,238,0.12);
+  --btn-exam-hover:  rgba(139,92,246,0.12);
 }
 
 /* ── Pink ─────────────────────────────────────────────────────────────────── */
@@ -83,6 +91,14 @@
   --course-pd:   #f472b6;
   --course-ap:   #34d399;
   --course-ld:   #fbbf24;
+
+  /* Pink-theme card palette: warmer, jewel tones that don't clash with pink */
+  --card-c1: #f472b6; --card-c2: #c084fc; --card-c3: #34d399; --card-c4: #fbbf24;
+  --card-c5: #fb7185; --card-c6: #e879f9; --card-c7: #67e8f9; --card-c8: #a3e635;
+
+  /* Button hover */
+  --btn-flash-hover: rgba(244,114,182,0.12);
+  --btn-exam-hover:  rgba(192,132,252,0.12);
 }
 
 /* ── Forest ───────────────────────────────────────────────────────────────── */
@@ -121,6 +137,14 @@
   --course-pd:   #38bdf8;
   --course-ap:   #10b981;
   --course-ld:   #fbbf24;
+
+  /* Forest-theme card palette: earthy + nature tones */
+  --card-c1: #34d399; --card-c2: #6ee7b7; --card-c3: #38bdf8; --card-c4: #fbbf24;
+  --card-c5: #f87171; --card-c6: #a78bfa; --card-c7: #22d3ee; --card-c8: #bef264;
+
+  /* Button hover */
+  --btn-flash-hover: rgba(52,211,153,0.12);
+  --btn-exam-hover:  rgba(167,139,250,0.12);
 }
 
 /* ── Smooth theme transition (applied to all elements) ─────────────────────── */

@@ -15,7 +15,8 @@ import type { Flashcard, Course } from '@/types';
 // ─── Props ───────────────────────────────────────────────────────────────────
 
 interface LectureViewModalProps {
-  lecture: Lecture;
+  lecture: Lecture | null;   // null = modal hidden but mounted
+  isOpen: boolean;
   flashcardProgress: number;
   examProgress: number;
   onClose: () => void;
@@ -79,11 +80,14 @@ function useSlides(internalId: string, slideCount: number) {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function LectureViewModal({
-  lecture, flashcardProgress, examProgress,
+  lecture, isOpen, flashcardProgress, examProgress,
   onClose, onFlashcards, onExam,
   onChangeColor, onChangeCourse, onRenameTitle,
   onHide, onArchive,
 }: LectureViewModalProps) {
+  // Guard: nothing to render if no lecture has ever been opened
+  if (!lecture) return null;
+
   const color = lecture.color_override ?? lecture.color ?? '#5b8dee';
   const title = lecture.custom_title ?? lecture.title;
   const course = (lecture.course_override ?? lecture.course) as Course;
@@ -92,6 +96,9 @@ export default function LectureViewModal({
   const fcLen = flashcards.length;
   const qLen = ((lecture.json_data as any)?.questions ?? []).length;
 
+  const [localSubtitle, setLocalSubtitle] = useState(lecture.subtitle ?? '');
+  const [isEditingSubtitle, setIsEditingSubtitle] = useState(false);
+  const subtitleInputRef = useRef<HTMLInputElement>(null);
   const [localColor, setLocalColor] = useState(color);
   const [localTitle, setLocalTitle] = useState(title);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
@@ -99,31 +106,29 @@ export default function LectureViewModal({
   const [showCourseMenu, setShowCourseMenu] = useState(false);
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const [selectedSlide, setSelectedSlide] = useState<number | null>(null);
-  const [closing, setClosing] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
-  const { urls: slideUrls, state: slideState } = useSlides(lecture.internal_id, lecture.slide_count ?? 0);
+  // Sync local state when lecture changes
+  useEffect(() => { setLocalTitle(title); }, [title]);
+  useEffect(() => { setLocalSubtitle(lecture.subtitle ?? ''); }, [lecture.subtitle]);
+  useEffect(() => { setLocalCourse(course); }, [course]);
+  useEffect(() => { setLocalColor(color); }, [color]);
 
   useEffect(() => {
+    if (!isOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && lightboxIdx === null && !isEditingTitle) handleClose();
+      if (e.key === 'Escape' && lightboxIdx === null && !isEditingTitle) onClose();
     };
     document.addEventListener('keydown', onKey);
     document.body.style.overflow = 'hidden';
     return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
-  }, [lightboxIdx, isEditingTitle]);
+  }, [isOpen, lightboxIdx, isEditingTitle, onClose]);
 
-  // Smooth close to prevent flash (fix #1)
-  function handleClose() {
-    setClosing(true);
-    setTimeout(() => onClose(), 150);
-  }
+  function handleClose() { onClose(); }
+  function handleStudyAction(action: () => void) { action(); onClose(); }
 
-  function handleStudyAction(action: () => void) {
-    setClosing(true);
-    setTimeout(() => action(), 150);
-  }
+  const { urls: slideUrls, state: slideState } = useSlides(lecture.internal_id, lecture.slide_count ?? 0);
 
   // Editable title (fix #5)
   function handleTitleSave() {
@@ -132,6 +137,19 @@ export default function LectureViewModal({
       onRenameTitle?.(localTitle.trim());
     } else {
       setLocalTitle(title);
+    }
+  }
+
+  // Subtitle edit (fix #6)
+  function handleSubtitleSave() {
+    setIsEditingSubtitle(false);
+    if (localSubtitle.trim() !== (lecture.subtitle ?? '')) {
+      // Save via the same rename API, pass subtitle field
+      fetch('/api/lectures/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ internalId: lecture.internal_id, updates: { subtitle: localSubtitle.trim() } }),
+      }).catch(console.error);
     }
   }
 
@@ -152,12 +170,13 @@ export default function LectureViewModal({
   return createPortal(
     <div
       ref={overlayRef}
-      className={`lvm-overlay${closing ? ' lvm-closing' : ''}`}
+      className={`lvm-overlay${isOpen ? ' lvm-visible' : ''}`}
       onClick={(e) => { if (e.target === overlayRef.current) handleClose(); }}
+      aria-hidden={!isOpen}
     >
       <style>{modalCss}</style>
 
-      <div className={`lvm-modal${closing ? ' lvm-modal-closing' : ''}`} role="dialog" aria-modal="true" aria-label={localTitle}>
+      <div className="lvm-modal" role="dialog" aria-modal={isOpen} aria-label={localTitle}>
         <div className="lvm-drag-handle" />
 
         {/* ── Header: close button only ── */}
@@ -191,7 +210,28 @@ export default function LectureViewModal({
                 {onRenameTitle && <span className="lvm-edit-hint">✎</span>}
               </h2>
             )}
-            {lecture.subtitle && <p className="lvm-subtitle">{lecture.subtitle}</p>}
+            {isEditingSubtitle ? (
+              <input
+                ref={subtitleInputRef}
+                className="lvm-subtitle-input"
+                value={localSubtitle}
+                onChange={e => setLocalSubtitle(e.target.value)}
+                onBlur={handleSubtitleSave}
+                onKeyDown={e => { if (e.key === 'Enter') handleSubtitleSave(); if (e.key === 'Escape') { setLocalSubtitle(lecture.subtitle ?? ''); setIsEditingSubtitle(false); } }}
+                placeholder="Add a subtitle…"
+                autoFocus
+              />
+            ) : (
+              <p
+                className="lvm-subtitle"
+                onClick={() => setIsEditingSubtitle(true)}
+                style={{ cursor: 'text', minHeight: 18 }}
+                title="Click to edit subtitle"
+              >
+                {localSubtitle || <span style={{ opacity: 0.35 }}>Add subtitle…</span>}
+                <span className="lvm-edit-hint">✎</span>
+              </p>
+            )}
 
             {/* Course badge — clickable to change */}
             <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -363,11 +403,11 @@ const modalCss = `
   position: fixed; inset: 0;
   background: rgba(0,0,0,0.75); backdrop-filter: blur(8px);
   z-index: 500; display: flex; align-items: flex-end; justify-content: center;
-  animation: lvm-fade-in 0.15s ease forwards;
-  transition: opacity 0.15s ease;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.2s ease;
 }
+.lvm-overlay.lvm-visible { opacity: 1; pointer-events: auto; }
 .lvm-overlay.lvm-closing { opacity: 0; }
-@keyframes lvm-fade-in { from { opacity: 0; } to { opacity: 1; } }
 
 .lvm-modal {
   background: var(--surface, #13161d);
@@ -375,12 +415,11 @@ const modalCss = `
   border-radius: 20px 20px 0 0;
   padding: 12px 20px 28px; width: 100%; max-width: 640px;
   max-height: 92vh; overflow-y: auto;
-  animation: lvm-slide-up 0.3s cubic-bezier(0.34, 1.2, 0.64, 1) forwards;
-  transition: transform 0.15s ease, opacity 0.15s ease;
+  transform: translateY(40px);
+  transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
   scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
 }
-.lvm-modal.lvm-modal-closing { transform: translateY(30px); opacity: 0; }
-@keyframes lvm-slide-up { from { transform: translateY(40px); opacity: 0.8; } to { transform: translateY(0); opacity: 1; } }
+.lvm-overlay.lvm-visible .lvm-modal { transform: translateY(0); }
 
 .lvm-drag-handle { width: 36px; height: 4px; background: var(--border-bright); border-radius: 2px; margin: 0 auto 14px; }
 .lvm-header { display: flex; align-items: center; justify-content: flex-end; margin-bottom: 12px; }
@@ -409,7 +448,14 @@ const modalCss = `
   border: 1px solid var(--accent); border-radius: 8px; padding: 4px 8px;
   width: 100%; outline: none;
 }
-.lvm-subtitle { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 6px; }
+.lvm-subtitle { font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 6px; position: relative; display: inline-block; }
+.lvm-subtitle:hover .lvm-edit-hint { opacity: 0.6; }
+.lvm-subtitle-input {
+  font-family: 'Outfit', sans-serif; font-size: 13px;
+  color: var(--text); line-height: 1.5; background: var(--surface2);
+  border: 1px solid var(--accent); border-radius: 6px; padding: 3px 8px;
+  width: 100%; outline: none; margin-bottom: 6px;
+}
 .lvm-course {
   display: inline-flex; align-items: center; font-family: 'DM Mono', monospace;
   font-size: 10px; letter-spacing: 0.04em; padding: 2px 8px; border-radius: 100px;
@@ -454,9 +500,9 @@ const modalCss = `
 }
 .lvm-study-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
 .lvm-study-btn.flash { border-color: rgba(91,141,238,0.3); }
-.lvm-study-btn.flash:hover { background: rgba(91,141,238,0.1); border-color: #5b8dee; }
+.lvm-study-btn.flash:hover { background: var(--accent-muted, rgba(91,141,238,0.1)); border-color: var(--accent); }
 .lvm-study-btn.exam { border-color: rgba(139,92,246,0.3); }
-.lvm-study-btn.exam:hover { background: rgba(139,92,246,0.1); border-color: #8b5cf6; }
+.lvm-study-btn.exam:hover { background: rgba(var(--accent2-rgb, 139,92,246), 0.1); border-color: var(--accent2, #8b5cf6); }
 .lvm-btn-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
 .lvm-btn-text { display: flex; flex-direction: column; }
 .lvm-btn-label { font-size: 13px; font-weight: 600; }
@@ -508,7 +554,8 @@ const modalCss = `
 /* Desktop */
 @media (min-width: 768px) {
   .lvm-overlay { align-items: center; padding: 20px; }
-  .lvm-modal { border-radius: 20px; }
+  .lvm-modal { border-radius: 20px; transform: translateY(20px) scale(0.97); }
+  .lvm-overlay.lvm-visible .lvm-modal { transform: translateY(0) scale(1); }
   .lvm-drag-handle { display: none; }
 }
 /* Mobile */

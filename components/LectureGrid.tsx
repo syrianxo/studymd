@@ -1,9 +1,9 @@
 // components/LectureGrid.tsx
-// Manages the grid layout of lecture cards on the normal dashboard.
-// Imports LectureCard for rendering and LectureViewModal for the pop-out.
+// Grid layout of lecture cards. LectureViewModal is kept permanently mounted
+// to prevent the re-render flash on open/close — only its content swaps.
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import LectureCard from './LectureCard';
 import LectureViewModal from './LectureViewModal';
 import type { Lecture } from '@/hooks/useUserLectures';
@@ -30,9 +30,22 @@ export default function LectureGrid({
   onHide, onArchive, onRenameTitle,
 }: LectureGridProps) {
   const [openLecture, setOpenLecture] = useState<Lecture | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const openProgress = openLecture
     ? progressByLecture[openLecture.internal_id] ?? null
     : null;
+
+  const handleOpen = useCallback((lecture: Lecture) => {
+    setOpenLecture(lecture);
+    setIsModalOpen(true);
+  }, []);
+
+  const handleClose = useCallback(() => {
+    setIsModalOpen(false);
+    // Keep openLecture populated for 300ms so the close animation plays cleanly
+    setTimeout(() => setOpenLecture(null), 300);
+  }, []);
 
   if (loading) {
     return (
@@ -68,7 +81,7 @@ export default function LectureGrid({
               lecture={lecture}
               flashcardProgress={progress?.mastery_pct ?? 0}
               examProgress={progress?.best_exam_score ?? 0}
-              onOpen={() => setOpenLecture(lecture)}
+              onOpen={() => handleOpen(lecture)}
               onFlashcards={() => onStartFlash(lecture.internal_id)}
               onExam={() => onStartExam(lecture.internal_id)}
               onChangeCourse={onChangeCourse ? (c) => onChangeCourse(lecture.internal_id, c) : undefined}
@@ -80,27 +93,27 @@ export default function LectureGrid({
         })}
       </div>
 
-      {openLecture && (
-        <LectureViewModal
-          lecture={openLecture}
-          flashcardProgress={openProgress?.mastery_pct ?? 0}
-          examProgress={openProgress?.best_exam_score ?? 0}
-          onClose={() => setOpenLecture(null)}
-          onFlashcards={() => {
-            setOpenLecture(null);
-            onStartFlash(openLecture.internal_id);
-          }}
-          onExam={() => {
-            setOpenLecture(null);
-            onStartExam(openLecture.internal_id);
-          }}
-          onChangeColor={onChangeColor ? (c) => onChangeColor(openLecture.internal_id, c) : undefined}
-          onChangeCourse={onChangeCourse ? (c) => onChangeCourse(openLecture.internal_id, c) : undefined}
-          onRenameTitle={onRenameTitle ? (t) => onRenameTitle(openLecture.internal_id, t) : undefined}
-          onHide={onHide ? () => { onHide(openLecture.internal_id); setOpenLecture(null); } : undefined}
-          onArchive={onArchive ? () => { onArchive(openLecture.internal_id); setOpenLecture(null); } : undefined}
-        />
-      )}
+      {/* Modal is always mounted once a lecture has been opened — avoids flash on re-open */}
+      <LectureViewModal
+        lecture={openLecture}
+        isOpen={isModalOpen}
+        flashcardProgress={openProgress?.mastery_pct ?? 0}
+        examProgress={openProgress?.best_exam_score ?? 0}
+        onClose={handleClose}
+        onFlashcards={() => {
+          handleClose();
+          if (openLecture) onStartFlash(openLecture.internal_id);
+        }}
+        onExam={() => {
+          handleClose();
+          if (openLecture) onStartExam(openLecture.internal_id);
+        }}
+        onChangeColor={onChangeColor && openLecture ? (c) => onChangeColor(openLecture.internal_id, c) : undefined}
+        onChangeCourse={onChangeCourse && openLecture ? (c) => onChangeCourse(openLecture.internal_id, c) : undefined}
+        onRenameTitle={onRenameTitle && openLecture ? (t) => onRenameTitle(openLecture.internal_id, t) : undefined}
+        onHide={onHide && openLecture ? () => { onHide(openLecture.internal_id); handleClose(); } : undefined}
+        onArchive={onArchive && openLecture ? () => { onArchive(openLecture.internal_id); handleClose(); } : undefined}
+      />
     </>
   );
 }
