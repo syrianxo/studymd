@@ -1,8 +1,9 @@
 'use client';
 
 // components/LectureCard.tsx
-// v2.6: Restored v1-style expand panel with slide thumbnail strip + lightbox.
-//       Added full mobile responsive layout per HIG touch-target requirements.
+// v2.7: Restored v1-style expand panel with slide thumbnail strip + lightbox.
+//       Mobile: inline submenu at <640px, 44px touch targets, 32px color swatches.
+//       Dual-purpose: isManageMode=true (drag/kebab), isManageMode=false (expand/study).
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
@@ -299,6 +300,10 @@ const cardCss = `
 }
 .lc-color-swatch:hover { transform: scale(1.18); }
 .lc-color-swatch.selected { border-color: rgba(255,255,255,0.7); box-shadow: 0 0 0 1px rgba(255,255,255,0.3); }
+@media (max-width: 639px) {
+  .lc-color-swatch { width: 32px; height: 32px; }
+  .lc-color-row { gap: 10px; padding: 12px 16px; }
+}
 
 .lc-restore-btn {
   display: block; width: 100%; text-align: center; margin-top: 10px; padding: 6px;
