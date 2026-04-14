@@ -8,7 +8,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { createClient } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase';
 import type { LectureWithSettings, Course } from '@/types';
 
 const COURSES: Course[] = [
