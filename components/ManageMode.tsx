@@ -55,7 +55,7 @@ async function fetchAllTags(_userId: string): Promise<string[]> {
   const data = await res.json();
   return data.tags ?? [];
 }
-import { LectureCard } from './LectureCard';
+import { ManageLectureCard } from './ManageLectureCard';
 import { TagEditor } from './TagEditor';
 import { FilterBar, applyFilters, type FilterState } from './FilterBar';
 import type { LectureWithSettings, Course } from '@/types';
@@ -486,7 +486,7 @@ export function ManageMode({
               </div>
             )}
             {visibleLectures.map((lecture) => (
-              <LectureCard
+              <ManageLectureCard
                 key={lecture.internal_id}
                 lecture={lecture}
                 isManageMode={isManageMode}
@@ -515,7 +515,7 @@ export function ManageMode({
           </div>
           <div className="mm-grid">
             {archivedLectures.map((lecture) => (
-              <LectureCard
+              <ManageLectureCard
                 key={lecture.internal_id}
                 lecture={lecture}
                 isManageMode={isManageMode}
@@ -544,7 +544,7 @@ export function ManageMode({
           </div>
           <div className="mm-grid">
             {hiddenLectures.map((lecture) => (
-              <LectureCard
+              <ManageLectureCard
                 key={lecture.internal_id}
                 lecture={lecture}
                 isManageMode={isManageMode}
