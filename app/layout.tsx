@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "../styles/themes.css";
 import "./globals.css";
 import AppBootstrap from '@/components/AppBootstrap';
+import { PomoProvider } from '@/components/PomodoroTimer';
 import '@/styles/dashboard.css';
 import '@/styles/study.css';
 
@@ -42,7 +43,9 @@ export default function RootLayout({
       </head>
       <body>
         <AppBootstrap />
-        {children}
+        <PomoProvider>
+          {children}
+        </PomoProvider>
       </body>
     </html>
   );

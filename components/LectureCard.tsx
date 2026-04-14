@@ -104,30 +104,21 @@ export default function LectureCard({
           <div className="smd-card-title">{title}</div>
           {lecture.subtitle && <div className="smd-card-subtitle">{lecture.subtitle}</div>}
 
-          {(flashcardProgress > 0 || examProgress > 0) && (
-            <div className="smd-card-progress">
-              {flashcardProgress > 0 && (
-                <>
-                  <div className="smd-progress-label">
-                    <span>Flashcards</span><span>{flashcardProgress}%</span>
-                  </div>
-                  <div className="smd-progress-bar">
-                    <div className="smd-progress-fill" style={{ width: `${flashcardProgress}%`, background: flashColor }} />
-                  </div>
-                </>
-              )}
-              {examProgress > 0 && (
-                <>
-                  <div className="smd-progress-label" style={{ marginTop: flashcardProgress > 0 ? 7 : 0 }}>
-                    <span>Last Exam</span><span>{examProgress}%</span>
-                  </div>
-                  <div className="smd-progress-bar">
-                    <div className="smd-progress-fill" style={{ width: `${examProgress}%`, background: examColor }} />
-                  </div>
-                </>
-              )}
+          {/* Progress bars — always shown (fix #4) */}
+          <div className="smd-card-progress">
+            <div className="smd-progress-label">
+              <span>Flashcards</span><span>{flashcardProgress > 0 ? `${flashcardProgress}%` : '—'}</span>
             </div>
-          )}
+            <div className="smd-progress-bar">
+              {flashcardProgress > 0 && <div className="smd-progress-fill" style={{ width: `${flashcardProgress}%`, background: flashColor }} />}
+            </div>
+            <div className="smd-progress-label" style={{ marginTop: 7 }}>
+              <span>Last Exam</span><span>{examProgress > 0 ? `${examProgress}%` : '—'}</span>
+            </div>
+            <div className="smd-progress-bar">
+              {examProgress > 0 && <div className="smd-progress-fill" style={{ width: `${examProgress}%`, background: examColor }} />}
+            </div>
+          </div>
 
           {/* Quick-access study buttons */}
           <div className="smd-card-actions">

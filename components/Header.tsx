@@ -5,6 +5,7 @@ import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
+import { PomodoroMiniPill } from '@/components/PomodoroTimer';
 import { ThemePicker } from './ThemePicker';
 import type { Theme } from '@/types';
 
@@ -82,14 +83,8 @@ export default function Header({
             </button>
           )}
 
-          {/* 2. Theme toggle — compact dot (always visible, no settings panel needed on mobile) */}
-          <div className="smd-hdr-theme-wrap">
-            <ThemePicker
-              userId={userId}
-              initialTheme={initialTheme}
-              variant="compact"
-            />
-          </div>
+          {/* 2. Pomodoro mini-pill — only shown when timer is running */}
+          <PomodoroMiniPill />
 
           {/* 3. Settings gear (desktop) / Sign-out icon (mobile) */}
           <div className="smd-hdr-settings-wrap" ref={settingsRef}>
