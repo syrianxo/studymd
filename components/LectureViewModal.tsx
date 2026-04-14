@@ -54,21 +54,36 @@ function useSlides(internalId: string, slideCount: number) {
     loaded.current = true;
     async function load() {
       const supabase = createClient();
-      const count = Math.max(slideCount ?? 0, 1);
+      // If slide_count is 0/null (common for migrated lectures), probe up to 200
+      const count = (slideCount && slideCount > 0) ? slideCount : 200;
       const built: string[] = [];
       for (let i = 1; i <= count; i++) {
         const path = `slides/${internalId}/slide_${String(i).padStart(2, '0')}.jpg`;
-        const { data } = supabase.storage.from('studymd').getPublicUrl(path);
+        const { data } = supabase.storage.from('slides').getPublicUrl(path);
         if (data?.publicUrl) built.push(data.publicUrl);
       }
-      if (built.length > 0) {
-        try {
-          const res = await fetch(built[0], { method: 'HEAD' });
-          if (!res.ok) { setState('empty'); return; }
-        } catch { setState('empty'); return; }
-      }
       if (built.length === 0) { setState('empty'); return; }
-      setUrls(built);
+      // Probe the first URL to confirm slides actually exist in storage
+      try {
+        const res = await fetch(built[0], { method: 'HEAD' });
+        if (!res.ok) { setState('empty'); return; }
+      } catch { setState('empty'); return; }
+      // If slide_count was 0, also probe the end to find real count
+      if (!slideCount || slideCount === 0) {
+        // Binary-search the actual last slide — stop at first 404
+        let lo = 1, hi = built.length;
+        while (lo < hi) {
+          const mid = Math.ceil((lo + hi) / 2);
+          const probeUrl = built[mid - 1];
+          try {
+            const r = await fetch(probeUrl, { method: 'HEAD' });
+            if (r.ok) { lo = mid; } else { hi = mid - 1; }
+          } catch { hi = mid - 1; }
+        }
+        setUrls(built.slice(0, lo));
+      } else {
+        setUrls(built);
+      }
       setState('loaded');
     }
     load();

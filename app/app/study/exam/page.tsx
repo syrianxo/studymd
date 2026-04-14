@@ -15,6 +15,7 @@ interface LectureData {
   title: string;
   json_data: {
     questions?: ExamQuestion[];
+    examQuestions?: ExamQuestion[]; // v1 key — tolerated on read
     [key: string]: unknown;
   };
 }
@@ -67,10 +68,14 @@ function ExamPageInner() {
   if (loading) return <LoadingScreen />;
   if (error || !lecture) return <ErrorScreen message={error ?? 'Unknown error'} onBack={() => router.push('/app')} />;
 
-  // ── Build question set ──────────────────────────────────────────────────
-  let questions: ExamQuestion[] = normalizeQuestions(
-    (lecture.json_data?.questions as Record<string, unknown>[] | undefined) ?? []
+  // ── Build question set ─────────────────────────────────────────────────
+  // v1 JSON uses 'examQuestions', v2 normalised key is 'questions'. Try both.
+  const rawQuestions = (
+    (lecture.json_data?.questions as Record<string, unknown>[] | undefined) ??
+    (lecture.json_data?.examQuestions as Record<string, unknown>[] | undefined) ??
+    []
   );
+  let questions: ExamQuestion[] = normalizeQuestions(rawQuestions);
   if (topicsFilter.length > 0) {
     questions = questions.filter((q) => topicsFilter.includes(q.topic));
   }

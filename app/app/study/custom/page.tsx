@@ -18,6 +18,7 @@ interface LectureData {
   json_data: {
     flashcards?: FlashCard[];
     questions?: ExamQuestion[];
+    examQuestions?: ExamQuestion[]; // v1 key — tolerated on read
   };
 }
 
@@ -108,7 +109,10 @@ function CustomPageInner() {
   }
 
   // ── Exam mode ──────────────────────────────────────────────────────────
-  let questions: ExamQuestion[] = lectures.flatMap((l) => l.json_data?.questions ?? []);
+  // v1 JSON uses 'examQuestions', v2 normalised key is 'questions'. Try both.
+  let questions: ExamQuestion[] = lectures.flatMap(
+    (l) => l.json_data?.questions ?? l.json_data?.examQuestions ?? []
+  );
 
   if (topicsFilter.length > 0) {
     questions = questions.filter((q) => topicsFilter.includes(q.topic));

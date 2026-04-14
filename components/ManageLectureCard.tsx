@@ -451,7 +451,7 @@ function SlideStrip({ internalId, slideCount, accentColor }: SlideStripProps) {
       for (let i = 1; i <= count; i++) {
         const paddedNum = String(i).padStart(2, '0');
         const path = `slides/${internalId}/slide_${paddedNum}.jpg`;
-        const { data } = supabase.storage.from('studymd').getPublicUrl(path);
+        const { data } = supabase.storage.from('slides').getPublicUrl(path);
         if (data?.publicUrl) urls.push(data.publicUrl);
       }
 
