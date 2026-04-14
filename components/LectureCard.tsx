@@ -1,13 +1,14 @@
 'use client';
 
 // components/LectureCard.tsx
-// v2.5: Added expand panel with Flashcards / Practice Exam buttons that
-//       open FlashcardConfigModal / ExamConfigModal before entering study views.
+// v2.6: Restored v1-style expand panel with slide thumbnail strip + lightbox.
+//       Added full mobile responsive layout per HIG touch-target requirements.
 
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { createClient } from '@/lib/supabase/client';
 import type { LectureWithSettings, Course } from '@/types';
 
 const COURSES: Course[] = [
@@ -116,12 +117,12 @@ const cardCss = `
 /* ── Expand panel ─────────────────────────────────────────────────────────── */
 .lc-expand-panel {
   max-height: 0; overflow: hidden;
-  transition: max-height 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: max-height 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.lc-expand-panel.open { max-height: 400px; }
+.lc-expand-panel.open { max-height: 900px; }
 
 .lc-expand-inner {
-  padding-top: 14px;
+  padding-top: 16px;
   border-top: 1px solid rgba(255,255,255,0.07);
   margin-top: 14px;
 }
@@ -129,30 +130,120 @@ const cardCss = `
 .lc-expand-section-label {
   font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.1em;
   text-transform: uppercase; color: var(--text-muted, #6b7280);
-  margin-bottom: 8px;
+  margin-bottom: 10px; font-weight: 700;
 }
 
+/* Study mode buttons — v1 style: stacked icon+label */
 .lc-study-btns {
-  display: flex; gap: 8px; margin-bottom: 14px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px;
 }
 .lc-study-btn {
-  flex: 1; display: flex; align-items: center; justify-content: center; gap: 7px;
-  padding: 10px 12px; border-radius: 10px; cursor: pointer;
-  border: 1.5px solid rgba(255,255,255,0.1);
-  background: rgba(255,255,255,0.04);
-  font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px;
+  padding: 14px 12px; border-radius: 10px; cursor: pointer;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface2, #1a1e27);
+  font-family: 'Outfit', sans-serif;
   color: var(--text, #e8eaf0);
   transition: all 0.15s; min-height: 44px;
 }
-.lc-study-btn:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.22); }
-.lc-study-btn.primary {
-  background: rgba(91,141,238,0.12); border-color: rgba(91,141,238,0.3);
-  color: #7da8f0;
+.lc-study-btn .lc-btn-icon { font-size: 20px; line-height: 1; margin-bottom: 2px; }
+.lc-study-btn .lc-btn-label { font-size: 13px; font-weight: 600; }
+.lc-study-btn .lc-btn-sub { font-size: 10px; color: var(--text-muted, #6b7280); margin-top: 1px; }
+.lc-study-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+.lc-study-btn.flash {
+  border-color: rgba(91,141,238,0.3);
 }
-.lc-study-btn.primary:hover { background: rgba(91,141,238,0.2); border-color: rgba(91,141,238,0.5); }
+.lc-study-btn.flash:hover { background: rgba(91,141,238,0.1); border-color: #5b8dee; }
+.lc-study-btn.exam {
+  border-color: rgba(139,92,246,0.3);
+}
+.lc-study-btn.exam:hover { background: rgba(139,92,246,0.1); border-color: #8b5cf6; }
 @media (max-width: 480px) {
-  .lc-study-btns { flex-direction: column; }
+  .lc-study-btns { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .lc-study-btn { padding: 12px 8px; }
 }
+
+/* ── Slide strip ──────────────────────────────────────────────────────────── */
+.lc-slide-strip {
+  display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px;
+  scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.15) transparent;
+  -webkit-overflow-scrolling: touch;
+}
+.lc-slide-strip::-webkit-scrollbar { height: 4px; }
+.lc-slide-strip::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 2px; }
+
+.lc-slide-thumb {
+  flex-shrink: 0; width: 120px; cursor: pointer;
+  border-radius: 8px; overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color 0.18s, transform 0.15s;
+  position: relative;
+}
+.lc-slide-thumb:hover { border-color: var(--accent, #5b8dee); transform: scale(1.03); }
+.lc-slide-thumb img { width: 100%; display: block; border-radius: 6px; }
+.lc-slide-num {
+  position: absolute; bottom: 4px; right: 4px;
+  background: rgba(0,0,0,0.72); color: #fff;
+  font-size: 9px; font-family: 'DM Mono', monospace;
+  padding: 1px 5px; border-radius: 4px; pointer-events: none;
+}
+.lc-slide-loading {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--text-muted, #6b7280); padding: 8px 0;
+  display: flex; align-items: center; gap: 6px;
+}
+.lc-slide-none {
+  font-size: 12px; color: var(--text-muted, #6b7280);
+  font-style: italic; padding: 8px 0;
+}
+
+/* ── Lightbox ─────────────────────────────────────────────────────────────── */
+.lc-lightbox-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.88);
+  backdrop-filter: blur(10px); z-index: 99999;
+  display: flex; align-items: center; justify-content: center;
+  animation: lc-lb-in 0.15s ease;
+}
+@keyframes lc-lb-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.lc-lightbox {
+  position: relative; max-width: min(90vw, 900px); max-height: 90vh;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.lc-lightbox img {
+  max-width: 100%; max-height: 75vh; border-radius: 10px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.7);
+  object-fit: contain;
+}
+.lc-lightbox-controls {
+  display: flex; align-items: center; gap: 12px;
+}
+.lc-lightbox-btn {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+  color: #fff; border-radius: 8px; cursor: pointer;
+  font-size: 18px; line-height: 1;
+  min-width: 44px; min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.lc-lightbox-btn:hover { background: rgba(255,255,255,0.2); }
+.lc-lightbox-btn:disabled { opacity: 0.3; cursor: default; }
+.lc-lightbox-counter {
+  font-family: 'DM Mono', monospace; font-size: 13px; color: rgba(255,255,255,0.7);
+  min-width: 60px; text-align: center;
+}
+.lc-lightbox-close {
+  position: absolute; top: -40px; right: 0;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+  color: #fff; border-radius: 8px; cursor: pointer;
+  font-size: 18px; line-height: 1;
+  min-width: 44px; min-height: 44px;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s;
+}
+.lc-lightbox-close:hover { background: rgba(255,255,255,0.2); }
 
 /* ── Kebab dropdown ─────────────────────────────────────────────────────── */
 .lc-menu {
@@ -214,6 +305,7 @@ const cardCss = `
   font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
   color: var(--accent, #5b8dee); background: rgba(91,141,238,0.1);
   border: 1px solid rgba(91,141,238,0.2); border-radius: 8px; cursor: pointer; transition: background 0.15s;
+  min-height: 44px; display: flex; align-items: center; justify-content: center; gap: 6px;
 }
 .lc-restore-btn:hover { background: rgba(91,141,238,0.18); }
 
@@ -255,6 +347,155 @@ const cardCss = `
 .lc-ctx-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 2px 0; }
 @media (max-width: 639px) { .lc-ctx-item { min-height: 44px; font-size: 14px; padding: 10px 18px; } }
 `;
+
+// ─── Lightbox ─────────────────────────────────────────────────────────────────
+
+interface LightboxProps {
+  slides: string[];
+  initialIndex: number;
+  onClose: () => void;
+}
+
+function Lightbox({ slides, initialIndex, onClose }: LightboxProps) {
+  const [idx, setIdx] = useState(initialIndex);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+      if (e.key === 'ArrowLeft') setIdx(i => Math.max(0, i - 1));
+      if (e.key === 'ArrowRight') setIdx(i => Math.min(slides.length - 1, i + 1));
+    };
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+  }, [onClose, slides.length]);
+
+  if (typeof document === 'undefined') return null;
+
+  return createPortal(
+    <div
+      className="lc-lightbox-overlay"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      role="dialog" aria-modal="true" aria-label="Slide viewer"
+    >
+      <div className="lc-lightbox">
+        <button className="lc-lightbox-close" onClick={onClose} aria-label="Close">✕</button>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={slides[idx]} alt={`Slide ${idx + 1}`} />
+        <div className="lc-lightbox-controls">
+          <button
+            className="lc-lightbox-btn"
+            onClick={() => setIdx(i => Math.max(0, i - 1))}
+            disabled={idx === 0} aria-label="Previous slide"
+          >‹</button>
+          <span className="lc-lightbox-counter">{idx + 1} / {slides.length}</span>
+          <button
+            className="lc-lightbox-btn"
+            onClick={() => setIdx(i => Math.min(slides.length - 1, i + 1))}
+            disabled={idx === slides.length - 1} aria-label="Next slide"
+          >›</button>
+        </div>
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+// ─── SlideStrip ───────────────────────────────────────────────────────────────
+
+interface SlideStripProps {
+  internalId: string;
+  slideCount: number;
+  accentColor: string;
+}
+
+type SlideState = 'loading' | 'loaded' | 'empty';
+
+function SlideStrip({ internalId, slideCount, accentColor }: SlideStripProps) {
+  const [slideUrls, setSlideUrls] = useState<string[]>([]);
+  const [state, setState] = useState<SlideState>('loading');
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+  const loadedRef = useRef(false);
+
+  useEffect(() => {
+    if (loadedRef.current) return;
+    loadedRef.current = true;
+
+    async function loadSlides() {
+      const supabase = createClient();
+      const count = Math.max(slideCount ?? 0, 1);
+      const urls: string[] = [];
+
+      for (let i = 1; i <= count; i++) {
+        const paddedNum = String(i).padStart(2, '0');
+        const path = `slides/${internalId}/slide_${paddedNum}.jpg`;
+        const { data } = supabase.storage.from('studymd').getPublicUrl(path);
+        if (data?.publicUrl) urls.push(data.publicUrl);
+      }
+
+      // Probe the first URL to see if slides actually exist
+      if (urls.length > 0) {
+        try {
+          const res = await fetch(urls[0], { method: 'HEAD' });
+          if (!res.ok) { setState('empty'); return; }
+        } catch {
+          setState('empty'); return;
+        }
+      }
+
+      if (urls.length === 0) { setState('empty'); return; }
+      setSlideUrls(urls);
+      setState('loaded');
+    }
+
+    loadSlides();
+  }, [internalId, slideCount]);
+
+  return (
+    <>
+      {state === 'loading' && (
+        <div className="lc-slide-loading">
+          <span style={{ animation: 'spin 1s linear infinite', display: 'inline-block' }}>⟳</span>
+          Loading slides…
+        </div>
+      )}
+      {state === 'empty' && (
+        <div className="lc-slide-none">No slide images available</div>
+      )}
+      {state === 'loaded' && (
+        <div className="lc-slide-strip" role="list" aria-label="Lecture slides">
+          {slideUrls.map((url, i) => (
+            <div
+              key={i}
+              className="lc-slide-thumb"
+              role="listitem"
+              tabIndex={0}
+              aria-label={`Slide ${i + 1}`}
+              onClick={(e) => { e.stopPropagation(); setLightboxIdx(i); }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLightboxIdx(i); } }}
+              style={{ borderColor: lightboxIdx === i ? accentColor : undefined }}
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={url} alt={`Slide ${i + 1}`} loading="lazy" />
+              <span className="lc-slide-num">{i + 1}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {lightboxIdx !== null && (
+        <Lightbox
+          slides={slideUrls}
+          initialIndex={lightboxIdx}
+          onClose={() => setLightboxIdx(null)}
+        />
+      )}
+
+      <style>{`
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+      `}</style>
+    </>
+  );
+}
 
 // ─── ContextMenu via Portal ────────────────────────────────────────────────
 
@@ -709,27 +950,44 @@ export function LectureCard({
 
         <div className="lc-slide-count">{lecture.slide_count} slides</div>
 
-        {/* ── Expand panel: Study Mode buttons ── */}
+        {/* ── Expand panel: Study Mode + Slide strip ── */}
         {hasStudyActions && !isManageMode && (
           <div className={`lc-expand-panel${expanded ? ' open' : ''}`}>
             <div className="lc-expand-inner">
+
+              {/* STUDY MODE */}
               <div className="lc-expand-section-label">Study Mode</div>
               <div className="lc-study-btns">
                 <button
-                  className="lc-study-btn primary"
+                  className="lc-study-btn flash"
                   onClick={handleFlashcardsClick}
                   aria-label={`Study flashcards for ${lecture.display_title}`}
                 >
-                  📇 Flashcards
+                  <span className="lc-btn-icon">📇</span>
+                  <span className="lc-btn-label">Flashcards</span>
+                  <span className="lc-btn-sub">Review & memorize</span>
                 </button>
                 <button
-                  className="lc-study-btn"
+                  className="lc-study-btn exam"
                   onClick={handleExamClick}
                   aria-label={`Practice exam for ${lecture.display_title}`}
                 >
-                  📝 Practice Exam
+                  <span className="lc-btn-icon">📝</span>
+                  <span className="lc-btn-label">Practice Exam</span>
+                  <span className="lc-btn-sub">Test your knowledge</span>
                 </button>
               </div>
+
+              {/* LECTURE SLIDES */}
+              <div className="lc-expand-section-label">Lecture Slides</div>
+              {expanded && (
+                <SlideStrip
+                  internalId={lecture.internal_id}
+                  slideCount={lecture.slide_count ?? 0}
+                  accentColor={displayColor}
+                />
+              )}
+
             </div>
           </div>
         )}
