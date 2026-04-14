@@ -208,6 +208,14 @@ export default function Dashboard({
     refetch();
   }
 
+  function handleRenameTitle(internalId: string, title: string) {
+    fetch('/api/lectures/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ internalId, updates: { customTitle: title } }),
+    }).then(() => refetch()).catch(console.error);
+  }
+
   if (lecturesError) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -418,6 +426,7 @@ export default function Dashboard({
             onChangeColor={handleChangeColor}
             onHide={handleHide}
             onArchive={handleArchive}
+            onRenameTitle={handleRenameTitle}
           />
         )}
       </main>

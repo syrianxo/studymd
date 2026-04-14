@@ -82,6 +82,23 @@ const cardCss = `
 }
 .lc-slide-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted, #6b7280); margin-top: 10px; }
 
+/* Editable title input */
+.lc-title-input {
+  font-family: 'Fraunces', Georgia, serif; font-size: 16px; font-weight: 600;
+  color: var(--text, #e8eaf0); line-height: 1.3;
+  background: var(--surface2, #1a1e27); border: 1px solid var(--accent, #5b8dee);
+  border-radius: 6px; padding: 3px 6px; width: 100%; outline: none;
+}
+
+/* Counts row (manage mode — replaces progress bars) */
+.lc-counts-row {
+  display: flex; gap: 14px; margin-bottom: 10px;
+}
+.lc-count-item {
+  font-family: 'DM Mono', monospace; font-size: 11px;
+  color: var(--text-muted, #6b7280);
+}
+
 .lc-drag-handle {
   position: absolute; top: 14px; left: 12px; color: var(--text-muted, #6b7280);
   cursor: grab; font-size: 16px; line-height: 1; opacity: 0.5; transition: opacity 0.15s; z-index: 5; display: none;
@@ -765,7 +782,6 @@ interface LectureCardProps {
   isManageMode: boolean;
   flashcardProgress?: number;
   examProgress?: number;
-  /** @deprecated use onFlashcards / onExam instead; kept for backward-compat */
   onOpen?: () => void;
   onFlashcards?: () => void;
   onExam?: () => void;
@@ -775,6 +791,7 @@ interface LectureCardProps {
   onEditTags: () => void;
   onChangeCourse: (course: Course) => void;
   onChangeColor: (color: string) => void;
+  onRenameTitle?: (title: string) => void;
 }
 
 export function ManageLectureCard({
@@ -782,12 +799,17 @@ export function ManageLectureCard({
   flashcardProgress = 0, examProgress = 0,
   onOpen, onFlashcards, onExam,
   onHide, onArchive, onRestore, onEditTags,
-  onChangeCourse, onChangeColor,
+  onChangeCourse, onChangeColor, onRenameTitle,
 }: LectureCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [kebabRect, setKebabRect] = useState<DOMRect | null>(null);
   const [expanded, setExpanded] = useState(false);
   const kebabRef = useRef<HTMLButtonElement>(null);
+
+  // Editable title state
+  const [isEditingTitle, setIsEditingTitle] = useState(false);
+  const [editTitle, setEditTitle] = useState(lecture.display_title);
+  const titleInputRef = useRef<HTMLInputElement>(null);
 
   const [localColor, setLocalColor] = useState<string | null>(null);
   const [localCourse, setLocalCourse] = useState<Course | null>(null);
@@ -917,7 +939,35 @@ export function ManageLectureCard({
         <div className="lc-header" style={{ paddingLeft: isManageMode ? 20 : 0 }}>
           <div className="lc-icon">{lecture.icon}</div>
           <div className="lc-title-block">
-            <div className="lc-title">{lecture.display_title}</div>
+            {isEditingTitle ? (
+              <input
+                ref={titleInputRef}
+                className="lc-title-input"
+                value={editTitle}
+                onChange={(e) => setEditTitle(e.target.value)}
+                onBlur={() => {
+                  setIsEditingTitle(false);
+                  if (editTitle.trim() && editTitle !== lecture.display_title) onRenameTitle?.(editTitle.trim());
+                  else setEditTitle(lecture.display_title);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
+                  if (e.key === 'Escape') { setEditTitle(lecture.display_title); setIsEditingTitle(false); }
+                }}
+                onClick={(e) => e.stopPropagation()}
+                autoFocus
+              />
+            ) : (
+              <div
+                className="lc-title"
+                onDoubleClick={(e) => {
+                  if (onRenameTitle) { e.stopPropagation(); setIsEditingTitle(true); setTimeout(() => titleInputRef.current?.select(), 0); }
+                }}
+                title={onRenameTitle ? 'Double-click to rename' : undefined}
+              >
+                {lecture.display_title}
+              </div>
+            )}
             <span
               className="lc-course-badge"
               style={{ background: `${displayColor}22`, color: displayColor }}
@@ -930,21 +980,10 @@ export function ManageLectureCard({
           </div>
         </div>
 
-        <div className="lc-progress-row">
-          <div className="lc-progress-item">
-            <span>Flashcards</span>
-            <div className="lc-progress-bar-bg">
-              <div className="lc-progress-bar-fill"
-                style={{ width: `${flashcardProgress}%`, background: displayColor, opacity: 0.75 }} />
-            </div>
-          </div>
-          <div className="lc-progress-item">
-            <span>Exam</span>
-            <div className="lc-progress-bar-bg">
-              <div className="lc-progress-bar-fill"
-                style={{ width: `${examProgress}%`, background: displayColor, opacity: 0.75 }} />
-            </div>
-          </div>
+        {/* Flashcard / Exam counts instead of progress bars */}
+        <div className="lc-counts-row">
+          <span className="lc-count-item">📇 {(lecture.json_data as any)?.flashcards?.length ?? 0} cards</span>
+          <span className="lc-count-item">📝 {(lecture.json_data as any)?.questions?.length ?? 0} questions</span>
         </div>
 
         {lecture.settings.tags.length > 0 && (

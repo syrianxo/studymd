@@ -1,7 +1,6 @@
 // components/LectureGrid.tsx
 // Manages the grid layout of lecture cards on the normal dashboard.
 // Imports LectureCard for rendering and LectureViewModal for the pop-out.
-// Does NOT contain card rendering logic — that lives in LectureCard.tsx.
 'use client';
 
 import React, { useState } from 'react';
@@ -10,8 +9,6 @@ import LectureViewModal from './LectureViewModal';
 import type { Lecture } from '@/hooks/useUserLectures';
 import type { LectureProgress } from '@/hooks/useProgress';
 import type { Course } from '@/types';
-
-// ─── Types ───────────────────────────────────────────────────────────────────
 
 interface LectureGridProps {
   lectures: Lecture[];
@@ -23,14 +20,14 @@ interface LectureGridProps {
   onChangeColor?: (lectureId: string, color: string) => void;
   onHide?: (lectureId: string) => void;
   onArchive?: (lectureId: string) => void;
+  onRenameTitle?: (lectureId: string, title: string) => void;
 }
-
-// ─── Grid ────────────────────────────────────────────────────────────────────
 
 export default function LectureGrid({
   lectures, progressByLecture, loading,
   onStartFlash, onStartExam,
-  onChangeColor, onHide, onArchive,
+  onChangeCourse, onChangeColor,
+  onHide, onArchive, onRenameTitle,
 }: LectureGridProps) {
   const [openLecture, setOpenLecture] = useState<Lecture | null>(null);
   const openProgress = openLecture
@@ -72,12 +69,17 @@ export default function LectureGrid({
               flashcardProgress={progress?.mastery_pct ?? 0}
               examProgress={progress?.best_exam_score ?? 0}
               onOpen={() => setOpenLecture(lecture)}
+              onFlashcards={() => onStartFlash(lecture.internal_id)}
+              onExam={() => onStartExam(lecture.internal_id)}
+              onChangeCourse={onChangeCourse ? (c) => onChangeCourse(lecture.internal_id, c) : undefined}
+              onChangeColor={onChangeColor ? (c) => onChangeColor(lecture.internal_id, c) : undefined}
+              onHide={onHide ? () => onHide(lecture.internal_id) : undefined}
+              onArchive={onArchive ? () => onArchive(lecture.internal_id) : undefined}
             />
           );
         })}
       </div>
 
-      {/* Pop-out modal when a card is clicked */}
       {openLecture && (
         <LectureViewModal
           lecture={openLecture}
@@ -92,22 +94,16 @@ export default function LectureGrid({
             setOpenLecture(null);
             onStartExam(openLecture.internal_id);
           }}
-          onChangeColor={onChangeColor
-            ? (c) => onChangeColor(openLecture.internal_id, c)
-            : undefined}
-          onHide={onHide
-            ? () => { onHide(openLecture.internal_id); setOpenLecture(null); }
-            : undefined}
-          onArchive={onArchive
-            ? () => { onArchive(openLecture.internal_id); setOpenLecture(null); }
-            : undefined}
+          onChangeColor={onChangeColor ? (c) => onChangeColor(openLecture.internal_id, c) : undefined}
+          onChangeCourse={onChangeCourse ? (c) => onChangeCourse(openLecture.internal_id, c) : undefined}
+          onRenameTitle={onRenameTitle ? (t) => onRenameTitle(openLecture.internal_id, t) : undefined}
+          onHide={onHide ? () => { onHide(openLecture.internal_id); setOpenLecture(null); } : undefined}
+          onArchive={onArchive ? () => { onArchive(openLecture.internal_id); setOpenLecture(null); } : undefined}
         />
       )}
     </>
   );
 }
-
-// ─── Skeleton ────────────────────────────────────────────────────────────────
 
 function SkeletonCard() {
   return (
