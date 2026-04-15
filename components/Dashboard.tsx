@@ -12,7 +12,6 @@ import { useUserLectures, resolveColor } from '@/hooks/useUserLectures';
 import type { Lecture } from '@/hooks/useUserLectures';
 import { useProgress } from '@/hooks/useProgress';
 import { createClient } from '@/lib/supabase';
-import UploadModal from '@/components/UploadModal';
 import PomodoroTimer from '@/components/PomodoroTimer';
 import { StudyConfigManager, useStudyConfig } from '@/components/StudyConfigManager';
 import type { Course, Theme } from '@/types';
@@ -53,7 +52,6 @@ export default function Dashboard({
   const [customModalOpen, setCustomModalOpen] = useState(false);
   const [manageOpen, setManageOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
-  const [showUploadModal, setShowUploadModal] = useState(false);
   const [theme, setTheme] = useState<Theme>(initialThemeProp);
   const studyConfig = useStudyConfig();
 
@@ -170,11 +168,6 @@ export default function Dashboard({
     window.location.href = `/app/study/custom?${params.toString()}`;
   }
 
-  function handleLectureCreated(_internalId: string) {
-    setShowUploadModal(false);
-    refetch();
-  }
-
   function handleChangeCourse(internalId: string, course: Course) {
     fetch('/api/lectures/settings', {
       method: 'PUT',
@@ -224,7 +217,6 @@ export default function Dashboard({
           loading
           userId={userId ?? ''}
           initialTheme={theme}
-          onUploadClick={() => setShowUploadModal(true)}
         />
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, padding: 40, textAlign: 'center' }}>
           <div style={{ fontSize: 42 }}>⚠️</div>
@@ -249,7 +241,6 @@ export default function Dashboard({
         loading={lecturesLoading}
         userId={userId ?? ''}
         initialTheme={theme}
-        onUploadClick={() => setShowUploadModal(true)}
       />
 
       <main className="smd-dashboard" id="mainDashboard">
@@ -492,11 +483,7 @@ export default function Dashboard({
           handleCustomSession(config);
         }}
       />
-      <UploadModal
-        isOpen={showUploadModal}
-        onClose={() => setShowUploadModal(false)}
-        onLectureCreated={handleLectureCreated}
-      />
+      {/* UploadModal removed — upload lives at /app/upload */}
     </>
   );
 }
