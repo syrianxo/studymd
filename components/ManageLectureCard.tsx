@@ -831,13 +831,22 @@ export function ManageLectureCard({
 
   const [localColor, setLocalColor] = useState<string | null>(null);
   const [localCourse, setLocalCourse] = useState<Course | null>(null);
-  useEffect(() => { setLocalColor(null); }, [lecture.display_color]);
+  // Track whether local overrides were set by user interaction (not prop change)
+  const localColorSet = useRef(false);
+  useEffect(() => {
+    // Only reset local color if it wasn't set by the user in this session
+    if (!localColorSet.current) setLocalColor(null);
+  }, [lecture.display_color]);
   useEffect(() => { setLocalCourse(null); }, [lecture.display_course]);
 
   const displayColor = localColor ?? lecture.display_color;
   const displayCourse = localCourse ?? lecture.display_course;
 
-  const handleChangeColor = useCallback((c: string) => { setLocalColor(c); onChangeColor(c); }, [onChangeColor]);
+  const handleChangeColor = useCallback((c: string) => {
+    localColorSet.current = true;
+    setLocalColor(c);
+    onChangeColor(c);
+  }, [onChangeColor]);
   const handleChangeCourse = useCallback((c: Course) => { setLocalCourse(c); onChangeCourse(c); }, [onChangeCourse]);
 
   type CtxMode = { x: number; y: number; showColor: boolean; showCourse: boolean; showVisibility: boolean } | null;
@@ -922,15 +931,18 @@ export function ManageLectureCard({
         <button className="lc-kebab-btn"
           ref={kebabRef}
           onPointerDown={(e) => {
-            // Stop the event reaching the document touchstart/mousedown close handler
-            // so toggling works correctly: open→close, not open→close→reopen
             e.stopPropagation();
           }}
           onClick={(e) => {
             e.stopPropagation();
+            if (menuOpen) {
+              // Menu is open — close it directly without re-opening
+              setMenuOpen(false);
+              return;
+            }
             const rect = kebabRef.current?.getBoundingClientRect() ?? null;
             setKebabRect(rect);
-            setMenuOpen(v => !v);
+            setMenuOpen(true);
           }}
           aria-label="Lecture options" aria-haspopup="true" aria-expanded={menuOpen}>⋮</button>
 

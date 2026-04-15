@@ -31,13 +31,17 @@ export default function Header({
   const settingsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function onDown(e: MouseEvent) {
+    function onDown(e: MouseEvent | TouchEvent) {
       if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
         setSettingsOpen(false);
       }
     }
     document.addEventListener('mousedown', onDown);
-    return () => document.removeEventListener('mousedown', onDown);
+    document.addEventListener('touchstart', onDown as EventListener, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('touchstart', onDown as EventListener);
+    };
   }, []);
 
   async function handleSignOut() {
@@ -86,11 +90,10 @@ export default function Header({
           {/* 2. Pomodoro mini-pill — only shown when timer is running */}
           <PomodoroMiniPill />
 
-          {/* 3. Settings gear (desktop) / Sign-out icon (mobile) */}
+          {/* 3. Settings gear — opens dropdown with theme + sign out on ALL screen sizes */}
           <div className="smd-hdr-settings-wrap" ref={settingsRef}>
-            {/* Desktop: gear icon opens dropdown with theme + sign out */}
             <button
-              className="smd-hdr-gear smd-hdr-desktop"
+              className="smd-hdr-gear"
               onClick={() => setSettingsOpen(o => !o)}
               aria-label="Settings"
               title="Settings"
@@ -107,19 +110,6 @@ export default function Header({
                   clipRule="evenodd"
                   d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
                 />
-              </svg>
-            </button>
-
-            {/* Mobile: direct sign-out icon (no gear dropdown) */}
-            <button
-              className="smd-hdr-signout-icon smd-hdr-mobile-only"
-              onClick={handleSignOut}
-              aria-label="Sign out"
-              title="Sign out"
-            >
-              <svg viewBox="0 0 20 20" fill="currentColor" width="18" height="18" aria-hidden="true">
-                <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h5a1 1 0 100-2H4V5h4a1 1 0 100-2H3z" clipRule="evenodd" />
-                <path fillRule="evenodd" d="M13.293 6.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L14.586 11H7a1 1 0 110-2h7.586l-1.293-1.293a1 1 0 010-1.414z" clipRule="evenodd" />
               </svg>
             </button>
 
@@ -328,7 +318,7 @@ const headerCss = `
 
 /* ── Mobile (< 768px) ──────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  /* Hide desktop-only elements */
+  /* Hide desktop subtitle */
   .smd-hdr-desktop { display: none !important; }
   .smd-header { padding: 10px 16px; }
 
@@ -342,9 +332,18 @@ const headerCss = `
   .smd-hdr-icon { font-size: 18px; }
   .smd-header-right { gap: 4px; }
 
-  /* Show mobile sign-out icon, hide desktop gear */
-  .smd-hdr-mobile-only { display: flex !important; }
-  .smd-hdr-gear.smd-hdr-desktop { display: none !important; }
-  .smd-hdr-settings-panel { display: none !important; }
+  /* Gear is shown on mobile (no longer desktop-only) */
+  .smd-hdr-gear {
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Settings panel is allowed on mobile — remove the display:none override */
+  .smd-hdr-settings-panel {
+    display: block !important;
+    min-width: 200px;
+  }
 }
 `;

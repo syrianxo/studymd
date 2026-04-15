@@ -1,7 +1,7 @@
 // components/Dashboard.tsx
 'use client';
 
-import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import Header from './Header';
 import { FilterBar, type FilterState } from './FilterBar';
