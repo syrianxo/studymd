@@ -187,7 +187,7 @@ export default function Dashboard({
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ internalId, updates: { colorOverride: color } }),
-    }).catch(console.error);
+    }).then(() => refetch()).catch(console.error);
   }
 
   async function handleHide(internalId: string) {
@@ -650,18 +650,21 @@ const dashboardCss = `
 }
 
 /* ── Hero right: pomodoro + compact stats stacked ──────────────────────── */
+/* The pomodoro container must be a block-level column so the inline
+   panel can push the stats box down rather than overlay it.            */
 .smd-hero-right {
   flex-direction: column;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 12px;
   padding-top: 8px;
   flex-shrink: 0;
+  width: 300px;
+  position: relative;
+  z-index: 1;
 }
 
 .smd-hero-pomodoro {
-  align-self: stretch;
-  display: flex;
-  justify-content: flex-end;
+  width: 100%;
 }
 
 .smd-hero-stats {

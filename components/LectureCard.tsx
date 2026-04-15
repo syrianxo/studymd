@@ -220,13 +220,18 @@ ContextMenu.displayName = 'ContextMenu';
 const cardExtraCss = `
 .smd-card-course-badge {
   display: inline-block;
+  align-self: flex-start;   /* prevent stretching in flex-column parent */
   font-family: 'DM Mono', monospace;
   font-size: 10px;
   letter-spacing: 0.04em;
-  padding: 2px 7px;
+  padding: 2px 8px;
   border-radius: 100px;
   margin-bottom: 6px;
-  opacity: 0.85;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 `;
 

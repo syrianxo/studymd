@@ -270,24 +270,28 @@ const miniPillCss = `
 @keyframes pomo-danger-pulse{0%,100%{opacity:1}50%{opacity:0.5}}
 .pomo-mini-toggle{
   width:22px;height:22px;border-radius:50%;
-  background:rgba(91,141,238,0.15);border:1px solid rgba(91,141,238,0.3);
+  background:color-mix(in srgb, var(--accent) 18%, transparent);
+  border:1px solid color-mix(in srgb, var(--accent) 35%, transparent);
   color:var(--accent);font-size:10px;
   display:flex;align-items:center;justify-content:center;
   flex-shrink:0;cursor:pointer;transition:background 0.15s;
 }
-.pomo-mini-toggle:hover{background:rgba(91,141,238,0.28);}
+.pomo-mini-toggle:hover{background:color-mix(in srgb, var(--accent) 32%, transparent);}
 `;
 
 const pomoCss = `
 .pomo-container{width:100%;}
 
+/* Pill stretches to fill .smd-hero-pomodoro column */
 .pomo-pill{
   display:flex;align-items:center;gap:10px;
+  width:100%;
   background:var(--surface);border:1px solid var(--border);
   border-radius:50px;padding:6px 14px 6px 10px;
   cursor:pointer;user-select:none;
   transition:border-color 0.18s,border-radius 0.25s;
-  touch-action:manipulation;flex-shrink:0;
+  touch-action:manipulation;
+  box-sizing:border-box;
 }
 .pomo-pill:hover{border-color:var(--border-bright);}
 .pomo-pill.open{border-radius:14px 14px 0 0;border-color:var(--border-bright);border-bottom-color:transparent;}
@@ -308,12 +312,14 @@ const pomoCss = `
 
 .pomo-pill-toggle{
   width:24px;height:24px;border-radius:50%;flex-shrink:0;
-  background:rgba(91,141,238,0.12);border:1px solid rgba(91,141,238,0.25);
+  background:color-mix(in srgb, var(--accent) 14%, transparent);
+  border:1px solid color-mix(in srgb, var(--accent) 30%, transparent);
   color:var(--accent);font-size:10px;
   display:flex;align-items:center;justify-content:center;
   cursor:pointer;transition:background 0.15s;
+  margin-left:auto;
 }
-.pomo-pill-toggle:hover{background:rgba(91,141,238,0.25);}
+.pomo-pill-toggle:hover{background:color-mix(in srgb, var(--accent) 28%, transparent);}
 
 .pomo-panel{
   max-height:0;overflow:hidden;
