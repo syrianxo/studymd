@@ -116,8 +116,11 @@ function applyStatusToSteps(
       s[s.length - 1].label = 'Lecture ready! ✅';
       break;
     case 'error': {
-      const first = s.find((t) => t.status === 'active' || t.status === 'pending');
-      if (first) first.status = 'error';
+      // Mark the currently active step (or first pending) as error
+      const firstActive = s.find((t) => t.status === 'active');
+      const firstPending = s.find((t) => t.status === 'pending');
+      const target = firstActive ?? firstPending;
+      if (target) target.status = 'error';
       break;
     }
   }
@@ -360,6 +363,7 @@ export default function UploadPage() {
 
     if ('error' in result) {
       setSingleJob({ phase: 'error', errorMessage: result.error });
+      setSingleSteps((prev) => applyStatusToSteps(prev, 'error', 0));
       return;
     }
 
@@ -1153,9 +1157,12 @@ const css = `
   border-radius: 10px; padding: 10px 14px;
   font-family: 'Outfit', sans-serif; font-size: 14px;
   min-height: 44px; outline: none; width: 100%;
-  transition: border-color 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
 }
-.upl-select:focus, .upl-input:focus  { border-color: var(--accent); }
+.upl-select:focus, .upl-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(91,141,238,0.18);
+}
 .upl-select:disabled, .upl-input:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Cost row ────────────────────────────────────────────────────────── */

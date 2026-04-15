@@ -24,7 +24,8 @@ function getFileExtension(filename: string): string {
 function getSupabaseAdmin() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) throw new Error('Supabase environment variables are not configured.');
+  if (!url) throw new Error('NEXT_PUBLIC_SUPABASE_URL is not set.');
+  if (!key) throw new Error('SUPABASE_SERVICE_ROLE_KEY is not set in environment variables.');
   return createClient(url, key);
 }
 
@@ -146,10 +147,11 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (jobError || !job) {
+      // Surface the real Supabase error so we can diagnose it
+      const detail = jobError?.message ?? jobError?.details ?? jobError?.hint ?? 'unknown';
       console.error('Job creation error:', jobError);
-      // Don't delete the file — the user uploaded it directly; log for manual cleanup
       return NextResponse.json(
-        { error: 'Failed to create processing job. Please try again.' },
+        { error: `Failed to create processing job: ${detail}` },
         { status: 500 }
       );
     }
