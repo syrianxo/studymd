@@ -75,7 +75,7 @@ async function updateJobStatus(
   const { error } = await supabase
     .from('processing_jobs')
     .update(payload)
-    .eq('id', jobId);
+    .eq('job_id', jobId);
 
   if (error) {
     console.error(`[generate] Failed to update job ${jobId} to "${status}":`, error.message);
@@ -450,8 +450,9 @@ export async function POST(request: NextRequest) {
     input_tokens: result.inputTokens,
     output_tokens: result.outputTokens,
     estimated_cost: finalCost,
+    completed_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-  }).eq('id', jobId);
+  }).eq('job_id', jobId);
 
   return NextResponse.json({
     success: true,

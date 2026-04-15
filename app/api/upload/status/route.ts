@@ -51,8 +51,8 @@ export async function GET(request: NextRequest) {
     const supabase = getSupabaseClient();
     const { data: job, error } = await supabase
       .from('processing_jobs')
-      .select('id, user_id, status, progress, error_message, title, course, completed_at, lecture_id')
-      .eq('id', jobId)
+      .select('job_id, user_id, status, progress, error_message, title, course, completed_at, lecture_id')
+      .eq('job_id', jobId)
       .single();
 
     if (error || !job) {

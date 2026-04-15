@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
         created_at:         new Date().toISOString(),
         updated_at:         new Date().toISOString(),
       })
-      .select('id')
+      .select('job_id')
       .single();
 
     if (jobError || !job) {
@@ -154,7 +154,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ jobId: job.id, estimatedCost, estimatedTokens, tokenWarning });
+    return NextResponse.json({ jobId: job.job_id, estimatedCost, estimatedTokens, tokenWarning });
   } catch (err) {
     console.error('Upload route error:', err);
     return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
