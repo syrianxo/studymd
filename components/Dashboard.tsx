@@ -1,7 +1,7 @@
 // components/Dashboard.tsx
 'use client';
 
-import { useState, useMemo, useEffect, useCallback } from 'react';
+import { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import Header from './Header';
 import { FilterBar, type FilterState } from './FilterBar';
@@ -56,6 +56,7 @@ export default function Dashboard({
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [theme, setTheme] = useState<Theme>(initialThemeProp);
   const [mobileActionsOpen, setMobileActionsOpen] = useState(false);
+  const mobileActionsRef = useRef<HTMLDivElement>(null);
   const studyConfig = useStudyConfig();
 
   useEffect(() => {
@@ -63,6 +64,22 @@ export default function Dashboard({
       if (data.user) setUserId(data.user.id);
     });
   }, []);
+
+  // Close mobile actions dropdown on outside tap/click
+  useEffect(() => {
+    if (!mobileActionsOpen) return;
+    function handler(e: MouseEvent | TouchEvent) {
+      if (mobileActionsRef.current && !mobileActionsRef.current.contains(e.target as Node)) {
+        setMobileActionsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handler);
+    document.addEventListener('touchstart', handler as EventListener, { passive: true });
+    return () => {
+      document.removeEventListener('mousedown', handler);
+      document.removeEventListener('touchstart', handler as EventListener);
+    };
+  }, [mobileActionsOpen]);
 
   useEffect(() => {
     try {
@@ -350,7 +367,7 @@ export default function Dashboard({
           </div>
 
           {/* Mobile actions — overflow "..." menu */}
-          <div className="smd-section-actions smd-mobile-actions">
+          <div className="smd-section-actions smd-mobile-actions" ref={mobileActionsRef}>
             <button
               className="btn btn-ghost smd-mobile-overflow-btn"
               onClick={() => setMobileActionsOpen(o => !o)}
