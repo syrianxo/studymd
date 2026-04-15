@@ -2,6 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /*
+   * Increase the server body size limit for the upload API route.
+   * Default is 1 MB which rejects PDFs larger than that.
+   * 52 MB gives headroom above the 50 MB file limit.
+   */
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '52mb',
+    },
+  },
+  /*
    * Security headers applied to all responses.
    * Workstream 3 will tighten the CSP once all asset origins are known.
    */
