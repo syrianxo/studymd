@@ -14,10 +14,6 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import Anthropic from '@anthropic-ai/sdk';
-// Use the untyped client to avoid strict schema inference on table names.
-// This project does not have a generated supabase types file (types/supabase.ts),
-// so using SupabaseClient<any> is correct here — it avoids the "never" error on
-// .update() that occurs when TypeScript can't infer the table's row shape.
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import {
@@ -27,6 +23,7 @@ import {
 } from '@/lib/api-limits';
 import { buildSystemWithCache } from '@/lib/lecture-processor-prompt';
 import { validateLecture, type LectureJSON } from '@/lib/validate-lecture';
+import { extractPptxSlides, formatSlidesForClaude } from '@/lib/pptx-extractor';
 
 // ─── Supabase admin client ────────────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -204,39 +201,49 @@ interface ClaudeCallResult {
 
 async function callClaudeAPI(
   client: Anthropic,
-  fileBase64: string,
-  mimeType: string,
+  fileBase64: string | null,
+  slideText: string | null,
   internalId: string,
   course: string,
   title: string,
   model: string
 ): Promise<ClaudeCallResult> {
+  // Build the user content — either a PDF document source or extracted text
+  const userContent: Anthropic.MessageParam['content'] = [];
+
+  if (fileBase64) {
+    // PDF: send as a document source (Claude can extract text + layout natively)
+    userContent.push({
+      type: 'document',
+      source: {
+        type: 'base64',
+        media_type: 'application/pdf',
+        data: fileBase64,
+      },
+    } as Anthropic.DocumentBlockParam);
+  } else if (slideText) {
+    // PPTX (or any non-PDF): send extracted text as a text block
+    userContent.push({
+      type: 'text',
+      text: slideText,
+    });
+  } else {
+    throw new Error('No file content provided to Claude — either fileBase64 (PDF) or slideText (PPTX) must be set.');
+  }
+
+  userContent.push({
+    type: 'text',
+    text: `Process the above lecture content as lecture ${internalId} for course "${course}". Title: "${title}". Generate the full JSON output as specified in your system prompt.`,
+  });
+
   const response = await client.messages.create({
     model,
     max_tokens: API_LIMITS.MAX_OUTPUT_TOKENS,
     system: buildSystemWithCache(),
-    messages: [
-      {
-        role: 'user',
-        content: [
-          {
-            type: 'document',
-            source: {
-              type: 'base64',
-              media_type: mimeType as 'application/pdf',
-              data: fileBase64,
-            },
-          },
-          {
-            type: 'text',
-            text: `Process this as lecture ${internalId} for course ${course}. Title: ${title}.`,
-          },
-        ],
-      },
-    ],
+    messages: [{ role: 'user', content: userContent }],
   });
 
-  const inputTokens = response.usage?.input_tokens ?? 0;
+  const inputTokens  = response.usage?.input_tokens  ?? 0;
   const outputTokens = response.usage?.output_tokens ?? 0;
 
   const textBlock = response.content.find((b) => b.type === 'text');
@@ -328,8 +335,28 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: msg }, { status: 500 });
   }
 
-  const fileBase64 = arrayBufferToBase64(fileBuffer);
-  const mimeType = getMimeType(fileUrl);
+  const isPptx = fileUrl.toLowerCase().includes('.pptx') || fileUrl.toLowerCase().includes('.ppt');
+  let fileBase64: string | null = null;
+  let slideText: string | null = null;
+
+  if (isPptx) {
+    try {
+      const slides = await extractPptxSlides(fileBuffer);
+      if (slides.length === 0) {
+        const msg = 'No slide content could be extracted from the PPTX. The file may be empty or corrupted.';
+        await updateJobStatus(supabase, jobId, 'error', msg);
+        return NextResponse.json({ error: msg }, { status: 422 });
+      }
+      slideText = formatSlidesForClaude(slides, title);
+      console.log(`[generate] PPTX: extracted ${slides.length} slides (${slideText.length} chars)`);
+    } catch (err) {
+      const msg = `PPTX text extraction failed: ${(err as Error).message}`;
+      await updateJobStatus(supabase, jobId, 'error', msg);
+      return NextResponse.json({ error: msg }, { status: 500 });
+    }
+  } else {
+    fileBase64 = arrayBufferToBase64(fileBuffer);
+  }
 
   // ── Step 2: Call Claude (default model, with validation + fallback) ─────────
   await updateJobStatus(supabase, jobId, 'generating');
@@ -340,7 +367,7 @@ export async function POST(request: NextRequest) {
 
   try {
     result = await callClaudeAPI(
-      anthropic, fileBase64, mimeType, internalId, course, title, API_LIMITS.MODEL_DEFAULT
+      anthropic, fileBase64, slideText, internalId, course, title, API_LIMITS.MODEL_DEFAULT
     );
 
     const validation = validateLecture(result.lectureJson);
@@ -357,7 +384,7 @@ export async function POST(request: NextRequest) {
 
       usedFallback = true;
       const fallback = await callClaudeAPI(
-        anthropic, fileBase64, mimeType, internalId, course, title, API_LIMITS.MODEL_FALLBACK
+        anthropic, fileBase64, slideText, internalId, course, title, API_LIMITS.MODEL_FALLBACK
       );
       const fallbackValidation = validateLecture(fallback.lectureJson);
 
