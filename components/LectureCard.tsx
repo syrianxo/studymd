@@ -5,10 +5,12 @@
 // Right-click opens a context menu for course/color/visibility changes.
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
 import { createPortal } from 'react-dom';
 import type { Lecture } from '@/hooks/useUserLectures';
-import type { Course } from '@/types';
+import { resolveColor } from '@/hooks/useUserLectures';
+import { PomoContext } from '@/components/PomodoroTimer';
+import type { Course, Theme } from '@/types';
 
 const COURSES: Course[] = [
   'Physical Diagnosis I',
@@ -16,13 +18,20 @@ const COURSES: Course[] = [
   'Laboratory Diagnosis',
 ];
 
-const PRESET_COLORS = [
-  '#5b8dee', '#8b5cf6', '#10b981', '#f59e0b',
-  '#ef4444', '#ec4899', '#06b6d4', '#84cc16',
-];
+// Per-theme color palettes — swatches shown in the color picker match the theme aesthetic
+const THEME_COLORS: Record<string, string[]> = {
+  midnight: ['#5b8dee', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16'],
+  pink:     ['#f472b6', '#c084fc', '#34d399', '#fbbf24', '#fb7185', '#e879f9', '#67e8f9', '#a3e635'],
+  forest:   ['#34d399', '#6ee7b7', '#38bdf8', '#fbbf24', '#f87171', '#a78bfa', '#22d3ee', '#bef264'],
+};
+
+function getThemeColors(theme: string): string[] {
+  return THEME_COLORS[theme] ?? THEME_COLORS.midnight;
+}
 
 interface LectureCardProps {
   lecture: Lecture;
+  activeTheme: Theme;
   flashcardProgress: number;
   examProgress: number;
   onOpen: () => void;
@@ -35,13 +44,13 @@ interface LectureCardProps {
 }
 
 export default function LectureCard({
-  lecture, flashcardProgress, examProgress,
+  lecture, activeTheme, flashcardProgress, examProgress,
   onOpen, onFlashcards, onExam,
   onChangeCourse, onChangeColor, onHide, onArchive,
 }: LectureCardProps) {
   // Optimistic local color — avoids jarring flicker from parent refetch()
   const [localColor, setLocalColor] = useState<string | null>(null);
-  const color = localColor ?? lecture.color_override ?? lecture.color ?? 'var(--accent)';
+  const color = localColor ?? resolveColor(lecture, activeTheme);
   const course = lecture.course_override ?? lecture.course;
   const title = lecture.custom_title ?? lecture.title;
   const fcLen = (lecture.json_data?.flashcards ?? []).length;
@@ -144,14 +153,15 @@ export default function LectureCard({
           ref={ctxRef}
           x={ctxMenu.x} y={ctxMenu.y}
           color={color} course={course as Course}
+          activeTheme={activeTheme}
           onChangeCourse={(c) => { onChangeCourse?.(c); setCtxMenu(null); }}
           onChangeColor={(c) => {
             setLocalColor(c);
-            // Direct API call — skip onChangeColor to avoid parent refetch flicker
+            // Direct API call — send theme-keyed colorOverride so other themes' colors are preserved
             fetch('/api/lectures/settings', {
               method: 'PUT',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ internalId: lecture.internal_id, updates: { colorOverride: c } }),
+              body: JSON.stringify({ internalId: lecture.internal_id, updates: { colorOverride: { [activeTheme]: c } } }),
             }).catch(console.error);
             setCtxMenu(null);
           }}
@@ -172,6 +182,7 @@ export default function LectureCard({
 interface ContextMenuProps {
   x: number; y: number;
   color: string; course: Course;
+  activeTheme: string;
   onChangeCourse: (c: Course) => void;
   onChangeColor: (c: string) => void;
   onHide: () => void; onArchive: () => void;
@@ -179,7 +190,7 @@ interface ContextMenuProps {
 }
 
 const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
-  ({ x, y, color, course, onChangeCourse, onChangeColor, onHide, onArchive, onClose }, ref) => {
+  ({ x, y, color, course, activeTheme, onChangeCourse, onChangeColor, onHide, onArchive, onClose }, ref) => {
     const innerRef = useRef<HTMLDivElement>(null);
     const combinedRef = (node: HTMLDivElement) => {
       (innerRef as any).current = node;
@@ -187,6 +198,7 @@ const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
       else if (ref) (ref as any).current = node;
     };
     const [pos, setPos] = useState({ x, y });
+    const swatches = getThemeColors(activeTheme);
 
     useEffect(() => {
       if (!innerRef.current) return;
@@ -203,7 +215,7 @@ const ContextMenu = React.forwardRef<HTMLDivElement, ContextMenuProps>(
         <style>{ctxCss}</style>
         <div className="lc-ctx-label">Color</div>
         <div className="lc-ctx-colors">
-          {PRESET_COLORS.map(c => (
+          {swatches.map(c => (
             <button key={c}
               className={`lc-ctx-swatch${color === c ? ' selected' : ''}`}
               style={{ background: c }} aria-label={`Color ${c}`}

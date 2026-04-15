@@ -8,12 +8,13 @@ import LectureCard from './LectureCard';
 import LectureViewModal from './LectureViewModal';
 import type { Lecture } from '@/hooks/useUserLectures';
 import type { LectureProgress } from '@/hooks/useProgress';
-import type { Course } from '@/types';
+import type { Course, Theme } from '@/types';
 
 interface LectureGridProps {
   lectures: Lecture[];
   progressByLecture: Record<string, LectureProgress>;
   loading: boolean;
+  activeTheme: Theme;
   onStartFlash: (lectureId: string) => void;
   onStartExam: (lectureId: string) => void;
   onChangeCourse?: (lectureId: string, course: Course) => void;
@@ -25,6 +26,7 @@ interface LectureGridProps {
 
 export default function LectureGrid({
   lectures, progressByLecture, loading,
+  activeTheme,
   onStartFlash, onStartExam,
   onChangeCourse, onChangeColor,
   onHide, onArchive, onRenameTitle,
@@ -79,6 +81,7 @@ export default function LectureGrid({
             <LectureCard
               key={lecture.internal_id}
               lecture={lecture}
+              activeTheme={activeTheme}
               flashcardProgress={progress?.mastery_pct ?? 0}
               examProgress={progress?.best_exam_score ?? 0}
               onOpen={() => handleOpen(lecture)}
@@ -97,6 +100,7 @@ export default function LectureGrid({
       <LectureViewModal
         lecture={openLecture}
         isOpen={isModalOpen}
+        activeTheme={activeTheme}
         flashcardProgress={openProgress?.mastery_pct ?? 0}
         examProgress={openProgress?.best_exam_score ?? 0}
         onClose={handleClose}

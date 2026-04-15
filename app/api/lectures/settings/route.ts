@@ -15,7 +15,13 @@ interface SettingsUpdates {
   groupId?: string | null;
   tags?: string[];
   courseOverride?: string | null;
-  colorOverride?: string | null;
+  /**
+   * colorOverride: pass an object with theme keys to update per-theme colors.
+   * Example: { midnight: '#5b8dee', pink: '#ec4899' }
+   * Or pass null to clear all overrides.
+   * Legacy: a plain hex string is also accepted and treated as a midnight override.
+   */
+  colorOverride?: Record<string, string> | string | null;
   customTitle?: string | null;
 }
 
@@ -72,10 +78,26 @@ function validateUpdates(updates: SettingsUpdates): string | null {
   }
   if (
     updates.colorOverride !== undefined &&
-    updates.colorOverride !== null &&
-    !/^#[0-9A-Fa-f]{6}$/.test(updates.colorOverride)
+    updates.colorOverride !== null
   ) {
-    return "colorOverride must be a hex color (e.g. #5b8dee) or null";
+    if (typeof updates.colorOverride === 'string') {
+      // Legacy plain hex string
+      if (!/^#[0-9A-Fa-f]{6}$/.test(updates.colorOverride)) {
+        return "colorOverride string must be a hex color (e.g. #5b8dee)";
+      }
+    } else if (typeof updates.colorOverride === 'object') {
+      const validThemes = ['midnight', 'pink', 'forest'];
+      for (const [theme, hex] of Object.entries(updates.colorOverride)) {
+        if (!validThemes.includes(theme)) {
+          return `colorOverride key '${theme}' is not a valid theme (midnight|pink|forest)`;
+        }
+        if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+          return `colorOverride['${theme}'] must be a hex color (e.g. #5b8dee)`;
+        }
+      }
+    } else {
+      return "colorOverride must be a hex string, theme-keyed object, or null";
+    }
   }
   if (
     updates.customTitle !== undefined &&
@@ -89,6 +111,21 @@ function validateUpdates(updates: SettingsUpdates): string | null {
 }
 
 // Map camelCase body fields → snake_case column names
+// For colorOverride, we use a JSONB merge so that setting one theme's color
+// doesn't wipe out another theme's color.
+function buildColorUpdate(
+  colorOverride: Record<string, string> | string | null | undefined
+): string | null {
+  if (colorOverride === null) return null; // explicit clear → set to null
+  if (colorOverride === undefined) return undefined as any; // no-op
+  if (typeof colorOverride === 'string') {
+    // Legacy: treat plain hex as midnight override
+    return JSON.stringify({ midnight: colorOverride });
+  }
+  // Object: return as JSON string for Supabase JSONB merge expression
+  return JSON.stringify(colorOverride);
+}
+
 function toColumnMap(updates: SettingsUpdates): Record<string, unknown> {
   const map: Record<string, unknown> = {};
   if (updates.displayOrder !== undefined) map.display_order = updates.displayOrder;
@@ -97,7 +134,17 @@ function toColumnMap(updates: SettingsUpdates): Record<string, unknown> {
   if ("groupId" in updates) map.group_id = updates.groupId;
   if (updates.tags !== undefined) map.tags = updates.tags;
   if ("courseOverride" in updates) map.course_override = updates.courseOverride;
-  if ("colorOverride" in updates) map.color_override = updates.colorOverride;
+  if ("colorOverride" in updates) {
+    if (updates.colorOverride === null) {
+      map.color_override = null;
+    } else if (typeof updates.colorOverride === 'string') {
+      // Legacy plain hex — wrap as midnight override object
+      map.color_override = { midnight: updates.colorOverride };
+    } else {
+      // Object — store directly; Supabase JSONB will accept a JS object
+      map.color_override = updates.colorOverride;
+    }
+  }
   if ("customTitle" in updates) map.custom_title = updates.customTitle;
   return map;
 }
@@ -187,6 +234,38 @@ export async function PUT(req: NextRequest) {
 
   // Upsert — RLS policy on user_lecture_settings ensures user_id = auth.uid()
   const columns = toColumnMap(updates);
+
+  // For color_override (JSONB), we need to MERGE into the existing value
+  // so that setting midnight color doesn't erase pink color and vice versa.
+  // Strategy: fetch existing row, merge color maps, then upsert full row.
+  let finalColorOverride: Record<string, string> | null | undefined = undefined;
+  if ("colorOverride" in updates) {
+    if (updates.colorOverride === null) {
+      finalColorOverride = null;
+    } else {
+      // Fetch the current color_override JSONB for this row
+      const { data: existing } = await supabase
+        .from("user_lecture_settings")
+        .select("color_override")
+        .eq("user_id", session.user.id)
+        .eq("internal_id", internalId)
+        .maybeSingle();
+
+      const existingMap: Record<string, string> =
+        (existing?.color_override && typeof existing.color_override === 'object')
+          ? existing.color_override as Record<string, string>
+          : {};
+
+      const newEntries: Record<string, string> =
+        typeof updates.colorOverride === 'string'
+          ? { midnight: updates.colorOverride }   // legacy
+          : updates.colorOverride as Record<string, string>;
+
+      // Merge: new entries take precedence over existing per-theme values
+      finalColorOverride = { ...existingMap, ...newEntries };
+    }
+    columns.color_override = finalColorOverride;
+  }
 
   const { data, error } = await supabase
     .from("user_lecture_settings")

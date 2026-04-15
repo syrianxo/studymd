@@ -409,6 +409,7 @@ export default function Dashboard({
         {manageOpen && userId && (
           <ManageMode
             userId={userId}
+            activeTheme={theme}
             initialLectures={lectures.map((l) => ({
               ...l,
               settings: {
@@ -439,6 +440,7 @@ export default function Dashboard({
             lectures={visibleLectures}
             progressByLecture={progressByLecture}
             loading={lecturesLoading}
+            activeTheme={theme}
             onStartFlash={handleStartFlash}
             onStartExam={handleStartExam}
             onChangeCourse={handleChangeCourse}

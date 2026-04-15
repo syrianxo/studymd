@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase';
-import type { Course } from '@/types';
+import type { Course, Theme } from '@/types';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -23,6 +23,9 @@ export interface ExamQuestion {
   correct_answer: string;
   topic: string;
 }
+
+// Per-theme color map stored in the DB as JSONB
+export type ColorOverrideMap = Partial<Record<Theme, string>>;
 
 export interface Lecture {
   internal_id: string;
@@ -46,7 +49,16 @@ export interface Lecture {
   tags: string[];
   group_id: string | null;
   course_override: Course | null;
-  color_override: string | null;
+  // color_override is now a per-theme map; use resolveColor() to get the active color
+  color_override: ColorOverrideMap | null;
+}
+
+/** Resolve the display color for a lecture given the active theme. */
+export function resolveColor(lecture: Lecture, activeTheme: Theme): string {
+  if (lecture.color_override && lecture.color_override[activeTheme]) {
+    return lecture.color_override[activeTheme]!;
+  }
+  return lecture.color ?? 'var(--accent)';
 }
 
 interface UseUserLecturesResult {
@@ -97,6 +109,18 @@ export function useUserLectures(): UseUserLecturesResult {
           .eq('user_id', user.id);
 
         for (const s of settingsRows ?? []) {
+          // color_override from DB is now JSONB — could be an object like
+          // { midnight: '#5b8dee', pink: '#ec4899' } or null
+          // Handle legacy text strings from before the migration too
+          let colorOverride: ColorOverrideMap | null = null;
+          if (s.color_override) {
+            if (typeof s.color_override === 'string' && s.color_override.startsWith('#')) {
+              // Legacy text value — treat as midnight override
+              colorOverride = { midnight: s.color_override };
+            } else if (typeof s.color_override === 'object') {
+              colorOverride = s.color_override as ColorOverrideMap;
+            }
+          }
           settingsMap[s.internal_id] = {
             display_order:   s.display_order   ?? 999,
             visible:         s.visible         ?? true,
@@ -105,7 +129,7 @@ export function useUserLectures(): UseUserLecturesResult {
             tags:            s.tags            ?? [],
             group_id:        s.group_id        ?? null,
             course_override: s.course_override ?? null,
-            color_override:  s.color_override  ?? null,
+            color_override:  colorOverride,
           };
         }
       }

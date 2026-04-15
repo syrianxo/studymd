@@ -224,16 +224,17 @@ function moveLecture(
 interface ManageModeProps {
   userId: string;
   initialLectures: LectureWithSettings[];
+  activeTheme?: string;
   flashcardProgress?: Record<string, number>;
   examProgress?: Record<string, number>;
   onOpenLecture?: (internalId: string) => void;
-  /** Called by parent so ThemePicker / other header items can coexist */
   renderHeaderRight?: React.ReactNode;
 }
 
 export function ManageMode({
   userId,
   initialLectures,
+  activeTheme = 'midnight',
   flashcardProgress = {},
   examProgress = {},
   onOpenLecture,
@@ -398,10 +399,22 @@ export function ManageMode({
       setLectures((ls) =>
         ls.map((l) =>
           l.internal_id === id
-            ? { ...l, display_color: color, settings: { ...l.settings, color_override: color } }
+            ? { ...l, display_color: color }
             : l
         )
       );
+      // Send theme-keyed colorOverride so switching themes preserves other colors
+      fetch('/api/lectures/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ internalId: id, updates: { colorOverride: { [activeTheme]: color } } }),
+      }).catch(() => {
+        setLectures((ls) => ls.map((l) => (l.internal_id === id ? prev : l)));
+        showError('Failed to update color.');
+      });
+    },
+    [lectures, activeTheme, showError]
+  );
       updateLectureSettings(userId, id, { color_override: color }).catch(() => {
         setLectures((ls) => ls.map((l) => (l.internal_id === id ? prev : l)));
         showError('Failed to update color.');
@@ -507,6 +520,7 @@ export function ManageMode({
                 key={lecture.internal_id}
                 lecture={lecture}
                 isManageMode={isManageMode}
+                activeTheme={activeTheme}
                 flashcardProgress={flashcardProgress[lecture.internal_id]}
                 examProgress={examProgress[lecture.internal_id]}
                 onOpen={() => onOpenLecture?.(lecture.internal_id)}
@@ -537,6 +551,7 @@ export function ManageMode({
                 key={lecture.internal_id}
                 lecture={lecture}
                 isManageMode={isManageMode}
+                activeTheme={activeTheme}
                 flashcardProgress={flashcardProgress[lecture.internal_id]}
                 examProgress={examProgress[lecture.internal_id]}
                 onOpen={undefined}
@@ -566,6 +581,7 @@ export function ManageMode({
                 key={lecture.internal_id}
                 lecture={lecture}
                 isManageMode={isManageMode}
+                activeTheme={activeTheme}
                 flashcardProgress={flashcardProgress[lecture.internal_id]}
                 examProgress={examProgress[lecture.internal_id]}
                 onOpen={undefined}

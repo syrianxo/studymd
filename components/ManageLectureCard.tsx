@@ -18,10 +18,15 @@ const COURSES: Course[] = [
   'Laboratory Diagnosis',
 ];
 
-const PRESET_COLORS = [
-  '#5b8dee', '#8b5cf6', '#10b981', '#f59e0b',
-  '#ef4444', '#ec4899', '#06b6d4', '#84cc16',
-];
+// Per-theme color palettes
+const THEME_COLORS: Record<string, string[]> = {
+  midnight: ['#5b8dee', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16'],
+  pink:     ['#f472b6', '#c084fc', '#34d399', '#fbbf24', '#fb7185', '#e879f9', '#67e8f9', '#a3e635'],
+  forest:   ['#34d399', '#6ee7b7', '#38bdf8', '#fbbf24', '#f87171', '#a78bfa', '#22d3ee', '#bef264'],
+};
+function getThemeColors(theme: string): string[] {
+  return THEME_COLORS[theme] ?? THEME_COLORS.midnight;
+}
 
 // ─── Shared menu sizing constants ─────────────────────────────────────────────
 const MENU_ITEM_PADDING = '10px 16px';
@@ -525,6 +530,7 @@ function SlideStrip({ internalId, slideCount, accentColor }: SlideStripProps) {
 interface ContextMenuProps {
   x: number; y: number;
   currentColor: string; currentCourse: Course;
+  activeTheme: string;
   showColor: boolean; showCourse: boolean; showVisibility: boolean;
   isArchived: boolean; isHidden: boolean;
   onChangeCourse: (c: Course) => void; onChangeColor: (c: string) => void;
@@ -534,6 +540,7 @@ interface ContextMenuProps {
 
 function ContextMenu({
   x, y, currentColor, currentCourse,
+  activeTheme,
   showColor, showCourse, showVisibility,
   isArchived, isHidden,
   onChangeCourse, onChangeColor, onHide, onArchive, onRestore, onClose,
@@ -584,7 +591,7 @@ function ContextMenu({
         <>
           <div className="lc-ctx-label">Color</div>
           <div className="lc-ctx-colors">
-            {PRESET_COLORS.map(c => (
+            {getThemeColors(activeTheme).map(c => (
               <button key={c}
                 className={`lc-ctx-swatch${currentColor === c ? ' selected' : ''}`}
                 style={{ background: c }} aria-label={`Color ${c}`}
@@ -637,6 +644,7 @@ function ContextMenu({
 interface KebabMenuProps {
   anchorRect: DOMRect;
   lecture: LectureWithSettings;
+  activeTheme: string;
   onHide: () => void; onArchive: () => void; onRestore: () => void;
   onEditTags: () => void;
   onChangeCourse: (course: Course) => void;
@@ -644,7 +652,7 @@ interface KebabMenuProps {
   onClose: () => void;
 }
 
-function KebabMenu({ anchorRect, lecture, onHide, onArchive, onRestore, onEditTags, onChangeCourse, onChangeColor, onClose }: KebabMenuProps) {
+function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRestore, onEditTags, onChangeCourse, onChangeColor, onClose }: KebabMenuProps) {
   const [showCourse, setShowCourse] = useState(false);
   const [showColor, setShowColor] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -666,16 +674,23 @@ function KebabMenu({ anchorRect, lecture, onHide, onArchive, onRestore, onEditTa
   }, [anchorRect]);
 
   useEffect(() => {
-    const onDown = (e: MouseEvent) => {
+    // Use a small delay so the opening tap doesn't immediately trigger close
+    let active = false;
+    const timer = setTimeout(() => { active = true; }, 50);
+    const onDown = (e: MouseEvent | TouchEvent) => {
+      if (!active) return;
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) onClose();
     };
-    const onKey  = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     const onScroll = () => onClose();
     document.addEventListener('mousedown', onDown);
+    document.addEventListener('touchstart', onDown as EventListener, { passive: true });
     document.addEventListener('keydown', onKey);
     window.addEventListener('scroll', onScroll, { passive: true, capture: true });
     return () => {
+      clearTimeout(timer);
       document.removeEventListener('mousedown', onDown);
+      document.removeEventListener('touchstart', onDown as EventListener);
       document.removeEventListener('keydown', onKey);
       window.removeEventListener('scroll', onScroll, { capture: true } as EventListenerOptions);
     };
@@ -695,22 +710,25 @@ function KebabMenu({ anchorRect, lecture, onHide, onArchive, onRestore, onEditTa
 
   if (typeof document === 'undefined' || !pos) return null;
 
+  // Stop propagation on touch so the document touchstart handler doesn't close
+  // the menu when interacting with menu items (single-tap on mobile)
+  function stopTouch(e: React.TouchEvent) { e.stopPropagation(); }
+
   const menu = (
     <div className="lc-menu" ref={menuRef} role="menu"
-      style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 99999 }}>
+      style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 99999 }}
+      onTouchStart={stopTouch}>
       <div className="lc-menu-row"><div className="lc-menu-row-inner">
         <button className="lc-menu-item" onClick={onEditTags} role="menuitem"><span>🏷</span> Edit Tags</button>
       </div></div>
 
-      <div className="lc-menu-row"
-        onMouseEnter={() => { setShowCourse(true); setShowColor(false); }}
-        onMouseLeave={() => setShowCourse(false)}>
+      <div className="lc-menu-row">
         <div className="lc-menu-row-inner">
           <button className={`lc-menu-item${showCourse ? ' active' : ''}`}
             onClick={() => { setShowCourse(v => !v); setShowColor(false); }}
             role="menuitem" aria-haspopup="true" aria-expanded={showCourse}>
             <span>📚</span> Change Course
-            <span style={{ marginLeft: 'auto', opacity: 0.5 }}>›</span>
+            <span style={{ marginLeft: 'auto', opacity: 0.5, transform: showCourse ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s', display: 'inline-block' }}>›</span>
           </button>
         </div>
         {showCourse && (
@@ -725,21 +743,19 @@ function KebabMenu({ anchorRect, lecture, onHide, onArchive, onRestore, onEditTa
         )}
       </div>
 
-      <div className="lc-menu-row"
-        onMouseEnter={() => { setShowColor(true); setShowCourse(false); }}
-        onMouseLeave={() => setShowColor(false)}>
+      <div className="lc-menu-row">
         <div className="lc-menu-row-inner">
           <button className={`lc-menu-item${showColor ? ' active' : ''}`}
             onClick={() => { setShowColor(v => !v); setShowCourse(false); }}
             role="menuitem" aria-haspopup="true" aria-expanded={showColor}>
             <span>🎨</span> Change Color
-            <span style={{ marginLeft: 'auto', opacity: 0.5 }}>›</span>
+            <span style={{ marginLeft: 'auto', opacity: 0.5, transform: showColor ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s', display: 'inline-block' }}>›</span>
           </button>
         </div>
         {showColor && (
           <div className="lc-submenu">
             <div className="lc-color-row">
-              {PRESET_COLORS.map(c => (
+              {getThemeColors(activeTheme).map(c => (
                 <button key={c}
                   className={`lc-color-swatch${lecture.display_color === c ? ' selected' : ''}`}
                   style={{ background: c }} aria-label={`Color ${c}`}
@@ -781,6 +797,7 @@ function KebabMenu({ anchorRect, lecture, onHide, onArchive, onRestore, onEditTa
 interface LectureCardProps {
   lecture: LectureWithSettings;
   isManageMode: boolean;
+  activeTheme: string;
   flashcardProgress?: number;
   examProgress?: number;
   onOpen?: () => void;
@@ -796,7 +813,7 @@ interface LectureCardProps {
 }
 
 export function ManageLectureCard({
-  lecture, isManageMode,
+  lecture, isManageMode, activeTheme,
   flashcardProgress = 0, examProgress = 0,
   onOpen, onFlashcards, onExam,
   onHide, onArchive, onRestore, onEditTags,
@@ -904,6 +921,11 @@ export function ManageLectureCard({
 
         <button className="lc-kebab-btn"
           ref={kebabRef}
+          onPointerDown={(e) => {
+            // Stop the event reaching the document touchstart/mousedown close handler
+            // so toggling works correctly: open→close, not open→close→reopen
+            e.stopPropagation();
+          }}
           onClick={(e) => {
             e.stopPropagation();
             const rect = kebabRef.current?.getBoundingClientRect() ?? null;
@@ -916,6 +938,7 @@ export function ManageLectureCard({
           <KebabMenu
             anchorRect={kebabRect}
             lecture={{ ...lecture, display_color: displayColor, display_course: displayCourse }}
+            activeTheme={activeTheme}
             onHide={onHide} onArchive={onArchive} onRestore={onRestore}
             onEditTags={onEditTags}
             onChangeCourse={handleChangeCourse} onChangeColor={handleChangeColor}
@@ -927,6 +950,7 @@ export function ManageLectureCard({
           <ContextMenu
             x={ctxMenu.x} y={ctxMenu.y}
             currentColor={displayColor} currentCourse={displayCourse}
+            activeTheme={activeTheme}
             showColor={ctxMenu.showColor} showCourse={ctxMenu.showCourse}
             showVisibility={ctxMenu.showVisibility}
             isArchived={lecture.settings.archived}

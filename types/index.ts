@@ -44,6 +44,8 @@ export interface Question {
   explanation?: string;
 }
 
+import type { ColorOverrideMap } from '@/hooks/useUserLectures';
+
 export interface UserLectureSettings {
   user_id: string;
   internal_id: string;
@@ -53,7 +55,7 @@ export interface UserLectureSettings {
   group_id?: string | null;
   tags: string[];
   course_override?: Course | null;
-  color_override?: string | null;
+  color_override?: ColorOverrideMap | null;
   custom_title?: string | null;
 }
 
@@ -62,7 +64,7 @@ export interface LectureWithSettings extends Lecture {
   // Computed display values (settings override base)
   display_title: string;
   display_course: Course;
-  display_color: string;
+  display_color: string; // resolved for current theme by caller
 }
 
 export interface UserPreferences {
