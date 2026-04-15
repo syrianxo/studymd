@@ -98,7 +98,7 @@ export function useUserLectures(): UseUserLecturesResult {
 
       let settingsMap: Record<
         string,
-        { display_order: number; visible: boolean; archived: boolean; custom_title: string | null; tags: string[]; group_id: string | null; course_override: Course | null; color_override: string | null; }
+        { display_order: number; visible: boolean; archived: boolean; custom_title: string | null; tags: string[]; group_id: string | null; course_override: Course | null; color_override: ColorOverrideMap | null; }
       > = {};
 
       // ── 2. Fetch per-user overrides if logged in ────────────────────────
