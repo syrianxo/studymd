@@ -17,6 +17,8 @@ interface HeaderProps {
   /** @deprecated — kept for backward compat; ignored now that upload is a page */
   onUploadClick?: () => void;
   isProcessing?: boolean;
+  /** Hide the Upload button entirely (used on /app/upload itself) */
+  hideUploadButton?: boolean;
 }
 
 export default function Header({
@@ -25,6 +27,7 @@ export default function Header({
   userId,
   initialTheme,
   isProcessing = false,
+  hideUploadButton = false,
 }: HeaderProps) {
   const router = useRouter();
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -70,20 +73,22 @@ export default function Header({
         {/* ── Right controls ── */}
         <div className="smd-header-right">
 
-          {/* 1. Upload — Link to /app/upload (icon-only on mobile) */}
-          <Link
-            href="/app/upload"
-            className="smd-hdr-btn smd-hdr-upload"
-            aria-label="Upload lecture"
-            title="Upload Lecture"
-          >
-            {isProcessing
-              ? <span className="smd-hdr-spinner" aria-hidden="true" />
-              : <span className="smd-hdr-icon" aria-hidden="true">⬆</span>}
-            <span className="smd-hdr-desktop smd-hdr-btn-label">
-              {isProcessing ? 'Processing…' : 'Upload'}
-            </span>
-          </Link>
+          {/* 1. Upload — Link to /app/upload (hidden on the upload page itself) */}
+          {!hideUploadButton && (
+            <Link
+              href="/app/upload"
+              className="smd-hdr-btn smd-hdr-upload"
+              aria-label="Upload lecture"
+              title="Upload Lecture"
+            >
+              {isProcessing
+                ? <span className="smd-hdr-spinner" aria-hidden="true" />
+                : <span className="smd-hdr-icon" aria-hidden="true">⬆</span>}
+              <span className="smd-hdr-desktop smd-hdr-btn-label">
+                {isProcessing ? 'Processing…' : 'Upload'}
+              </span>
+            </Link>
+          )}
 
           {/* 2. Pomodoro mini-pill — only shown when timer is running */}
           <PomodoroMiniPill />
