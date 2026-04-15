@@ -8,7 +8,7 @@ import { FilterBar, type FilterState } from './FilterBar';
 import LectureGrid from './LectureGrid';
 import { ManageMode } from './ManageMode';
 import CustomSessionModal, { type CustomSessionConfig } from './CustomSessionModal';
-import { useUserLectures } from '@/hooks/useUserLectures';
+import { useUserLectures, resolveColor } from '@/hooks/useUserLectures';
 import type { Lecture } from '@/hooks/useUserLectures';
 import { useProgress } from '@/hooks/useProgress';
 import { createClient } from '@/lib/supabase';
@@ -143,8 +143,8 @@ export default function Dashboard({
     },
     display_title: lecture.custom_title ?? lecture.title,
     display_course: (lecture.course_override ?? lecture.course) as Course,
-    display_color: lecture.color_override ?? lecture.color,
-  }), [userId]);
+    display_color:  resolveColor(lecture, theme),
+  }), [userId, theme]);
 
   function handleStartFlash(lectureId: string) {
     const lecture = lectures.find(l => l.internal_id === lectureId);
@@ -202,11 +202,10 @@ export default function Dashboard({
   }
 
   function handleChangeColor(internalId: string, color: string) {
-    fetch('/api/lectures/settings', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ internalId, updates: { colorOverride: color } }),
-    }).then(() => refetch()).catch(console.error);
+    // No-op here: LectureCard and LectureViewModal now call the API directly
+    // with theme-keyed colorOverride, bypassing this to avoid refetch flicker.
+    // ManageMode handles its own API calls too.
+    // We only refetch if called from a path that doesn't do its own optimistic update.
   }
 
   async function handleHide(internalId: string) {
@@ -426,7 +425,7 @@ export default function Dashboard({
               },
               display_title:  l.custom_title   ?? l.title,
               display_course: l.course_override ?? l.course,
-              display_color:  l.color_override  ?? l.color,
+              display_color:  resolveColor(l, theme),
             }))}
             onOpenLecture={(id) => {
               setManageOpen(false);

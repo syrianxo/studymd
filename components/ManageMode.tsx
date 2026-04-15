@@ -403,7 +403,7 @@ export function ManageMode({
             : l
         )
       );
-      // Send theme-keyed colorOverride so switching themes preserves other colors
+      // Send theme-keyed colorOverride so switching themes preserves other theme colors
       fetch('/api/lectures/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -414,13 +414,6 @@ export function ManageMode({
       });
     },
     [lectures, activeTheme, showError]
-  );
-      updateLectureSettings(userId, id, { color_override: color }).catch(() => {
-        setLectures((ls) => ls.map((l) => (l.internal_id === id ? prev : l)));
-        showError('Failed to update color.');
-      });
-    },
-    [lectures, userId, showError]
   );
 
   const handleTagSave = useCallback(
