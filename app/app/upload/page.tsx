@@ -244,11 +244,19 @@ export default function UploadPage() {
         headers: { Authorization: `Bearer ${token}` },
         body: fd,
       });
-      const data = await res.json();
-      if (!res.ok) return { error: data.error ?? `Upload failed (${res.status}).` };
-      return { jobId: data.jobId, estimatedCost: data.estimatedCost, tokenWarning: data.tokenWarning };
-    } catch (e) {
-      return { error: 'Network error — check your connection and try again.' };
+
+      let data: Record<string, unknown> = {};
+      try { data = await res.json(); } catch {}
+
+      if (!res.ok) {
+        const msg = (data.error as string) ?? `Server error (${res.status} ${res.statusText})`;
+        return { error: msg };
+      }
+      return { jobId: data.jobId as string, estimatedCost: data.estimatedCost as number, tokenWarning: data.tokenWarning as string | undefined };
+    } catch (e: unknown) {
+      // fetch() itself threw — likely a body-size rejection or loss of connectivity
+      const msg = e instanceof Error ? e.message : String(e);
+      return { error: `Upload failed: ${msg}` };
     }
   }
 
@@ -1007,9 +1015,16 @@ const css = `
 .upl-left  { display: flex; flex-direction: column; gap: 18px; }
 .upl-right {
   position: sticky;
-  /* header is ~72px; leave 16px clearance */
+  /* header ~72px + 16px gap; bottom offset keeps card from running into footer */
   top: 88px;
+  max-height: calc(100vh - 88px - 80px);
+  overflow-y: auto;
+  /* thin scrollbar so it doesn't look broken */
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
 }
+.upl-right::-webkit-scrollbar { width: 4px; }
+.upl-right::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
 
 /* ── Drop zone ───────────────────────────────────────────────────────── */
 .upl-dropzone {
