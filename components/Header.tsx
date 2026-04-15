@@ -14,6 +14,7 @@ interface HeaderProps {
   loading?: boolean;
   userId: string;
   initialTheme: Theme;
+  /** @deprecated — kept for backward compat; ignored now that upload is a page */
   onUploadClick?: () => void;
   isProcessing?: boolean;
 }
@@ -23,7 +24,6 @@ export default function Header({
   loading: _loading = false,
   userId,
   initialTheme,
-  onUploadClick,
   isProcessing = false,
 }: HeaderProps) {
   const router = useRouter();
@@ -70,27 +70,25 @@ export default function Header({
         {/* ── Right controls ── */}
         <div className="smd-header-right">
 
-          {/* 1. Upload — icon-only on mobile, icon + label on desktop */}
-          {onUploadClick && (
-            <button
-              className="smd-hdr-btn smd-hdr-upload"
-              onClick={onUploadClick}
-              aria-label="Upload lecture"
-              title="Upload Lecture"
-            >
-              {isProcessing
-                ? <span className="smd-hdr-spinner" aria-hidden="true" />
-                : <span className="smd-hdr-icon" aria-hidden="true">⬆</span>}
-              <span className="smd-hdr-desktop smd-hdr-btn-label">
-                {isProcessing ? 'Processing…' : 'Upload'}
-              </span>
-            </button>
-          )}
+          {/* 1. Upload — Link to /app/upload (icon-only on mobile) */}
+          <Link
+            href="/app/upload"
+            className="smd-hdr-btn smd-hdr-upload"
+            aria-label="Upload lecture"
+            title="Upload Lecture"
+          >
+            {isProcessing
+              ? <span className="smd-hdr-spinner" aria-hidden="true" />
+              : <span className="smd-hdr-icon" aria-hidden="true">⬆</span>}
+            <span className="smd-hdr-desktop smd-hdr-btn-label">
+              {isProcessing ? 'Processing…' : 'Upload'}
+            </span>
+          </Link>
 
           {/* 2. Pomodoro mini-pill — only shown when timer is running */}
           <PomodoroMiniPill />
 
-          {/* 3. Settings gear — opens dropdown with theme + sign out on ALL screen sizes */}
+          {/* 3. Settings gear — opens dropdown with theme + sign out */}
           <div className="smd-hdr-settings-wrap" ref={settingsRef}>
             <button
               className="smd-hdr-gear"
@@ -159,7 +157,7 @@ const headerCss = `
   gap: 8px;
 }
 
-/* ── Upload button ─────────────────────────────────────────────────── */
+/* ── Upload button (now a Link, styled as button) ──────────────────── */
 .smd-hdr-btn {
   display: inline-flex;
   align-items: center;
@@ -173,9 +171,11 @@ const headerCss = `
   font-weight: 500;
   cursor: pointer;
   padding: 7px 14px;
-  min-height: 40px;
+  min-height: 44px;
+  min-width: 44px;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   white-space: nowrap;
+  text-decoration: none;
 }
 .smd-hdr-upload:hover {
   background: rgba(91,141,238,0.12);
@@ -195,22 +195,14 @@ const headerCss = `
 }
 @keyframes smd-spin { to { transform: rotate(360deg); } }
 
-/* ── Theme wrap ────────────────────────────────────────────────────── */
-.smd-hdr-theme-wrap {
-  display: flex;
-  align-items: center;
-  min-width: 44px;
-  min-height: 44px;
-  justify-content: center;
-}
-
-/* ── Gear button — borderless, icon only ───────────────────────────── */
+/* ── Gear button ───────────────────────────────────────────────────── */
+.smd-hdr-settings-wrap { position: relative; }
 .smd-hdr-gear {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   min-width: 44px;
   min-height: 44px;
   background: none;
@@ -235,33 +227,7 @@ const headerCss = `
   transform: rotate(45deg);
 }
 
-/* ── Mobile sign-out icon ──────────────────────────────────────────── */
-.smd-hdr-signout-icon {
-  display: none; /* hidden on desktop */
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  min-height: 44px;
-  background: none;
-  border: none;
-  border-radius: 10px;
-  color: var(--text-muted, #6b7280);
-  cursor: pointer;
-  transition: color 0.15s, background 0.15s;
-  padding: 0;
-}
-.smd-hdr-signout-icon:hover {
-  color: var(--text, #e8eaf0);
-  background: rgba(255,255,255,0.06);
-}
-
-/* ── Mobile-only util ──────────────────────────────────────────────── */
-.smd-hdr-mobile-only { display: none; }
-
 /* ── Settings dropdown panel ───────────────────────────────────────── */
-.smd-hdr-settings-wrap { position: relative; }
 .smd-hdr-settings-panel {
   position: absolute;
   top: calc(100% + 8px);
@@ -318,32 +284,18 @@ const headerCss = `
 
 /* ── Mobile (< 768px) ──────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  /* Hide desktop subtitle */
+  /* Hide desktop subtitle + button label */
   .smd-hdr-desktop { display: none !important; }
   .smd-header { padding: 10px 16px; }
 
-  /* Upload collapses to icon-only square — 44px touch target */
+  /* Upload collapses to icon-only 44px square */
   .smd-hdr-btn {
     padding: 0;
-    width: 44px; min-width: 44px; min-height: 44px;
+    width: 44px;
     justify-content: center;
     border-radius: 10px;
   }
   .smd-hdr-icon { font-size: 18px; }
   .smd-header-right { gap: 4px; }
-
-  /* Gear is shown on mobile (no longer desktop-only) */
-  .smd-hdr-gear {
-    min-width: 44px;
-    min-height: 44px;
-    width: 44px;
-    height: 44px;
-  }
-
-  /* Settings panel is allowed on mobile — remove the display:none override */
-  .smd-hdr-settings-panel {
-    display: block !important;
-    min-width: 200px;
-  }
 }
 `;
