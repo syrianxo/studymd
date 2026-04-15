@@ -12,6 +12,9 @@ export const dynamic = 'force-dynamic';
 // ─── File constraints (validated against client-reported values) ────────────
 const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
 const ALLOWED_EXTENSIONS  = new Set(['.pdf', '.pptx', '.ppt']);
+// Bucket that receives raw uploaded PDFs/PPTX files from users.
+// Created in Supabase Storage with authenticated-user RLS policies.
+const STORAGE_BUCKET = 'uploads';
 
 function getFileExtension(filename: string): string {
   const dot = filename.lastIndexOf('.');
