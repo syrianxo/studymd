@@ -55,8 +55,6 @@ export default function Dashboard({
   const [userId, setUserId] = useState<string | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [theme, setTheme] = useState<Theme>(initialThemeProp);
-  const [mobileActionsOpen, setMobileActionsOpen] = useState(false);
-  const mobileActionsRef = useRef<HTMLDivElement>(null);
   const studyConfig = useStudyConfig();
 
   useEffect(() => {
@@ -64,22 +62,6 @@ export default function Dashboard({
       if (data.user) setUserId(data.user.id);
     });
   }, []);
-
-  // Close mobile actions dropdown on outside tap/click
-  useEffect(() => {
-    if (!mobileActionsOpen) return;
-    function handler(e: MouseEvent | TouchEvent) {
-      if (mobileActionsRef.current && !mobileActionsRef.current.contains(e.target as Node)) {
-        setMobileActionsOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handler);
-    document.addEventListener('touchstart', handler as EventListener, { passive: true });
-    return () => {
-      document.removeEventListener('mousedown', handler);
-      document.removeEventListener('touchstart', handler as EventListener);
-    };
-  }, [mobileActionsOpen]);
 
   useEffect(() => {
     try {
@@ -351,8 +333,8 @@ export default function Dashboard({
             )}
           </div>
 
-          {/* Desktop actions — always visible */}
-          <div className="smd-section-actions smd-desktop-actions">
+          {/* Action buttons — always shown on all screen sizes */}
+          <div className="smd-section-actions">
             <button
               className="btn btn-ghost"
               onClick={() => setManageOpen((v) => !v)}
@@ -365,34 +347,6 @@ export default function Dashboard({
             >
               ✦ Custom Study
             </button>
-          </div>
-
-          {/* Mobile actions — overflow "..." menu */}
-          <div className="smd-section-actions smd-mobile-actions" ref={mobileActionsRef}>
-            <button
-              className="btn btn-ghost smd-mobile-overflow-btn"
-              onClick={() => setMobileActionsOpen(o => !o)}
-              aria-label="More actions"
-              aria-expanded={mobileActionsOpen}
-            >
-              ⋯
-            </button>
-            {mobileActionsOpen && (
-              <div className="smd-mobile-actions-dropdown">
-                <button
-                  className="smd-mobile-action-item"
-                  onClick={() => { setManageOpen((v) => !v); setMobileActionsOpen(false); }}
-                >
-                  {manageOpen ? '✓ Done Managing' : '✏️ Manage Lectures'}
-                </button>
-                <button
-                  className="smd-mobile-action-item"
-                  onClick={() => { setCustomModalOpen(true); setMobileActionsOpen(false); }}
-                >
-                  ✦ Custom Study Session
-                </button>
-              </div>
-            )}
           </div>
         </div>
 
@@ -972,9 +926,9 @@ const dashboardCss = `
     margin-bottom: 28px;
   }
 
-  /* Section actions: hide desktop, show mobile overflow */
-  .smd-desktop-actions { display: none !important; }
-  .smd-mobile-actions  { display: flex !important; }
+  /* Section actions: always visible inline on mobile, wrap naturally */
+  .smd-section-actions { flex-wrap: wrap; }
+  .smd-section-actions .btn { min-height: 44px; }
 
   /* Footer */
   .smd-footer-inner { padding: 36px 16px 24px; }
