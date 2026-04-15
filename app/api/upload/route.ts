@@ -2,6 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { checkLimits, estimateCost, estimateTokens, TOKEN_PREFLIGHT_LIMIT } from '@/lib/api-limits';
 
+// ─── Route config ──────────────────────────────────────────────────────────
+// Disable Next.js body-size limit (default 1 MB) so large PDFs/PPTX can
+// stream through. Vercel Hobby allows up to 4.5 MB per request body;
+// for larger files the client should upload directly to Supabase Storage
+// and pass the storage path instead (future workstream).
+export const maxDuration = 60; // seconds — Vercel Hobby max
+export const dynamic = 'force-dynamic';
+
+// App Router body-size override (replaces pages/api bodyParser config)
+export const runtime = 'nodejs'; // ensure streaming body parsing
+
 // ─── Config ────────────────────────────────────────────────────────────────
 const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
 const ALLOWED_MIME_TYPES = new Set([
