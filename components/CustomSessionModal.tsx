@@ -35,6 +35,14 @@ export default function CustomSessionModal({
   onClose,
   onStart,
 }: CustomSessionModalProps) {
+  // Lock body scroll when modal is open (prevents dashboard scrolling behind)
+  useEffect(() => {
+    if (isOpen) {
+      const prev = document.body.style.overflow;
+      document.body.style.overflow = 'hidden';
+      return () => { document.body.style.overflow = prev; };
+    }
+  }, [isOpen]);
   const [mode, setMode] = useState<SessionMode>('flash');
   const [selectedLectureIds, setSelectedLectureIds] = useState<Set<string>>(new Set());
   const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set());
@@ -103,13 +111,24 @@ export default function CustomSessionModal({
 
   const allSelected = selectedLectureIds.size === lectures.length;
 
+<><style>{modalExtraCss}</style>
   return (
     <div
       className={`smd-modal-overlay${isOpen ? ' active' : ''}`}
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
       <div className="smd-modal" style={{ maxWidth: 640 }}>
-        <div className="smd-modal-drag-handle" />
+        {/* Sticky top bar with drag handle + close button — always visible */}
+        <div className="smd-modal-topbar">
+          <div className="smd-modal-drag-handle" />
+          <button
+            className="smd-modal-close-btn"
+            onClick={onClose}
+            aria-label="Close custom study session"
+          >
+            ✕
+          </button>
+        </div>
         <div className="smd-modal-title">✦ Custom Study Session</div>
         <div className="smd-modal-subtitle">Mix lectures, build your own deck or exam.</div>
 
@@ -232,7 +251,46 @@ export default function CustomSessionModal({
         </div>
       </div>
     </div>
-  );
+  );</>
 }
+// Add this at the bottom of the component file
+const modalExtraCss = `
+.smd-modal-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px 6px;
+  margin: -20px -20px 0;
+  background: var(--surface, #13161d);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.smd-modal-close-btn {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px; height: 44px;
+  min-width: 44px; min-height: 44px;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  color: var(--text-muted, #6b7280);
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.smd-modal-close-btn:hover {
+  background: rgba(255,255,255,0.07);
+  color: var(--text, #e8eaf0);
+}
+/* Override drag handle centering when close btn present */
+.smd-modal-topbar .smd-modal-drag-handle {
+  margin: 0;
+}
+`;
 
 export type { CustomSessionConfig };
