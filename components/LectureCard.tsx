@@ -105,18 +105,22 @@ export default function LectureCard({
           {lecture.subtitle && <div className="smd-card-subtitle">{lecture.subtitle}</div>}
 
           {/* Progress bars — always shown (fix #4) */}
-          <div className="smd-card-progress">
-            <div className="smd-progress-label">
-              <span>Flashcards</span><span>{flashcardProgress > 0 ? `${flashcardProgress}%` : '—'}</span>
+          <div className="smd-card-progress smd-card-progress-row">
+            <div className="smd-card-progress-col">
+              <div className="smd-progress-label">
+                <span>Flashcards</span><span>{flashcardProgress > 0 ? `${flashcardProgress}%` : '—'}</span>
+              </div>
+              <div className="smd-progress-bar">
+                {flashcardProgress > 0 && <div className="smd-progress-fill" style={{ width: `${flashcardProgress}%`, background: flashColor }} />}
+              </div>
             </div>
-            <div className="smd-progress-bar">
-              {flashcardProgress > 0 && <div className="smd-progress-fill" style={{ width: `${flashcardProgress}%`, background: flashColor }} />}
-            </div>
-            <div className="smd-progress-label" style={{ marginTop: 7 }}>
-              <span>Last Exam</span><span>{examProgress > 0 ? `${examProgress}%` : '—'}</span>
-            </div>
-            <div className="smd-progress-bar">
-              {examProgress > 0 && <div className="smd-progress-fill" style={{ width: `${examProgress}%`, background: examColor }} />}
+            <div className="smd-card-progress-col">
+              <div className="smd-progress-label">
+                <span>Last Exam</span><span>{examProgress > 0 ? `${examProgress}%` : '—'}</span>
+              </div>
+              <div className="smd-progress-bar">
+                {examProgress > 0 && <div className="smd-progress-fill" style={{ width: `${examProgress}%`, background: examColor }} />}
+              </div>
             </div>
           </div>
 
@@ -233,6 +237,8 @@ const cardExtraCss = `
   text-overflow: ellipsis;
   max-width: 100%;
 }
+.smd-card-progress-row { display: flex; gap: 12px; }
+.smd-card-progress-col { flex: 1; min-width: 0; }
 `;
 
 const ctxCss = `
