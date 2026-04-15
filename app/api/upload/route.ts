@@ -3,22 +3,24 @@ import { createClient } from '@supabase/supabase-js';
 import { checkLimits, estimateCost, estimateTokens, TOKEN_PREFLIGHT_LIMIT } from '@/lib/api-limits';
 
 // ─── Route config ───────────────────────────────────────────────────────────
-// This route no longer receives the file body — the client uploads directly
-// to Supabase Storage and passes the storagePath here. The payload is tiny
-// JSON so Vercel's 4.5 MB body limit is not a concern.
 export const maxDuration = 30;
 export const dynamic = 'force-dynamic';
 
-// ─── File constraints (validated against client-reported values) ────────────
-const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024; // 50 MB
+// ─── Constants ──────────────────────────────────────────────────────────────
+const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
 const ALLOWED_EXTENSIONS  = new Set(['.pdf', '.pptx', '.ppt']);
-// Bucket that receives raw uploaded PDFs/PPTX files from users.
-// Created in Supabase Storage with authenticated-user RLS policies.
-const STORAGE_BUCKET = 'uploads';
+const STORAGE_BUCKET      = 'uploads';
 
 function getFileExtension(filename: string): string {
   const dot = filename.lastIndexOf('.');
   return dot >= 0 ? filename.slice(dot).toLowerCase() : '';
+}
+
+function generateInternalId(): string {
+  const hex = Array.from(crypto.getRandomValues(new Uint8Array(4)))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('');
+  return `lec_${hex}`;
 }
 
 function getSupabaseAdmin() {
@@ -43,31 +45,21 @@ async function getUserFromRequest(
 
 // ─── POST /api/upload ────────────────────────────────────────────────────────
 //
-// NEW CONTRACT (v2): client uploads file directly to Supabase Storage,
-// then calls this endpoint with JSON metadata only.
-//
-// Request body (JSON):
-//   storagePath   string   — path already uploaded to the 'uploads' bucket
-//   originalName  string   — original filename (for extension + title fallback)
-//   fileSizeBytes number   — reported by the browser File object
-//   course        string   — one of the three valid courses
-//   title?        string   — optional override title
-//
-// Response (JSON):
-//   jobId           string
-//   estimatedCost   number
-//   estimatedTokens number
-//   tokenWarning?   string
+// Client uploads file directly to Supabase Storage, then calls this endpoint
+// with JSON metadata. This route:
+//   1. Validates inputs
+//   2. Gets a signed URL for the file (so /api/generate can fetch it)
+//   3. Creates a processing_jobs row
+//   4. Fires off POST /api/generate in the background (non-blocking)
+//   5. Returns { jobId } immediately so the client can start polling
 //
 export async function POST(request: NextRequest) {
   try {
-    // 1. Auth
     const user = await getUserFromRequest(request);
     if (!user) {
       return NextResponse.json({ error: 'Unauthorized. Please sign in.' }, { status: 401 });
     }
 
-    // 2. Parse JSON body
     let body: Record<string, unknown>;
     try {
       body = await request.json();
@@ -86,22 +78,15 @@ export async function POST(request: NextRequest) {
     if (!fileSizeBytes) return NextResponse.json({ error: 'fileSizeBytes is required.' }, { status: 400 });
     if (!course)        return NextResponse.json({ error: 'course is required.'         }, { status: 400 });
 
-    // 3. Validate that storagePath belongs to this user
-    //    (path is always `{userId}/...` — anything else is rejected)
     if (!storagePath.startsWith(`${user.id}/`)) {
       return NextResponse.json({ error: 'Forbidden: storagePath does not belong to this user.' }, { status: 403 });
     }
 
-    // 4. Validate extension
     const ext = getFileExtension(originalName);
     if (!ALLOWED_EXTENSIONS.has(ext)) {
-      return NextResponse.json(
-        { error: 'Unsupported file type. Only PDF and PPTX files are accepted.' },
-        { status: 415 }
-      );
+      return NextResponse.json({ error: 'Unsupported file type. Only PDF and PPTX files are accepted.' }, { status: 415 });
     }
 
-    // 5. Validate reported size (sanity check — real enforcement is in Storage RLS)
     if (fileSizeBytes > MAX_FILE_SIZE_BYTES) {
       return NextResponse.json(
         { error: `File too large (${(fileSizeBytes / 1024 / 1024).toFixed(1)} MB). Maximum is 50 MB.` },
@@ -109,35 +94,52 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 6. Rate / cost limits
     const limitsCheck = await checkLimits(user.id);
     if (!limitsCheck.allowed) {
       return NextResponse.json({ error: limitsCheck.reason ?? 'Usage limit reached.' }, { status: 429 });
     }
 
-    // 7. Token pre-flight estimate
     const estimatedTokens = estimateTokens(fileSizeBytes);
     const tokenWarning =
       estimatedTokens > TOKEN_PREFLIGHT_LIMIT
-        ? `This file may contain ~${(estimatedTokens / 1000).toFixed(0)}K tokens, exceeding the 200K recommended limit. Consider splitting it.`
+        ? `This file may contain ~${(estimatedTokens / 1000).toFixed(0)}K tokens, exceeding the 200K recommended limit.`
         : undefined;
 
-    // 8. Create processing_jobs row
-    const estimatedCost  = estimateCost(fileSizeBytes);
-    const lectureTitle   = titleOverride?.trim() || originalName.replace(/\.[^.]+$/, '');
+    const estimatedCost = estimateCost(fileSizeBytes);
+    const lectureTitle  = titleOverride?.trim() || originalName.replace(/\.[^.]+$/, '');
+    const internalId    = generateInternalId();
 
     const supabase = getSupabaseAdmin();
+
+    // ── Get a signed URL so /api/generate can fetch the file ─────────────────
+    // Signed URL valid for 2 hours — plenty of time for processing
+    const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .createSignedUrl(storagePath, 7200);
+
+    if (signedUrlError || !signedUrlData?.signedUrl) {
+      const detail = signedUrlError?.message ?? 'no URL returned';
+      return NextResponse.json(
+        { error: `Could not get file URL: ${detail}` },
+        { status: 500 }
+      );
+    }
+
+    const fileUrl = signedUrlData.signedUrl;
+
+    // ── Insert processing_jobs row ────────────────────────────────────────────
     const { data: job, error: jobError } = await supabase
       .from('processing_jobs')
       .insert({
         user_id:            user.id,
         storage_path:       storagePath,
-        original_file:      originalName,
-        original_filename:  originalName,
+        original_file:      originalName,   // NOT NULL legacy column
+        original_filename:  originalName,   // newer column
         file_size_bytes:    fileSizeBytes,
-        file_type:          ext.slice(1), // 'pdf' | 'pptx' | 'ppt'
+        file_type:          ext.slice(1),
         course,
         title:              lectureTitle,
+        internal_id:        internalId,
         status:             'pending',
         estimated_cost_usd: estimatedCost,
         estimated_tokens:   estimatedTokens,
@@ -148,18 +150,19 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (jobError || !job) {
-      // Surface the real Supabase error so we can diagnose it
-      const detail = jobError?.message ?? jobError?.details ?? jobError?.hint ?? 'unknown';
+      const detail = jobError?.message ?? jobError?.details ?? 'unknown';
       console.error('Job creation error:', jobError);
-      return NextResponse.json(
-        { error: `Failed to create processing job: ${detail}` },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: `Failed to create processing job: ${detail}` }, { status: 500 });
     }
 
-    return NextResponse.json({ jobId: job.job_id, estimatedCost, estimatedTokens, tokenWarning });
+    const jobId = job.job_id as string;
+
+    // ── Return jobId immediately — client calls /api/generate directly ──────
+    // This avoids Vercel serverless timeout issues with chained long-running
+    // functions. The upload page fires /api/generate after receiving jobId.
+    return NextResponse.json({ jobId, internalId, fileUrl, estimatedCost, estimatedTokens, tokenWarning });
   } catch (err) {
     console.error('Upload route error:', err);
-    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
+    return NextResponse.json({ error: `Internal server error: ${(err as Error).message}` }, { status: 500 });
   }
 }

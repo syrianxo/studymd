@@ -244,7 +244,7 @@ export default function UploadPage() {
     course: string,
     title: string,
     token: string
-  ): Promise<{ jobId: string; estimatedCost: number; tokenWarning?: string } | { error: string }> {
+  ): Promise<{ jobId: string; internalId: string; fileUrl: string; estimatedCost: number; tokenWarning?: string } | { error: string }> {
     // ── Step 1: upload file directly to Supabase Storage ──────────────────────
     const timestamp    = Date.now();
     const safeFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
@@ -293,6 +293,8 @@ export default function UploadPage() {
 
       return {
         jobId:         data.jobId         as string,
+        internalId:    data.internalId    as string,
+        fileUrl:       data.fileUrl       as string,
         estimatedCost: data.estimatedCost as number,
         tokenWarning:  data.tokenWarning  as string | undefined,
       };
@@ -379,6 +381,22 @@ export default function UploadPage() {
     ));
     persistJob(result.jobId, lecTitle);
 
+    // ── Fire /api/generate (non-blocking — status flows back via polling) ──────
+    const currentUserId = (await supabase.auth.getUser()).data.user?.id ?? '';
+    fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify({
+        fileUrl:      result.fileUrl,
+        course:       singleCourse,
+        title:        lecTitle,
+        internalId:   result.internalId,
+        jobId:        result.jobId,
+        userId:       currentUserId,
+        fileSizeBytes: singleFile!.size,
+      }),
+    }).catch((err) => console.error('[upload page] /api/generate fetch failed:', err));
+
     startPolling(result.jobId, token, lecTitle);
   }
 
@@ -430,6 +448,21 @@ export default function UploadPage() {
           ? { ...b, phase: 'polling', jobId: result.jobId, estimatedCost: result.estimatedCost, tokenWarning: result.tokenWarning }
           : b
       ));
+
+      // Fire generate for this batch item
+      fetch('/api/generate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          fileUrl:      result.fileUrl,
+          course:       item.course,
+          title:        lecTitle,
+          internalId:   result.internalId,
+          jobId:        result.jobId,
+          userId:       (await supabase.auth.getUser()).data.user?.id ?? '',
+          fileSizeBytes: item.file!.size,
+        }),
+      }).catch((err) => console.error('[batch] /api/generate failed:', err));
 
       // Poll synchronously — wait for this item before starting the next
       await new Promise<void>((resolve) => {
