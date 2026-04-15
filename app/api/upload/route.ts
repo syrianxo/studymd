@@ -132,6 +132,7 @@ export async function POST(request: NextRequest) {
       .insert({
         user_id:            user.id,
         storage_path:       storagePath,
+        original_file:      originalName,
         original_filename:  originalName,
         file_size_bytes:    fileSizeBytes,
         file_type:          ext.slice(1), // 'pdf' | 'pptx' | 'ppt'

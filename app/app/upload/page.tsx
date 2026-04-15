@@ -1152,16 +1152,21 @@ const css = `
 }
 .upl-optional { font-weight: 400; text-transform: none; letter-spacing: 0; font-size: 11px; }
 .upl-select, .upl-input {
-  background: var(--surface); color: var(--text);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: var(--surface2, rgba(255,255,255,0.04)); color: var(--text);
+  border: 1.5px solid rgba(255,255,255,0.1);
   border-radius: 10px; padding: 10px 14px;
   font-family: 'Outfit', sans-serif; font-size: 14px;
   min-height: 44px; outline: none; width: 100%;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.upl-select:hover, .upl-input:hover {
+  border-color: rgba(255,255,255,0.22);
+  background: var(--surface2, rgba(255,255,255,0.06));
 }
 .upl-select:focus, .upl-input:focus {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(91,141,238,0.18);
+  background: var(--surface2, rgba(255,255,255,0.06));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 .upl-select:disabled, .upl-input:disabled { opacity: 0.5; cursor: not-allowed; }
 
