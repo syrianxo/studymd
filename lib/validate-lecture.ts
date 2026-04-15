@@ -58,8 +58,12 @@ const VALID_QUESTION_TYPES = ['mcq', 'true_false', 'short_answer', 'clinical_vig
 const VALID_DIFFICULTIES = ['easy', 'medium', 'hard'] as const;
 
 const REQUIRED_TOP_LEVEL = [
-  'lecture_id', 'course', 'title', 'summary', 'topics', 'flashcards', 'questions',
+  'title', 'summary', 'topics', 'flashcards', 'questions',
 ] as const;
+
+// lecture_id and course are optional in validation — we supply them ourselves
+// from the job row if Claude omits or mis-formats them
+const OPTIONAL_TOP_LEVEL = ['lecture_id', 'course'] as const;
 
 const REQUIRED_FLASHCARD_FIELDS = [
   'id', 'topic', 'front', 'back', 'tags', 'difficulty',

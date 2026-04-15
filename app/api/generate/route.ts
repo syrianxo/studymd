@@ -273,17 +273,34 @@ async function callClaudeAPI(
     .replace(/\s*```$/i, '')
     .trim();
 
+  // Extract the outermost JSON object — handles cases where Claude adds
+  // commentary before or after the JSON despite being instructed not to
+  const firstBrace = rawText.indexOf('{');
+  const lastBrace  = rawText.lastIndexOf('}');
+  const jsonStr = (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace)
+    ? rawText.slice(firstBrace, lastBrace + 1)
+    : rawText;
+
   let parsed: unknown;
   try {
-    parsed = JSON.parse(rawText);
+    parsed = JSON.parse(jsonStr);
   } catch (e) {
     throw new Error(
       `Response was not valid JSON. Error: ${(e as Error).message}. ` +
-        `First 500 chars: ${rawText.slice(0, 500)}`
+        `First 500 chars: ${jsonStr.slice(0, 500)}`
     );
   }
 
-  return { lectureJson: parsed as LectureJSON, inputTokens, outputTokens, model };
+  // Inject known metadata — guarantees these fields are correct even if
+  // Claude omits or mis-formats them
+  const lectureJson = {
+    ...(parsed as Record<string, unknown>),
+    lecture_id: internalId,
+    course,
+    title,
+  } as LectureJSON;
+
+  return { lectureJson, inputTokens, outputTokens, model };
 }
 
 // ─── Route handler ────────────────────────────────────────────────────────────
