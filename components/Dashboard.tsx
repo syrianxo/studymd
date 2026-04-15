@@ -86,6 +86,8 @@ export default function Dashboard({
       const stored = localStorage.getItem('studymd_theme') as Theme | null;
       if (stored === 'midnight' || stored === 'pink' || stored === 'forest') {
         setTheme(stored);
+        // Ensure the data-theme attribute is applied on the html element
+        document.documentElement.dataset.theme = stored;
       }
     } catch {}
   }, []);

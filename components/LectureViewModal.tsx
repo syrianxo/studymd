@@ -132,7 +132,9 @@ export default function LectureViewModal({
   useEffect(() => { setLocalTitle(title); }, [title]);
   useEffect(() => { setLocalSubtitle(lectureSubtitle); }, [lectureSubtitle]);
   useEffect(() => { setLocalCourse(course); }, [course]);
-  useEffect(() => { setLocalColor(color); }, [color]);
+  // Only sync localColor from props when lecture identity changes, not on every prop update.
+  // This prevents the jarring re-render/flicker caused by refetch() in Dashboard.
+  useEffect(() => { setLocalColor(color); }, [lectureId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!isOpen) return;
@@ -386,7 +388,17 @@ export default function LectureViewModal({
               <button key={c}
                 className={`lvm-color-dot${localColor === c ? ' selected' : ''}`}
                 style={{ background: c }}
-                onClick={() => { setLocalColor(c); onChangeColor?.(c); }}
+                onClick={() => {
+                  setLocalColor(c);
+                  // Use optimistic update only — do NOT call onChangeColor which
+                  // triggers refetch() in Dashboard and causes full remount/flicker.
+                  // Persist directly without going through parent.
+                  fetch('/api/lectures/settings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ internalId: lectureId, updates: { colorOverride: c } }),
+                  }).catch(console.error);
+                }}
                 aria-label={`Color ${c}`}
               />
             ))}

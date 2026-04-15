@@ -43,7 +43,7 @@ const css = `
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 999999;
   animation: te-fade-in 0.15s ease;
 }
 @keyframes te-fade-in {

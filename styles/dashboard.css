@@ -1100,6 +1100,11 @@ body::before {
 /* ─── DESKTOP MODAL ─── */
 @media (min-width: 768px) {
   .smd-modal-overlay { align-items: center; padding: 20px; }
-  .smd-modal { border-radius: 20px; max-width: 560px; }
+  .smd-modal {
+    border-radius: 20px;
+    max-width: 680px;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
   .smd-modal-drag-handle { display: none; }
 }

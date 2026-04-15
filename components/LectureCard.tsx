@@ -39,7 +39,9 @@ export default function LectureCard({
   onOpen, onFlashcards, onExam,
   onChangeCourse, onChangeColor, onHide, onArchive,
 }: LectureCardProps) {
-  const color = lecture.color_override ?? lecture.color ?? 'var(--accent)';
+  // Optimistic local color — avoids jarring flicker from parent refetch()
+  const [localColor, setLocalColor] = useState<string | null>(null);
+  const color = localColor ?? lecture.color_override ?? lecture.color ?? 'var(--accent)';
   const course = lecture.course_override ?? lecture.course;
   const title = lecture.custom_title ?? lecture.title;
   const fcLen = (lecture.json_data?.flashcards ?? []).length;
@@ -143,7 +145,16 @@ export default function LectureCard({
           x={ctxMenu.x} y={ctxMenu.y}
           color={color} course={course as Course}
           onChangeCourse={(c) => { onChangeCourse?.(c); setCtxMenu(null); }}
-          onChangeColor={(c) => { onChangeColor?.(c); setCtxMenu(null); }}
+          onChangeColor={(c) => {
+            setLocalColor(c);
+            // Direct API call — skip onChangeColor to avoid parent refetch flicker
+            fetch('/api/lectures/settings', {
+              method: 'PUT',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ internalId: lecture.internal_id, updates: { colorOverride: c } }),
+            }).catch(console.error);
+            setCtxMenu(null);
+          }}
           onHide={() => { onHide?.(); setCtxMenu(null); }}
           onArchive={() => { onArchive?.(); setCtxMenu(null); }}
           onClose={() => setCtxMenu(null)}

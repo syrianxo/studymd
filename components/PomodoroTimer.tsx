@@ -324,12 +324,16 @@ const pomoCss = `
 .pomo-panel{
   max-height:0;overflow:hidden;
   background:var(--surface);
-  border:1px solid var(--border-bright);border-top:none;
+  border:0px solid var(--border-bright);border-top:none;
   border-radius:0 0 14px 14px;
-  transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1),padding 0.25s;
+  transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1),padding 0.25s,border-width 0.05s 0.3s;
   padding:0 18px;
 }
-.pomo-panel.open{max-height:600px;padding:18px 18px 20px;}
+.pomo-panel.open{
+  max-height:600px;padding:18px 18px 20px;
+  border-width:1px;
+  transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1),padding 0.25s,border-width 0s;
+}
 
 .pomo-panel-clock{
   font-family:'DM Mono',monospace;font-size:42px;font-weight:500;
