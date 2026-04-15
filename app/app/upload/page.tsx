@@ -72,12 +72,12 @@ interface BatchItem {
 
 function buildInitialSteps(): TimelineStep[] {
   return [
-    { id: 'upload',     label: 'File uploaded',             status: 'pending' },
-    { id: 'converting', label: 'Converting slides',         status: 'pending' },
-    { id: 'flashcards', label: 'Generating flashcards',     status: 'pending' },
-    { id: 'questions',  label: 'Generating exam questions', status: 'pending' },
-    { id: 'validating', label: 'Validating content',        status: 'pending' },
-    { id: 'ready',      label: 'Lecture ready!',            status: 'pending' },
+    { id: 'upload',     label: 'Uploading to storage',      status: 'pending' },
+    { id: 'converting', label: 'Converting slides',           status: 'pending' },
+    { id: 'flashcards', label: 'Generating flashcards',       status: 'pending' },
+    { id: 'questions',  label: 'Generating exam questions',   status: 'pending' },
+    { id: 'validating', label: 'Validating content',          status: 'pending' },
+    { id: 'ready',      label: 'Lecture ready!',              status: 'pending' },
   ];
 }
 
@@ -96,6 +96,9 @@ function applyStatusToSteps(
   };
 
   switch (apiStatus) {
+    case 'uploading-to-storage':
+      mark('upload', 'active', 'Uploading…');
+      break;
     case 'pending':
       mark('upload', 'active', 'Queued…');
       break;
@@ -226,37 +229,74 @@ export default function UploadPage() {
     } catch {}
   }
 
-  // ── Core: upload file to API ──────────────────────────────────────────────────
+  // ── Core: upload file directly to Supabase Storage, then register job ──────────
+  //
+  // Step 1: browser uploads the file straight to Supabase Storage via the anon
+  //         client. This bypasses Vercel entirely — no 4.5 MB body limit.
+  // Step 2: call POST /api/upload with tiny JSON metadata to create the
+  //         processing_jobs row and get back a jobId.
+  //
   async function apiUpload(
     file: File,
     course: string,
     title: string,
     token: string
   ): Promise<{ jobId: string; estimatedCost: number; tokenWarning?: string } | { error: string }> {
-    const fd = new FormData();
-    fd.append('file', file);
-    fd.append('course', course);
-    if (title.trim()) fd.append('title', title.trim());
+    // ── Step 1: upload file directly to Supabase Storage ──────────────────────
+    const timestamp    = Date.now();
+    const safeFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: 'Not authenticated — please sign in again.' };
 
+    const storagePath = `${user.id}/${timestamp}_${safeFilename}`;
+
+    const { error: storageError } = await supabase.storage
+      .from('uploads')
+      .upload(storagePath, file, {
+        contentType: file.type || 'application/octet-stream',
+        upsert: false,
+      });
+
+    if (storageError) {
+      return { error: `Storage upload failed: ${storageError.message}` };
+    }
+
+    // ── Step 2: register the job via API (JSON only, no file body) ────────────
     try {
-      const res  = await fetch('/api/upload', {
+      const res = await fetch('/api/upload', {
         method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          storagePath,
+          originalName:  file.name,
+          fileSizeBytes: file.size,
+          course,
+          title: title.trim() || undefined,
+        }),
       });
 
       let data: Record<string, unknown> = {};
       try { data = await res.json(); } catch {}
 
       if (!res.ok) {
+        // Clean up the orphaned storage file
+        await supabase.storage.from('uploads').remove([storagePath]);
         const msg = (data.error as string) ?? `Server error (${res.status} ${res.statusText})`;
         return { error: msg };
       }
-      return { jobId: data.jobId as string, estimatedCost: data.estimatedCost as number, tokenWarning: data.tokenWarning as string | undefined };
+
+      return {
+        jobId:         data.jobId         as string,
+        estimatedCost: data.estimatedCost as number,
+        tokenWarning:  data.tokenWarning  as string | undefined,
+      };
     } catch (e: unknown) {
-      // fetch() itself threw — likely a body-size rejection or loss of connectivity
+      await supabase.storage.from('uploads').remove([storagePath]);
       const msg = e instanceof Error ? e.message : String(e);
-      return { error: `Upload failed: ${msg}` };
+      return { error: `Job registration failed: ${msg}` };
     }
   }
 
@@ -311,7 +351,7 @@ export default function UploadPage() {
     if (singlePollRef.current) clearInterval(singlePollRef.current);
 
     setSingleJob({ phase: 'uploading' });
-    setSingleSteps(buildInitialSteps());
+    setSingleSteps(applyStatusToSteps(buildInitialSteps(), 'uploading-to-storage', 0));
     setSingleCost(undefined);
     setSingleWarning(undefined);
 
@@ -328,6 +368,11 @@ export default function UploadPage() {
 
     setSingleJob({ phase: 'polling', jobId: result.jobId, title: lecTitle });
     setSingleSteps(applyStatusToSteps(buildInitialSteps(), 'pending', 0));
+    // Upload step is done — mark it so before first poll returns
+    setSingleSteps((prev) => applyStatusToSteps(
+      prev.map((s) => s.id === 'upload' ? { ...s, status: 'done', detail: undefined } : s),
+      'pending', 0
+    ));
     persistJob(result.jobId, lecTitle);
 
     startPolling(result.jobId, token, lecTitle);
