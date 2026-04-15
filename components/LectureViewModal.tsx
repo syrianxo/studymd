@@ -103,6 +103,10 @@ export default function LectureViewModal({
   // Guard: nothing to render if no lecture has ever been opened
   if (!lecture) return null;
 
+  // Capture stable references before hooks so TypeScript knows these are non-null
+  const lectureId       = lecture.internal_id;
+  const lectureSubtitle = lecture.subtitle ?? '';
+
   const color = lecture.color_override ?? lecture.color ?? '#5b8dee';
   const title = lecture.custom_title ?? lecture.title;
   const course = (lecture.course_override ?? lecture.course) as Course;
@@ -111,7 +115,7 @@ export default function LectureViewModal({
   const fcLen = flashcards.length;
   const qLen = ((lecture.json_data as any)?.questions ?? []).length;
 
-  const [localSubtitle, setLocalSubtitle] = useState(lecture.subtitle ?? '');
+  const [localSubtitle, setLocalSubtitle] = useState(lectureSubtitle);
   const [isEditingSubtitle, setIsEditingSubtitle] = useState(false);
   const subtitleInputRef = useRef<HTMLInputElement>(null);
   const [localColor, setLocalColor] = useState(color);
@@ -126,7 +130,7 @@ export default function LectureViewModal({
 
   // Sync local state when lecture changes
   useEffect(() => { setLocalTitle(title); }, [title]);
-  useEffect(() => { setLocalSubtitle(lecture.subtitle ?? ''); }, [lecture.subtitle]);
+  useEffect(() => { setLocalSubtitle(lectureSubtitle); }, [lectureSubtitle]);
   useEffect(() => { setLocalCourse(course); }, [course]);
   useEffect(() => { setLocalColor(color); }, [color]);
 
@@ -143,7 +147,7 @@ export default function LectureViewModal({
   function handleClose() { onClose(); }
   function handleStudyAction(action: () => void) { action(); onClose(); }
 
-  const { urls: slideUrls, state: slideState } = useSlides(lecture.internal_id, lecture.slide_count ?? 0);
+  const { urls: slideUrls, state: slideState } = useSlides(lectureId, lecture.slide_count ?? 0);
 
   // Editable title (fix #5)
   function handleTitleSave() {
@@ -158,12 +162,11 @@ export default function LectureViewModal({
   // Subtitle edit (fix #6)
   function handleSubtitleSave() {
     setIsEditingSubtitle(false);
-    if (localSubtitle.trim() !== (lecture.subtitle ?? '')) {
-      // Save via the same rename API, pass subtitle field
+    if (localSubtitle.trim() !== lectureSubtitle) {
       fetch('/api/lectures/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ internalId: lecture.internal_id, updates: { subtitle: localSubtitle.trim() } }),
+        body: JSON.stringify({ internalId: lectureId, updates: { subtitle: localSubtitle.trim() } }),
       }).catch(console.error);
     }
   }
@@ -232,7 +235,7 @@ export default function LectureViewModal({
                 value={localSubtitle}
                 onChange={e => setLocalSubtitle(e.target.value)}
                 onBlur={handleSubtitleSave}
-                onKeyDown={e => { if (e.key === 'Enter') handleSubtitleSave(); if (e.key === 'Escape') { setLocalSubtitle(lecture.subtitle ?? ''); setIsEditingSubtitle(false); } }}
+                onKeyDown={e => { if (e.key === 'Enter') handleSubtitleSave(); if (e.key === 'Escape') { setLocalSubtitle(lectureSubtitle); setIsEditingSubtitle(false); } }}
                 placeholder="Add a subtitle…"
                 autoFocus
               />
