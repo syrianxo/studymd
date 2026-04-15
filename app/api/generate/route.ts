@@ -190,7 +190,11 @@ async function checkRateLimits(
   return { allowed: true };
 }
 
-// ─── Core Claude API call ─────────────────────────────────────────────────────
+// Per-model output token limits
+const MODEL_MAX_OUTPUT: Record<string, number> = {
+  'claude-haiku-4-5-20251001': 8000,
+  'claude-sonnet-4-6':        16000,
+};
 
 interface ClaudeCallResult {
   lectureJson: LectureJSON;
@@ -238,13 +242,25 @@ async function callClaudeAPI(
 
   const response = await client.messages.create({
     model,
-    max_tokens: API_LIMITS.MAX_OUTPUT_TOKENS,
+    max_tokens: MODEL_MAX_OUTPUT[model] ?? API_LIMITS.MAX_OUTPUT_TOKENS,
     system: buildSystemWithCache(),
     messages: [{ role: 'user', content: userContent }],
   });
 
   const inputTokens  = response.usage?.input_tokens  ?? 0;
   const outputTokens = response.usage?.output_tokens ?? 0;
+
+  // If stop_reason is max_tokens, output was truncated — return invalid result
+  // so the caller's validation step triggers the Sonnet fallback automatically
+  if (response.stop_reason === 'max_tokens') {
+    console.warn(`[generate] ${model} truncated at max_tokens — will trigger fallback`);
+    return {
+      lectureJson: { _truncated: true } as unknown as LectureJSON,
+      inputTokens,
+      outputTokens,
+      model,
+    };
+  }
 
   const textBlock = response.content.find((b) => b.type === 'text');
   if (!textBlock || textBlock.type !== 'text') {

@@ -41,8 +41,19 @@ export const API_LIMITS = {
   MODEL_FALLBACK: 'claude-sonnet-4-6' as const,
 
   // ── Generation parameters ───────────────────────────────────────────────────
-  /** Max tokens for the Claude response. 16384 handles large lecture JSON output. */
-  MAX_OUTPUT_TOKENS: 16384,
+  /**
+   * Max tokens for the Claude response.
+   * Haiku 4.5 max output: 8,192 tokens
+   * Sonnet 4.6 max output: 64,000 tokens
+   *
+   * A dense lecture with 40+ flashcards + 30+ questions can exceed 8K tokens.
+   * We set this to 8000 for Haiku (safe ceiling) and rely on the fallback to
+   * Sonnet when Haiku's output is truncated/invalid. For very large lectures
+   * Sonnet will be used automatically via the validation+fallback path.
+   *
+   * To always use Sonnet's higher limit, change MODEL_DEFAULT to MODEL_FALLBACK.
+   */
+  MAX_OUTPUT_TOKENS: 8000,
 
   // ── Batch API ───────────────────────────────────────────────────────────────
   /**
