@@ -139,7 +139,8 @@ export async function POST(request: NextRequest) {
         file_type:          ext.slice(1),
         course,
         title:              lectureTitle,
-        internal_id:        internalId,
+        // internal_id intentionally omitted — FK references lectures.internal_id
+        // which doesn't exist yet. /api/generate sets it after inserting the lecture.
         status:             'pending',
         estimated_cost_usd: estimatedCost,
         estimated_tokens:   estimatedTokens,
