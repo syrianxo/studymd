@@ -1,0 +1,255 @@
+'use client';
+
+/**
+ * components/TodaysPlanWidget.tsx
+ *
+ * Shows the active study plan's today schedule on the dashboard.
+ * Renders nothing if no active plan, nothing today, or today already done.
+ */
+
+import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
+import type { StudyPlan } from '@/types';
+
+interface LectureMeta { title: string; icon: string; color: string; }
+
+interface TodaysPlanWidgetProps {
+  onStartLecture?: (internalId: string) => void;
+}
+
+function todayISO(): string {
+  const d = new Date();
+  return [
+    d.getFullYear(),
+    String(d.getMonth() + 1).padStart(2, '0'),
+    String(d.getDate()).padStart(2, '0'),
+  ].join('-');
+}
+
+function daysUntil(iso: string): number {
+  const t = new Date(); t.setHours(0,0,0,0);
+  return Math.ceil((new Date(iso + 'T00:00:00').getTime() - t.getTime()) / 86_400_000);
+}
+
+export default function TodaysPlanWidget({ onStartLecture }: TodaysPlanWidgetProps) {
+  const [plan, setPlan]             = useState<StudyPlan | null>(null);
+  const [lectureMap, setLectureMap] = useState<Map<string, LectureMeta>>(new Map());
+  const [loading, setLoading]       = useState(true);
+
+  const load = useCallback(async () => {
+    try {
+      const [planRes, lecRes] = await Promise.all([
+        fetch('/api/plans'),
+        fetch('/api/lectures'),
+      ]);
+      const { plans }    = await planRes.json();
+      const { lectures } = await lecRes.json();
+
+      const active: StudyPlan[] = (plans ?? []).filter((p: StudyPlan) => p.is_active);
+      active.sort((a, b) => a.test_date.localeCompare(b.test_date));
+      setPlan(active[0] ?? null);
+
+      const map = new Map<string, LectureMeta>();
+      for (const l of (lectures ?? [])) {
+        map.set(l.internalId, { title: l.title, icon: l.icon, color: l.color });
+      }
+      setLectureMap(map);
+    } catch { /* silently fail — widget is non-critical */ }
+    finally { setLoading(false); }
+  }, []);
+
+  useEffect(() => { load(); }, [load]);
+
+  if (loading || !plan) return null;
+
+  const today          = todayISO();
+  const schedule       = plan.schedule as Record<string, string[]>;
+  const todaysLectures = schedule[today] ?? [];
+  const isCompleted    = plan.completed_days.includes(today);
+
+  if (todaysLectures.length === 0) return null;
+
+  const dLeft      = daysUntil(plan.test_date);
+  const firstLecId = todaysLectures[0];
+  const doneDays   = plan.completed_days.length;
+  const totalDays  = Object.keys(schedule).length;
+  const pct        = totalDays > 0 ? Math.round((doneDays / totalDays) * 100) : 0;
+
+  return (
+    <>
+      <style>{widgetCss}</style>
+      <div className={`tpw-card${isCompleted ? ' tpw-card--done' : ''}`}>
+
+        <div className="tpw-header">
+          <div className="tpw-icon-wrap">📅</div>
+          <div className="tpw-label-wrap">
+            <div className="tpw-label">Today&apos;s Plan</div>
+            <div className="tpw-plan-name">{plan.name}</div>
+          </div>
+          {dLeft > 0 && (
+            <div className="tpw-countdown">
+              <span className="tpw-countdown-num">{dLeft}</span>
+              <span className="tpw-countdown-unit">days to test</span>
+            </div>
+          )}
+        </div>
+
+        {/* Lecture list */}
+        <div className="tpw-lecs">
+          {todaysLectures.map((id, i) => {
+            const meta = lectureMap.get(id);
+            return (
+              <div key={id} className="tpw-lec-row">
+                <span className="tpw-lec-num">{i + 1}</span>
+                {meta && (
+                  <span
+                    className="tpw-lec-icon-pill"
+                    style={{ background: meta.color + '22', borderColor: meta.color + '55' }}
+                  >
+                    {meta.icon}
+                  </span>
+                )}
+                <span className="tpw-lec-title">{meta?.title ?? id}</span>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Progress bar */}
+        <div className="tpw-progress">
+          <div className="tpw-progress-bar">
+            <div className="tpw-progress-fill" style={{ width: `${pct}%` }} />
+          </div>
+          <span className="tpw-progress-pct">{pct}%</span>
+        </div>
+
+        <div className="tpw-actions">
+          {isCompleted ? (
+            <span className="tpw-done-badge">✅ Today complete — great work!</span>
+          ) : (
+            <button
+              className="btn btn-primary tpw-start-btn"
+              onClick={() => onStartLecture?.(firstLecId)}
+            >
+              ▶ Start Today&apos;s Review
+            </button>
+          )}
+          <Link href="/app/plans" className="tpw-view-link">View full plan →</Link>
+        </div>
+
+      </div>
+    </>
+  );
+}
+
+const widgetCss = `
+.tpw-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 16px;
+  padding: 20px 22px;
+  margin-bottom: 24px;
+}
+.tpw-card--done { opacity: 0.7; border-left-color: #10b981; }
+
+.tpw-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.tpw-icon-wrap { font-size: 22px; flex-shrink: 0; }
+.tpw-label-wrap { flex: 1; min-width: 0; }
+.tpw-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--accent);
+  margin-bottom: 2px;
+}
+.tpw-plan-name {
+  font-family: 'Fraunces', serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.tpw-countdown {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+.tpw-countdown-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--accent);
+  line-height: 1;
+}
+.tpw-countdown-unit {
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+}
+
+.tpw-lecs { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
+.tpw-lec-row { display: flex; align-items: center; gap: 8px; }
+.tpw-lec-num {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  color: var(--text-muted);
+  flex-shrink: 0;
+}
+.tpw-lec-icon-pill {
+  width: 24px; height: 24px;
+  border-radius: 6px;
+  border: 1px solid;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px;
+  flex-shrink: 0;
+}
+.tpw-lec-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tpw-progress { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; }
+.tpw-progress-bar {
+  flex: 1; height: 4px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 100px; overflow: hidden;
+}
+.tpw-progress-fill {
+  height: 100%; background: var(--accent);
+  border-radius: 100px; transition: width 0.4s ease;
+}
+.tpw-progress-pct {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px; color: var(--text-muted);
+  flex-shrink: 0; width: 28px; text-align: right;
+}
+
+.tpw-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.tpw-start-btn { font-size: 13px; padding: 9px 18px; }
+.tpw-done-badge { font-size: 13px; color: #10b981; font-weight: 600; }
+.tpw-view-link {
+  font-size: 13px; color: var(--text-muted);
+  text-decoration: none; font-family: 'Outfit', sans-serif;
+  transition: color 0.15s;
+}
+.tpw-view-link:hover { color: var(--text); }
+`;

@@ -14,7 +14,8 @@ import { useProgress } from '@/hooks/useProgress';
 import { createClient } from '@/lib/supabase';
 import PomodoroTimer from '@/components/PomodoroTimer';
 import { StudyConfigManager, useStudyConfig } from '@/components/StudyConfigManager';
-import type { Course, Theme } from '@/types';
+import TodaysPlanWidget from '@/components/TodaysPlanWidget';
+import type { Course, Theme, StudyPlan } from '@/types';
 import type { FlashcardConfig } from '@/components/study/FlashcardConfigModal';
 import type { ExamConfig } from '@/components/study/ExamConfigModal';
 
@@ -55,6 +56,34 @@ export default function Dashboard({
   const [theme, setTheme] = useState<Theme>(initialThemeProp);
   const studyConfig = useStudyConfig();
   const [sectionMenuOpen, setSectionMenuOpen] = useState(false);
+
+  // ── Active study plan (for dashboard widget + lecture badges) ────────────────
+  const [activePlan, setActivePlan] = useState<StudyPlan | null>(null);
+  useEffect(() => {
+    fetch('/api/plans')
+      .then(r => r.json())
+      .then(({ plans }) => {
+        const active = (plans ?? []).filter((p: StudyPlan) => p.is_active);
+        active.sort((a: StudyPlan, b: StudyPlan) => a.test_date.localeCompare(b.test_date));
+        setActivePlan(active[0] ?? null);
+      })
+      .catch(() => {});
+  }, []);
+
+  // Build lectureId → next scheduled date (on-or-after today) from active plan
+  const planNextReview = useMemo((): Record<string, string> => {
+    if (!activePlan) return {};
+    const today = new Date().toISOString().slice(0, 10);
+    const schedule = activePlan.schedule as Record<string, string[]>;
+    const futureDays = Object.keys(schedule).filter(d => d >= today).sort();
+    const result: Record<string, string> = {};
+    for (const day of futureDays) {
+      for (const id of schedule[day]) {
+        if (!result[id]) result[id] = day;
+      }
+    }
+    return result;
+  }, [activePlan]);
 
   useEffect(() => {
     createClient().auth.getUser().then(({ data }) => {
@@ -278,6 +307,9 @@ export default function Dashboard({
                 : 'Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.'}
             </p>
 
+            {/* Today's Plan widget — shows only when there's an active plan with today's lectures */}
+            <TodaysPlanWidget onStartLecture={handleStartFlash} />
+
             {continueHref && (
               <Link href={continueHref} className="smd-continue-btn">
                 Continue Studying
@@ -430,6 +462,8 @@ export default function Dashboard({
             onHide={handleHide}
             onArchive={handleArchive}
             onRenameTitle={handleRenameTitle}
+            planNextReview={planNextReview}
+            planTestDate={activePlan?.test_date}
           />
         )}
       </main>
@@ -459,6 +493,7 @@ export default function Dashboard({
                 <a href="#mainDashboard" className="smd-footer-link">Back to top</a>
                 <a href="/app" className="smd-footer-link">Dashboard</a>
                 <a href="/app/lectures" className="smd-footer-link">My Lectures</a>
+                <a href="/app/plans" className="smd-footer-link">Study Plans</a>
                 <a href="/app/upload" className="smd-footer-link">Upload Lecture</a>
               </div>
               <div className="smd-footer-col">
