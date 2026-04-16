@@ -13,7 +13,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import { createClient } from '@/lib/supabase';
 import type { Theme } from '@/types';
@@ -147,8 +147,13 @@ function newBatchItem(): BatchItem {
 
 export default function UploadPage() {
   const router   = useRouter();
-  const supabase = createClient();
+  const searchParams = useSearchParams();
+  const fromParam = searchParams.get('from');
+  // Determine back destination from ?from= query param
+  const backHref  = fromParam === 'lectures' ? '/app/lectures' : '/app';
+  const backLabel = fromParam === 'lectures' ? 'My Lectures' : 'Dashboard';
 
+  const supabase = createClient();
   const [theme,  setTheme]  = useState<Theme>('midnight');
   const [userId, setUserId] = useState('');
   const [mode,   setMode]   = useState<'single' | 'batch'>('single');
@@ -530,7 +535,7 @@ export default function UploadPage() {
 
         {/* Top bar */}
         <div className="upl-topbar">
-          <Link href="/app" className="upl-back-link">← Back to Dashboard</Link>
+          <Link href={backHref} className="upl-back-link">← Back to {backLabel}</Link>
           {isProcessing && (
             <span className="upl-processing-badge">
               <span className="upl-spin-sm" />
@@ -678,7 +683,7 @@ export default function UploadPage() {
                       : 'Start Processing'}
                   </button>
                 ) : (
-                  <Link href="/app" className="upl-done-btn">← Back to Dashboard</Link>
+                  <Link href={backHref} className="upl-done-btn">← Back to {backLabel}</Link>
                 )}
               </div>
 
@@ -868,7 +873,7 @@ export default function UploadPage() {
 
                 {!batchRunning && (
                   <div className="upl-batch-done-bar">
-                    <Link href="/app" className="upl-done-btn">← Back to Dashboard</Link>
+                    <Link href={backHref} className="upl-done-btn">← Back to {backLabel}</Link>
                   </div>
                 )}
               </div>

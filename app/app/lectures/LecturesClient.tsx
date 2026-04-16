@@ -1411,7 +1411,7 @@ export default function LecturesClient({ initialLectures }: { initialLectures: L
           lectureCount={lectures.length}
           userId={userId}
           initialTheme={theme}
-          hideUploadButton={false}
+          hideUploadButton={true}
         />
 
         <div className="lm-page-wrap">
@@ -1437,7 +1437,7 @@ export default function LecturesClient({ initialLectures }: { initialLectures: L
           {/* Table header row */}
           <div className="lm-table-header-row">
             <span className="lm-table-hint">⠿ Drag rows to reorder</span>
-            <Link href="/app/upload" className="lm-btn lm-btn-primary lm-btn-sm">↑ Upload Lecture</Link>
+            <Link href="/app/upload?from=lectures" className="lm-btn lm-btn-primary lm-btn-sm">↑ Upload Lecture</Link>
           </div>
 
           <div className="lm-table-outer">
