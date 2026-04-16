@@ -152,7 +152,20 @@ async function apiFetch(path: string, opts?: RequestInit) {
   return r.json();
 }
 
-// ─── Portal ───────────────────────────────────────────────────────────────────
+// ─── Color helper ───────────────────────────────────────────────────────────
+// color_override in DB is a JSONB object {midnight: '#hex', pink: '#hex', ...}
+// or null, or a plain hex string (legacy). We extract the current theme's hex.
+function resolveColorHex(raw: unknown): string {
+  if (!raw) return '#5b8dee';
+  if (typeof raw === 'string') return raw;
+  if (typeof raw === 'object' && raw !== null) {
+    const obj = raw as Record<string, string>;
+    // Try to get any stored color — prefer midnight, then first value
+    return obj.midnight ?? obj.pink ?? obj.forest ?? Object.values(obj)[0] ?? '#5b8dee';
+  }
+  return '#5b8dee';
+}
+
 
 function Portal({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
@@ -343,7 +356,15 @@ function QuestionEditModal({ question, lectureId, onSave, onClose }: {
   const [q, setQ] = useState(question.question);
   const [ca, setCa] = useState(question.correctAnswer);
   const [options, setOptions] = useState<string[]>(
-    question.options?.length ? question.options : question.type === 'tf' ? ['True', 'False'] : []
+    // Defensive: filter out undefined/null/object entries, coerce to string
+    (() => {
+      const raw = question.options;
+      if (Array.isArray(raw) && raw.length > 0) {
+        const cleaned = raw.map(o => (o != null && typeof o === 'string' ? o : typeof o === 'object' ? JSON.stringify(o) : String(o ?? '')));
+        return cleaned;
+      }
+      return question.type === 'tf' ? ['True', 'False'] : [];
+    })()
   );
   const [exp, setExp] = useState(question.explanation ?? '');
   const [saving, setSaving] = useState(false);
@@ -759,7 +780,7 @@ function ExpandedRow({ summary, onToast, onSummaryChange, onOpenModal, detailCac
   const [tagInput, setTagInput]       = useState('');
   const [tags, setTags]               = useState<string[]>(summary.tags);
   const [course, setCourse]           = useState(summary.course);
-  const [color, setColor]             = useState(summary.color);
+  const [color, setColor]             = useState(() => resolveColorHex(summary.color));
   const [icon, setIcon]               = useState(summary.icon);
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [savingMeta, setSavingMeta]   = useState(false);
@@ -830,29 +851,14 @@ function ExpandedRow({ summary, onToast, onSummaryChange, onOpenModal, detailCac
               {/* ── General Info ── */}
               {tab === 'info' && (
                 <div className="lm-meta-grid">
-                  {/* Icon: compact, auto-width column */}
-                  <div className="lm-form-field lm-form-field-icon">
-                    <label className="lm-form-label">Icon</label>
-                    <button ref={iconBtnRef} className="lm-icon-btn" type="button"
-                      onClick={() => setShowIconPicker(v => !v)} title="Change icon">
-                      {icon}
-                    </button>
-                    {showIconPicker && (
-                      <IconPicker current={icon} anchorRef={iconBtnRef} onSelect={setIcon} onClose={() => setShowIconPicker(false)} />
-                    )}
-                  </div>
 
-                  {/* Display Title */}
+                  {/* Row 1: Display Title | Course */}
                   <div className="lm-form-field">
                     <label className="lm-form-label">Display Title</label>
                     <input className="lm-input" value={customTitle} onChange={e => setCustomTitle(e.target.value)} placeholder={summary.title} />
                     <div className="lm-field-hint">Rename this lecture for yourself only.</div>
                   </div>
 
-                  {/* empty cell — icon col is 1, title col is 2; row ends at col 2 */}
-                  {/* Course + Color span row 2, cols 1+2 via lm-form-field-full isn't right — use explicit col-span */}
-
-                  {/* Course */}
                   <div className="lm-form-field">
                     <label className="lm-form-label">Course</label>
                     <select className="lm-select" value={course} onChange={e => setCourse(e.target.value)}>
@@ -861,7 +867,13 @@ function ExpandedRow({ summary, onToast, onSummaryChange, onOpenModal, detailCac
                     <div className="lm-field-hint">Override which course this appears under.</div>
                   </div>
 
-                  {/* Accent Color */}
+                  {/* Row 2: Study Block | Accent Color */}
+                  <div className="lm-form-field">
+                    <label className="lm-form-label">Study Block</label>
+                    <input className="lm-input" value={groupId} onChange={e => setGroupId(e.target.value)} placeholder="e.g. Fall 2026 Block 1" />
+                    <div className="lm-field-hint">Group with others for focused study.</div>
+                  </div>
+
                   <div className="lm-form-field">
                     <label className="lm-form-label">Accent Color</label>
                     <div className="lm-color-row">
@@ -873,16 +885,7 @@ function ExpandedRow({ summary, onToast, onSummaryChange, onOpenModal, detailCac
                     </div>
                   </div>
 
-                  {/* Study Block */}
-                  <div className="lm-form-field">
-                    <label className="lm-form-label">Study Block</label>
-                    <input className="lm-input" value={groupId} onChange={e => setGroupId(e.target.value)} placeholder="e.g. Fall 2026 Block 1" />
-                    <div className="lm-field-hint">Group with others for focused study.</div>
-                  </div>
-
-                  <div />{/* spacer to fill second column */}
-
-                  {/* Tags */}
+                  {/* Row 3: Tags (full width) */}
                   <div className="lm-form-field lm-form-field-full">
                     <label className="lm-form-label">Tags</label>
                     <div className="lm-tag-editor">
@@ -894,6 +897,22 @@ function ExpandedRow({ summary, onToast, onSummaryChange, onOpenModal, detailCac
                       <input className="lm-tag-input" value={tagInput} onChange={e => setTagInput(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter' || e.key === ',') { e.preventDefault(); addTag(); } }}
                         placeholder="Type a tag and press Enter…" />
+                    </div>
+                  </div>
+
+                  {/* Row 4: Icon picker (inline, no popup) */}
+                  <div className="lm-form-field lm-form-field-full">
+                    <label className="lm-form-label">Icon</label>
+                    <div className="lm-icon-grid-inline">
+                      {ICON_OPTIONS.map(ic => (
+                        <button key={ic}
+                          className={`lm-icon-opt ${ic === icon ? 'lm-icon-opt-selected' : ''}`}
+                          onClick={() => setIcon(ic)}
+                          title={ic}
+                          type="button">
+                          {ic}
+                        </button>
+                      ))}
                     </div>
                   </div>
 
@@ -1395,6 +1414,8 @@ const CSS = `
 .lm-icon-picker { position: fixed; background: var(--surface, #13161d); border: 1px solid rgba(255,255,255,.14); border-radius: 14px; padding: 14px; box-shadow: 0 16px 48px rgba(0,0,0,.75); z-index: 1999; width: 252px; }
 .lm-icon-picker-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); margin-bottom: 8px; font-family: 'DM Mono', monospace; }
 .lm-icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
+/* ── Icon inline grid (inside General Info, no popup) ── */
+.lm-icon-grid-inline { display: flex; flex-wrap: wrap; gap: 6px; }
 .lm-icon-opt { background: none; border: 1px solid transparent; border-radius: 8px; font-size: 20px; cursor: pointer; padding: 5px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; transition: background .1s, border-color .1s; }
 .lm-icon-opt:hover { background: rgba(255,255,255,.09); }
 .lm-icon-opt-selected { background: rgba(91,141,238,.18); border-color: var(--accent); }

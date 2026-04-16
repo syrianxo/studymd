@@ -56,10 +56,13 @@ export async function GET(
   try { service = buildServiceClient(); }
   catch (e: any) { return NextResponse.json({ error: e.message }, { status: 500 }); }
 
-  // List files in the lecture's folder
+  // List files in the lecture's folder.
+  // Storage structure: bucket='slides', path='slides/{id}/slide_XX.jpg'
+  // (there is a 'slides' subfolder inside the 'slides' bucket)
+  const folderPath = `slides/${id}`;
   const { data: files, error: listErr } = await service.storage
     .from('slides')
-    .list(id, { limit: 300, sortBy: { column: 'name', order: 'asc' } });
+    .list(folderPath, { limit: 300, sortBy: { column: 'name', order: 'asc' } });
 
   if (listErr) {
     // Bucket may not exist or folder empty — return empty list gracefully
@@ -80,7 +83,7 @@ export async function GET(
   // Generate signed URLs (1 hour)
   const slides = await Promise.all(
     realFiles.map(async f => {
-      const path = `${id}/${f.name}`;
+      const path = `slides/${id}/${f.name}`;
       const { data: signedData } = await service!.storage
         .from('slides')
         .createSignedUrl(path, 3600);
@@ -140,7 +143,8 @@ export async function POST(
   const padded = String(slideNumber).padStart(2, '0');
   const ext = file.name.split('.').pop()?.toLowerCase() ?? 'jpg';
   const filename = `slide_${padded}.${ext}`;
-  const storagePath = `${id}/${filename}`;
+  // Matches storage structure: slides/{id}/slide_XX.jpg inside 'slides' bucket
+  const storagePath = `slides/${id}/${filename}`;
 
   const buffer = Buffer.from(await file.arrayBuffer());
 
