@@ -353,8 +353,8 @@ function FlashcardEditModal({ card, lectureId, onSave, onClose }: {
 function QuestionEditModal({ question, lectureId, onSave, onClose }: {
   question: ExamQuestion; lectureId: string; onSave: (updated: ExamQuestion) => void; onClose: () => void;
 }) {
-  const [q, setQ] = useState(question.question);
-  const [ca, setCa] = useState(question.correctAnswer);
+  const [q, setQ] = useState(question.question ?? '');
+  const [ca, setCa] = useState(question.correctAnswer ?? '');
   const [options, setOptions] = useState<string[]>(
     // Defensive: filter out undefined/null/object entries, coerce to string
     (() => {
@@ -367,6 +367,8 @@ function QuestionEditModal({ question, lectureId, onSave, onClose }: {
     })()
   );
   const [exp, setExp] = useState(question.explanation ?? '');
+  // missingAnswer: source data has no correct answer — show amber warning
+  const missingAnswer = !question.correctAnswer?.trim();
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
   const [editingAnswerIdx, setEditingAnswerIdx] = useState<number | null>(null);
@@ -445,6 +447,12 @@ function QuestionEditModal({ question, lectureId, onSave, onClose }: {
                 <button className="lm-btn lm-btn-primary" onClick={acceptCanonical} disabled={saving}>✓ Accept instructor's version</button>
                 <span className="lm-conflict-or">or keep editing yours below</span>
               </div>
+            </div>
+          )}
+          {/* Missing answer warning — shown when no correct answer was defined in source data */}
+          {missingAnswer && (
+            <div className="lm-warn">
+              ⚠️ No correct answer is set for this question. Please click the correct answer text below to set one before saving.
             </div>
           )}
           <div className="lm-qcard">
@@ -661,14 +669,161 @@ function AddQuestionModal({ lectureId, onAdded, onClose }: {
   );
 }
 
+// ─── Slide Lightbox ──────────────────────────────────────────────────────────
+
+function SlideLightbox({ slides, startIndex, lectureId, onAddFlashcard, onClose }: {
+  slides: SlideItem[];
+  startIndex: number;
+  lectureId: string;
+  onAddFlashcard: (slideNumber: number | null, slideUrl: string | null) => void;
+  onClose: () => void;
+}) {
+  const [idx, setIdx] = useState(startIndex);
+  const slide = slides[idx];
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'ArrowLeft')  setIdx(i => Math.max(0, i - 1));
+      if (e.key === 'ArrowRight') setIdx(i => Math.min(slides.length - 1, i + 1));
+      if (e.key === 'Escape') onClose();
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [slides.length, onClose]);
+
+  return (
+    <Portal>
+      <div className="lm-lightbox-overlay" onClick={onClose}>
+        <div className="lm-lightbox" onClick={e => e.stopPropagation()}>
+          {/* Close */}
+          <button className="lm-lightbox-close" onClick={onClose} aria-label="Close">✕</button>
+
+          {/* Nav prev */}
+          <button className="lm-lightbox-nav lm-lightbox-prev"
+            onClick={e => { e.stopPropagation(); setIdx(i => Math.max(0, i - 1)); }}
+            disabled={idx === 0} aria-label="Previous slide">
+            ‹
+          </button>
+
+          {/* Image */}
+          <div className="lm-lightbox-img-wrap">
+            {slide?.url
+              ? <img src={slide.url} alt={`Slide ${slide.slideNumber}`} className="lm-lightbox-img" />
+              : <div className="lm-lightbox-placeholder">🖼️</div>}
+          </div>
+
+          {/* Nav next */}
+          <button className="lm-lightbox-nav lm-lightbox-next"
+            onClick={e => { e.stopPropagation(); setIdx(i => Math.min(slides.length - 1, i + 1)); }}
+            disabled={idx === slides.length - 1} aria-label="Next slide">
+            ›
+          </button>
+
+          {/* Footer bar */}
+          <div className="lm-lightbox-footer">
+            <span className="lm-lightbox-counter">
+              {slide?.slideNumber != null ? `Slide ${slide.slideNumber}` : slide?.name ?? ''}
+              &nbsp;·&nbsp; {idx + 1} / {slides.length}
+            </span>
+            <button className="lm-btn lm-btn-primary lm-btn-sm"
+              onClick={() => onAddFlashcard(slide?.slideNumber ?? null, slide?.url ?? null)}>
+              + Add Flashcard from this slide
+            </button>
+          </div>
+        </div>
+      </div>
+    </Portal>
+  );
+}
+
+// ─── Add Flashcard from Slide Modal ──────────────────────────────────────────
+
+function AddFlashcardFromSlideModal({ lectureId, slideNumber, slideUrl, onAdded, onClose }: {
+  lectureId: string;
+  slideNumber: number | null;
+  slideUrl: string | null;
+  onAdded: (card: Flashcard) => void;
+  onClose: () => void;
+}) {
+  const [q, setQ] = useState('');
+  const [a, setA] = useState('');
+  const [topic, setTopic] = useState('');
+  const [saving, setSaving] = useState(false);
+  const [err, setErr] = useState('');
+
+  async function save() {
+    if (!q.trim() || !a.trim()) { setErr('Question and answer are required.'); return; }
+    setSaving(true);
+    try {
+      const data = await apiFetch(`/api/lectures/${lectureId}/flashcards`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question: q.trim(), answer: a.trim(), topic: topic.trim() || 'General', slideNumber }),
+      });
+      onAdded({ id: data.card.id, topic: data.card.topic, slideNumber: slideNumber, question: data.card.question, answer: data.card.answer, hasUserEdit: false, hasConflict: false, userEditedAt: null });
+      onClose();
+    } catch (e: any) { setErr(e.message); }
+    setSaving(false);
+  }
+
+  return (
+    <Portal>
+      <div className="lm-overlay" onClick={onClose}>
+        <div className="lm-modal lm-modal-slide-fc" onClick={e => e.stopPropagation()}>
+          <div className="lm-modal-header">
+            <div>
+              <div className="lm-modal-title">Add Flashcard</div>
+              <div className="lm-modal-sub">
+                {slideNumber != null ? `From Slide ${slideNumber}` : 'New flashcard'} · personal, won't affect others
+              </div>
+            </div>
+            <button className="lm-modal-close" onClick={onClose}>✕</button>
+          </div>
+
+          {/* Slide thumbnail */}
+          {slideUrl && (
+            <img src={slideUrl} alt="Slide" className="lm-slide-fc-thumb"
+              onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+          )}
+
+          <div className="lm-form-field">
+            <label className="lm-form-label">Topic <span style={{ opacity: 0.6 }}>(optional)</span></label>
+            <input className="lm-input" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Cardiovascular" />
+          </div>
+          <div className="lm-form-field">
+            <label className="lm-form-label">Question</label>
+            <textarea className="lm-textarea" rows={3} value={q} onChange={e => setQ(e.target.value)}
+              placeholder="Write a question about this slide…" />
+          </div>
+          <div className="lm-form-field">
+            <label className="lm-form-label">Answer</label>
+            <textarea className="lm-textarea" rows={3} value={a} onChange={e => setA(e.target.value)} />
+          </div>
+          {err && <div className="lm-err">{err}</div>}
+          <div className="lm-modal-footer">
+            <button className="lm-btn lm-btn-ghost" onClick={onClose}>Cancel</button>
+            <button className="lm-btn lm-btn-primary" onClick={save} disabled={saving}>{saving ? 'Adding…' : 'Add Flashcard'}</button>
+          </div>
+        </div>
+      </div>
+    </Portal>
+  );
+}
+
+
 // ─── Slides Tab ───────────────────────────────────────────────────────────────
 
-function SlidesTab({ lectureId, onToast }: { lectureId: string; onToast: (m: string, t: 'ok' | 'err') => void }) {
+function SlidesTab({ lectureId, onToast, onFlashcardAdded }: {
+  lectureId: string;
+  onToast: (m: string, t: 'ok' | 'err') => void;
+  onFlashcardAdded: (card: Flashcard) => void;
+}) {
   const [slides, setSlides] = useState<SlideItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [slideError, setSlideError] = useState('');
+  const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
+  const [addFromSlide, setAddFromSlide] = useState<{ num: number | null; url: string | null } | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const load = useCallback(async () => {
@@ -677,9 +832,7 @@ function SlidesTab({ lectureId, onToast }: { lectureId: string; onToast: (m: str
     try {
       const data = await apiFetch(`/api/lectures/${lectureId}/slides`);
       setSlides(data.slides ?? []);
-    } catch (e: any) {
-      setSlideError(e.message);
-    }
+    } catch (e: any) { setSlideError(e.message); }
     setLoading(false);
   }, [lectureId, onToast]);
 
@@ -691,10 +844,7 @@ function SlidesTab({ lectureId, onToast }: { lectureId: string; onToast: (m: str
     form.append('file', file);
     try {
       const res = await fetch(`/api/lectures/${lectureId}/slides`, { method: 'POST', body: form });
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({}));
-        throw new Error(j.error ?? 'Upload failed');
-      }
+      if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.error ?? 'Upload failed'); }
       onToast('Slide uploaded.', 'ok');
       load();
     } catch (e: any) { onToast(e.message, 'err'); }
@@ -712,8 +862,14 @@ function SlidesTab({ lectureId, onToast }: { lectureId: string; onToast: (m: str
     setDeleting(null);
   }
 
+  const openLightbox = useCallback((idx: number, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setLightboxIdx(idx);
+  }, []);
+
   return (
-    <div>
+    <div className="lm-slides-container">
+      {/* Header bar (always visible, outside scroll) */}
       <div className="lm-slides-header">
         <span className="lm-slides-count">{slides.length} slide{slides.length !== 1 ? 's' : ''}</span>
         <button className="lm-btn lm-btn-primary lm-btn-sm" onClick={() => fileRef.current?.click()} disabled={uploading}>
@@ -722,39 +878,75 @@ function SlidesTab({ lectureId, onToast }: { lectureId: string; onToast: (m: str
         <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
           onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.target.value = ''; }} />
       </div>
-      {loading ? (
-        <div className="lm-loading">Loading slides…</div>
-      ) : slideError ? (
-        <div className="lm-slide-error">
-          <div>⚠️ Could not load slides</div>
-          <div className="lm-muted" style={{ fontSize: 12, marginTop: 4 }}>{slideError}</div>
-          <button className="lm-btn lm-btn-ghost lm-btn-sm" style={{ marginTop: 10 }} onClick={load}>Retry</button>
-        </div>
-      ) : slides.length === 0 ? (
-        <div className="lm-empty-slides">
-          <div style={{ fontSize: 32, marginBottom: 8 }}>🖼️</div>
-          <div>No slides uploaded yet.</div>
-          <div className="lm-muted" style={{ marginTop: 4 }}>Slides here appear in the study lightbox.</div>
-        </div>
-      ) : (
-        <div className="lm-slides-grid">
-          {slides.map(sl => (
-            <div key={sl.name} className="lm-slide-card">
-              {sl.url
-                ? <img src={sl.url} alt={sl.name} className="lm-slide-img" loading="lazy"
-                    onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                : <div className="lm-slide-placeholder">🖼️</div>}
-              <div className="lm-slide-meta">
-                <span className="lm-slide-num">{sl.slideNumber != null ? `Slide ${sl.slideNumber}` : sl.name}</span>
-                <span className="lm-slide-size">{fmtSize(sl.size)}</span>
+
+      {/* Scrollable content area */}
+      <div className="lm-slides-scroll">
+        {loading ? (
+          <div className="lm-loading">Loading slides…</div>
+        ) : slideError ? (
+          <div className="lm-slide-error">
+            <div>⚠️ Could not load slides</div>
+            <div className="lm-muted" style={{ fontSize: 12, marginTop: 4 }}>{slideError}</div>
+            <button className="lm-btn lm-btn-ghost lm-btn-sm" style={{ marginTop: 10 }} onClick={load}>Retry</button>
+          </div>
+        ) : slides.length === 0 ? (
+          <div className="lm-empty-slides">
+            <div style={{ fontSize: 32, marginBottom: 8 }}>🖼️</div>
+            <div>No slides uploaded yet.</div>
+            <div className="lm-muted" style={{ marginTop: 4 }}>Slides here appear in the study lightbox. Click any slide to expand.</div>
+          </div>
+        ) : (
+          <div className="lm-slides-grid">
+            {slides.map((sl, i) => (
+              <div key={sl.name} className="lm-slide-card lm-slide-card-clickable"
+                onClick={e => openLightbox(i, e)}
+                title={`Slide ${sl.slideNumber ?? i + 1} — click to view`}>
+                {sl.url
+                  ? <img src={sl.url} alt={sl.name} className="lm-slide-img" loading="lazy"
+                      onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                  : <div className="lm-slide-placeholder">🖼️</div>}
+                <div className="lm-slide-meta">
+                  <span className="lm-slide-num">{sl.slideNumber != null ? `Slide ${sl.slideNumber}` : sl.name}</span>
+                  <span className="lm-slide-size">{fmtSize(sl.size)}</span>
+                </div>
+                {/* Hover actions */}
+                <div className="lm-slide-actions">
+                  <button className="lm-slide-action-btn"
+                    onClick={e => { e.stopPropagation(); setAddFromSlide({ num: sl.slideNumber, url: sl.url }); }}
+                    title="Add flashcard from this slide">+ Card</button>
+                  <button className="lm-slide-action-btn lm-slide-action-del"
+                    onClick={e => { e.stopPropagation(); deleteSlide(sl.slideNumber, sl.name); }}
+                    disabled={deleting === sl.name} aria-label="Delete slide">
+                    {deleting === sl.name ? '…' : '✕'}
+                  </button>
+                </div>
+                <div className="lm-slide-expand-hint">🔍</div>
               </div>
-              <button className="lm-slide-delete" onClick={() => deleteSlide(sl.slideNumber, sl.name)}
-                disabled={deleting === sl.name} aria-label="Delete slide">
-                {deleting === sl.name ? '…' : '✕'}
-              </button>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Lightbox */}
+      {lightboxIdx !== null && (
+        <SlideLightbox
+          slides={slides}
+          startIndex={lightboxIdx}
+          lectureId={lectureId}
+          onAddFlashcard={(num, url) => { setLightboxIdx(null); setAddFromSlide({ num, url }); }}
+          onClose={() => setLightboxIdx(null)}
+        />
+      )}
+
+      {/* Add flashcard from slide */}
+      {addFromSlide && (
+        <AddFlashcardFromSlideModal
+          lectureId={lectureId}
+          slideNumber={addFromSlide.num}
+          slideUrl={addFromSlide.url}
+          onAdded={card => { onFlashcardAdded(card); onToast('Flashcard added.', 'ok'); setAddFromSlide(null); }}
+          onClose={() => setAddFromSlide(null)}
+        />
       )}
     </div>
   );
@@ -1005,7 +1197,12 @@ function ExpandedRow({ summary, onToast, onSummaryChange, onOpenModal, detailCac
               )}
 
               {/* ── Slides ── */}
-              {tab === 'slides' && <SlidesTab lectureId={summary.id} onToast={onToast} />}
+              {tab === 'slides' && <SlidesTab lectureId={summary.id} onToast={onToast}
+                onFlashcardAdded={card => {
+                  // add to detail cache flashcards
+                  if (detail) onDetailLoad({ ...detail, flashcards: [...detail.flashcards, card] });
+                  onToast('Flashcard added.', 'ok');
+                }} />}
             </>
           )}
         </div>
@@ -1414,8 +1611,10 @@ const CSS = `
 .lm-icon-picker { position: fixed; background: var(--surface, #13161d); border: 1px solid rgba(255,255,255,.14); border-radius: 14px; padding: 14px; box-shadow: 0 16px 48px rgba(0,0,0,.75); z-index: 1999; width: 252px; }
 .lm-icon-picker-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); margin-bottom: 8px; font-family: 'DM Mono', monospace; }
 .lm-icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; }
-/* ── Icon inline grid (inside General Info, no popup) ── */
-.lm-icon-grid-inline { display: flex; flex-wrap: wrap; gap: 6px; }
+/* ── Icon inline grid — 15 per row, justified ── */
+/* grid-template-columns: repeat(15, 1fr) forces exactly 15 columns. */
+/* On narrow containers it reflows to fewer columns; justify-items fills the space evenly. */
+.lm-icon-grid-inline { display: grid; grid-template-columns: repeat(15, 1fr); gap: 4px; }
 .lm-icon-opt { background: none; border: 1px solid transparent; border-radius: 8px; font-size: 20px; cursor: pointer; padding: 5px; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; transition: background .1s, border-color .1s; }
 .lm-icon-opt:hover { background: rgba(255,255,255,.09); }
 .lm-icon-opt-selected { background: rgba(91,141,238,.18); border-color: var(--accent); }
@@ -1442,7 +1641,8 @@ const CSS = `
 /* ── Card tables ── */
 .lm-card-table-wrap { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; max-height: 420px; overflow-y: auto; overflow-x: auto; }
 .lm-card-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-.lm-card-table th { padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); border-bottom: 1px solid var(--border); background: rgba(255,255,255,.02); position: sticky; top: 0; z-index: 2; white-space: nowrap; }
+/* Opaque background on sticky header so rows don't bleed through on scroll */
+.lm-card-table th { padding: 9px 14px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); border-bottom: 1px solid var(--border); background: var(--surface, #13161d); position: sticky; top: 0; z-index: 2; white-space: nowrap; }
 .lm-card-table td { padding: 11px 14px; border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: top; }
 .lm-card-row { cursor: pointer; transition: background .1s; }
 .lm-card-row:hover { background: rgba(255,255,255,.03); }
@@ -1462,20 +1662,48 @@ const CSS = `
 .lm-add-row { padding: 12px 0 4px; display: flex; justify-content: flex-end; }
 
 /* ── Slides tab ── */
-.lm-slides-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+.lm-slides-container { border: 1px solid var(--border); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
+.lm-slides-header { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-bottom: 1px solid var(--border); background: var(--surface, #13161d); flex-shrink: 0; }
 .lm-slides-count { font-size: 13px; color: var(--text-muted); flex: 1; }
+.lm-slides-scroll { overflow-y: auto; max-height: 420px; padding: 14px; }
 .lm-slides-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 14px; }
-.lm-slide-card { position: relative; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.lm-slide-card { position: relative; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; transition: border-color .13s, box-shadow .13s; }
+.lm-slide-card-clickable { cursor: pointer; }
+.lm-slide-card-clickable:hover { border-color: var(--accent, #5b8dee); box-shadow: 0 0 0 2px rgba(91,141,238,.15); }
 .lm-slide-img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
 .lm-slide-placeholder { width: 100%; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; font-size: 28px; background: rgba(255,255,255,.03); }
 .lm-slide-meta { display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; }
 .lm-slide-num { font-size: 11px; font-weight: 600; color: var(--text); }
 .lm-slide-size { font-size: 10px; color: var(--text-muted); }
-.lm-slide-delete { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,.6); border: none; border-radius: 50%; width: 22px; height: 22px; color: #fff; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity .15s; }
-.lm-slide-card:hover .lm-slide-delete { opacity: 1; }
-.lm-slide-delete:hover { background: #ef4444; }
+/* Hover action bar — slides over image on hover */
+.lm-slide-actions { position: absolute; top: 0; left: 0; right: 0; display: flex; gap: 4px; padding: 6px; background: linear-gradient(to bottom, rgba(0,0,0,.7), transparent); opacity: 0; transition: opacity .15s; }
+.lm-slide-card:hover .lm-slide-actions { opacity: 1; }
+.lm-slide-action-btn { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.18); border-radius: 6px; color: #fff; font-size: 11px; font-weight: 600; cursor: pointer; padding: 3px 8px; min-height: 26px; transition: background .12s; white-space: nowrap; }
+.lm-slide-action-btn:hover { background: rgba(91,141,238,.5); border-color: var(--accent); }
+.lm-slide-action-del { margin-left: auto; }
+.lm-slide-action-del:hover { background: rgba(239,68,68,.5); border-color: #ef4444; }
+.lm-slide-expand-hint { position: absolute; bottom: 34px; right: 6px; font-size: 13px; opacity: 0; transition: opacity .15s; pointer-events: none; }
+.lm-slide-card:hover .lm-slide-expand-hint { opacity: .7; }
 .lm-empty-slides { text-align: center; padding: 40px 20px; color: var(--text-muted); font-size: 14px; line-height: 2; }
 .lm-slide-error { text-align: center; padding: 32px; color: var(--text-muted); font-size: 14px; }
+/* Lightbox */
+.lm-lightbox-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.88); z-index: 2000; display: flex; align-items: center; justify-content: center; }
+.lm-lightbox { position: relative; display: flex; flex-direction: column; align-items: center; max-width: 92vw; max-height: 92vh; width: 100%; }
+.lm-lightbox-close { position: absolute; top: -44px; right: 0; background: none; border: none; color: rgba(255,255,255,.7); font-size: 22px; cursor: pointer; padding: 8px; line-height: 1; z-index: 10; }
+.lm-lightbox-close:hover { color: #fff; }
+.lm-lightbox-img-wrap { display: flex; align-items: center; justify-content: center; width: 100%; }
+.lm-lightbox-img { max-width: 100%; max-height: 75vh; border-radius: 12px; object-fit: contain; box-shadow: 0 24px 80px rgba(0,0,0,.7); display: block; }
+.lm-lightbox-placeholder { width: 640px; height: 360px; display: flex; align-items: center; justify-content: center; font-size: 48px; background: rgba(255,255,255,.05); border-radius: 12px; }
+.lm-lightbox-nav { position: fixed; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 50%; width: 48px; height: 48px; color: #fff; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background .13s; z-index: 10; padding: 0; line-height: 1; }
+.lm-lightbox-nav:hover:not(:disabled) { background: rgba(255,255,255,.18); }
+.lm-lightbox-nav:disabled { opacity: .25; cursor: default; }
+.lm-lightbox-prev { left: 20px; }
+.lm-lightbox-next { right: 20px; }
+.lm-lightbox-footer { display: flex; align-items: center; justify-content: space-between; width: 100%; margin-top: 14px; padding: 0 4px; gap: 16px; }
+.lm-lightbox-counter { font-size: 13px; color: rgba(255,255,255,.6); font-family: 'DM Mono', monospace; }
+/* Add-from-slide modal */
+.lm-modal-slide-fc { max-width: 620px; }
+.lm-slide-fc-thumb { width: 100%; border-radius: 10px; object-fit: contain; max-height: 200px; background: rgba(0,0,0,.3); display: block; }
 
 /* ── Modals ── */
 .lm-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); backdrop-filter: blur(4px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 16px; }
@@ -1546,6 +1774,7 @@ const CSS = `
 
 /* ── Misc ── */
 .lm-err { font-size: 12px; color: #ef4444; padding: 8px 12px; background: rgba(239,68,68,.08); border-radius: 8px; }
+.lm-warn { font-size: 13px; color: #f59e0b; padding: 10px 14px; background: rgba(245,158,11,.10); border: 1px solid rgba(245,158,11,.3); border-radius: 10px; line-height: 1.5; font-weight: 500; }
 .lm-empty { text-align: center; color: var(--text-muted); padding: 32px; font-size: 14px; }
 .lm-loading { text-align: center; color: var(--text-muted); padding: 32px; font-size: 14px; }
 
