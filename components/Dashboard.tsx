@@ -327,6 +327,9 @@ export default function Dashboard({
 
           {/* Desktop: buttons rendered inline */}
           <div className="smd-section-actions smd-desktop-actions">
+            <Link href="/app/lectures" className="btn btn-ghost">
+              📋 My Lectures
+            </Link>
             <button
               className="btn btn-ghost"
               onClick={() => setManageOpen((v) => !v)}
@@ -353,6 +356,12 @@ export default function Dashboard({
             </button>
             {sectionMenuOpen && (
               <div className="smd-mobile-actions-dropdown" onClick={() => setSectionMenuOpen(false)}>
+                <Link
+                  href="/app/lectures"
+                  className="smd-mobile-action-item"
+                >
+                  📋 My Lectures
+                </Link>
                 <button
                   className="smd-mobile-action-item"
                   onClick={() => setManageOpen(v => !v)}
@@ -449,6 +458,7 @@ export default function Dashboard({
                 <div className="smd-footer-col-label">Navigate</div>
                 <a href="#mainDashboard" className="smd-footer-link">Back to top</a>
                 <a href="/app" className="smd-footer-link">Dashboard</a>
+                <a href="/app/lectures" className="smd-footer-link">My Lectures</a>
                 <a href="/app/upload" className="smd-footer-link">Upload Lecture</a>
               </div>
               <div className="smd-footer-col">
