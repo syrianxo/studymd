@@ -16,6 +16,7 @@ interface LectureRow {
   icon: string;
   topics: unknown[];
   slide_count: number;
+  json_data: { flashcards?: unknown[]; questions?: unknown[] } | null;
 }
 
 interface SettingsRow {
@@ -66,7 +67,6 @@ function applyOverrides(row: JoinedRow) {
 
   return {
     internalId: row.internal_id,
-    // User overrides take precedence over the immutable lecture values
     title: settings.custom_title ?? row.title,
     subtitle: row.subtitle,
     course: settings.course_override ?? row.course,
@@ -74,6 +74,10 @@ function applyOverrides(row: JoinedRow) {
     icon: row.icon,
     topics: row.topics,
     slideCount: row.slide_count,
+    // Lightweight card counts — used by the Plans page lecture selector.
+    // We avoid sending the full json_data payload to the client.
+    flashcardCount: row.json_data?.flashcards?.length ?? 0,
+    questionCount:  row.json_data?.questions?.length  ?? 0,
     settings: {
       displayOrder: settings.display_order,
       visible: settings.visible,
@@ -94,7 +98,6 @@ function applyOverrides(row: JoinedRow) {
 export async function GET(_req: NextRequest) {
   const supabase = await buildSupabaseClient();
 
-  // Auth check
   const {
     data: { session },
     error: sessionError,
@@ -106,9 +109,6 @@ export async function GET(_req: NextRequest) {
 
   const userId = session.user.id;
 
-  // Fetch lectures joined with user-specific settings.
-  // We left-join so that lectures without settings rows still appear
-  // (new lectures before user has customised anything).
   const { data, error } = await supabase
     .from("lectures")
     .select(
@@ -121,6 +121,7 @@ export async function GET(_req: NextRequest) {
       icon,
       topics,
       slide_count,
+      json_data,
       user_lecture_settings!left (
         display_order,
         visible,
@@ -145,8 +146,6 @@ export async function GET(_req: NextRequest) {
 
   const lectures = (data as JoinedRow[])
     .map(applyOverrides)
-    // Sort by display_order ascending; lectures without a settings row
-    // (display_order === 9999) sort to the bottom.
     .sort((a, b) => a.settings.displayOrder - b.settings.displayOrder);
 
   return NextResponse.json({ lectures });

@@ -22,9 +22,8 @@ interface LectureGridProps {
   onHide?: (lectureId: string) => void;
   onArchive?: (lectureId: string) => void;
   onRenameTitle?: (lectureId: string, title: string) => void;
-  /** lectureId → next scheduled ISO date from the active study plan */
+  /** Reserved for future plan integration — passed but not rendered on cards */
   planNextReview?: Record<string, string>;
-  /** lectureId → test date ISO string from active plan */
   planTestDate?: string;
 }
 
@@ -34,8 +33,8 @@ export default function LectureGrid({
   onStartFlash, onStartExam,
   onChangeCourse, onChangeColor,
   onHide, onArchive, onRenameTitle,
-  planNextReview = {},
-  planTestDate,
+  planNextReview: _planNextReview = {},
+  planTestDate: _planTestDate,
 }: LectureGridProps) {
   const [openLecture, setOpenLecture] = useState<Lecture | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -51,6 +50,7 @@ export default function LectureGrid({
 
   const handleClose = useCallback(() => {
     setIsModalOpen(false);
+    // Keep openLecture populated for 300ms so the close animation plays cleanly
     setTimeout(() => setOpenLecture(null), 300);
   }, []);
 
@@ -79,47 +79,29 @@ export default function LectureGrid({
 
   return (
     <>
-      <style>{planBadgeCss}</style>
       <div className="smd-lecture-grid">
         {lectures.map(lecture => {
-          const progress    = progressByLecture[lecture.internal_id] ?? null;
-          const nextReview  = planNextReview[lecture.internal_id];
-          const isToday     = nextReview === todayISO();
+          const progress = progressByLecture[lecture.internal_id] ?? null;
           return (
-            <div key={lecture.internal_id} className="smd-grid-cell">
-              {/* Plan badges rendered as overlay above the card */}
-              {(nextReview || planTestDate) && (
-                <div className="smd-plan-badges">
-                  {planTestDate && (
-                    <span className="smd-plan-badge smd-plan-badge--test">
-                      🎯 {daysUntil(planTestDate)}d to test
-                    </span>
-                  )}
-                  {nextReview && (
-                    <span className={`smd-plan-badge${isToday ? ' smd-plan-badge--today' : ''}`}>
-                      {isToday ? '📌 Study today' : `📅 Next: ${formatShortDate(nextReview)}`}
-                    </span>
-                  )}
-                </div>
-              )}
-              <LectureCard
-                lecture={lecture}
-                activeTheme={activeTheme}
-                flashcardProgress={progress?.mastery_pct ?? 0}
-                examProgress={progress?.best_exam_score ?? 0}
-                onOpen={() => handleOpen(lecture)}
-                onFlashcards={() => onStartFlash(lecture.internal_id)}
-                onExam={() => onStartExam(lecture.internal_id)}
-                onChangeCourse={onChangeCourse ? (c) => onChangeCourse(lecture.internal_id, c) : undefined}
-                onChangeColor={onChangeColor ? (c) => onChangeColor(lecture.internal_id, c) : undefined}
-                onHide={onHide ? () => onHide(lecture.internal_id) : undefined}
-                onArchive={onArchive ? () => onArchive(lecture.internal_id) : undefined}
-              />
-            </div>
+            <LectureCard
+              key={lecture.internal_id}
+              lecture={lecture}
+              activeTheme={activeTheme}
+              flashcardProgress={progress?.mastery_pct ?? 0}
+              examProgress={progress?.best_exam_score ?? 0}
+              onOpen={() => handleOpen(lecture)}
+              onFlashcards={() => onStartFlash(lecture.internal_id)}
+              onExam={() => onStartExam(lecture.internal_id)}
+              onChangeCourse={onChangeCourse ? (c) => onChangeCourse(lecture.internal_id, c) : undefined}
+              onChangeColor={onChangeColor ? (c) => onChangeColor(lecture.internal_id, c) : undefined}
+              onHide={onHide ? () => onHide(lecture.internal_id) : undefined}
+              onArchive={onArchive ? () => onArchive(lecture.internal_id) : undefined}
+            />
           );
         })}
       </div>
 
+      {/* Modal is always mounted once a lecture has been opened — avoids flash on re-open */}
       <LectureViewModal
         lecture={openLecture}
         isOpen={isModalOpen}
@@ -127,8 +109,14 @@ export default function LectureGrid({
         flashcardProgress={openProgress?.mastery_pct ?? 0}
         examProgress={openProgress?.best_exam_score ?? 0}
         onClose={handleClose}
-        onFlashcards={() => { handleClose(); if (openLecture) onStartFlash(openLecture.internal_id); }}
-        onExam={() => { handleClose(); if (openLecture) onStartExam(openLecture.internal_id); }}
+        onFlashcards={() => {
+          handleClose();
+          if (openLecture) onStartFlash(openLecture.internal_id);
+        }}
+        onExam={() => {
+          handleClose();
+          if (openLecture) onStartExam(openLecture.internal_id);
+        }}
         onChangeColor={onChangeColor && openLecture ? (c) => onChangeColor(openLecture.internal_id, c) : undefined}
         onChangeCourse={onChangeCourse && openLecture ? (c) => onChangeCourse(openLecture.internal_id, c) : undefined}
         onRenameTitle={onRenameTitle && openLecture ? (t) => onRenameTitle(openLecture.internal_id, t) : undefined}
@@ -138,68 +126,6 @@ export default function LectureGrid({
     </>
   );
 }
-
-// ── Helpers ────────────────────────────────────────────────────────────────────
-
-function todayISO(): string {
-  const d = new Date();
-  return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-');
-}
-
-function daysUntil(iso: string): number {
-  const t = new Date(); t.setHours(0,0,0,0);
-  return Math.ceil((new Date(iso + 'T00:00:00').getTime() - t.getTime()) / 86_400_000);
-}
-
-function formatShortDate(iso: string): string {
-  const [y, m, d] = iso.split('-').map(Number);
-  return new Date(y, m-1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
-// ── Plan badge CSS ─────────────────────────────────────────────────────────────
-
-const planBadgeCss = `
-.smd-grid-cell { position: relative; }
-
-.smd-plan-badges {
-  position: absolute;
-  top: -8px;
-  left: 12px;
-  z-index: 5;
-  display: flex;
-  gap: 5px;
-  flex-wrap: wrap;
-  pointer-events: none;
-}
-
-.smd-plan-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 3px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 100px;
-  padding: 2px 8px;
-  font-size: 10px;
-  font-weight: 600;
-  color: var(--text-muted);
-  font-family: 'DM Mono', monospace;
-  white-space: nowrap;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-}
-
-.smd-plan-badge--today {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #fff;
-}
-
-.smd-plan-badge--test {
-  background: rgba(245,158,11,0.12);
-  border-color: rgba(245,158,11,0.4);
-  color: #f59e0b;
-}
-`;
 
 function SkeletonCard() {
   return (
