@@ -1,4 +1,6 @@
 // components/Header.tsx
+// Mobile: logo (left) + icon-only row (right) — no text labels below 768px
+// Desktop: full labels + subtitle
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
@@ -14,7 +16,7 @@ interface HeaderProps {
   loading?: boolean;
   userId: string;
   initialTheme: Theme;
-  /** @deprecated — kept for backward compat; ignored now that upload is a page */
+  /** @deprecated — kept for backward compat; ignored */
   onUploadClick?: () => void;
   isProcessing?: boolean;
   /** Hide the Upload button entirely (used on /app/upload itself) */
@@ -65,7 +67,8 @@ export default function Header({
             <span className="smd-logo-study">Study</span>
             <span className="smd-logo-md">MD</span>
           </div>
-          <div className="smd-header-subtitle smd-hdr-desktop">
+          {/* Subtitle hidden on mobile via CSS */}
+          <div className="smd-header-subtitle smd-hdr-desktop-only">
             Lecture Mastery Platform
           </div>
         </Link>
@@ -73,18 +76,24 @@ export default function Header({
         {/* ── Right controls ── */}
         <div className="smd-header-right">
 
-          {/* 1. Upload — Link to /app/upload (hidden on the upload page itself) */}
+          {/* 1. Upload — icon-only on mobile, icon+label on desktop */}
           {!hideUploadButton && (
             <Link
               href="/app/upload"
               className="smd-hdr-btn smd-hdr-upload"
-              aria-label="Upload lecture"
+              aria-label={isProcessing ? 'Processing lecture…' : 'Upload lecture'}
               title="Upload Lecture"
             >
               {isProcessing
                 ? <span className="smd-hdr-spinner" aria-hidden="true" />
-                : <span className="smd-hdr-icon" aria-hidden="true">⬆</span>}
-              <span className="smd-hdr-desktop smd-hdr-btn-label">
+                : (
+                  /* Upload icon SVG — works at any size, scales with CSS */
+                  <svg className="smd-hdr-icon-svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                    <path d="M10 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L11 6.414V13a1 1 0 11-2 0V6.414L6.707 8.707A1 1 0 015.293 7.293l4-4A1 1 0 0110 3z" />
+                    <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
+                  </svg>
+                )}
+              <span className="smd-hdr-label smd-hdr-desktop-only">
                 {isProcessing ? 'Processing…' : 'Upload'}
               </span>
             </Link>
@@ -93,7 +102,7 @@ export default function Header({
           {/* 2. Pomodoro mini-pill — only shown when timer is running */}
           <PomodoroMiniPill />
 
-          {/* 3. Settings gear — opens dropdown with theme + sign out */}
+          {/* 3. Settings/Theme — gear on desktop, palette icon on mobile */}
           <div className="smd-hdr-settings-wrap" ref={settingsRef}>
             <button
               className="smd-hdr-gear"
@@ -102,8 +111,22 @@ export default function Header({
               title="Settings"
               aria-expanded={settingsOpen}
             >
+              {/* Theme/palette icon — visible on mobile as the theme toggle */}
               <svg
-                className="smd-hdr-gear-icon"
+                className="smd-hdr-icon-svg smd-hdr-mobile-only"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                aria-hidden="true"
+              >
+                <path
+                  fillRule="evenodd"
+                  clipRule="evenodd"
+                  d="M10 2a8 8 0 100 16A8 8 0 0010 2zM4.07 9A6 6 0 019 4.07V7a3 3 0 00-3 3H4.07zM9 12.93V16a6 6 0 01-4.93-5H7a3 3 0 002 2.93zM11 16v-3.07A3 3 0 0013 10h2.93A6 6 0 0111 16zM15.93 8H13a3 3 0 00-2-2.93V2.07A6 6 0 0115.93 8z"
+                />
+              </svg>
+              {/* Gear icon — desktop only */}
+              <svg
+                className="smd-hdr-gear-icon smd-hdr-desktop-only"
                 viewBox="0 0 20 20"
                 fill="currentColor"
                 aria-hidden="true"
@@ -125,15 +148,32 @@ export default function Header({
                   variant="panel"
                 />
                 <div className="smd-hdr-panel-divider" />
-                <button
-                  className="smd-hdr-panel-signout"
-                  onClick={handleSignOut}
-                >
+                {/* Profile link */}
+                <Link href="/app/profile" className="smd-hdr-panel-link" onClick={() => setSettingsOpen(false)}>
+                  <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
+                    <path fillRule="evenodd" clipRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+                  </svg>
+                  Profile & Settings
+                </Link>
+                <div className="smd-hdr-panel-divider" />
+                <button className="smd-hdr-panel-signout" onClick={handleSignOut}>
                   Sign out
                 </button>
               </div>
             )}
           </div>
+
+          {/* 4. Sign-out — icon-only on mobile */}
+          <button
+            className="smd-hdr-signout-icon smd-hdr-mobile-only"
+            onClick={handleSignOut}
+            aria-label="Sign out"
+            title="Sign out"
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor" className="smd-hdr-icon-svg" aria-hidden="true">
+              <path fillRule="evenodd" clipRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h6a1 1 0 100-2H4V5h5a1 1 0 100-2H3zm12.293 4.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L16.586 12H9a1 1 0 110-2h7.586l-1.293-1.293a1 1 0 010-1.414z" />
+            </svg>
+          </button>
 
         </div>
       </header>
@@ -142,6 +182,15 @@ export default function Header({
 }
 
 const headerCss = `
+/* ── Visibility helpers ────────────────────────────────────────────── */
+.smd-hdr-desktop-only { display: inline-flex; }
+.smd-hdr-mobile-only  { display: none !important; }
+
+@media (max-width: 767px) {
+  .smd-hdr-desktop-only { display: none !important; }
+  .smd-hdr-mobile-only  { display: flex !important; }
+}
+
 /* ── Logo link ─────────────────────────────────────────────────────── */
 .smd-header-logo-link {
   display: flex;
@@ -162,10 +211,18 @@ const headerCss = `
   gap: 8px;
 }
 
-/* ── Upload button (now a Link, styled as button) ──────────────────── */
+/* ── Shared SVG icon sizing ────────────────────────────────────────── */
+.smd-hdr-icon-svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ── Upload button ─────────────────────────────────────────────────── */
 .smd-hdr-btn {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 6px;
   background: none;
   border: 1px solid rgba(255,255,255,0.1);
@@ -187,11 +244,10 @@ const headerCss = `
   border-color: rgba(91,141,238,0.35);
   color: var(--accent, #5b8dee);
 }
-.smd-hdr-icon    { font-size: 15px; line-height: 1; flex-shrink: 0; }
-.smd-hdr-desktop { display: inline; }
+.smd-hdr-label { font-size: 13px; }
 .smd-hdr-spinner {
   display: inline-block;
-  width: 15px; height: 15px;
+  width: 16px; height: 16px;
   border: 2px solid rgba(255,255,255,0.15);
   border-top-color: var(--accent, #5b8dee);
   border-radius: 50%;
@@ -200,7 +256,7 @@ const headerCss = `
 }
 @keyframes smd-spin { to { transform: rotate(360deg); } }
 
-/* ── Gear button ───────────────────────────────────────────────────── */
+/* ── Gear / settings button ────────────────────────────────────────── */
 .smd-hdr-settings-wrap { position: relative; }
 .smd-hdr-gear {
   display: flex;
@@ -230,6 +286,28 @@ const headerCss = `
 }
 .smd-hdr-gear[aria-expanded="true"] .smd-hdr-gear-icon {
   transform: rotate(45deg);
+}
+
+/* ── Mobile sign-out icon button ───────────────────────────────────── */
+.smd-hdr-signout-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  color: var(--text-muted, #6b7280);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s, background 0.15s;
+}
+.smd-hdr-signout-icon:hover {
+  color: #f87171;
+  background: rgba(248,113,113,0.1);
 }
 
 /* ── Settings dropdown panel ───────────────────────────────────────── */
@@ -265,6 +343,28 @@ const headerCss = `
   background: rgba(255,255,255,0.07);
   margin: 8px 0;
 }
+.smd-hdr-panel-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  min-height: 44px;
+  background: none;
+  border: none;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+  cursor: pointer;
+  transition: background 0.13s, color 0.13s;
+  text-decoration: none;
+}
+.smd-hdr-panel-link:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text, #e8eaf0);
+}
 .smd-hdr-panel-signout {
   display: flex;
   align-items: center;
@@ -289,18 +389,25 @@ const headerCss = `
 
 /* ── Mobile (< 768px) ──────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  /* Hide desktop subtitle + button label */
-  .smd-hdr-desktop { display: none !important; }
   .smd-header { padding: 10px 16px; }
+  .smd-header-right { gap: 2px; }
 
-  /* Upload collapses to icon-only 44px square */
+  /* Upload collapses to icon-only 44×44 square */
   .smd-hdr-btn {
     padding: 0;
     width: 44px;
-    justify-content: center;
     border-radius: 10px;
   }
-  .smd-hdr-icon { font-size: 18px; }
-  .smd-header-right { gap: 4px; }
+
+  /* Settings panel: shift to stay in viewport on narrow screens */
+  .smd-hdr-settings-panel {
+    right: -8px;
+    max-width: calc(100vw - 24px);
+  }
+
+  /* Hide the gear icon's spin-on-open on mobile since we show palette icon */
+  .smd-hdr-gear[aria-expanded="true"] .smd-hdr-icon-svg {
+    color: var(--accent);
+  }
 }
 `;
