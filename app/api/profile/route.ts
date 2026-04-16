@@ -4,10 +4,6 @@ import type { NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
 async function getSupabase() {
   const cookieStore = await cookies();
   return createServerClient(
@@ -37,21 +33,22 @@ function usernameError(u: string): string | null {
 
 // ---------------------------------------------------------------------------
 // GET /api/profile
-// Returns: profile row + auth email + member_since + study stats
 // ---------------------------------------------------------------------------
 
 export async function GET() {
   const supabase = await getSupabase();
 
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-  if (sessionError || !session) {
+  // Use getUser() not getSession() — getSession() trusts the JWT from the
+  // cookie without server-side re-validation, which can leave auth.uid()
+  // null for RLS even when the user is logged in.
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const userId = session.user.id;
+  const userId = user.id;
 
-  // ── Step 1: try to fetch existing profile row ──────────────────────────
-  // Use maybeSingle() so missing rows return null instead of throwing PGRST116
+  // Fetch existing row — maybeSingle() returns null (not error) when missing
   const { data: existingRow, error: fetchError } = await supabase
     .from('user_profiles')
     .select('*')
@@ -59,11 +56,14 @@ export async function GET() {
     .maybeSingle();
 
   if (fetchError) {
-    console.error('[GET /api/profile] fetch error:', fetchError);
-    return NextResponse.json({ error: 'Failed to load profile.' }, { status: 500 });
+    console.error('[GET /api/profile] fetch error:', JSON.stringify(fetchError));
+    return NextResponse.json(
+      { error: 'Failed to load profile.', detail: fetchError.message, code: fetchError.code },
+      { status: 500 }
+    );
   }
 
-  // ── Step 2: if no row yet, insert one (first-time profile creation) ────
+  // Auto-create row on first visit
   let profileRow = existingRow;
   if (!profileRow) {
     const { data: inserted, error: insertError } = await supabase
@@ -73,36 +73,38 @@ export async function GET() {
       .maybeSingle();
 
     if (insertError) {
-      // Could be a race condition — try one more select
-      const { data: retryRow } = await supabase
+      console.error('[GET /api/profile] insert error:', JSON.stringify(insertError));
+      // Possible race — retry select before giving up
+      const { data: retryRow, error: retryError } = await supabase
         .from('user_profiles')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle();
+
+      if (retryError || !retryRow) {
+        return NextResponse.json(
+          { error: 'Failed to create profile.', detail: insertError.message, code: insertError.code },
+          { status: 500 }
+        );
+      }
       profileRow = retryRow;
     } else {
       profileRow = inserted;
     }
   }
 
-  // ── Step 3: study stats from user_progress ─────────────────────────────
+  // Study stats — non-fatal if this fails
   const { data: progressRows } = await supabase
     .from('user_progress')
     .select('flashcard_progress, exam_progress')
     .eq('user_id', userId);
 
-  let totalFlashcards = 0;
-  let totalExams = 0;
-  let examScoreSum = 0;
-  let examScoreCount = 0;
-
+  let totalFlashcards = 0, totalExams = 0, examScoreSum = 0, examScoreCount = 0;
   for (const row of progressRows ?? []) {
     const fp = row.flashcard_progress as any;
     const ep = row.exam_progress as any;
     if (fp?.got_it_ids) {
-      totalFlashcards +=
-        (fp.got_it_ids as string[]).length +
-        ((fp.missed_ids as string[] | undefined)?.length ?? 0);
+      totalFlashcards += (fp.got_it_ids as string[]).length + ((fp.missed_ids as string[] | undefined)?.length ?? 0);
     }
     if (ep?.sessions) {
       for (const s of ep.sessions as any[]) {
@@ -112,8 +114,6 @@ export async function GET() {
     }
   }
 
-  const avgScore = examScoreCount > 0 ? Math.round(examScoreSum / examScoreCount) : null;
-
   return NextResponse.json({
     profile: {
       userId,
@@ -121,30 +121,29 @@ export async function GET() {
       username:    profileRow?.username    ?? null,
       role:        profileRow?.role        ?? 'student',
       isPrimary:   profileRow?.is_primary  ?? false,
-      createdAt:   profileRow?.created_at  ?? session.user.created_at,
+      createdAt:   profileRow?.created_at  ?? user.created_at,
     },
     auth: {
-      email:       session.user.email,
-      memberSince: session.user.created_at,
+      email:       user.email,
+      memberSince: user.created_at,
     },
     stats: {
       totalFlashcards,
       totalExams,
-      avgScore,
+      avgScore: examScoreCount > 0 ? Math.round(examScoreSum / examScoreCount) : null,
     },
   });
 }
 
 // ---------------------------------------------------------------------------
 // PUT /api/profile
-// Updates: display_name, username (with uniqueness check)
 // ---------------------------------------------------------------------------
 
 export async function PUT(req: NextRequest) {
   const supabase = await getSupabase();
 
-  const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-  if (sessionError || !session) {
+  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  if (userError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
@@ -167,17 +166,14 @@ export async function PUT(req: NextRequest) {
     const err = usernameError(u);
     if (err) return NextResponse.json({ error: err }, { status: 400 });
 
-    // Uniqueness check (excluding self)
     const { data: existing } = await supabase
       .from('user_profiles')
       .select('user_id')
       .eq('username', u)
-      .neq('user_id', session.user.id)
+      .neq('user_id', user.id)
       .maybeSingle();
 
-    if (existing) {
-      return NextResponse.json({ error: 'Username is already taken.' }, { status: 409 });
-    }
+    if (existing) return NextResponse.json({ error: 'Username is already taken.' }, { status: 409 });
     updates.username = u;
   }
 
@@ -185,19 +181,18 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: 'No updatable fields provided.' }, { status: 400 });
   }
 
-  // upsert so it works whether the row exists yet or not
   const { data, error } = await supabase
     .from('user_profiles')
-    .upsert(
-      { user_id: session.user.id, ...updates },
-      { onConflict: 'user_id', ignoreDuplicates: false }
-    )
+    .upsert({ user_id: user.id, ...updates }, { onConflict: 'user_id', ignoreDuplicates: false })
     .select()
     .maybeSingle();
 
   if (error || !data) {
-    console.error('[PUT /api/profile]', error);
-    return NextResponse.json({ error: 'Failed to update profile.' }, { status: 500 });
+    console.error('[PUT /api/profile]', JSON.stringify(error));
+    return NextResponse.json(
+      { error: 'Failed to update profile.', detail: error?.message, code: error?.code },
+      { status: 500 }
+    );
   }
 
   return NextResponse.json({
