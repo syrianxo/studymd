@@ -3,6 +3,8 @@ import "../styles/themes.css";
 import "./globals.css";
 import AppBootstrap from '@/components/AppBootstrap';
 import { PomoProvider } from '@/components/PomodoroTimer';
+import { ToastProvider } from '@/components/Toast';
+import FeedbackWidget from '@/components/FeedbackWidget';
 import '@/styles/dashboard.css';
 import '@/styles/study.css';
 
@@ -44,7 +46,11 @@ export default function RootLayout({
       <body>
         <AppBootstrap />
         <PomoProvider>
-          {children}
+          <ToastProvider>
+            {children}
+            {/* FeedbackWidget appears on all pages — floating bottom-left */}
+            <FeedbackWidget />
+          </ToastProvider>
         </PomoProvider>
       </body>
     </html>
