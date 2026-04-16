@@ -72,3 +72,30 @@ export interface UserPreferences {
   theme: Theme;
   settings: Record<string, unknown>;
 }
+
+// ─── Study Plans ───────────────────────────────────────────────────────────
+
+/**
+ * schedule maps ISO date strings → array of lecture internal_ids
+ * e.g. { "2026-04-15": ["lec_001"], "2026-04-16": ["lec_003", "lec_005"] }
+ */
+export type StudySchedule = Record<string, string[]>;
+
+export interface StudyPlan {
+  id: string;
+  user_id: string;
+  name: string;
+  test_date: string;          // ISO date "YYYY-MM-DD"
+  lecture_ids: string[];
+  schedule: StudySchedule;
+  completed_days: string[];   // ISO dates the user has marked done
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CreateStudyPlanInput {
+  name: string;
+  testDate: string;           // ISO date
+  lectureIds: string[];
+}
