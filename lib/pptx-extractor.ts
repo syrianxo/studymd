@@ -3,188 +3,150 @@
  *
  * Server-side PPTX text extraction — no native binaries, no LibreOffice.
  *
- * A PPTX is a ZIP archive. We parse the ZIP central directory (which always
- * has correct sizes/offsets, even for data-descriptor entries where the local
- * header has zeros) to locate each file, then inflate with Node's built-in zlib.
+ * A PPTX is a ZIP archive. We parse the ZIP Central Directory (which always
+ * has correct sizes, even for data-descriptor entries) to locate each file,
+ * then inflate with Node's built-in zlib and extract text.
  */
 
-// ─── ZIP parsing via Central Directory ───────────────────────────────────────
+// ─── ZIP Central Directory parser ────────────────────────────────────────────
 
-const CENTRAL_DIR_SIG  = 0x02014b50; // PK\x01\x02
-const EOCD_SIG         = 0x06054b50; // PK\x05\x06  (End of Central Directory)
-const LOCAL_FILE_SIG   = 0x04034b50; // PK\x03\x04
+const EOCD_SIG        = 0x06054b50;
+const CENTRAL_DIR_SIG = 0x02014b50;
+const LOCAL_FILE_SIG  = 0x04034b50;
 
 interface ZipEntry {
   filename:          string;
-  compressionMethod: number;   // 0=stored, 8=deflate
+  compressionMethod: number;
   compressedSize:    number;
   uncompressedSize:  number;
   localHeaderOffset: number;
 }
 
-/**
- * Locate the End-of-Central-Directory record and return the offset +
- * size of the central directory.
- */
-function findCentralDirectory(buf: Buffer): { cdOffset: number; cdSize: number } | null {
-  // EOCD is at most 22 + 65535 bytes from the end (comment length).
-  // Scan backwards for the EOCD signature.
-  const minOffset = Math.max(0, buf.length - 65557);
-  for (let i = buf.length - 22; i >= minOffset; i--) {
-    if (buf.readUInt32LE(i) === EOCD_SIG) {
-      const cdSize   = buf.readUInt32LE(i + 12);
-      const cdOffset = buf.readUInt32LE(i + 16);
-      return { cdOffset, cdSize };
-    }
+function findEocd(buf: Buffer): number | null {
+  // Scan backwards; EOCD signature PK\x05\x06
+  const min = Math.max(0, buf.length - 65557);
+  for (let i = buf.length - 22; i >= min; i--) {
+    if (buf.readUInt32LE(i) === EOCD_SIG) return i;
   }
   return null;
 }
 
-/**
- * Parse the central directory and return a map of filename → ZipEntry.
- * Central directory entries always contain correct compressed/uncompressed
- * sizes and the local header offset, even when the local header uses
- * data descriptors (bit 3 of the general-purpose flag).
- */
 function parseCentralDirectory(buf: Buffer): Map<string, ZipEntry> {
   const entries = new Map<string, ZipEntry>();
 
-  const cd = findCentralDirectory(buf);
-  if (!cd) {
-    // Fallback: no EOCD found — try scanning local headers directly
+  const eocdOffset = findEocd(buf);
+  if (eocdOffset === null) {
+    console.warn('[pptx] No EOCD found, falling back to local header scan');
     return parseLocalHeaders(buf);
   }
 
-  let offset = cd.cdOffset;
-  const end  = cd.cdOffset + cd.cdSize;
+  const cdOffset = buf.readUInt32LE(eocdOffset + 16);
+  const cdSize   = buf.readUInt32LE(eocdOffset + 12);
+  const cdEnd    = cdOffset + cdSize;
 
-  while (offset < end && offset + 46 <= buf.length) {
-    if (buf.readUInt32LE(offset) !== CENTRAL_DIR_SIG) break;
+  let pos = cdOffset;
+  while (pos < cdEnd && pos + 46 <= buf.length) {
+    if (buf.readUInt32LE(pos) !== CENTRAL_DIR_SIG) break;
 
-    const compressionMethod = buf.readUInt16LE(offset + 10);
-    const compressedSize    = buf.readUInt32LE(offset + 20);
-    const uncompressedSize  = buf.readUInt32LE(offset + 24);
-    const filenameLen       = buf.readUInt16LE(offset + 28);
-    const extraLen          = buf.readUInt16LE(offset + 30);
-    const commentLen        = buf.readUInt16LE(offset + 32);
-    const localHeaderOffset = buf.readUInt32LE(offset + 42);
+    const compressionMethod = buf.readUInt16LE(pos + 10);
+    const compressedSize    = buf.readUInt32LE(pos + 20);
+    const uncompressedSize  = buf.readUInt32LE(pos + 24);
+    const filenameLen       = buf.readUInt16LE(pos + 28);
+    const extraLen          = buf.readUInt16LE(pos + 30);
+    const commentLen        = buf.readUInt16LE(pos + 32);
+    const localHeaderOffset = buf.readUInt32LE(pos + 42);
 
-    const filename = buf.slice(offset + 46, offset + 46 + filenameLen).toString('utf8');
+    const filename = buf.slice(pos + 46, pos + 46 + filenameLen).toString('utf8');
 
     entries.set(filename, {
-      filename,
-      compressionMethod,
-      compressedSize,
-      uncompressedSize,
-      localHeaderOffset,
+      filename, compressionMethod,
+      compressedSize, uncompressedSize, localHeaderOffset,
     });
 
-    offset += 46 + filenameLen + extraLen + commentLen;
+    pos += 46 + filenameLen + extraLen + commentLen;
   }
 
   return entries;
 }
 
-/**
- * Fallback: scan for PK\x03\x04 local file headers when EOCD is missing.
- * Only works reliably when data descriptors are NOT used (sizes are in header).
- */
 function parseLocalHeaders(buf: Buffer): Map<string, ZipEntry> {
+  // Fallback when EOCD is absent — only works if data descriptors aren't used
   const entries = new Map<string, ZipEntry>();
-  let offset = 0;
-
-  while (offset < buf.length - 30) {
-    if (buf.readUInt32LE(offset) !== LOCAL_FILE_SIG) { offset++; continue; }
-
-    const compressionMethod = buf.readUInt16LE(offset + 8);
-    const compressedSize    = buf.readUInt32LE(offset + 18);
-    const uncompressedSize  = buf.readUInt32LE(offset + 22);
-    const filenameLen       = buf.readUInt16LE(offset + 26);
-    const extraLen          = buf.readUInt16LE(offset + 28);
-
-    const filename = buf.slice(offset + 30, offset + 30 + filenameLen).toString('utf8');
-
-    entries.set(filename, {
-      filename,
-      compressionMethod,
-      compressedSize,
-      uncompressedSize,
-      localHeaderOffset: offset,
-    });
-
-    offset += 30 + filenameLen + extraLen + compressedSize;
+  let pos = 0;
+  while (pos + 30 < buf.length) {
+    if (buf.readUInt32LE(pos) !== LOCAL_FILE_SIG) { pos++; continue; }
+    const compressionMethod = buf.readUInt16LE(pos + 8);
+    const compressedSize    = buf.readUInt32LE(pos + 18);
+    const uncompressedSize  = buf.readUInt32LE(pos + 22);
+    const filenameLen       = buf.readUInt16LE(pos + 26);
+    const extraLen          = buf.readUInt16LE(pos + 28);
+    const filename          = buf.slice(pos + 30, pos + 30 + filenameLen).toString('utf8');
+    entries.set(filename, { filename, compressionMethod, compressedSize, uncompressedSize, localHeaderOffset: pos });
+    pos += 30 + filenameLen + extraLen + compressedSize;
   }
-
   return entries;
 }
 
-/**
- * Read and decompress a single ZIP entry.
- * Resolves the actual data offset from the local file header (to account
- * for variable-length extra fields that differ from the central directory).
- */
-function readEntry(buf: Buffer, entry: ZipEntry): string {
-  // Read actual extra field length from the local header (may differ from CD)
-  const localOffset   = entry.localHeaderOffset;
-  const filenameLen   = buf.readUInt16LE(localOffset + 26);
-  const extraLen      = buf.readUInt16LE(localOffset + 28);
-  const dataStart     = localOffset + 30 + filenameLen + extraLen;
-  const dataEnd       = dataStart + entry.compressedSize;
+function readEntry(buf: Buffer, entry: ZipEntry): Buffer {
+  // Local header extra field length can differ from central directory
+  const lh          = entry.localHeaderOffset;
+  const filenameLen = buf.readUInt16LE(lh + 26);
+  const extraLen    = buf.readUInt16LE(lh + 28);
+  const dataStart   = lh + 30 + filenameLen + extraLen;
+  const compressed  = buf.slice(dataStart, dataStart + entry.compressedSize);
 
-  if (dataEnd > buf.length) {
-    throw new Error(`Entry "${entry.filename}": data extends beyond buffer (${dataEnd} > ${buf.length})`);
-  }
-
-  const compressed = buf.slice(dataStart, dataEnd);
-
-  if (entry.compressionMethod === 0) {
-    return compressed.toString('utf8');
-  }
-
+  if (entry.compressionMethod === 0) return compressed;
   if (entry.compressionMethod === 8) {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const zlib       = require('zlib') as typeof import('zlib');
-    const decompressed = zlib.inflateRawSync(compressed);
-    return decompressed.toString('utf8');
+    return (require('zlib') as typeof import('zlib')).inflateRawSync(compressed);
   }
-
-  throw new Error(`Unsupported compression method ${entry.compressionMethod} for "${entry.filename}"`);
+  throw new Error(`Unsupported compression method ${entry.compressionMethod}`);
 }
 
 // ─── XML text extraction ──────────────────────────────────────────────────────
 
-function decodeXmlEntities(s: string): string {
+function xmlEntities(s: string): string {
   return s
     .replace(/&amp;/g,  '&')
     .replace(/&lt;/g,   '<')
     .replace(/&gt;/g,   '>')
     .replace(/&apos;/g, "'")
     .replace(/&quot;/g, '"')
-    .replace(/&#(\d+);/g,   (_, n) => String.fromCharCode(parseInt(n, 10)))
+    .replace(/&#(\d+);/g,      (_, n) => String.fromCharCode(+n))
     .replace(/&#x([0-9a-f]+);/gi, (_, h) => String.fromCharCode(parseInt(h, 16)));
 }
 
 /**
- * Extract readable text from OOXML slide/notes XML.
- * Works with both namespace-prefixed (<a:t>) and unprefixed (<t>) tags.
+ * Extract all readable text from OOXML XML.
+ *
+ * PPTX slide XML looks like:
+ *   <p:sp> ... <a:txBody> ... <a:p> ... <a:r> ... <a:t>TEXT</a:t> ... </a:r> ... </a:p> ... </a:txBody> ... </p:sp>
+ *
+ * We match <a:t> regardless of namespace prefix variations.
  */
-function extractTextFromXml(xml: string): string {
+function extractText(xml: string): string {
   const lines: string[] = [];
 
-  // Match paragraph elements (a:p or just p)
-  const paraRe = /<(?:a:)?p[\s>][\s\S]*?<\/(?:a:)?p>/g;
+  // Strip XML comments and processing instructions first
+  const clean = xml
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/<\?[\s\S]*?\?>/g, '');
+
+  // Match paragraphs — any element ending in :p or just <p ...> / </p>
+  // This covers <a:p>, <p>, <w:p>, etc.
+  const paraPattern = /<[a-zA-Z_]?[a-zA-Z0-9_]*:?p[\s>][\s\S]*?<\/[a-zA-Z_]?[a-zA-Z0-9_]*:?p>/g;
   let paraMatch: RegExpExecArray | null;
 
-  while ((paraMatch = paraRe.exec(xml)) !== null) {
-    const para = paraMatch[0];
+  while ((paraMatch = paraPattern.exec(clean)) !== null) {
+    const para   = paraMatch[0];
     const parts: string[] = [];
 
-    // Match text runs (a:t or just t)
-    const textRe = /<(?:a:)?t[^>]*>([\s\S]*?)<\/(?:a:)?t>/g;
+    // Match text runs: <a:t ...>TEXT</a:t> or <t ...>TEXT</t>
+    const textPattern = /<[a-zA-Z_]?[a-zA-Z0-9_]*:?t[\s>]([\s\S]*?)<\/[a-zA-Z_]?[a-zA-Z0-9_]*:?t>/g;
     let textMatch: RegExpExecArray | null;
 
-    while ((textMatch = textRe.exec(para)) !== null) {
-      const raw = decodeXmlEntities(textMatch[1]).trim();
+    while ((textMatch = textPattern.exec(para)) !== null) {
+      const raw = xmlEntities(textMatch[1]).trim();
       if (raw) parts.push(raw);
     }
 
@@ -192,64 +154,82 @@ function extractTextFromXml(xml: string): string {
     if (line) lines.push(line);
   }
 
-  return lines.join('\n');
+  // Deduplicate adjacent identical lines (sometimes repeated in PPTX)
+  const deduped: string[] = [];
+  for (const line of lines) {
+    if (deduped[deduped.length - 1] !== line) deduped.push(line);
+  }
+
+  return deduped.join('\n');
 }
 
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export interface PptxSlide {
   slideNumber: number;
-  text:  string;
-  notes: string;
+  text:        string;
+  notes:       string;
 }
 
 export async function extractPptxSlides(buffer: ArrayBuffer): Promise<PptxSlide[]> {
   const buf     = Buffer.from(buffer);
   const entries = parseCentralDirectory(buf);
 
-  // Log what we found for debugging
-  const allKeys = [...entries.keys()];
-  const slideKeys = allKeys.filter(k => /^ppt\/slides\/slide\d+\.xml$/.test(k));
-  console.log(`[pptx] ZIP entries: ${allKeys.length} total, ${slideKeys.length} slides`);
+  const allKeys    = [...entries.keys()];
+  const slideKeys  = allKeys.filter(k => /^ppt\/slides\/slide\d+\.xml$/.test(k));
+  console.log(`[pptx] ${allKeys.length} ZIP entries, ${slideKeys.length} slides found`);
   if (slideKeys.length === 0) {
-    console.warn('[pptx] No slide XML files found. Keys sample:', allKeys.slice(0, 20));
+    console.warn('[pptx] No slides found. Entries sample:', allKeys.slice(0, 30).join(', '));
   }
 
-  const slideEntries: { num: number; entry: ZipEntry }[] = [];
+  // Collect and sort slides
+  const slideList: { num: number; entry: ZipEntry }[] = [];
   for (const [filename, entry] of entries) {
-    const m = filename.match(/^ppt\/slides\/slide(\d+)\.xml$/);
-    if (m) slideEntries.push({ num: parseInt(m[1], 10), entry });
+    const m = filename.match(/^ppt\/slides\/slide(\d+)\.xml$/i);
+    if (m) slideList.push({ num: parseInt(m[1], 10), entry });
   }
-  slideEntries.sort((a, b) => a.num - b.num);
+  slideList.sort((a, b) => a.num - b.num);
 
   const slides: PptxSlide[] = [];
 
-  for (const { num, entry } of slideEntries) {
+  for (const { num, entry } of slideList) {
     let text  = '';
     let notes = '';
 
     try {
-      const xml = readEntry(buf, entry);
-      text = extractTextFromXml(xml);
+      const raw = readEntry(buf, entry).toString('utf8');
+      text = extractText(raw);
+      if (!text) {
+        // Last resort: pull every text node between > and <
+        const stripped = raw
+          .replace(/<[^>]+>/g, '\n')
+          .replace(/&[a-z]+;/g, ' ')
+          .split('\n')
+          .map(s => s.trim())
+          .filter(s => s.length > 1 && !/^[0-9.]+$/.test(s))
+          .join('\n');
+        text = stripped;
+      }
     } catch (e) {
-      console.warn(`[pptx] slide ${num} extraction failed: ${(e as Error).message}`);
+      console.warn(`[pptx] slide ${num} failed: ${(e as Error).message}`);
     }
 
     // Speaker notes
     const notesEntry = entries.get(`ppt/notesSlides/notesSlide${num}.xml`);
     if (notesEntry) {
       try {
-        const notesXml = readEntry(buf, notesEntry);
-        notes = extractTextFromXml(notesXml)
-          .split('\n')
-          .filter(l => l.length > 2)
-          .join('\n');
-      } catch { /* notes are optional */ }
+        const raw   = readEntry(buf, notesEntry).toString('utf8');
+        notes = extractText(raw).split('\n').filter(l => l.length > 2).join('\n');
+      } catch { /* optional */ }
     }
 
-    if (text || notes) {
-      slides.push({ slideNumber: num, text, notes });
-    }
+    if (text || notes) slides.push({ slideNumber: num, text, notes });
+  }
+
+  // Log sample of extracted content for debugging
+  if (slides.length > 0) {
+    const sample = slides[0].text.slice(0, 200);
+    console.log(`[pptx] Slide 1 sample: ${JSON.stringify(sample)}`);
   }
 
   return slides;
