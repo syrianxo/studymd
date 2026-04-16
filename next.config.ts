@@ -1,5 +1,6 @@
 import type { NextConfig } from "next";
 
+// Build cache bust: admin route fix
 const nextConfig: NextConfig = {
   /*
    * Security headers applied to all responses.
