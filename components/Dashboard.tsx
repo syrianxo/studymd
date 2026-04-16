@@ -54,6 +54,7 @@ export default function Dashboard({
   const [userId, setUserId] = useState<string | null>(null);
   const [theme, setTheme] = useState<Theme>(initialThemeProp);
   const studyConfig = useStudyConfig();
+  const [sectionMenuOpen, setSectionMenuOpen] = useState(false);
 
   useEffect(() => {
     createClient().auth.getUser().then(({ data }) => {
@@ -324,8 +325,8 @@ export default function Dashboard({
             )}
           </div>
 
-          {/* Action buttons — always shown on all screen sizes */}
-          <div className="smd-section-actions">
+          {/* Desktop: buttons rendered inline */}
+          <div className="smd-section-actions smd-desktop-actions">
             <button
               className="btn btn-ghost"
               onClick={() => setManageOpen((v) => !v)}
@@ -338,6 +339,34 @@ export default function Dashboard({
             >
               ✦ Custom Study
             </button>
+          </div>
+
+          {/* Mobile: "•••" overflow menu */}
+          <div className="smd-mobile-actions">
+            <button
+              className="btn btn-ghost smd-mobile-overflow-btn"
+              onClick={() => setSectionMenuOpen(v => !v)}
+              aria-label="More actions"
+              aria-expanded={sectionMenuOpen}
+            >
+              •••
+            </button>
+            {sectionMenuOpen && (
+              <div className="smd-mobile-actions-dropdown" onClick={() => setSectionMenuOpen(false)}>
+                <button
+                  className="smd-mobile-action-item"
+                  onClick={() => setManageOpen(v => !v)}
+                >
+                  ✏️ {manageOpen ? 'Done Editing' : 'Manage Lectures'}
+                </button>
+                <button
+                  className="smd-mobile-action-item"
+                  onClick={() => setCustomModalOpen(true)}
+                >
+                  ✦ Custom Study Session
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -720,6 +749,11 @@ const dashboardCss = `
 /* Desktop actions visible, mobile hidden by default */
 .smd-desktop-actions { display: flex; }
 .smd-mobile-actions  { display: none; position: relative; }
+
+@media (max-width: 767px) {
+  .smd-desktop-actions { display: none !important; }
+  .smd-mobile-actions  { display: flex !important; }
+}
 
 /* ── Mobile overflow menu ──────────────────────────────────────────────── */
 .smd-mobile-overflow-btn {
