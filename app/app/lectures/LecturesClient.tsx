@@ -1,22 +1,38 @@
 'use client';
 /**
- * app/app/lectures/LecturesClient.tsx
+ * app/app/lectures/LecturesClient.tsx — v3
  *
- * Changes from v1:
- * 1.  "Metadata" tab → "General Info"
- * 2.  Course + color editable in General Info (via user_lecture_settings)
- * 3.  Exam question editing: rendered as question card + answer choices, inline click-to-edit
- * 4.  Removed "Slide" column from exam questions table
- * 5.  Slides: fetched via API (signed URLs) — bug was missing fetch; now explicit load on tab switch
- * 6.  Navigation link added on dashboard (handled in Dashboard.tsx — see git commit note)
- * 7.  Table has horizontal page padding (lm-page-wrap)
- * 8.  Icon picker in General Info (emoji picker grid)
- * 9.  Header restructured: back link on its own line above title
- * 10. StudyMD Header + Footer rendered around content
+ * Fixes & features in this version:
+ * 1. Modal crash fix: all modals use ReactDOM.createPortal → render at document.body,
+ *    so no invalid <div> inside <tr>/<td> HTML that crashes the page.
+ * 2. Icon picker: compact square emoji button (no label text), popup uses
+ *    position:fixed anchored to button via getBoundingClientRect.
+ * 3. Upload Lecture button moved above the table (top-right of table header area).
+ * 4. Drag-to-reorder rows via @dnd-kit — persisted to user_lecture_settings.display_order.
+ *    Order is restored on next page load from the server.
+ * 5. Page loads lectures ordered by display_order (server-side sort added to page.tsx).
  */
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import ReactDOM from 'react-dom';
 import Link from 'next/link';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS as dndCSS } from '@dnd-kit/utilities';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -34,6 +50,7 @@ interface LectureSummary {
   tags: string[];
   groupId: string | null;
   customTitle: string | null;
+  displayOrder: number;
 }
 
 interface Flashcard {
@@ -99,7 +116,6 @@ const PRESET_COLORS = [
   '#a78bfa','#6366f1','#14b8a6','#e2e8f0','#94a3b8',
 ];
 
-// Common medical / study icons — users can pick these
 const ICON_OPTIONS = [
   '🫀','🫁','🧠','🦷','🦴','🩺','💉','🩸','🧬','🔬',
   '📋','📊','📈','🧪','⚕️','🏥','💊','🩻','👁️','👂',
@@ -125,11 +141,25 @@ async function apiFetch(path: string, opts?: RequestInit) {
   return r.json();
 }
 
+// ─── Portal wrapper — renders children at document.body ───────────────────────
+// This prevents the <div> inside <tr> HTML violation that crashes the page.
+
+function Portal({ children }: { children: React.ReactNode }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); return () => setMounted(false); }, []);
+  if (!mounted) return null;
+  return ReactDOM.createPortal(children, document.body);
+}
+
 // ─── Toast ────────────────────────────────────────────────────────────────────
 
 function Toast({ msg, type, onDone }: { msg: string; type: 'ok' | 'err'; onDone: () => void }) {
   useEffect(() => { const t = setTimeout(onDone, 3000); return () => clearTimeout(t); }, [onDone]);
-  return <div className={`lm-toast lm-toast-${type}`}>{msg}</div>;
+  return (
+    <Portal>
+      <div className={`lm-toast lm-toast-${type}`}>{msg}</div>
+    </Portal>
+  );
 }
 
 // ─── Conflict Banner ──────────────────────────────────────────────────────────
@@ -195,64 +225,63 @@ function FlashcardEditModal({ card, lectureId, onSave, onClose }: {
   }
 
   return (
-    <div className="lm-overlay" onClick={onClose}>
-      <div className="lm-modal" onClick={e => e.stopPropagation()}>
-        <div className="lm-modal-header">
-          <div>
-            <div className="lm-modal-title">Edit Flashcard</div>
-            <div className="lm-modal-sub">Your edits are personal and won't affect other students.</div>
+    <Portal>
+      <div className="lm-overlay" onClick={onClose}>
+        <div className="lm-modal" onClick={e => e.stopPropagation()}>
+          <div className="lm-modal-header">
+            <div>
+              <div className="lm-modal-title">Edit Flashcard</div>
+              <div className="lm-modal-sub">Your edits are personal and won't affect other students.</div>
+            </div>
+            <button className="lm-modal-close" onClick={onClose}>✕</button>
           </div>
-          <button className="lm-modal-close" onClick={onClose}>✕</button>
-        </div>
-
-        {card.hasConflict && card.canonical && (
-          <div className="lm-conflict-card">
-            <div className="lm-conflict-card-title">⚠️ Your instructor updated this card</div>
-            <div className="lm-conflict-versions">
-              <div className="lm-conflict-col">
-                <div className="lm-conflict-col-label">Instructor's version</div>
-                <div className="lm-conflict-text">{card.canonical.question}</div>
-                <div className="lm-conflict-answer">{card.canonical.answer}</div>
+          {card.hasConflict && card.canonical && (
+            <div className="lm-conflict-card">
+              <div className="lm-conflict-card-title">⚠️ Your instructor updated this card</div>
+              <div className="lm-conflict-versions">
+                <div className="lm-conflict-col">
+                  <div className="lm-conflict-col-label">Instructor's version</div>
+                  <div className="lm-conflict-text">{card.canonical.question}</div>
+                  <div className="lm-conflict-answer">{card.canonical.answer}</div>
+                </div>
+                <div className="lm-conflict-col">
+                  <div className="lm-conflict-col-label">Your version</div>
+                  <div className="lm-conflict-text">{card.question}</div>
+                  <div className="lm-conflict-answer">{card.answer}</div>
+                </div>
               </div>
-              <div className="lm-conflict-col">
-                <div className="lm-conflict-col-label">Your version</div>
-                <div className="lm-conflict-text">{card.question}</div>
-                <div className="lm-conflict-answer">{card.answer}</div>
+              <div className="lm-conflict-actions">
+                <button className="lm-btn lm-btn-primary" onClick={acceptCanonical} disabled={saving}>✓ Accept instructor's version</button>
+                <span className="lm-conflict-or">or keep editing yours below</span>
               </div>
             </div>
-            <div className="lm-conflict-actions">
-              <button className="lm-btn lm-btn-primary" onClick={acceptCanonical} disabled={saving}>✓ Accept instructor's version</button>
-              <span className="lm-conflict-or">or keep editing yours below</span>
+          )}
+          <div className="lm-form-field">
+            <label className="lm-form-label">Question</label>
+            <textarea className="lm-textarea" rows={3} value={q} onChange={e => setQ(e.target.value)} />
+          </div>
+          <div className="lm-form-field">
+            <label className="lm-form-label">Answer</label>
+            <textarea className="lm-textarea" rows={4} value={a} onChange={e => setA(e.target.value)} />
+          </div>
+          {card.hasUserEdit && !card.hasConflict && (
+            <div className="lm-revert-row">
+              <span className="lm-edit-badge">✏️ You've edited this card</span>
+              <button className="lm-btn lm-btn-ghost lm-btn-sm" onClick={revertToCanonical} disabled={saving}>Revert to original</button>
             </div>
+          )}
+          {err && <div className="lm-err">{err}</div>}
+          <div className="lm-modal-footer">
+            <button className="lm-btn lm-btn-ghost" onClick={onClose}>Cancel</button>
+            <button className="lm-btn lm-btn-primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save My Edit'}</button>
           </div>
-        )}
-
-        <div className="lm-form-field">
-          <label className="lm-form-label">Question</label>
-          <textarea className="lm-textarea" rows={3} value={q} onChange={e => setQ(e.target.value)} />
-        </div>
-        <div className="lm-form-field">
-          <label className="lm-form-label">Answer</label>
-          <textarea className="lm-textarea" rows={4} value={a} onChange={e => setA(e.target.value)} />
-        </div>
-
-        {card.hasUserEdit && !card.hasConflict && (
-          <div className="lm-revert-row">
-            <span className="lm-edit-badge">✏️ You've edited this card</span>
-            <button className="lm-btn lm-btn-ghost lm-btn-sm" onClick={revertToCanonical} disabled={saving}>Revert to original</button>
-          </div>
-        )}
-        {err && <div className="lm-err">{err}</div>}
-        <div className="lm-modal-footer">
-          <button className="lm-btn lm-btn-ghost" onClick={onClose}>Cancel</button>
-          <button className="lm-btn lm-btn-primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save My Edit'}</button>
         </div>
       </div>
-    </div>
+    </Portal>
   );
 }
 
-// ─── Question Edit Modal (card-style presentation) ────────────────────────────
+// ─── Question Edit Modal ──────────────────────────────────────────────────────
 
 function QuestionEditModal({ question, lectureId, onSave, onClose }: {
   question: ExamQuestion; lectureId: string; onSave: (updated: ExamQuestion) => void; onClose: () => void;
@@ -265,8 +294,6 @@ function QuestionEditModal({ question, lectureId, onSave, onClose }: {
   const [exp, setExp] = useState(question.explanation);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
-
-  // Which "answer" is focused for inline editing
   const [editingAnswerIdx, setEditingAnswerIdx] = useState<number | null>(null);
   const [editingCorrect, setEditingCorrect] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState(false);
@@ -310,199 +337,144 @@ function QuestionEditModal({ question, lectureId, onSave, onClose }: {
     setSaving(false);
   }
 
-  function updateOption(idx: number, val: string) {
-    setOptions(prev => prev.map((o, i) => i === idx ? val : o));
-  }
-
   const isCorrect = (opt: string) => opt.trim().toLowerCase() === ca.trim().toLowerCase();
   const questionLabel = TYPE_LABELS[question.type] ?? question.type;
 
   return (
-    <div className="lm-overlay" onClick={onClose}>
-      <div className="lm-modal lm-modal-wide" onClick={e => e.stopPropagation()}>
-        <div className="lm-modal-header">
-          <div>
-            <div className="lm-modal-title">Edit Exam Question</div>
-            <div className="lm-modal-sub">Click any section to edit. Your changes are personal.</div>
-          </div>
-          <button className="lm-modal-close" onClick={onClose}>✕</button>
-        </div>
-
-        {question.hasConflict && question.canonical && (
-          <div className="lm-conflict-card">
-            <div className="lm-conflict-card-title">⚠️ Your instructor updated this question</div>
-            <div className="lm-conflict-versions">
-              <div className="lm-conflict-col">
-                <div className="lm-conflict-col-label">Instructor's version</div>
-                <div className="lm-conflict-text">{question.canonical.question}</div>
-                <div className="lm-conflict-answer">✓ {question.canonical.correctAnswer}</div>
-              </div>
-              <div className="lm-conflict-col">
-                <div className="lm-conflict-col-label">Your version</div>
-                <div className="lm-conflict-text">{question.question}</div>
-                <div className="lm-conflict-answer">✓ {question.correctAnswer}</div>
-              </div>
+    <Portal>
+      <div className="lm-overlay" onClick={onClose}>
+        <div className="lm-modal lm-modal-wide" onClick={e => e.stopPropagation()}>
+          <div className="lm-modal-header">
+            <div>
+              <div className="lm-modal-title">Edit Exam Question</div>
+              <div className="lm-modal-sub">Click any section to edit. Your changes are personal.</div>
             </div>
-            <div className="lm-conflict-actions">
-              <button className="lm-btn lm-btn-primary" onClick={acceptCanonical} disabled={saving}>✓ Accept instructor's version</button>
-              <span className="lm-conflict-or">or keep editing yours below</span>
-            </div>
-          </div>
-        )}
-
-        {/* ── Card-style presentation ── */}
-        <div className="lm-qcard">
-          {/* Type badge + topic */}
-          <div className="lm-qcard-meta">
-            <span className="lm-type-badge">{questionLabel}</span>
-            {question.topic && <span className="lm-qcard-topic">{question.topic}</span>}
+            <button className="lm-modal-close" onClick={onClose}>✕</button>
           </div>
 
-          {/* Question — click to edit */}
-          <div
-            className={`lm-qcard-question ${editingQuestion ? 'lm-qcard-editing' : 'lm-qcard-clickable'}`}
-            onClick={() => !editingQuestion && setEditingQuestion(true)}
-            title={editingQuestion ? '' : 'Click to edit question'}
-          >
-            {editingQuestion ? (
-              <textarea
-                className="lm-qcard-textarea"
-                autoFocus
-                rows={3}
-                value={q}
-                onChange={e => setQ(e.target.value)}
-                onBlur={() => setEditingQuestion(false)}
-              />
-            ) : (
-              <>
-                <span className="lm-qcard-question-text">{q}</span>
-                <span className="lm-qcard-edit-hint">✏️</span>
-              </>
-            )}
-          </div>
-
-          {/* Answer choices (if MCQ / matching / TF) */}
-          {options.length > 0 && (
-            <div className="lm-qcard-options">
-              {options.map((opt, i) => {
-                const correct = isCorrect(opt);
-                const isEditing = editingAnswerIdx === i;
-                return (
-                  <div
-                    key={i}
-                    className={`lm-qcard-option ${correct ? 'lm-qcard-option-correct' : ''} ${isEditing ? 'lm-qcard-editing' : 'lm-qcard-clickable'}`}
-                    onClick={() => !isEditing && setEditingAnswerIdx(i)}
-                    title={isEditing ? '' : 'Click to edit this answer'}
-                  >
-                    <span className="lm-qcard-option-letter">{String.fromCharCode(65 + i)}</span>
-                    {isEditing ? (
-                      <input
-                        className="lm-qcard-option-input"
-                        autoFocus
-                        value={opt}
-                        onChange={e => updateOption(i, e.target.value)}
-                        onBlur={() => setEditingAnswerIdx(null)}
-                      />
-                    ) : (
-                      <>
-                        <span className="lm-qcard-option-text">{opt}</span>
-                        {correct && <span className="lm-qcard-correct-mark">✓</span>}
-                        <span className="lm-qcard-edit-hint">✏️</span>
-                      </>
-                    )}
-                  </div>
-                );
-              })}
+          {question.hasConflict && question.canonical && (
+            <div className="lm-conflict-card">
+              <div className="lm-conflict-card-title">⚠️ Your instructor updated this question</div>
+              <div className="lm-conflict-versions">
+                <div className="lm-conflict-col">
+                  <div className="lm-conflict-col-label">Instructor's version</div>
+                  <div className="lm-conflict-text">{question.canonical.question}</div>
+                  <div className="lm-conflict-answer">✓ {question.canonical.correctAnswer}</div>
+                </div>
+                <div className="lm-conflict-col">
+                  <div className="lm-conflict-col-label">Your version</div>
+                  <div className="lm-conflict-text">{question.question}</div>
+                  <div className="lm-conflict-answer">✓ {question.correctAnswer}</div>
+                </div>
+              </div>
+              <div className="lm-conflict-actions">
+                <button className="lm-btn lm-btn-primary" onClick={acceptCanonical} disabled={saving}>✓ Accept instructor's version</button>
+                <span className="lm-conflict-or">or keep editing yours below</span>
+              </div>
             </div>
           )}
 
-          {/* Correct answer for non-MCQ types (fill-in, no options list) */}
-          {options.length === 0 && (
+          <div className="lm-qcard">
+            <div className="lm-qcard-meta">
+              <span className="lm-type-badge">{questionLabel}</span>
+              {question.topic && <span className="lm-qcard-topic">{question.topic}</span>}
+            </div>
+
+            {/* Question — click to edit */}
             <div
-              className={`lm-qcard-fillin ${editingCorrect ? 'lm-qcard-editing' : 'lm-qcard-clickable'}`}
-              onClick={() => !editingCorrect && setEditingCorrect(true)}
-              title={editingCorrect ? '' : 'Click to edit correct answer'}
+              className={`lm-qcard-question ${editingQuestion ? 'lm-qcard-editing' : 'lm-qcard-clickable'}`}
+              onClick={() => !editingQuestion && setEditingQuestion(true)}
+              title={editingQuestion ? '' : 'Click to edit question'}
             >
-              <span className="lm-qcard-fillin-label">Correct Answer</span>
-              {editingCorrect ? (
-                <input
-                  className="lm-qcard-option-input"
-                  autoFocus
-                  value={ca}
-                  onChange={e => setCa(e.target.value)}
-                  onBlur={() => setEditingCorrect(false)}
-                />
+              {editingQuestion ? (
+                <textarea className="lm-qcard-textarea" autoFocus rows={3} value={q}
+                  onChange={e => setQ(e.target.value)} onBlur={() => setEditingQuestion(false)} />
               ) : (
-                <>
-                  <span className="lm-qcard-fillin-val">{ca}</span>
-                  <span className="lm-qcard-edit-hint">✏️</span>
-                </>
+                <><span className="lm-qcard-question-text">{q}</span><span className="lm-qcard-edit-hint">✏️</span></>
               )}
             </div>
-          )}
 
-          {/* Correct answer field for MCQ (set which option is correct) */}
-          {options.length > 0 && (
-            <div className="lm-qcard-correct-row">
-              <span className="lm-qcard-fillin-label">Correct answer text</span>
-              <div
-                className={`lm-qcard-fillin lm-qcard-fillin-inline ${editingCorrect ? 'lm-qcard-editing' : 'lm-qcard-clickable'}`}
-                onClick={() => !editingCorrect && setEditingCorrect(true)}
-                title="Click to edit — must match one of the answer choices above"
-              >
-                {editingCorrect ? (
-                  <input className="lm-qcard-option-input" autoFocus value={ca} onChange={e => setCa(e.target.value)} onBlur={() => setEditingCorrect(false)} />
+            {/* MCQ/TF options */}
+            {options.length > 0 && (
+              <div className="lm-qcard-options">
+                {options.map((opt, i) => {
+                  const correct = isCorrect(opt);
+                  const isEditing = editingAnswerIdx === i;
+                  return (
+                    <div key={i}
+                      className={`lm-qcard-option ${correct ? 'lm-qcard-option-correct' : ''} ${isEditing ? 'lm-qcard-editing' : 'lm-qcard-clickable'}`}
+                      onClick={() => !isEditing && setEditingAnswerIdx(i)}>
+                      <span className="lm-qcard-option-letter">{String.fromCharCode(65 + i)}</span>
+                      {isEditing ? (
+                        <input className="lm-qcard-option-input" autoFocus value={opt}
+                          onChange={e => setOptions(p => p.map((o, j) => j === i ? e.target.value : o))}
+                          onBlur={() => setEditingAnswerIdx(null)} />
+                      ) : (
+                        <><span className="lm-qcard-option-text">{opt}</span>
+                          {correct && <span className="lm-qcard-correct-mark">✓</span>}
+                          <span className="lm-qcard-edit-hint">✏️</span></>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Fill-in / no-options correct answer */}
+            {options.length === 0 && (
+              <div className={`lm-qcard-fillin ${editingCorrect ? 'lm-qcard-editing' : 'lm-qcard-clickable'}`}
+                onClick={() => !editingCorrect && setEditingCorrect(true)}>
+                <span className="lm-qcard-fillin-label">Correct Answer</span>
+                {editingCorrect
+                  ? <input className="lm-qcard-option-input" autoFocus value={ca} onChange={e => setCa(e.target.value)} onBlur={() => setEditingCorrect(false)} />
+                  : <><span className="lm-qcard-fillin-val">{ca}</span><span className="lm-qcard-edit-hint">✏️</span></>}
+              </div>
+            )}
+
+            {/* MCQ: show which text is the correct answer */}
+            {options.length > 0 && (
+              <div className="lm-qcard-correct-row">
+                <span className="lm-qcard-fillin-label">Correct answer text</span>
+                <div className={`lm-qcard-fillin lm-qcard-fillin-inline ${editingCorrect ? 'lm-qcard-editing' : 'lm-qcard-clickable'}`}
+                  onClick={() => !editingCorrect && setEditingCorrect(true)}>
+                  {editingCorrect
+                    ? <input className="lm-qcard-option-input" autoFocus value={ca} onChange={e => setCa(e.target.value)} onBlur={() => setEditingCorrect(false)} />
+                    : <><span className="lm-qcard-fillin-val">{ca}</span><span className="lm-qcard-edit-hint">✏️</span></>}
+                </div>
+              </div>
+            )}
+
+            {/* Explanation */}
+            <div className="lm-qcard-explanation">
+              <div className="lm-qcard-exp-label">Explanation</div>
+              <div className={`lm-qcard-exp-body ${editingExplanation ? 'lm-qcard-editing' : 'lm-qcard-clickable'}`}
+                onClick={() => !editingExplanation && setEditingExplanation(true)}>
+                {editingExplanation ? (
+                  <textarea className="lm-qcard-textarea" autoFocus rows={3} value={exp}
+                    onChange={e => setExp(e.target.value)} onBlur={() => setEditingExplanation(false)}
+                    placeholder="Add an explanation or memory aid…" />
                 ) : (
-                  <>
-                    <span className="lm-qcard-fillin-val">{ca}</span>
-                    <span className="lm-qcard-edit-hint">✏️</span>
-                  </>
+                  <><span className="lm-qcard-exp-text">{exp || <span style={{ opacity: .45 }}>No explanation — click to add one</span>}</span>
+                    <span className="lm-qcard-edit-hint">✏️</span></>
                 )}
               </div>
             </div>
-          )}
+          </div>
 
-          {/* Explanation */}
-          <div className="lm-qcard-explanation">
-            <div className="lm-qcard-exp-label">Explanation</div>
-            <div
-              className={`lm-qcard-exp-body ${editingExplanation ? 'lm-qcard-editing' : 'lm-qcard-clickable'}`}
-              onClick={() => !editingExplanation && setEditingExplanation(true)}
-              title={editingExplanation ? '' : 'Click to edit explanation'}
-            >
-              {editingExplanation ? (
-                <textarea
-                  className="lm-qcard-textarea"
-                  autoFocus
-                  rows={3}
-                  value={exp}
-                  onChange={e => setExp(e.target.value)}
-                  onBlur={() => setEditingExplanation(false)}
-                  placeholder="Add an explanation or memory aid…"
-                />
-              ) : (
-                <>
-                  <span className="lm-qcard-exp-text">{exp || <span style={{ opacity: 0.45 }}>No explanation — click to add one</span>}</span>
-                  <span className="lm-qcard-edit-hint">✏️</span>
-                </>
-              )}
+          {question.hasUserEdit && !question.hasConflict && (
+            <div className="lm-revert-row">
+              <span className="lm-edit-badge">✏️ You've edited this question</span>
+              <button className="lm-btn lm-btn-ghost lm-btn-sm" onClick={revertToCanonical} disabled={saving}>Revert to original</button>
             </div>
+          )}
+          {err && <div className="lm-err">{err}</div>}
+          <div className="lm-modal-footer">
+            <button className="lm-btn lm-btn-ghost" onClick={onClose}>Cancel</button>
+            <button className="lm-btn lm-btn-primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save My Edit'}</button>
           </div>
-        </div>
-
-        {question.hasUserEdit && !question.hasConflict && (
-          <div className="lm-revert-row">
-            <span className="lm-edit-badge">✏️ You've edited this question</span>
-            <button className="lm-btn lm-btn-ghost lm-btn-sm" onClick={revertToCanonical} disabled={saving}>Revert to original</button>
-          </div>
-        )}
-        {err && <div className="lm-err">{err}</div>}
-        <div className="lm-modal-footer">
-          <button className="lm-btn lm-btn-ghost" onClick={onClose}>Cancel</button>
-          <button className="lm-btn lm-btn-primary" onClick={save} disabled={saving}>{saving ? 'Saving…' : 'Save My Edit'}</button>
         </div>
       </div>
-    </div>
+    </Portal>
   );
 }
 
@@ -532,31 +504,33 @@ function AddFlashcardModal({ lectureId, onAdded, onClose }: {
   }
 
   return (
-    <div className="lm-overlay" onClick={onClose}>
-      <div className="lm-modal" onClick={e => e.stopPropagation()}>
-        <div className="lm-modal-header">
-          <div className="lm-modal-title">Add Flashcard</div>
-          <button className="lm-modal-close" onClick={onClose}>✕</button>
-        </div>
-        <div className="lm-form-field">
-          <label className="lm-form-label">Topic <span style={{ opacity: 0.6 }}>(optional)</span></label>
-          <input className="lm-input" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Cardiovascular" />
-        </div>
-        <div className="lm-form-field">
-          <label className="lm-form-label">Question</label>
-          <textarea className="lm-textarea" rows={3} value={q} onChange={e => setQ(e.target.value)} />
-        </div>
-        <div className="lm-form-field">
-          <label className="lm-form-label">Answer</label>
-          <textarea className="lm-textarea" rows={4} value={a} onChange={e => setA(e.target.value)} />
-        </div>
-        {err && <div className="lm-err">{err}</div>}
-        <div className="lm-modal-footer">
-          <button className="lm-btn lm-btn-ghost" onClick={onClose}>Cancel</button>
-          <button className="lm-btn lm-btn-primary" onClick={save} disabled={saving}>{saving ? 'Adding…' : 'Add Card'}</button>
+    <Portal>
+      <div className="lm-overlay" onClick={onClose}>
+        <div className="lm-modal" onClick={e => e.stopPropagation()}>
+          <div className="lm-modal-header">
+            <div className="lm-modal-title">Add Flashcard</div>
+            <button className="lm-modal-close" onClick={onClose}>✕</button>
+          </div>
+          <div className="lm-form-field">
+            <label className="lm-form-label">Topic <span style={{ opacity: 0.6 }}>(optional)</span></label>
+            <input className="lm-input" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Cardiovascular" />
+          </div>
+          <div className="lm-form-field">
+            <label className="lm-form-label">Question</label>
+            <textarea className="lm-textarea" rows={3} value={q} onChange={e => setQ(e.target.value)} />
+          </div>
+          <div className="lm-form-field">
+            <label className="lm-form-label">Answer</label>
+            <textarea className="lm-textarea" rows={4} value={a} onChange={e => setA(e.target.value)} />
+          </div>
+          {err && <div className="lm-err">{err}</div>}
+          <div className="lm-modal-footer">
+            <button className="lm-btn lm-btn-ghost" onClick={onClose}>Cancel</button>
+            <button className="lm-btn lm-btn-primary" onClick={save} disabled={saving}>{saving ? 'Adding…' : 'Add Card'}</button>
+          </div>
         </div>
       </div>
-    </div>
+    </Portal>
   );
 }
 
@@ -588,42 +562,44 @@ function AddQuestionModal({ lectureId, onAdded, onClose }: {
   }
 
   return (
-    <div className="lm-overlay" onClick={onClose}>
-      <div className="lm-modal" onClick={e => e.stopPropagation()}>
-        <div className="lm-modal-header">
-          <div className="lm-modal-title">Add Exam Question</div>
-          <button className="lm-modal-close" onClick={onClose}>✕</button>
-        </div>
-        <div className="lm-form-row">
-          <div className="lm-form-field" style={{ flex: 1 }}>
-            <label className="lm-form-label">Type</label>
-            <select className="lm-select" value={type} onChange={e => setType(e.target.value)}>
-              <option value="mcq">Multiple Choice</option>
-              <option value="tf">True / False</option>
-              <option value="matching">Matching</option>
-              <option value="fillin">Fill in the Blank</option>
-            </select>
+    <Portal>
+      <div className="lm-overlay" onClick={onClose}>
+        <div className="lm-modal" onClick={e => e.stopPropagation()}>
+          <div className="lm-modal-header">
+            <div className="lm-modal-title">Add Exam Question</div>
+            <button className="lm-modal-close" onClick={onClose}>✕</button>
           </div>
-          <div className="lm-form-field" style={{ flex: 2 }}>
-            <label className="lm-form-label">Topic <span style={{ opacity: 0.6 }}>(optional)</span></label>
-            <input className="lm-input" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Cardiac Auscultation" />
+          <div className="lm-form-row">
+            <div className="lm-form-field" style={{ flex: 1 }}>
+              <label className="lm-form-label">Type</label>
+              <select className="lm-select" value={type} onChange={e => setType(e.target.value)}>
+                <option value="mcq">Multiple Choice</option>
+                <option value="tf">True / False</option>
+                <option value="matching">Matching</option>
+                <option value="fillin">Fill in the Blank</option>
+              </select>
+            </div>
+            <div className="lm-form-field" style={{ flex: 2 }}>
+              <label className="lm-form-label">Topic <span style={{ opacity: 0.6 }}>(optional)</span></label>
+              <input className="lm-input" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Cardiac Auscultation" />
+            </div>
           </div>
-        </div>
-        <div className="lm-form-field">
-          <label className="lm-form-label">Question</label>
-          <textarea className="lm-textarea" rows={3} value={question} onChange={e => setQuestion(e.target.value)} />
-        </div>
-        <div className="lm-form-field">
-          <label className="lm-form-label">Correct Answer</label>
-          <input className="lm-input" value={correct} onChange={e => setCorrect(e.target.value)} />
-        </div>
-        {err && <div className="lm-err">{err}</div>}
-        <div className="lm-modal-footer">
-          <button className="lm-btn lm-btn-ghost" onClick={onClose}>Cancel</button>
-          <button className="lm-btn lm-btn-primary" onClick={save} disabled={saving}>{saving ? 'Adding…' : 'Add Question'}</button>
+          <div className="lm-form-field">
+            <label className="lm-form-label">Question</label>
+            <textarea className="lm-textarea" rows={3} value={question} onChange={e => setQuestion(e.target.value)} />
+          </div>
+          <div className="lm-form-field">
+            <label className="lm-form-label">Correct Answer</label>
+            <input className="lm-input" value={correct} onChange={e => setCorrect(e.target.value)} />
+          </div>
+          {err && <div className="lm-err">{err}</div>}
+          <div className="lm-modal-footer">
+            <button className="lm-btn lm-btn-ghost" onClick={onClose}>Cancel</button>
+            <button className="lm-btn lm-btn-primary" onClick={save} disabled={saving}>{saving ? 'Adding…' : 'Add Question'}</button>
+          </div>
         </div>
       </div>
-    </div>
+    </Portal>
   );
 }
 
@@ -635,7 +611,6 @@ function SlidesTab({ lectureId, onToast }: { lectureId: string; onToast: (m: str
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
-  const loaded = useRef(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -644,7 +619,6 @@ function SlidesTab({ lectureId, onToast }: { lectureId: string; onToast: (m: str
       setSlides(data.slides ?? []);
     } catch (e: any) { onToast(e.message, 'err'); }
     setLoading(false);
-    loaded.current = true;
   }, [lectureId, onToast]);
 
   useEffect(() => { load(); }, [load]);
@@ -683,7 +657,6 @@ function SlidesTab({ lectureId, onToast }: { lectureId: string; onToast: (m: str
         <input ref={fileRef} type="file" accept="image/*" style={{ display: 'none' }}
           onChange={e => { const f = e.target.files?.[0]; if (f) uploadFile(f); e.target.value = ''; }} />
       </div>
-
       {loading ? (
         <div className="lm-loading">Loading slides…</div>
       ) : slides.length === 0 ? (
@@ -696,10 +669,8 @@ function SlidesTab({ lectureId, onToast }: { lectureId: string; onToast: (m: str
         <div className="lm-slides-grid">
           {slides.map(sl => (
             <div key={sl.name} className="lm-slide-card">
-              {sl.url
-                ? <img src={sl.url} alt={sl.name} className="lm-slide-img" loading="lazy" />
-                : <div className="lm-slide-placeholder">🖼️</div>
-              }
+              {sl.url ? <img src={sl.url} alt={sl.name} className="lm-slide-img" loading="lazy" />
+                : <div className="lm-slide-placeholder">🖼️</div>}
               <div className="lm-slide-meta">
                 <span className="lm-slide-num">{sl.slideNumber != null ? `Slide ${sl.slideNumber}` : sl.name}</span>
                 <span className="lm-slide-size">{fmtSize(sl.size)}</span>
@@ -716,12 +687,30 @@ function SlidesTab({ lectureId, onToast }: { lectureId: string; onToast: (m: str
   );
 }
 
-// ─── Icon Picker ──────────────────────────────────────────────────────────────
+// ─── Icon Picker (fixed-position popup anchored to button) ────────────────────
 
-function IconPicker({ current, onSelect, onClose }: { current: string; onSelect: (icon: string) => void; onClose: () => void }) {
+function IconPicker({ current, anchorRef, onSelect, onClose }: {
+  current: string;
+  anchorRef: React.RefObject<HTMLButtonElement | null>;
+  onSelect: (icon: string) => void;
+  onClose: () => void;
+}) {
+  const [style, setStyle] = useState<React.CSSProperties>({ top: 0, left: 0 });
+
+  useEffect(() => {
+    if (anchorRef.current) {
+      const r = anchorRef.current.getBoundingClientRect();
+      setStyle({
+        top: r.bottom + 8 + window.scrollY,
+        left: r.left + window.scrollX,
+      });
+    }
+  }, [anchorRef]);
+
   return (
-    <div className="lm-icon-picker-wrap" onClick={onClose}>
-      <div className="lm-icon-picker" onClick={e => e.stopPropagation()}>
+    <Portal>
+      <div className="lm-icon-picker-backdrop" onClick={onClose} />
+      <div className="lm-icon-picker" style={style} onClick={e => e.stopPropagation()}>
         <div className="lm-icon-picker-title">Choose an Icon</div>
         <div className="lm-icon-grid">
           {ICON_OPTIONS.map(icon => (
@@ -732,7 +721,7 @@ function IconPicker({ current, onSelect, onClose }: { current: string; onSelect:
           ))}
         </div>
       </div>
-    </div>
+    </Portal>
   );
 }
 
@@ -747,20 +736,19 @@ function ExpandedRow({ summary, onToast, onSummaryChange }: {
   const [detail, setDetail] = useState<LectureDetail | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // General Info state
-  const [customTitle, setCustomTitle]   = useState(summary.customTitle ?? '');
-  const [groupId, setGroupId]           = useState(summary.groupId ?? '');
-  const [tagInput, setTagInput]         = useState('');
-  const [tags, setTags]                 = useState<string[]>(summary.tags);
-  const [course, setCourse]             = useState(summary.course);
-  const [color, setColor]               = useState(summary.color);
-  const [icon, setIcon]                 = useState(summary.icon);
+  const [customTitle, setCustomTitle] = useState(summary.customTitle ?? '');
+  const [groupId, setGroupId]         = useState(summary.groupId ?? '');
+  const [tagInput, setTagInput]       = useState('');
+  const [tags, setTags]               = useState<string[]>(summary.tags);
+  const [course, setCourse]           = useState(summary.course);
+  const [color, setColor]             = useState(summary.color);
+  const [icon, setIcon]               = useState(summary.icon);
   const [showIconPicker, setShowIconPicker] = useState(false);
-  const [savingMeta, setSavingMeta]     = useState(false);
+  const [savingMeta, setSavingMeta]   = useState(false);
+  const iconBtnRef = useRef<HTMLButtonElement>(null);
 
-  // Card modals
-  const [editingCard, setEditingCard]   = useState<{ type: 'fc' | 'q'; item: Flashcard | ExamQuestion } | null>(null);
-  const [addingCard, setAddingCard]     = useState<'fc' | 'q' | null>(null);
+  const [editingCard, setEditingCard] = useState<{ type: 'fc' | 'q'; item: Flashcard | ExamQuestion } | null>(null);
+  const [addingCard, setAddingCard]   = useState<'fc' | 'q' | null>(null);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -776,18 +764,20 @@ function ExpandedRow({ summary, onToast, onSummaryChange }: {
   async function saveMeta() {
     setSavingMeta(true);
     try {
-      // Save user-scoped fields (title, groupId, tags, courseOverride, colorOverride)
       await apiFetch(`/api/lectures/${summary.id}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ customTitle: customTitle.trim() || null, groupId: groupId.trim() || null, tags }),
       });
-      // Save course + color overrides via settings route
       await apiFetch('/api/lectures/settings', {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ internalId: summary.id, updates: { courseOverride: course !== summary.course ? course : null, colorOverride: color !== summary.color ? color : null } }),
+        body: JSON.stringify({
+          internalId: summary.id,
+          updates: {
+            courseOverride: course !== summary.course ? course : null,
+            colorOverride: color !== summary.color ? color : null,
+          }
+        }),
       });
-      // Save icon via admin-safe route if changed — icon lives in user_lecture_settings custom_icon
-      // For now we piggyback on the PUT /api/lectures/[id] custom fields via settings
       onToast('Saved.', 'ok');
       onSummaryChange({ customTitle: customTitle.trim() || null, course, color, icon, tags, groupId: groupId.trim() || null });
     } catch (e: any) { onToast(e.message, 'err'); }
@@ -800,20 +790,10 @@ function ExpandedRow({ summary, onToast, onSummaryChange }: {
     setTagInput('');
   }
 
-  function updateFlashcard(updated: Flashcard) {
-    setDetail(d => d ? { ...d, flashcards: d.flashcards.map(f => f.id === updated.id ? updated : f) } : d);
-  }
-  function updateQuestion(updated: ExamQuestion) {
-    setDetail(d => d ? { ...d, questions: d.questions.map(q => q.id === updated.id ? updated : q) } : d);
-  }
-  function addFlashcard(card: Flashcard) {
-    setDetail(d => d ? { ...d, flashcards: [...d.flashcards, card] } : d);
-    onToast('Flashcard added.', 'ok');
-  }
-  function addQuestion(q: ExamQuestion) {
-    setDetail(d => d ? { ...d, questions: [...d.questions, q] } : d);
-    onToast('Question added.', 'ok');
-  }
+  function updateFlashcard(u: Flashcard) { setDetail(d => d ? { ...d, flashcards: d.flashcards.map(f => f.id === u.id ? u : f) } : d); }
+  function updateQuestion(u: ExamQuestion) { setDetail(d => d ? { ...d, questions: d.questions.map(q => q.id === u.id ? u : q) } : d); }
+  function addFlashcard(c: Flashcard) { setDetail(d => d ? { ...d, flashcards: [...d.flashcards, c] } : d); onToast('Flashcard added.', 'ok'); }
+  function addQuestion(q: ExamQuestion) { setDetail(d => d ? { ...d, questions: [...d.questions, q] } : d); onToast('Question added.', 'ok'); }
 
   const TABS: { id: TabId; label: string }[] = [
     { id: 'info',       label: 'General Info' },
@@ -824,7 +804,7 @@ function ExpandedRow({ summary, onToast, onSummaryChange }: {
 
   return (
     <tr>
-      <td colSpan={8} className="lm-expand-cell">
+      <td colSpan={9} className="lm-expand-cell">
         <div className="lm-expand-panel">
           <div className="lm-tabs">
             {TABS.map(t => (
@@ -836,45 +816,45 @@ function ExpandedRow({ summary, onToast, onSummaryChange }: {
             ))}
           </div>
 
-          {loading ? (
-            <div className="lm-loading">Loading…</div>
-          ) : (
+          {loading ? <div className="lm-loading">Loading…</div> : (
             <>
               {detail && <ConflictBanner count={detail.conflictCount} />}
 
-              {/* ── General Info Tab ── */}
+              {/* ── General Info ── */}
               {tab === 'info' && (
                 <div className="lm-meta-grid">
-
-                  {/* Icon picker */}
-                  <div className="lm-form-field" style={{ position: 'relative' }}>
+                  {/* Row 1: Icon (compact) + Display Title */}
+                  <div className="lm-form-field lm-form-field-icon">
                     <label className="lm-form-label">Icon</label>
-                    <button className="lm-icon-preview-btn" onClick={() => setShowIconPicker(v => !v)}>
-                      <span className="lm-icon-preview-emoji">{icon}</span>
-                      <span className="lm-icon-preview-label">Change icon</span>
+                    <button
+                      ref={iconBtnRef}
+                      className="lm-icon-btn"
+                      onClick={() => setShowIconPicker(v => !v)}
+                      title="Change icon"
+                      type="button"
+                    >
+                      <span>{icon}</span>
                     </button>
                     {showIconPicker && (
-                      <IconPicker current={icon} onSelect={setIcon} onClose={() => setShowIconPicker(false)} />
+                      <IconPicker current={icon} anchorRef={iconBtnRef} onSelect={setIcon} onClose={() => setShowIconPicker(false)} />
                     )}
                   </div>
 
-                  {/* Custom Title */}
                   <div className="lm-form-field">
                     <label className="lm-form-label">Display Title</label>
                     <input className="lm-input" value={customTitle} onChange={e => setCustomTitle(e.target.value)} placeholder={summary.title} />
                     <div className="lm-field-hint">Rename this lecture for yourself only.</div>
                   </div>
 
-                  {/* Course */}
+                  {/* Row 2: Course + Color (same row, side by side) */}
                   <div className="lm-form-field">
                     <label className="lm-form-label">Course</label>
                     <select className="lm-select" value={course} onChange={e => setCourse(e.target.value)}>
                       {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
-                    <div className="lm-field-hint">Override which course this lecture appears under.</div>
+                    <div className="lm-field-hint">Override which course this appears under.</div>
                   </div>
 
-                  {/* Color */}
                   <div className="lm-form-field">
                     <label className="lm-form-label">Accent Color</label>
                     <div className="lm-color-row">
@@ -882,25 +862,26 @@ function ExpandedRow({ summary, onToast, onSummaryChange }: {
                         <button key={hex} className={`lm-color-swatch ${color === hex ? 'lm-color-swatch-selected' : ''}`}
                           style={{ background: hex }} onClick={() => setColor(hex)} aria-label={hex} />
                       ))}
-                      <input type="color" value={color} onChange={e => setColor(e.target.value)}
-                        className="lm-color-custom" title="Custom color" />
+                      <input type="color" value={color} onChange={e => setColor(e.target.value)} className="lm-color-custom" title="Custom color" />
                     </div>
                   </div>
 
-                  {/* Study Block */}
+                  {/* Row 3: Study Block */}
                   <div className="lm-form-field">
                     <label className="lm-form-label">Study Block</label>
                     <input className="lm-input" value={groupId} onChange={e => setGroupId(e.target.value)} placeholder="e.g. Fall 2026 Block 1" />
                     <div className="lm-field-hint">Group this lecture with others for focused study.</div>
                   </div>
 
-                  {/* Tags */}
+                  {/* Row 3 right: empty, just fills the grid */}
+                  <div />
+
+                  {/* Tags full-width */}
                   <div className="lm-form-field lm-form-field-full">
                     <label className="lm-form-label">Tags</label>
                     <div className="lm-tag-editor">
                       {tags.map(tag => (
-                        <span key={tag} className="lm-tag">
-                          {tag}
+                        <span key={tag} className="lm-tag">{tag}
                           <button className="lm-tag-remove" onClick={() => setTags(t => t.filter(x => x !== tag))}>✕</button>
                         </span>
                       ))}
@@ -910,7 +891,7 @@ function ExpandedRow({ summary, onToast, onSummaryChange }: {
                     </div>
                   </div>
 
-                  {/* Read-only info */}
+                  {/* Stats strip */}
                   <div className="lm-form-field lm-form-field-full">
                     <div className="lm-readonly-info">
                       <div><span className="lm-readonly-label">Slides</span><span className="lm-readonly-val">{summary.slideCount}</span></div>
@@ -928,17 +909,13 @@ function ExpandedRow({ summary, onToast, onSummaryChange }: {
                 </div>
               )}
 
-              {/* ── Flashcards Tab ── */}
+              {/* ── Flashcards ── */}
               {tab === 'flashcards' && detail && (
                 <div>
-                  {detail.flashcards.length === 0 ? (
-                    <div className="lm-empty">No flashcards in this lecture yet.</div>
-                  ) : (
+                  {detail.flashcards.length === 0 ? <div className="lm-empty">No flashcards yet.</div> : (
                     <div className="lm-card-table-wrap">
                       <table className="lm-card-table">
-                        <thead>
-                          <tr><th>Topic</th><th>Question</th><th>Answer</th><th>Slide</th><th></th></tr>
-                        </thead>
+                        <thead><tr><th>Topic</th><th>Question</th><th>Answer</th><th>Slide</th><th></th></tr></thead>
                         <tbody>
                           {detail.flashcards.map(card => (
                             <tr key={card.id}
@@ -965,17 +942,13 @@ function ExpandedRow({ summary, onToast, onSummaryChange }: {
                 </div>
               )}
 
-              {/* ── Exam Questions Tab ── */}
+              {/* ── Exam Questions ── */}
               {tab === 'questions' && detail && (
                 <div>
-                  {detail.questions.length === 0 ? (
-                    <div className="lm-empty">No exam questions in this lecture yet.</div>
-                  ) : (
+                  {detail.questions.length === 0 ? <div className="lm-empty">No exam questions yet.</div> : (
                     <div className="lm-card-table-wrap">
                       <table className="lm-card-table">
-                        <thead>
-                          <tr><th>Type</th><th>Topic</th><th>Question</th><th>Correct Answer</th><th></th></tr>
-                        </thead>
+                        <thead><tr><th>Type</th><th>Topic</th><th>Question</th><th>Correct Answer</th><th></th></tr></thead>
                         <tbody>
                           {detail.questions.map(q => (
                             <tr key={q.id}
@@ -1002,12 +975,13 @@ function ExpandedRow({ summary, onToast, onSummaryChange }: {
                 </div>
               )}
 
-              {/* ── Slides Tab ── */}
+              {/* ── Slides ── */}
               {tab === 'slides' && <SlidesTab lectureId={summary.id} onToast={onToast} />}
             </>
           )}
         </div>
 
+        {/* Modals — rendered via Portal to avoid invalid HTML inside <td> */}
         {editingCard?.type === 'fc' && (
           <FlashcardEditModal card={editingCard.item as Flashcard} lectureId={summary.id}
             onSave={u => { updateFlashcard(u); setEditingCard(null); }} onClose={() => setEditingCard(null)} />
@@ -1027,7 +1001,64 @@ function ExpandedRow({ summary, onToast, onSummaryChange }: {
   );
 }
 
-// ─── Page Header (StudyMD brand bar) ─────────────────────────────────────────
+// ─── Sortable Table Row ───────────────────────────────────────────────────────
+
+function SortableRow({
+  lecture, expanded, onToggle, onToast, onSummaryChange,
+}: {
+  lecture: LectureSummary;
+  expanded: boolean;
+  onToggle: () => void;
+  onToast: (m: string, t: 'ok' | 'err') => void;
+  onSummaryChange: (updates: Partial<LectureSummary>) => void;
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: lecture.id });
+
+  const style: React.CSSProperties = {
+    transform: dndCSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 10 : undefined,
+  };
+
+  return (
+    <React.Fragment>
+      <tr ref={setNodeRef} style={style} className={`lm-row ${expanded ? 'lm-row-open' : ''}`} onClick={onToggle}>
+        {/* Drag handle — stop propagation so clicking it doesn't toggle expand */}
+        <td className="lm-drag-cell" onClick={e => e.stopPropagation()}>
+          <span className="lm-drag-handle" {...attributes} {...listeners} title="Drag to reorder">⠿</span>
+        </td>
+        <td className="lm-row-icon">{lecture.icon}</td>
+        <td className="lm-row-title-cell">
+          <div className="lm-row-title">{lecture.customTitle ?? lecture.title}</div>
+          {lecture.subtitle && <div className="lm-row-subtitle">{lecture.subtitle}</div>}
+          {lecture.tags.length > 0 && (
+            <div className="lm-row-tags">
+              {lecture.tags.slice(0, 3).map(t => <span key={t} className="lm-row-tag">{t}</span>)}
+              {lecture.tags.length > 3 && <span className="lm-row-tag lm-row-tag-more">+{lecture.tags.length - 3}</span>}
+            </div>
+          )}
+        </td>
+        <td>
+          <span className="lm-course-pill"
+            style={{ background: `${COURSE_COLORS[lecture.course] ?? '#5b8dee'}18`, color: COURSE_COLORS[lecture.course] ?? '#5b8dee' }}>
+            {lecture.course}
+          </span>
+        </td>
+        <td className="lm-num-cell">{lecture.slideCount}</td>
+        <td className="lm-num-cell" style={{ color: 'var(--accent)' }}>{lecture.flashcardCount}</td>
+        <td className="lm-num-cell" style={{ color: '#8b5cf6' }}>{lecture.questionCount}</td>
+        <td className="lm-muted lm-date-cell">{fmt(lecture.createdAt)}</td>
+        <td className="lm-chevron-cell"><span className="lm-chevron">{expanded ? '▲' : '▼'}</span></td>
+      </tr>
+      {expanded && (
+        <ExpandedRow summary={lecture} onToast={onToast} onSummaryChange={onSummaryChange} />
+      )}
+    </React.Fragment>
+  );
+}
+
+// ─── Page Header ─────────────────────────────────────────────────────────────
 
 function PageHeader() {
   return (
@@ -1066,6 +1097,7 @@ export default function LecturesClient({ initialLectures }: { initialLectures: L
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
   const [search, setSearch] = useState('');
   const [courseFilter, setCourseFilter] = useState<string>('all');
+  const [savingOrder, setSavingOrder] = useState(false);
 
   const showToast = useCallback((msg: string, type: 'ok' | 'err') => setToast({ msg, type }), []);
 
@@ -1077,19 +1109,49 @@ export default function LecturesClient({ initialLectures }: { initialLectures: L
 
   const filtered = lectures.filter(l => {
     const matchesCourse = courseFilter === 'all' || l.course === courseFilter;
-    const matchesSearch = !search || l.title.toLowerCase().includes(search.toLowerCase()) || l.course.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = !search || l.title.toLowerCase().includes(search.toLowerCase()) || l.course.toLowerCase().includes(search.toLowerCase()) || (l.customTitle ?? '').toLowerCase().includes(search.toLowerCase());
     return matchesCourse && matchesSearch;
   });
+
+  // ── Drag-to-reorder ──────────────────────────────────────────────────────
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
+  );
+
+  async function handleDragEnd(event: DragEndEvent) {
+    const { active, over } = event;
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = lectures.findIndex(l => l.id === active.id);
+    const newIndex = lectures.findIndex(l => l.id === over.id);
+    const reordered = arrayMove(lectures, oldIndex, newIndex);
+    setLectures(reordered);
+
+    // Persist new display_order for all lectures via the reorder endpoint
+    setSavingOrder(true);
+    try {
+      const order = reordered.map((l, i) => ({ internalId: l.id, displayOrder: i }));
+      await apiFetch('/api/lectures/reorder', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ order }),
+      });
+    } catch (e: any) {
+      showToast('Could not save order: ' + e.message, 'err');
+      setLectures(lectures); // revert
+    }
+    setSavingOrder(false);
+  }
 
   return (
     <>
       <style>{CSS}</style>
       <div className="lm-root">
-
         <PageHeader />
 
-        {/* Page title bar */}
         <div className="lm-page-wrap">
+          {/* Title bar */}
           <div className="lm-title-bar">
             <div className="lm-title-bar-top">
               <Link href="/app" className="lm-back">← Dashboard</Link>
@@ -1098,6 +1160,7 @@ export default function LecturesClient({ initialLectures }: { initialLectures: L
               <div className="lm-title-row">
                 <h1 className="lm-title">My Lectures</h1>
                 <span className="lm-count">{lectures.length}</span>
+                {savingOrder && <span className="lm-saving-order">Saving order…</span>}
               </div>
               <div className="lm-header-controls">
                 <input className="lm-search" placeholder="Search lectures…" value={search} onChange={e => setSearch(e.target.value)} />
@@ -1108,66 +1171,50 @@ export default function LecturesClient({ initialLectures }: { initialLectures: L
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Table */}
-        <div className="lm-page-wrap">
+          {/* Upload button + table */}
+          <div className="lm-table-header-row">
+            <span className="lm-table-hint">⠿ Drag rows to reorder</span>
+            <Link href="/app/upload" className="lm-btn lm-btn-primary lm-btn-sm">
+              ↑ Upload Lecture
+            </Link>
+          </div>
+
           <div className="lm-table-outer">
-            <table className="lm-table">
-              <thead>
-                <tr>
-                  <th style={{ width: 48 }}></th>
-                  <th>Lecture</th>
-                  <th>Course</th>
-                  <th style={{ width: 72, textAlign: 'center' }}>Slides</th>
-                  <th style={{ width: 96, textAlign: 'center' }}>Cards</th>
-                  <th style={{ width: 96, textAlign: 'center' }}>Questions</th>
-                  <th style={{ width: 130 }}>Added</th>
-                  <th style={{ width: 48 }}></th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.length === 0 && (
-                  <tr><td colSpan={8} className="lm-empty-row">No lectures match your filters.</td></tr>
-                )}
-                {filtered.map(l => (
-                  <React.Fragment key={l.id}>
-                    <tr className={`lm-row ${expanded === l.id ? 'lm-row-open' : ''}`}
-                      onClick={() => setExpanded(expanded === l.id ? null : l.id)}>
-                      <td className="lm-row-icon">{l.icon}</td>
-                      <td className="lm-row-title-cell">
-                        <div className="lm-row-title">{l.customTitle ?? l.title}</div>
-                        {l.subtitle && <div className="lm-row-subtitle">{l.subtitle}</div>}
-                        {l.tags.length > 0 && (
-                          <div className="lm-row-tags">
-                            {l.tags.slice(0, 3).map(t => <span key={t} className="lm-row-tag">{t}</span>)}
-                            {l.tags.length > 3 && <span className="lm-row-tag lm-row-tag-more">+{l.tags.length - 3}</span>}
-                          </div>
-                        )}
-                      </td>
-                      <td>
-                        <span className="lm-course-pill"
-                          style={{ background: `${COURSE_COLORS[l.course] ?? '#5b8dee'}18`, color: COURSE_COLORS[l.course] ?? '#5b8dee' }}>
-                          {l.course}
-                        </span>
-                      </td>
-                      <td className="lm-num-cell">{l.slideCount}</td>
-                      <td className="lm-num-cell" style={{ color: 'var(--accent)' }}>{l.flashcardCount}</td>
-                      <td className="lm-num-cell" style={{ color: '#8b5cf6' }}>{l.questionCount}</td>
-                      <td className="lm-muted lm-date-cell">{fmt(l.createdAt)}</td>
-                      <td className="lm-chevron-cell"><span className="lm-chevron">{expanded === l.id ? '▲' : '▼'}</span></td>
+            <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+              <SortableContext items={filtered.map(l => l.id)} strategy={verticalListSortingStrategy}>
+                <table className="lm-table">
+                  <thead>
+                    <tr>
+                      <th style={{ width: 36 }}></th>{/* drag handle */}
+                      <th style={{ width: 40 }}></th>{/* icon */}
+                      <th>Lecture</th>
+                      <th>Course</th>
+                      <th style={{ width: 72, textAlign: 'center' }}>Slides</th>
+                      <th style={{ width: 72, textAlign: 'center' }}>Cards</th>
+                      <th style={{ width: 84, textAlign: 'center' }}>Questions</th>
+                      <th style={{ width: 120 }}>Added</th>
+                      <th style={{ width: 40 }}></th>
                     </tr>
-                    {expanded === l.id && (
-                      <ExpandedRow
-                        summary={l}
+                  </thead>
+                  <tbody>
+                    {filtered.length === 0 && (
+                      <tr><td colSpan={9} className="lm-empty-row">No lectures match your filters.</td></tr>
+                    )}
+                    {filtered.map(l => (
+                      <SortableRow
+                        key={l.id}
+                        lecture={l}
+                        expanded={expanded === l.id}
+                        onToggle={() => setExpanded(expanded === l.id ? null : l.id)}
                         onToast={showToast}
                         onSummaryChange={updates => updateSummary(l.id, updates)}
                       />
-                    )}
-                  </React.Fragment>
-                ))}
-              </tbody>
-            </table>
+                    ))}
+                  </tbody>
+                </table>
+              </SortableContext>
+            </DndContext>
           </div>
         </div>
 
@@ -1190,11 +1237,11 @@ const CSS = `
 .lm-smd-logo-md { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 700; color: var(--accent, #5b8dee); }
 .lm-smd-header-sub { font-size: 11px; color: var(--text-muted, #6b7280); text-transform: uppercase; letter-spacing: .1em; font-family: 'DM Mono', monospace; margin-left: 4px; }
 
-/* ── Page-level padding ── */
-.lm-page-wrap { padding: 0 40px; }
+/* ── Page padding ── */
+.lm-page-wrap { padding: 0 40px; flex: 1; }
 
 /* ── Title bar ── */
-.lm-title-bar { padding: 24px 0 16px; border-bottom: 1px solid var(--border, rgba(255,255,255,0.08)); margin-bottom: 0; }
+.lm-title-bar { padding: 24px 0 16px; border-bottom: 1px solid var(--border, rgba(255,255,255,0.08)); }
 .lm-title-bar-top { margin-bottom: 8px; }
 .lm-title-bar-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
 .lm-title-row { display: flex; align-items: center; gap: 10px; }
@@ -1202,22 +1249,31 @@ const CSS = `
 .lm-back:hover { color: var(--accent, #5b8dee); }
 .lm-title { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 700; margin: 0; }
 .lm-count { font-size: 12px; color: var(--text-muted); background: rgba(255,255,255,.07); border-radius: 100px; padding: 2px 10px; font-family: 'DM Mono', monospace; }
+.lm-saving-order { font-size: 11px; color: var(--text-muted); font-style: italic; }
 .lm-header-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .lm-search { background: var(--surface, #13161d); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 13px; padding: 9px 14px; outline: none; min-width: 200px; min-height: 40px; }
 .lm-search:focus { border-color: var(--accent); }
 .lm-filter-select { background: var(--surface); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 13px; padding: 9px 12px; outline: none; min-height: 40px; cursor: pointer; }
 .lm-filter-select:focus { border-color: var(--accent); }
 
-/* ── Table wrapper ── */
-.lm-table-outer { border: 1px solid var(--border, rgba(255,255,255,0.08)); border-radius: 16px; overflow: hidden; margin: 20px 0 32px; overflow-x: auto; }
+/* ── Table header row (hint + upload button) ── */
+.lm-table-header-row { display: flex; align-items: center; justify-content: space-between; padding: 16px 0 10px; }
+.lm-table-hint { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+
+/* ── Table ── */
+.lm-table-outer { border: 1px solid var(--border, rgba(255,255,255,0.08)); border-radius: 16px; overflow: hidden; margin-bottom: 32px; overflow-x: auto; }
 .lm-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.lm-table th { padding: 10px 16px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); border-bottom: 1px solid var(--border); background: rgba(255,255,255,.02); white-space: nowrap; }
-.lm-table td { padding: 13px 16px; border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: middle; }
+.lm-table th { padding: 10px 12px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); border-bottom: 1px solid var(--border); background: rgba(255,255,255,.02); white-space: nowrap; }
+.lm-table td { padding: 12px 12px; border-bottom: 1px solid rgba(255,255,255,.04); vertical-align: middle; }
 .lm-row { cursor: pointer; transition: background .12s; }
 .lm-row:hover { background: rgba(255,255,255,.025); }
 .lm-row-open { background: rgba(91,141,238,.05) !important; border-bottom: none; }
-.lm-row-icon { font-size: 20px; text-align: center; }
-.lm-row-title-cell { min-width: 200px; }
+.lm-drag-cell { width: 36px; text-align: center; padding: 0 4px !important; }
+.lm-drag-handle { font-size: 16px; color: var(--text-muted); cursor: grab; user-select: none; display: inline-block; padding: 8px 4px; line-height: 1; opacity: .45; transition: opacity .13s; }
+.lm-drag-handle:hover { opacity: 1; color: var(--accent); cursor: grab; }
+.lm-drag-handle:active { cursor: grabbing; }
+.lm-row-icon { font-size: 20px; text-align: center; padding-left: 0 !important; }
+.lm-row-title-cell { min-width: 180px; }
 .lm-row-title { font-weight: 600; color: var(--text); line-height: 1.3; }
 .lm-row-subtitle { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 .lm-row-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
@@ -1246,10 +1302,12 @@ const CSS = `
 .lm-conflict-banner { display: flex; gap: 12px; align-items: flex-start; background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.25); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; font-size: 13px; line-height: 1.6; color: var(--text); }
 .lm-conflict-icon { font-size: 18px; flex-shrink: 0; }
 
-/* ── General Info (meta) grid ── */
+/* ── General Info grid ── */
 .lm-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .lm-form-field { display: flex; flex-direction: column; gap: 6px; }
 .lm-form-field-full { grid-column: 1 / -1; }
+/* Icon field: only as wide as the button */
+.lm-form-field-icon { width: fit-content; min-width: 0; }
 .lm-form-row { display: flex; gap: 12px; align-items: flex-start; }
 .lm-form-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); font-family: 'DM Mono', monospace; }
 .lm-field-hint { font-size: 11px; color: var(--text-muted); opacity: .7; }
@@ -1258,34 +1316,34 @@ const CSS = `
 .lm-select { background: var(--bg); border: 1px solid var(--border); border-radius: 10px; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 13px; padding: 10px 14px; outline: none; min-height: 44px; width: 100%; cursor: pointer; }
 .lm-select:focus { border-color: var(--accent); }
 
-/* Icon preview button */
-.lm-icon-preview-btn { display: inline-flex; align-items: center; gap: 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px 16px; cursor: pointer; transition: border-color .15s; min-height: 52px; }
-.lm-icon-preview-btn:hover { border-color: var(--accent); }
-.lm-icon-preview-emoji { font-size: 26px; line-height: 1; }
-.lm-icon-preview-label { font-size: 12px; color: var(--text-muted); }
-.lm-icon-picker-wrap { position: fixed; inset: 0; z-index: 900; }
-.lm-icon-picker { position: absolute; top: 70px; left: 0; background: var(--surface, #13161d); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 18px; box-shadow: 0 16px 48px rgba(0,0,0,.6); z-index: 901; width: 280px; animation: lm-modal-in .15s ease; }
-.lm-icon-picker-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); margin-bottom: 12px; font-family: 'DM Mono', monospace; }
-.lm-icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
-.lm-icon-opt { background: none; border: 1px solid transparent; border-radius: 8px; font-size: 22px; cursor: pointer; padding: 6px; transition: background .12s, border-color .12s; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; }
+/* ── Icon button — compact square ── */
+.lm-icon-btn { width: 52px; height: 52px; background: var(--bg, #0d0f14); border: 1px solid var(--border); border-radius: 12px; font-size: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color .15s, background .15s; flex-shrink: 0; }
+.lm-icon-btn:hover { border-color: var(--accent, #5b8dee); background: rgba(91,141,238,.06); }
+
+/* ── Icon picker popup (portal, fixed) ── */
+.lm-icon-picker-backdrop { position: fixed; inset: 0; z-index: 1998; }
+.lm-icon-picker { position: fixed; background: var(--surface, #13161d); border: 1px solid rgba(255,255,255,.14); border-radius: 16px; padding: 16px; box-shadow: 0 16px 48px rgba(0,0,0,.7); z-index: 1999; width: 256px; animation: lm-modal-in .15s ease; }
+.lm-icon-picker-title { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text-muted); margin-bottom: 10px; font-family: 'DM Mono', monospace; }
+.lm-icon-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 5px; }
+.lm-icon-opt { background: none; border: 1px solid transparent; border-radius: 8px; font-size: 20px; cursor: pointer; padding: 5px; transition: background .12s, border-color .12s; aspect-ratio: 1; display: flex; align-items: center; justify-content: center; }
 .lm-icon-opt:hover { background: rgba(255,255,255,.08); }
 .lm-icon-opt-selected { background: rgba(91,141,238,.15); border-color: var(--accent); }
 
-/* Color row */
+/* ── Color row ── */
 .lm-color-row { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; }
-.lm-color-swatch { width: 28px; height: 28px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: transform .13s, border-color .13s; flex-shrink: 0; }
+.lm-color-swatch { width: 26px; height: 26px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; transition: transform .13s, border-color .13s; flex-shrink: 0; }
 .lm-color-swatch:hover { transform: scale(1.15); }
 .lm-color-swatch-selected { border-color: #fff; transform: scale(1.2); box-shadow: 0 0 0 2px rgba(255,255,255,.3); }
-.lm-color-custom { width: 28px; height: 28px; border-radius: 50%; border: 2px solid rgba(255,255,255,.15); cursor: pointer; padding: 0; background: none; }
+.lm-color-custom { width: 26px; height: 26px; border-radius: 50%; border: 2px solid rgba(255,255,255,.15); cursor: pointer; padding: 0; background: none; }
 
-/* Tag editor */
+/* ── Tag editor ── */
 .lm-tag-editor { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; background: var(--bg); border: 1px solid var(--border); border-radius: 10px; padding: 8px 12px; min-height: 44px; }
 .lm-tag { display: inline-flex; align-items: center; gap: 5px; background: rgba(91,141,238,.12); color: var(--accent); border-radius: 100px; padding: 3px 10px; font-size: 12px; font-weight: 600; }
 .lm-tag-remove { background: none; border: none; color: inherit; cursor: pointer; font-size: 10px; padding: 0; opacity: .7; }
 .lm-tag-remove:hover { opacity: 1; }
 .lm-tag-input { background: none; border: none; outline: none; color: var(--text); font-family: 'Outfit', sans-serif; font-size: 13px; min-width: 100px; flex: 1; }
 
-/* Readonly info strip */
+/* ── Readonly info strip ── */
 .lm-readonly-info { display: flex; gap: 24px; flex-wrap: wrap; background: rgba(255,255,255,.02); border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; }
 .lm-readonly-label { font-size: 11px; color: var(--text-muted); margin-right: 6px; text-transform: uppercase; letter-spacing: .06em; font-family: 'DM Mono', monospace; }
 .lm-readonly-val { font-size: 13px; color: var(--text); font-weight: 500; }
@@ -1341,7 +1399,7 @@ const CSS = `
 .lm-textarea:focus { border-color: var(--accent); }
 .lm-modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 4px; }
 
-/* ── Question card (edit modal) ── */
+/* ── Question card ── */
 .lm-qcard { background: var(--bg, #0d0f14); border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
 .lm-qcard-meta { display: flex; align-items: center; gap: 10px; }
 .lm-qcard-topic { font-size: 12px; color: var(--text-muted); }
@@ -1381,12 +1439,12 @@ const CSS = `
 .lm-conflict-actions { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
 .lm-conflict-or { font-size: 12px; color: var(--text-muted); }
 
-/* ── Edit badge / revert ── */
+/* ── Revert row ── */
 .lm-revert-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: rgba(91,141,238,.06); border: 1px solid rgba(91,141,238,.15); border-radius: 10px; padding: 10px 14px; }
 .lm-edit-badge { font-size: 12px; color: var(--accent); font-weight: 600; }
 
 /* ── Buttons ── */
-.lm-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 20px; min-height: 44px; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .13s, color .13s; border: 1px solid transparent; white-space: nowrap; }
+.lm-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 20px; min-height: 44px; border-radius: 10px; font-family: 'Outfit', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: background .13s, color .13s; border: 1px solid transparent; white-space: nowrap; text-decoration: none; }
 .lm-btn:disabled { opacity: .55; cursor: not-allowed; }
 .lm-btn-sm { padding: 7px 14px; min-height: 36px; font-size: 12px; }
 .lm-btn-primary { background: var(--accent, #5b8dee); color: #fff; border-color: var(--accent); }
@@ -1400,13 +1458,13 @@ const CSS = `
 .lm-loading { text-align: center; color: var(--text-muted); padding: 32px; font-size: 14px; }
 
 /* ── Toast ── */
-.lm-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 11px 22px; border-radius: 100px; font-size: 14px; font-weight: 600; z-index: 9999; animation: lm-toast-in .2s ease; box-shadow: 0 8px 32px rgba(0,0,0,.4); white-space: nowrap; }
+.lm-toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); padding: 11px 22px; border-radius: 100px; font-size: 14px; font-weight: 600; z-index: 9999; animation: lm-toast-in .2s ease; box-shadow: 0 8px 32px rgba(0,0,0,.4); white-space: nowrap; pointer-events: none; }
 .lm-toast-ok { background: #10b981; color: #fff; }
 .lm-toast-err { background: #ef4444; color: #fff; }
 @keyframes lm-toast-in { from { opacity: 0; transform: translateX(-50%) translateY(12px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
 /* ── Footer ── */
-.lm-footer { margin-top: auto; border-top: 1px solid var(--border, rgba(255,255,255,0.08)); background: var(--surface, #13161d); }
+.lm-footer { border-top: 1px solid var(--border, rgba(255,255,255,0.08)); background: var(--surface, #13161d); }
 .lm-footer-inner { padding: 28px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
 .lm-footer-logo { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: var(--text); }
 .lm-footer-md { color: var(--accent, #5b8dee); }
@@ -1425,10 +1483,9 @@ const CSS = `
   .lm-meta-grid { grid-template-columns: 1fr; }
   .lm-conflict-versions { grid-template-columns: 1fr; }
   .lm-slides-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); }
-  .lm-table th:nth-child(4), .lm-table td:nth-child(4),
-  .lm-table th:nth-child(7), .lm-table td:nth-child(7) { display: none; }
+  .lm-table th:nth-child(5), .lm-table td:nth-child(5),
+  .lm-table th:nth-child(8), .lm-table td:nth-child(8) { display: none; }
   .lm-modal, .lm-modal-wide { padding: 20px; max-width: 100%; }
   .lm-footer-inner { padding: 20px 16px; flex-direction: column; align-items: flex-start; gap: 12px; }
-  .lm-icon-picker { width: 240px; }
 }
 `;
