@@ -11,9 +11,9 @@
  * navigation away and resumes on next mount.
  */
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import { createClient } from '@/lib/supabase';
 import type { Theme } from '@/types';
@@ -146,6 +146,14 @@ function newBatchItem(): BatchItem {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default function UploadPage() {
+  return (
+    <Suspense fallback={null}>
+      <UploadPageInner />
+    </Suspense>
+  );
+}
+
+function UploadPageInner() {
   const router   = useRouter();
   const searchParams = useSearchParams();
   const fromParam = searchParams.get('from');
