@@ -381,7 +381,15 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: msg }, { status: 422 });
       }
       slideText = formatSlidesForClaude(slides, title);
-      console.log(`[generate] PPTX: extracted ${slides.length} slides (${slideText.length} chars)`);
+      const totalChars = slideText.length;
+      console.log(`[generate] PPTX: extracted ${slides.length} slides (${totalChars} chars)`);
+      if (totalChars < 200) {
+        const msg = `PPTX extraction produced almost no text (${totalChars} chars across ${slides.length} slides). ` +
+          'The file may use embedded images for text rather than actual text objects. ' +
+          'Please export as PDF from PowerPoint/Keynote/Google Slides and re-upload.';
+        await updateJobStatus(supabase, jobId, 'error', msg);
+        return NextResponse.json({ error: msg }, { status: 422 });
+      }
     } catch (err) {
       const msg = `PPTX text extraction failed: ${(err as Error).message}`;
       await updateJobStatus(supabase, jobId, 'error', msg);
