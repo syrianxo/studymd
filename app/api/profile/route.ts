@@ -15,7 +15,14 @@ async function getSupabase() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name) { return cookieStore.get(name)?.value; },
+        getAll() { return cookieStore.getAll(); },
+        setAll(cookiesToSet) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            );
+          } catch {}
+        },
       },
     }
   );
@@ -43,28 +50,42 @@ export async function GET() {
 
   const userId = session.user.id;
 
-  // Upsert a profile row (creates one if it doesn't exist yet)
-  const { data: profile, error: profileError } = await supabase
+  // ── Step 1: try to fetch existing profile row ──────────────────────────
+  // Use maybeSingle() so missing rows return null instead of throwing PGRST116
+  const { data: existingRow, error: fetchError } = await supabase
     .from('user_profiles')
-    .upsert(
-      { user_id: userId },
-      { onConflict: 'user_id', ignoreDuplicates: true }
-    )
-    .select()
-    .single();
+    .select('*')
+    .eq('user_id', userId)
+    .maybeSingle();
 
-  // If upsert errored or returned nothing, try a plain select
-  let profileRow = profile;
-  if (profileError || !profileRow) {
-    const { data } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .eq('user_id', userId)
-      .single();
-    profileRow = data;
+  if (fetchError) {
+    console.error('[GET /api/profile] fetch error:', fetchError);
+    return NextResponse.json({ error: 'Failed to load profile.' }, { status: 500 });
   }
 
-  // Study stats from user_progress
+  // ── Step 2: if no row yet, insert one (first-time profile creation) ────
+  let profileRow = existingRow;
+  if (!profileRow) {
+    const { data: inserted, error: insertError } = await supabase
+      .from('user_profiles')
+      .insert({ user_id: userId })
+      .select()
+      .maybeSingle();
+
+    if (insertError) {
+      // Could be a race condition — try one more select
+      const { data: retryRow } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('user_id', userId)
+        .maybeSingle();
+      profileRow = retryRow;
+    } else {
+      profileRow = inserted;
+    }
+  }
+
+  // ── Step 3: study stats from user_progress ─────────────────────────────
   const { data: progressRows } = await supabase
     .from('user_progress')
     .select('flashcard_progress, exam_progress')
@@ -78,7 +99,11 @@ export async function GET() {
   for (const row of progressRows ?? []) {
     const fp = row.flashcard_progress as any;
     const ep = row.exam_progress as any;
-    if (fp?.got_it_ids) totalFlashcards += (fp.got_it_ids as string[]).length + ((fp.missed_ids as string[] | undefined)?.length ?? 0);
+    if (fp?.got_it_ids) {
+      totalFlashcards +=
+        (fp.got_it_ids as string[]).length +
+        ((fp.missed_ids as string[] | undefined)?.length ?? 0);
+    }
     if (ep?.sessions) {
       for (const s of ep.sessions as any[]) {
         totalExams++;
@@ -93,13 +118,13 @@ export async function GET() {
     profile: {
       userId,
       displayName: profileRow?.display_name ?? null,
-      username: profileRow?.username ?? null,
-      role: profileRow?.role ?? 'student',
-      isPrimary: profileRow?.is_primary ?? false,
-      createdAt: profileRow?.created_at ?? session.user.created_at,
+      username:    profileRow?.username    ?? null,
+      role:        profileRow?.role        ?? 'student',
+      isPrimary:   profileRow?.is_primary  ?? false,
+      createdAt:   profileRow?.created_at  ?? session.user.created_at,
     },
     auth: {
-      email: session.user.email,
+      email:       session.user.email,
       memberSince: session.user.created_at,
     },
     stats: {
@@ -160,13 +185,17 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: 'No updatable fields provided.' }, { status: 400 });
   }
 
+  // upsert so it works whether the row exists yet or not
   const { data, error } = await supabase
     .from('user_profiles')
-    .upsert({ user_id: session.user.id, ...updates }, { onConflict: 'user_id' })
+    .upsert(
+      { user_id: session.user.id, ...updates },
+      { onConflict: 'user_id', ignoreDuplicates: false }
+    )
     .select()
-    .single();
+    .maybeSingle();
 
-  if (error) {
+  if (error || !data) {
     console.error('[PUT /api/profile]', error);
     return NextResponse.json({ error: 'Failed to update profile.' }, { status: 500 });
   }
@@ -174,9 +203,9 @@ export async function PUT(req: NextRequest) {
   return NextResponse.json({
     profile: {
       displayName: data.display_name,
-      username: data.username,
-      role: data.role,
-      isPrimary: data.is_primary,
+      username:    data.username,
+      role:        data.role,
+      isPrimary:   data.is_primary,
     },
   });
 }
