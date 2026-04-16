@@ -2,9 +2,10 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { createClient as createServiceClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
-async function getSupabase() {
+async function getAnonSupabase() {
   const cookieStore = await cookies();
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -24,6 +25,13 @@ async function getSupabase() {
   );
 }
 
+function getServiceSupabase() {
+  return createServiceClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+}
+
 function usernameError(u: string): string | null {
   if (u.length < 2) return 'Username must be at least 2 characters.';
   if (u.length > 32) return 'Username must be 32 characters or fewer.';
@@ -36,20 +44,17 @@ function usernameError(u: string): string | null {
 // ---------------------------------------------------------------------------
 
 export async function GET() {
-  const supabase = await getSupabase();
-
-  // Use getUser() not getSession() — getSession() trusts the JWT from the
-  // cookie without server-side re-validation, which can leave auth.uid()
-  // null for RLS even when the user is logged in.
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const anonClient = await getAnonSupabase();
+  const { data: { user }, error: userError } = await anonClient.auth.getUser();
   if (userError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
   const userId = user.id;
+  const db = getServiceSupabase();
 
-  // Fetch existing row — maybeSingle() returns null (not error) when missing
-  const { data: existingRow, error: fetchError } = await supabase
+  // Fetch profile row
+  const { data: existingRow, error: fetchError } = await db
     .from('user_profiles')
     .select('*')
     .eq('user_id', userId)
@@ -66,22 +71,19 @@ export async function GET() {
   // Auto-create row on first visit
   let profileRow = existingRow;
   if (!profileRow) {
-    const { data: inserted, error: insertError } = await supabase
+    const { data: inserted, error: insertError } = await db
       .from('user_profiles')
       .insert({ user_id: userId })
       .select()
       .maybeSingle();
 
     if (insertError) {
-      console.error('[GET /api/profile] insert error:', JSON.stringify(insertError));
-      // Possible race — retry select before giving up
-      const { data: retryRow, error: retryError } = await supabase
+      const { data: retryRow } = await db
         .from('user_profiles')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle();
-
-      if (retryError || !retryRow) {
+      if (!retryRow) {
         return NextResponse.json(
           { error: 'Failed to create profile.', detail: insertError.message, code: insertError.code },
           { status: 500 }
@@ -93,26 +95,38 @@ export async function GET() {
     }
   }
 
-  // Study stats — non-fatal if this fails
-  const { data: progressRows } = await supabase
+  // ── Study stats ────────────────────────────────────────────────────────
+  // exam_progress shape: { sessions: number, best_score: number|null, avg_score: number|null }
+  // flashcard_progress shape: { sessions: number, got_it_ids: string[], missed_ids: string[] }
+  const { data: progressRows } = await db
     .from('user_progress')
     .select('flashcard_progress, exam_progress')
     .eq('user_id', userId);
 
-  let totalFlashcards = 0, totalExams = 0, examScoreSum = 0, examScoreCount = 0;
+  let totalFlashcards = 0;
+  let totalExams = 0;
+  let avgScoreSum = 0;
+  let avgScoreCount = 0;
+
   for (const row of progressRows ?? []) {
     const fp = row.flashcard_progress as any;
     const ep = row.exam_progress as any;
-    if (fp?.got_it_ids) {
-      totalFlashcards += (fp.got_it_ids as string[]).length + ((fp.missed_ids as string[] | undefined)?.length ?? 0);
+
+    // flashcard_progress: count got_it_ids + missed_ids as "studied"
+    if (Array.isArray(fp?.got_it_ids)) totalFlashcards += fp.got_it_ids.length;
+    if (Array.isArray(fp?.missed_ids)) totalFlashcards += fp.missed_ids.length;
+
+    // exam_progress: sessions is a count, avg_score is the per-lecture average
+    if (typeof ep?.sessions === 'number' && ep.sessions > 0) {
+      totalExams += ep.sessions;
     }
-    if (ep?.sessions) {
-      for (const s of ep.sessions as any[]) {
-        totalExams++;
-        if (typeof s.score === 'number') { examScoreSum += s.score; examScoreCount++; }
-      }
+    if (typeof ep?.avg_score === 'number') {
+      avgScoreSum += ep.avg_score;
+      avgScoreCount++;
     }
   }
+
+  const avgScore = avgScoreCount > 0 ? Math.round(avgScoreSum / avgScoreCount) : null;
 
   return NextResponse.json({
     profile: {
@@ -130,7 +144,7 @@ export async function GET() {
     stats: {
       totalFlashcards,
       totalExams,
-      avgScore: examScoreCount > 0 ? Math.round(examScoreSum / examScoreCount) : null,
+      avgScore,
     },
   });
 }
@@ -140,9 +154,8 @@ export async function GET() {
 // ---------------------------------------------------------------------------
 
 export async function PUT(req: NextRequest) {
-  const supabase = await getSupabase();
-
-  const { data: { user }, error: userError } = await supabase.auth.getUser();
+  const anonClient = await getAnonSupabase();
+  const { data: { user }, error: userError } = await anonClient.auth.getUser();
   if (userError || !user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
@@ -166,7 +179,8 @@ export async function PUT(req: NextRequest) {
     const err = usernameError(u);
     if (err) return NextResponse.json({ error: err }, { status: 400 });
 
-    const { data: existing } = await supabase
+    const db = getServiceSupabase();
+    const { data: existing } = await db
       .from('user_profiles')
       .select('user_id')
       .eq('username', u)
@@ -181,7 +195,8 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ error: 'No updatable fields provided.' }, { status: 400 });
   }
 
-  const { data, error } = await supabase
+  const db = getServiceSupabase();
+  const { data, error } = await db
     .from('user_profiles')
     .upsert({ user_id: user.id, ...updates }, { onConflict: 'user_id', ignoreDuplicates: false })
     .select()
