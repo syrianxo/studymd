@@ -249,7 +249,7 @@ function LoginForm() {
     setError(null)
     setLoading(true)
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    const { data: signInData, error } = await supabase.auth.signInWithPassword({ email, password })
 
     if (error) {
       setError(
@@ -261,8 +261,30 @@ function LoginForm() {
       return
     }
 
-    const next = searchParams.get('next') ?? '/app'
-    router.push(next)
+    // If the caller had a specific destination (e.g. bookmarked /admin), honour it.
+    // Otherwise route based on role: admins → /admin, everyone else → /app.
+    const explicitNext = searchParams.get('next')
+    if (explicitNext) {
+      router.push(explicitNext)
+      router.refresh()
+      return
+    }
+
+    // Role-aware default redirect
+    let dest = '/app'
+    try {
+      const userId = signInData?.user?.id
+      if (userId) {
+        const { data: profile } = await supabase
+          .from('user_profiles')
+          .select('role')
+          .eq('user_id', userId)
+          .single()
+        if (profile?.role === 'admin') dest = '/admin'
+      }
+    } catch {}
+
+    router.push(dest)
     router.refresh()
   }
 
