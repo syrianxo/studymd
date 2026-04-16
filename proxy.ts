@@ -45,11 +45,12 @@ export async function proxy(request: NextRequest) {
     }
   }
 
-  // ── /login: redirect already-authed users → /app ────────────────────
-  // Role-based destination (/admin vs /app) is handled by the login page
-  // itself after sign-in, and by each page's server component on direct nav.
+  // ── /login: redirect already-authed users → /admin ──────────────────
+  // /admin page server component handles role check and redirects
+  // non-admins to /app, so we always bounce here rather than trying
+  // to query user_profiles from the Edge runtime.
   if (pathname === '/login' && isAuthed) {
-    return NextResponse.redirect(new URL('/app', request.url))
+    return NextResponse.redirect(new URL('/admin', request.url))
   }
 
   return response

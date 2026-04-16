@@ -261,25 +261,11 @@ function LoginForm() {
       return
     }
 
-    // Role-aware redirect: check role first, then honour any ?next= param
-    let dest = '/app'
-    try {
-      const userId = signInData?.user?.id
-      if (userId) {
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('role')
-          .eq('user_id', userId)
-          .single()
-        if (profile?.role === 'admin') dest = '/admin'
-      }
-    } catch {}
-
-    // Only honour ?next= if it's a safe same-origin path
+    // Always redirect to /admin after login — the admin page server component
+    // will redirect non-admins to /app. This avoids depending on RLS for
+    // role detection in the browser client.
     const explicitNext = searchParams.get('next')
-    if (explicitNext && explicitNext.startsWith('/')) {
-      dest = explicitNext
-    }
+    const dest = (explicitNext && explicitNext.startsWith('/')) ? explicitNext : '/admin'
 
     router.push(dest)
     router.refresh()
