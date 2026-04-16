@@ -23,12 +23,12 @@ export async function GET() {
       if (!fb.user_id) return { ...fb, user_name: 'Anonymous' };
       const { data: profile } = await supabase
         .from('user_profiles')
-        .select('display_name, email')
+        .select('display_name, username')
         .eq('user_id', fb.user_id)
         .single();
       return {
         ...fb,
-        user_name: (profile as any)?.display_name ?? (profile as any)?.email ?? 'Unknown',
+        user_name: (profile as any)?.display_name ?? (profile as any)?.username ?? 'Unknown',
       };
     })
   );

@@ -52,7 +52,7 @@ async function getAdminUser(): Promise<AdminResult> {
 
   const { data: profile, error } = await serviceClient
     .from('user_profiles')
-    .select('role, display_name, email')
+    .select('role, display_name, username')
     .eq('user_id', user.id)
     .single();
 
@@ -61,7 +61,7 @@ async function getAdminUser(): Promise<AdminResult> {
 
   return {
     id: user.id,
-    name: profile.display_name ?? profile.email ?? 'Admin',
+    name: profile.display_name ?? profile.username ?? 'Admin',
     role: profile.role as string,
   };
 }

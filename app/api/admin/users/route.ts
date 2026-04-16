@@ -14,7 +14,7 @@ export async function GET() {
   // Pull from user_profiles joined with lecture counts & last activity
   const { data: profiles, error } = await supabase
     .from('user_profiles')
-    .select('user_id, display_name, email, role, created_at, is_primary');
+    .select('user_id, display_name, username, role, created_at, is_primary');
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
