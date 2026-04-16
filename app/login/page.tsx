@@ -261,16 +261,7 @@ function LoginForm() {
       return
     }
 
-    // If the caller had a specific destination (e.g. bookmarked /admin), honour it.
-    // Otherwise route based on role: admins → /admin, everyone else → /app.
-    const explicitNext = searchParams.get('next')
-    if (explicitNext) {
-      router.push(explicitNext)
-      router.refresh()
-      return
-    }
-
-    // Role-aware default redirect
+    // Role-aware redirect: check role first, then honour any ?next= param
     let dest = '/app'
     try {
       const userId = signInData?.user?.id
@@ -283,6 +274,12 @@ function LoginForm() {
         if (profile?.role === 'admin') dest = '/admin'
       }
     } catch {}
+
+    // Only honour ?next= if it's a safe same-origin path
+    const explicitNext = searchParams.get('next')
+    if (explicitNext && explicitNext.startsWith('/')) {
+      dest = explicitNext
+    }
 
     router.push(dest)
     router.refresh()

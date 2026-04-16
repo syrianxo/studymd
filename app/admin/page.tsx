@@ -1,8 +1,13 @@
 /**
  * app/admin/page.tsx
  *
- * Server component — verifies role = 'admin' before rendering.
- * Redirects to /app if the user lacks admin access.
+ * Server component — handles both auth and role enforcement.
+ * - Not logged in → /login
+ * - Logged in but not admin → /app
+ * - Admin → render dashboard
+ *
+ * The proxy only checks authentication. Role checking lives here
+ * so it runs in the Node.js runtime with a reliable service-key client.
  */
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
@@ -12,7 +17,9 @@ import AdminClient from './AdminClient';
 
 async function getAdminUser() {
   const cookieStore = await cookies();
-  const supabase = createServerClient(
+
+  // Session client — checks auth via cookie
+  const sessionClient = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -23,10 +30,10 @@ async function getAdminUser() {
     }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return null;
+  const { data: { user } } = await sessionClient.auth.getUser();
+  if (!user) return 'unauthenticated' as const;
 
-  // Use service client to bypass RLS for role check
+  // Service client — bypasses RLS to reliably read role
   const serviceClient = createSupabaseClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
@@ -38,14 +45,20 @@ async function getAdminUser() {
     .eq('user_id', user.id)
     .single();
 
-  if (!profile || profile.role !== 'admin') return null;
+  if (!profile || profile.role !== 'admin') return 'forbidden' as const;
 
-  return { id: user.id, name: profile.display_name ?? profile.email ?? 'Admin', role: profile.role };
+  return {
+    id: user.id,
+    name: profile.display_name ?? profile.email ?? 'Admin',
+    role: profile.role as string,
+  };
 }
 
 export default async function AdminPage() {
-  const admin = await getAdminUser();
-  if (!admin) redirect('/app');
+  const result = await getAdminUser();
 
-  return <AdminClient adminName={admin.name} />;
+  if (result === 'unauthenticated') redirect('/login?next=/admin');
+  if (result === 'forbidden') redirect('/app');
+
+  return <AdminClient adminName={result.name} />;
 }
