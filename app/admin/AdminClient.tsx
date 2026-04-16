@@ -792,6 +792,7 @@ function FeedbackSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') =>
   const [items, setItems] = useState<FeedbackRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [filterStatus, setFilterStatus] = useState<'all' | 'new' | 'reviewed' | 'resolved'>('all');
 
   const load = useCallback(() => {
     setLoading(true);
@@ -806,39 +807,44 @@ function FeedbackSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') =>
   }
 
   const newCount = items.filter(i => i.status === 'new').length;
+  const reviewedCount = items.filter(i => i.status === 'reviewed').length;
+  const resolvedCount = items.filter(i => i.status === 'resolved').length;
+  const visibleItems = filterStatus === 'all' ? items : items.filter(i => i.status === filterStatus);
 
   return (
     <div className="adm-section">
-      <h2 className="adm-section-title">Feedback Inbox {newCount > 0 && <span className="adm-badge adm-badge-red">{newCount} new</span>}</h2>
-
-      {/* Feedback form spec */}
-      <div className="adm-config-group" style={{ marginBottom: 24 }}>
-        <div className="adm-config-group-title">📋 Feedback Widget Spec (FeedbackWidget.tsx — not yet built)</div>
-        <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: 12 }}>
-          When built, <code>components/FeedbackWidget.tsx</code> should submit to Supabase directly. Submissions appear in this inbox automatically.
-        </p>
-        <pre className="adm-spec-block">{`// Submit payload from FeedbackWidget.tsx:
-await supabase.from('feedback').insert({
-  user_id: session.user.id,   // or null if anonymous
-  type: 'Bug Report' | 'Suggestion' | 'Content Error' | 'Other',
-  message: string,            // max 2000 chars
-  page_url: window.location.pathname,
-  // status defaults to 'new' in DB
-})
-
-// Widget UI — floating button bottom-left:
-// 1. Type selector (radio or select)
-// 2. Message textarea (required)
-// 3. Page URL (auto-filled, editable)
-// 4. Submit → success toast "Thanks for your feedback!"
-// 5. Error state → show error message inline`}</pre>
+      <div className="adm-section-header-row">
+        <h2 className="adm-section-title" style={{ margin: 0 }}>
+          Feedback Inbox {newCount > 0 && <span className="adm-badge adm-badge-red">{newCount} new</span>}
+        </h2>
+        <button className="adm-btn adm-btn-ghost" style={{ fontSize: 12 }} onClick={load}>↻ Refresh</button>
       </div>
 
-      {loading ? <div className="adm-loading">Loading…</div> : items.length === 0 ? (
-        <p className="adm-empty">No feedback yet. 🎉</p>
+      {/* ── Status filter pills ── */}
+      <div style={{ display: 'flex', gap: 8, marginBottom: 20, flexWrap: 'wrap' }}>
+        {([
+          { id: 'all',      label: `All (${items.length})` },
+          { id: 'new',      label: `New (${newCount})` },
+          { id: 'reviewed', label: `Reviewed (${reviewedCount})` },
+          { id: 'resolved', label: `Resolved (${resolvedCount})` },
+        ] as const).map(f => (
+          <button
+            key={f.id}
+            className={`adm-filter-pill${filterStatus === f.id ? ' adm-filter-pill-active' : ''}`}
+            onClick={() => setFilterStatus(f.id)}
+          >
+            {f.id !== 'all' && <span className="adm-fb-status-dot" style={{ background: STATUS_COLORS[f.id] ?? '#6b7280', display: 'inline-block' }} />}
+            {f.label}
+          </button>
+        ))}
+      </div>
+
+      {/* ── Inbox list — FIRST ── */}
+      {loading ? <div className="adm-loading">Loading…</div> : visibleItems.length === 0 ? (
+        <p className="adm-empty">{filterStatus === 'all' ? 'No feedback yet. 🎉' : `No ${filterStatus} feedback.`}</p>
       ) : (
-        <div className="adm-feedback-list">
-          {items.map(fb => (
+        <div className="adm-feedback-list" style={{ marginBottom: 32 }}>
+          {visibleItems.map(fb => (
             <div key={fb.id} className={`adm-feedback-item ${expanded === fb.id ? 'adm-fb-expanded' : ''}`}>
               <div className="adm-fb-header" role="button" tabIndex={0} onClick={() => setExpanded(expanded === fb.id ? null : fb.id)}
                 onKeyDown={e => { if (e.key === 'Enter') setExpanded(expanded === fb.id ? null : fb.id); }}>
@@ -867,6 +873,31 @@ await supabase.from('feedback').insert({
           ))}
         </div>
       )}
+
+      {/* ── Widget Configuration — LAST ── */}
+      <details className="adm-fb-widget-config">
+        <summary className="adm-fb-widget-config-summary">⚙️ Widget Configuration (FeedbackWidget.tsx)</summary>
+        <div className="adm-fb-widget-config-body">
+          <p style={{ fontSize: 13, color: 'var(--text-muted)', lineHeight: 1.7, marginBottom: 12 }}>
+            The floating feedback button (<code>components/FeedbackWidget.tsx</code>) is live. It submits
+            directly to Supabase. Entries appear above automatically on refresh.
+            On <code>/admin</code> pages it renders as an icon-only circle on the bottom-right to avoid
+            conflicting with the sidebar. On all other pages it shows the full label on the bottom-left.
+          </p>
+          <pre className="adm-spec-block">{`// Submit payload (from FeedbackWidget.tsx):
+await supabase.from('feedback').insert({
+  user_id: session.user.id,   // null if anonymous
+  type: 'Bug Report' | 'Suggestion' | 'Content Error' | 'Other',
+  message: string,            // max 2000 chars
+  page_url: window.location.pathname,
+  status: 'new',              // default
+})
+
+// Position logic:
+// /admin/* → icon-only circle, bottom-right (clears left sidebar)
+// All other pages → icon + label, bottom-left`}</pre>
+        </div>
+      </details>
     </div>
   );
 }
@@ -1259,6 +1290,14 @@ const css = `
 .adm-fb-message{font-size:14px;line-height:1.65;color:var(--text);margin-bottom:14px;white-space:pre-wrap}
 .adm-fb-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .adm-resolved-label{font-size:13px;color:#10b981;font-weight:600}
+.adm-filter-pill{display:inline-flex;align-items:center;gap:6px;padding:6px 14px;min-height:34px;background:var(--surface);border:1px solid var(--border);border-radius:50px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;color:var(--text-muted);cursor:pointer;transition:all .13s}
+.adm-filter-pill:hover{border-color:rgba(255,255,255,.2);color:var(--text)}
+.adm-filter-pill-active{background:rgba(91,141,238,.12);border-color:rgba(91,141,238,.4);color:var(--accent);font-weight:600}
+.adm-fb-widget-config{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-top:8px}
+.adm-fb-widget-config-summary{padding:14px 18px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;font-family:'DM Mono',monospace;letter-spacing:.04em;list-style:none;display:flex;align-items:center;gap:8px;min-height:48px;transition:background .12s}
+.adm-fb-widget-config-summary::-webkit-details-marker{display:none}
+.adm-fb-widget-config-summary:hover{background:rgba(255,255,255,.03);color:var(--text)}
+.adm-fb-widget-config-body{padding:0 18px 18px;border-top:1px solid var(--border)}
 .adm-config-group{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:24px}
 .adm-config-group-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text-muted);margin-bottom:20px;font-family:'DM Mono',monospace}
 .adm-config-rows{display:flex;flex-direction:column;gap:18px}
