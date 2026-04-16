@@ -11,7 +11,7 @@ import { createClient } from '@/lib/supabase';
 import Lightbox from './Lightbox';
 import type { Lecture } from '@/hooks/useUserLectures';
 import { resolveColor } from '@/hooks/useUserLectures';
-import type { Flashcard, Course, Theme } from '@/types';
+import type { Flashcard, Course, Theme, StudyPlan } from '@/types';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -100,6 +100,60 @@ function useSlides(internalId: string, slideCount: number) {
   return { urls, state };
 }
 
+// ─── Plan info hook ───────────────────────────────────────────────────────────
+// Fetches the user's active study plan and extracts schedule info for one lecture.
+
+interface PlanInfo {
+  planName: string;
+  testDate: string;       // ISO date
+  nextReview: string | null;  // ISO date of next scheduled day on-or-after today
+  isToday: boolean;
+}
+
+function usePlanInfo(internalId: string, isOpen: boolean): PlanInfo | null {
+  const [info, setInfo] = useState<PlanInfo | null>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    fetch('/api/plans')
+      .then(r => r.json())
+      .then(({ plans }) => {
+        const active = (plans ?? []).filter((p: StudyPlan) => p.is_active);
+        active.sort((a: StudyPlan, b: StudyPlan) => a.test_date.localeCompare(b.test_date));
+        const plan: StudyPlan | undefined = active[0];
+        if (!plan) { setInfo(null); return; }
+
+        // Check if this lecture appears in the plan at all
+        if (!plan.lecture_ids.includes(internalId)) { setInfo(null); return; }
+
+        const today = new Date().toISOString().slice(0, 10);
+        const schedule = plan.schedule as Record<string, string[]>;
+        const futureDays = Object.keys(schedule).filter(d => d >= today).sort();
+        const nextDay = futureDays.find(d => schedule[d].includes(internalId)) ?? null;
+
+        setInfo({
+          planName:   plan.name,
+          testDate:   plan.test_date,
+          nextReview: nextDay,
+          isToday:    nextDay === today,
+        });
+      })
+      .catch(() => setInfo(null));
+  }, [internalId, isOpen]);
+
+  return info;
+}
+
+function daysUntilDate(iso: string): number {
+  const t = new Date(); t.setHours(0,0,0,0);
+  return Math.ceil((new Date(iso + 'T00:00:00').getTime() - t.getTime()) / 86_400_000);
+}
+
+function formatShort(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Date(y, m-1, d).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
 // ─── Component ───────────────────────────────────────────────────────────────
 
 export default function LectureViewModal({
@@ -158,6 +212,7 @@ export default function LectureViewModal({
   function handleStudyAction(action: () => void) { action(); onClose(); }
 
   const { urls: slideUrls, state: slideState } = useSlides(lectureId, lecture.slide_count ?? 0);
+  const planInfo = usePlanInfo(lectureId, isOpen);
 
   // Editable title (fix #5)
   function handleTitleSave() {
@@ -207,9 +262,24 @@ export default function LectureViewModal({
       <div className="lvm-modal" role="dialog" aria-modal={isOpen} aria-label={localTitle}>
         <div className="lvm-drag-handle" />
 
-        {/* ── Header: close button only ── */}
+        {/* ── Header: plan badges (if applicable) + close button ── */}
         <div className="lvm-header">
-          <div style={{ flex: 1 }} />
+          <div className="lvm-plan-badges">
+            {planInfo && (
+              <>
+                <span className="lvm-plan-badge lvm-plan-badge--test">
+                  🎯 {daysUntilDate(planInfo.testDate)}d to test
+                </span>
+                {planInfo.nextReview && (
+                  <span className={`lvm-plan-badge${planInfo.isToday ? ' lvm-plan-badge--today' : ''}`}>
+                    {planInfo.isToday
+                      ? '📌 Study today'
+                      : `📅 Next: ${formatShort(planInfo.nextReview)}`}
+                  </span>
+                )}
+              </>
+            )}
+          </div>
           <button className="lvm-close" onClick={handleClose} aria-label="Close">✕</button>
         </div>
 
@@ -586,6 +656,39 @@ const modalCss = `
 .lvm-manage-btn:hover { border-color: var(--border-bright); color: var(--text); background: rgba(255,255,255,0.04); }
 .lvm-manage-btn.danger { color: var(--danger, #ef4444); }
 .lvm-manage-btn.danger:hover { border-color: rgba(239,68,68,0.3); background: rgba(239,68,68,0.08); }
+
+/* Plan badges in header */
+.lvm-plan-badges {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+.lvm-plan-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 100px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  font-family: 'DM Mono', monospace;
+  white-space: nowrap;
+}
+.lvm-plan-badge--today {
+  background: rgba(91,141,238,0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.lvm-plan-badge--test {
+  background: rgba(245,158,11,0.10);
+  border-color: rgba(245,158,11,0.4);
+  color: #f59e0b;
+}
 
 /* Desktop */
 @media (min-width: 768px) {
