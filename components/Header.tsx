@@ -62,7 +62,7 @@ export default function Header({
       <header className="smd-header">
 
         {/* ── Logo ── */}
-        <Link href="/" className="smd-header-logo-link" aria-label="StudyMD — home">
+        <Link href={userId ? "/app" : "/"} prefetch={false} className="smd-header-logo-link" aria-label="StudyMD — home">
           <div className="smd-logo">
             <span className="smd-logo-study">Study</span>
             <span className="smd-logo-md">MD</span>
@@ -72,6 +72,12 @@ export default function Header({
             Lecture Mastery Platform
           </div>
         </Link>
+
+        {/* ── Nav links — desktop only; full treatment (active state, mobile drawer) in Slice 7 ── */}
+        <nav className="smd-header-nav smd-hdr-desktop-only" aria-label="Main navigation">
+          <Link href="/app" className="smd-header-navlink" prefetch={false}>My Lectures</Link>
+          <Link href="/app/plans" className="smd-header-navlink" prefetch={false}>My Plans</Link>
+        </nav>
 
         {/* ── Right controls ── */}
         <div className="smd-header-right">
@@ -99,10 +105,12 @@ export default function Header({
             </Link>
           )}
 
-          {/* 2. Pomodoro mini-pill — only shown when timer is running */}
+          {/* 2. Pomodoro mini-pill — hidden <768px by design (120px+ min-width collides with mobile icons).
+               Timer state persists because PomoProvider wraps the whole app (see layout.tsx).
+               Accessible via /app/focus in a future release (v3.1). ADR-022. */}
           <PomodoroMiniPill />
 
-          {/* 3. Settings/Theme — gear on desktop, palette icon on mobile */}
+          {/* 3. Settings/Theme — gear icon opens panel with theme picker, profile, sign-out */}
           <div className="smd-hdr-settings-wrap" ref={settingsRef}>
             <button
               className="smd-hdr-gear"
@@ -111,22 +119,9 @@ export default function Header({
               title="Settings"
               aria-expanded={settingsOpen}
             >
-              {/* Theme/palette icon — visible on mobile as the theme toggle */}
+              {/* Gear icon — shown on all screen sizes */}
               <svg
-                className="smd-hdr-icon-svg smd-hdr-mobile-only"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-              >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M10 2a8 8 0 100 16A8 8 0 0010 2zM4.07 9A6 6 0 019 4.07V7a3 3 0 00-3 3H4.07zM9 12.93V16a6 6 0 01-4.93-5H7a3 3 0 002 2.93zM11 16v-3.07A3 3 0 0013 10h2.93A6 6 0 0111 16zM15.93 8H13a3 3 0 00-2-2.93V2.07A6 6 0 0115.93 8z"
-                />
-              </svg>
-              {/* Gear icon — desktop only */}
-              <svg
-                className="smd-hdr-gear-icon smd-hdr-desktop-only"
+                className="smd-hdr-gear-icon"
                 viewBox="0 0 20 20"
                 fill="currentColor"
                 aria-hidden="true"
@@ -163,17 +158,6 @@ export default function Header({
             )}
           </div>
 
-          {/* 4. Sign-out — icon-only on mobile */}
-          <button
-            className="smd-hdr-signout-icon smd-hdr-mobile-only"
-            onClick={handleSignOut}
-            aria-label="Sign out"
-            title="Sign out"
-          >
-            <svg viewBox="0 0 20 20" fill="currentColor" className="smd-hdr-icon-svg" aria-hidden="true">
-              <path fillRule="evenodd" clipRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 001 1h6a1 1 0 100-2H4V5h5a1 1 0 100-2H3zm12.293 4.293a1 1 0 011.414 0l3 3a1 1 0 010 1.414l-3 3a1 1 0 01-1.414-1.414L16.586 12H9a1 1 0 110-2h7.586l-1.293-1.293a1 1 0 010-1.414z" />
-            </svg>
-          </button>
 
         </div>
       </header>
@@ -189,6 +173,32 @@ const headerCss = `
 @media (max-width: 767px) {
   .smd-hdr-desktop-only { display: none !important; }
   .smd-hdr-mobile-only  { display: flex !important; }
+}
+
+/* ── Header nav ────────────────────────────────────────────────────── */
+.smd-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 24px;
+}
+.smd-header-navlink {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  min-height: 36px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+  text-decoration: none;
+  transition: background 0.13s, color 0.13s;
+  white-space: nowrap;
+}
+.smd-header-navlink:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text, #e8eaf0);
 }
 
 /* ── Logo link ─────────────────────────────────────────────────────── */
@@ -405,8 +415,8 @@ const headerCss = `
     max-width: calc(100vw - 24px);
   }
 
-  /* Hide the gear icon's spin-on-open on mobile since we show palette icon */
-  .smd-hdr-gear[aria-expanded="true"] .smd-hdr-icon-svg {
+  .smd-hdr-gear[aria-expanded="true"] .smd-hdr-gear-icon {
+    transform: rotate(45deg);
     color: var(--accent);
   }
 }
