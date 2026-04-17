@@ -56,13 +56,26 @@ export async function fetchLecturesWithSettings(userId: string) {
 
 export async function fetchUserPreferences(userId: string) {
   const supabase = await createServerComponentClient();
-  const { data } = await supabase
-    .from('user_preferences')
-    .select('theme, settings, display_name, is_primary')
-    .eq('user_id', userId)
-    .single();
+  const [prefsResult, profileResult] = await Promise.all([
+    supabase
+      .from('user_preferences')
+      .select('theme, settings, display_name')
+      .eq('user_id', userId)
+      .single(),
+    supabase
+      .from('user_profiles')
+      .select('is_primary')
+      .eq('user_id', userId)
+      .single(),
+  ]);
 
-  return data ?? { theme: 'midnight', settings: {}, display_name: null, is_primary: false };
+  return {
+    theme: prefsResult.data?.theme ?? 'midnight',
+    settings: prefsResult.data?.settings ?? {},
+    display_name: prefsResult.data?.display_name ?? null,
+    // is_primary is authoritative on user_profiles, not user_preferences
+    is_primary: profileResult.data?.is_primary ?? false,
+  };
 }
 
 // ─── Lecture settings mutations (called client-side via API routes) ─────────
