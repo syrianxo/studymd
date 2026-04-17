@@ -29,6 +29,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "@vitest/ui": "^4.1.4",
+    "supabase": "^2.92.1",
     "tailwindcss": "^4",
     "typescript": "^5",
     "vitest": "^4.1.4"

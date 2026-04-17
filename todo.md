@@ -6,8 +6,7 @@
 
 ## 🚧 Now (in flight)
 
-- [ ] **P7 — Add `lint`, `typecheck`, `test` scripts** — wire Vitest + `tsc --noEmit`.
-- [ ] **P8 — Adopt `supabase/migrations/` workflow** — `supabase db pull`, commit, repeat.
+_(nothing in flight — Slice 0 complete; Slice 1 is next)_
 
 ---
 
@@ -111,6 +110,15 @@
 
 ## ✅ Recently completed
 
+- [x] **Slice 0 complete** — all 8 prerequisites done (2026-04-17).
+  - P1: RLS + policies on `subscription_tiers` (ADR-016)
+  - P2: Role-based `api_usage` admin policy (ADR-017)
+  - P3: Drop broad `slides` bucket SELECT policy (ADR-018)
+  - P4: Document `system_config` no-policy as intentional (ADR-019)
+  - P5: `search_path` on 2 SECURITY DEFINER functions (ADR-020)
+  - P6: `is_primary` now read from `user_profiles` (ADR-021)
+  - P7: `typecheck`, `lint`, `test` scripts + vitest smoke test
+  - P8: `supabase/` directory initialized; `db pull` needs manual run with DB password
 - [x] Comprehensive documentation pass — README, CLAUDE.md, architecture.md, documentation.md, recommendations.md, development_plan_v3.md, decisions.md, todo.md (this file).
 
 ---

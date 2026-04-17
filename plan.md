@@ -161,8 +161,8 @@ Full design in [`development_plan_v3.md`](./development_plan_v3.md). Suggested i
 - [x] 🔴 Document `system_config` access pattern (intentional no-policy) — *Slice 0 P4 (ADR-019)*
 - [x] 🔴 Set `search_path` on SECURITY DEFINER functions — *Slice 0 P5; 2 functions fixed (ADR-020)*
 - [x] 🔴 Resolve `is_primary` source-of-truth confusion — *Slice 0 P6; now reads from `user_profiles` (ADR-021)*
-- [ ] 🟡 Adopt `supabase/migrations/` workflow — *Slice 0 P8*
-- [ ] 🟡 Add `lint`, `typecheck`, `test` scripts to `package.json` — *Slice 0 P7*
+- [~] 🟡 Adopt `supabase/migrations/` workflow — *`supabase init` done; `supabase db pull` needs manual run with DB password (P8)*
+- [x] 🟡 Add `lint`, `typecheck`, `test` scripts to `package.json` — *Slice 0 P7; vitest + smoke test added*
 - [ ] 🟡 Implement or delete `LoginForm.tsx` placeholder
 - [ ] 🟡 Consolidate `processing_jobs` duplicated columns
 - [ ] 🟡 Render `planNextReview` / `planTestDate` badges on `LectureCard`
