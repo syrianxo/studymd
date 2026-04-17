@@ -260,7 +260,28 @@ export default function Dashboard({
     );
   }
 
-  const greeting = isPrimary ? `Hey Haley 👋` : `Hey ${userName} 👋`;
+  const greeting = isPrimary ? `Hey Haley 👋` : `Welcome back, ${userName}`;
+
+  // Rotating affirmations for Haley — picked once per mount
+  const HALEY_SUBTITLES = [
+    'Your lecture mastery awaits ✨',
+    'Ready to conquer your exams? Let\'s go. 💪',
+    'Every card you flip is one step closer. Keep going. 🩵',
+    'You\'ve got this, Haley. One lecture at a time.',
+    'Built just for you, studied just by you. 🎓',
+    'Your hard work is paying off. Keep studying. ⭐',
+    'PA school\'s toughest student just logged in. 🩺',
+    'New day, new mastery. What are we studying today?',
+    'Knowledge is power. And you\'re powerfully smart. 💙',
+    'The flashcards are ready. Are you? Let\'s master it.',
+  ];
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const haleySubtitle = useMemo(
+    () => HALEY_SUBTITLES[Math.floor(Math.random() * HALEY_SUBTITLES.length)],
+    // Only pick once per mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
+  );
 
   return (
     <>
@@ -303,7 +324,7 @@ export default function Dashboard({
 
             <p className="smd-hero-sub">
               {isPrimary
-                ? 'Your personalized lecture mastery platform, designed just for you. ✨'
+                ? haleySubtitle
                 : 'Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.'}
             </p>
 
