@@ -8,11 +8,13 @@ import { useEffect } from 'react';
 interface DashboardClientProps {
   initialTheme: Theme;
   userName: string;
+  isPrimary?: boolean;
 }
 
 export function DashboardClient({
   initialTheme,
   userName,
+  isPrimary = false,
 }: DashboardClientProps) {
   useEffect(() => {
     applyTheme(initialTheme);
@@ -20,5 +22,5 @@ export function DashboardClient({
 
   // Pass initialTheme so Dashboard can give it directly to Header/ThemePicker
   // without waiting for a localStorage read on the next tick.
-  return <Dashboard userName={userName} initialTheme={initialTheme} />;
+  return <Dashboard userName={userName} initialTheme={initialTheme} isPrimary={isPrimary} />;
 }

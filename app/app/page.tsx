@@ -31,6 +31,7 @@ export default async function DashboardPage() {
     <DashboardClient
       initialTheme={preferences?.theme ?? 'midnight'}
       userName={userName}
+      isPrimary={preferences?.is_primary ?? false}
     />
   );
 }
