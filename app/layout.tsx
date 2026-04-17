@@ -22,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en" data-theme="midnight" suppressHydrationWarning>
       <head>
+        {/* Built with care, late nights, and a lot of love. I love you, Haley. 🩵 */}
         {/*
          * Theme initialization script — runs BEFORE first paint to prevent
          * flash of wrong theme. Reads saved theme from localStorage and
