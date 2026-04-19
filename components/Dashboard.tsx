@@ -230,6 +230,7 @@ export default function Dashboard({
           loading
           userId={userId ?? ''}
           initialTheme={theme}
+          onThemeChange={setTheme}
         />
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, padding: 40, textAlign: 'center' }}>
           <div style={{ fontSize: 42 }}>⚠️</div>
@@ -275,6 +276,7 @@ export default function Dashboard({
         loading={lecturesLoading}
         userId={userId ?? ''}
         initialTheme={theme}
+        onThemeChange={setTheme}
       />
 
       <main className="smd-dashboard" id="mainDashboard">

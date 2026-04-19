@@ -21,6 +21,8 @@ interface HeaderProps {
   isProcessing?: boolean;
   /** Hide the Upload button entirely (used on /app/upload itself) */
   hideUploadButton?: boolean;
+  /** Called immediately when user picks a new theme (before API save). */
+  onThemeChange?: (theme: import('@/types').Theme) => void;
 }
 
 export default function Header({
@@ -30,6 +32,7 @@ export default function Header({
   initialTheme,
   isProcessing = false,
   hideUploadButton = false,
+  onThemeChange,
 }: HeaderProps) {
   const router = useRouter();
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -140,6 +143,7 @@ export default function Header({
                   userId={userId}
                   initialTheme={initialTheme}
                   variant="panel"
+                  onThemeChange={onThemeChange}
                 />
                 <div className="smd-hdr-panel-divider" />
                 {/* Profile link */}

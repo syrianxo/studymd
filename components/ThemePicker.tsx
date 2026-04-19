@@ -38,9 +38,11 @@ interface ThemePickerProps {
   userId: string;
   initialTheme: Theme;
   variant?: 'compact' | 'panel';
+  /** Called with the new theme after DOM and localStorage are updated (before API response). */
+  onThemeChange?: (theme: Theme) => void;
 }
 
-export function ThemePicker({ userId, initialTheme, variant = 'compact' }: ThemePickerProps) {
+export function ThemePicker({ userId, initialTheme, variant = 'compact', onThemeChange }: ThemePickerProps) {
   const [active, setActive]         = useState<Theme>(initialTheme);
   const [expanded, setExpanded]     = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
@@ -81,6 +83,7 @@ export function ThemePicker({ userId, initialTheme, variant = 'compact' }: Theme
     if (theme === active && variant === 'compact') { setExpanded(false); return; }
     setActive(theme);
     applyTheme(theme);
+    onThemeChange?.(theme);
     if (variant === 'compact') setExpanded(false);
     setSaveStatus('saving');
     if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
