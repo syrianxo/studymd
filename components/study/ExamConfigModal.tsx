@@ -54,11 +54,10 @@ const CSS = `
   border-radius: 20px;
   box-shadow: 0 24px 64px rgba(0,0,0,0.6);
   width: 100%; max-width: 540px;
-  max-height: 90vh; max-height: 90dvh; overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  max-height: 90vh; max-height: 90dvh;
+  overflow: hidden;
+  display: flex; flex-direction: column;
   animation: ecm-slide-up 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.1) transparent;
 }
 @keyframes ecm-slide-up {
   from { opacity: 0; transform: translateY(16px) scale(0.98); }
@@ -66,7 +65,7 @@ const CSS = `
 }
 
 .ecm-header {
-  position: sticky; top: 0; z-index: 2;
+  flex-shrink: 0;
   padding: 24px 24px 0;
   background: var(--surface, #13161d);
   display: flex; align-items: flex-start; gap: 14px;
@@ -106,9 +105,9 @@ const CSS = `
 }
 .ecm-close-btn:hover { color: var(--text, #e8eaf0); background: rgba(255,255,255,0.07); }
 
-.ecm-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0 0; }
+.ecm-divider { flex-shrink: 0; height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0 0; }
 
-.ecm-body { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 24px; }
+.ecm-body { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 24px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
 
 .ecm-section-label {
   font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em;
@@ -221,6 +220,7 @@ const CSS = `
 
 /* Footer */
 .ecm-footer {
+  flex-shrink: 0;
   padding: 0 24px 24px;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
 }
@@ -245,14 +245,13 @@ const CSS = `
 .ecm-start-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 @media (max-width: 480px) {
-  .ecm-modal { border-radius: 16px 16px 0 0; max-height: 95vh; }
+  .ecm-modal { border-radius: 16px 16px 0 0; max-height: 95vh; max-height: 95dvh; }
   .ecm-backdrop { align-items: flex-end; padding: 0; }
-  .ecm-footer { flex-direction: column-reverse; align-items: stretch; }
+  .ecm-footer { flex-direction: column-reverse; align-items: stretch; padding: 0 18px max(env(safe-area-inset-bottom,0px),24px); }
   .ecm-start-btn { width: 100%; justify-content: center; }
   .ecm-type-grid { grid-template-columns: 1fr 1fr; }
   .ecm-header { padding: 20px 18px 0; }
-  .ecm-body { padding: 16px 18px 20px; }
-  .ecm-footer { padding: 0 18px 28px; }
+  .ecm-body { padding: 16px 18px 12px; }
   .ecm-type-toggle { padding: 10px 10px; }
   .ecm-type-label { font-size: 11px; }
 }

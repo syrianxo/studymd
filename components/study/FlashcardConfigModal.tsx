@@ -48,11 +48,10 @@ const CSS = `
   border-radius: 20px;
   box-shadow: 0 24px 64px rgba(0,0,0,0.6);
   width: 100%; max-width: 520px;
-  max-height: 90vh; max-height: 90dvh; overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
+  max-height: 90vh; max-height: 90dvh;
+  overflow: hidden;
+  display: flex; flex-direction: column;
   animation: fcm-slide-up 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.1) transparent;
 }
 @keyframes fcm-slide-up {
   from { opacity: 0; transform: translateY(16px) scale(0.98); }
@@ -60,7 +59,7 @@ const CSS = `
 }
 
 .fcm-header {
-  position: sticky; top: 0; z-index: 2;
+  flex-shrink: 0;
   padding: 24px 24px 0;
   background: var(--surface, #13161d);
   display: flex; align-items: flex-start; gap: 14px;
@@ -100,9 +99,9 @@ const CSS = `
 }
 .fcm-close-btn:hover { color: var(--text, #e8eaf0); background: rgba(255,255,255,0.07); }
 
-.fcm-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0 0; }
+.fcm-divider { flex-shrink: 0; height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0 0; }
 
-.fcm-body { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 24px; }
+.fcm-body { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 24px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
 
 /* Section */
 .fcm-section-label {
@@ -205,6 +204,7 @@ const CSS = `
 
 /* Footer */
 .fcm-footer {
+  flex-shrink: 0;
   padding: 0 24px 24px;
   display: flex; align-items: center; justify-content: space-between;
   gap: 12px;
@@ -232,13 +232,12 @@ const CSS = `
 .fcm-start-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 @media (max-width: 480px) {
-  .fcm-modal { border-radius: 16px 16px 0 0; max-height: 95vh; }
+  .fcm-modal { border-radius: 16px 16px 0 0; max-height: 95vh; max-height: 95dvh; }
   .fcm-backdrop { align-items: flex-end; padding: 0; }
-  .fcm-footer { flex-direction: column-reverse; align-items: stretch; }
+  .fcm-footer { flex-direction: column-reverse; align-items: stretch; padding: 0 18px max(env(safe-area-inset-bottom,0px),24px); }
   .fcm-start-btn { width: 100%; justify-content: center; }
   .fcm-header { padding: 20px 18px 0; }
-  .fcm-body { padding: 16px 18px 20px; }
-  .fcm-footer { padding: 0 18px 28px; }
+  .fcm-body { padding: 16px 18px 12px; }
 }
 `;
 

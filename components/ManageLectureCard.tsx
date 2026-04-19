@@ -280,7 +280,7 @@ const cardCss = `
   from { opacity: 0; transform: translateY(-6px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-.lc-menu-row { position: relative; z-index: 1; }
+.lc-menu-row { position: relative; }
 .lc-menu-row-inner { overflow: hidden; border-radius: 0; }
 .lc-menu > .lc-menu-row:first-child .lc-menu-row-inner { border-radius: 9px 9px 0 0; }
 .lc-menu > .lc-menu-row:last-child  .lc-menu-row-inner { border-radius: 0 0 9px 9px; }
@@ -308,13 +308,12 @@ const cardCss = `
 }
 @media (max-width: 639px) {
   .lc-submenu {
-    /* On mobile, float as an overlay below the trigger row rather than growing the menu inline */
-    position: absolute; top: 100%; left: 0; right: 0; width: auto;
-    z-index: 5; border-radius: 0 0 10px 10px;
-    border-left: none; animation: lc-menu-in 0.1s ease;
-    background: var(--surface2, #1a1e27);
+    position: static !important; right: auto !important; top: auto !important;
+    width: 100% !important; box-shadow: none; border: none;
+    border-left: 2px solid rgba(255,255,255,0.1); border-radius: 0; animation: none;
+    background: rgba(255,255,255,0.02);
   }
-  .lc-submenu .lc-menu-item { padding-left: 28px; }
+  .lc-submenu .lc-menu-item { padding-left: 32px; }
 }
 
 .lc-color-row { display: flex; gap: 8px; padding: 10px 16px; flex-wrap: wrap; }
@@ -705,9 +704,27 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
     if (left < 8) left = 8;
     if (left + mw > vw - 8) left = vw - mw - 8;
     if (top + mh > vh - 8) top = anchorRect.top - mh - 6;
+    if (top < 8) top = 8;
     setPos({ top, left });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuRef.current]);
+
+  // Recalculate position after submenu toggles change the menu height
+  useEffect(() => {
+    if (!menuRef.current) return;
+    const el = menuRef.current;
+    requestAnimationFrame(() => {
+      const vw = window.innerWidth, vh = window.innerHeight;
+      const mw = el.offsetWidth, mh = el.offsetHeight;
+      let left = anchorRect.right - mw, top = anchorRect.bottom + 6;
+      if (left < 8) left = 8;
+      if (left + mw > vw - 8) left = vw - mw - 8;
+      if (top + mh > vh - 8) top = anchorRect.top - mh - 6;
+      if (top < 8) top = 8;
+      setPos({ top, left });
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showCourse, showColor]);
 
   if (typeof document === 'undefined' || !pos) return null;
 
