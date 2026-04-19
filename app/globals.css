@@ -59,12 +59,6 @@ code, pre, kbd {
   color: var(--text);
 }
 
-/* iOS safe area — prevents content bleeding under status bar */
-.smd-header {
-  padding-top: max(18px, env(safe-area-inset-top, 0px));
-  -webkit-backdrop-filter: blur(20px);
-}
-
 /* Prevent body scroll behind open modals (JS sets overflow:hidden,
    but on iOS we also need position:fixed to stop rubber-band scroll) */
 body.modal-open {
