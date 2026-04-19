@@ -192,68 +192,91 @@ export default function PomodoroTimer() {
     active: i === blocksDone % settings.blocksPerLong && phase === 'study',
   }));
 
+  const phaseLabel = phase === 'study' ? 'Study Block' : phase === 'short' ? 'Short Break' : 'Long Break';
+  const phaseClass = phase === 'study' ? 'study-phase' : phase === 'short' ? 'break-phase' : 'long-phase';
+
   return (
     <>
       <style>{pomoCss}</style>
       <div className="pomo-container">
-        {/* Compact pill */}
-        <div className={`pomo-pill${panelOpen ? ' open' : ''}`} onClick={() => setPanelOpen(!panelOpen)}
-          role="button" aria-label="Pomodoro timer" aria-expanded={panelOpen}>
-          <div className="pomo-pill-dots">
-            {dots.map((d, i) => <span key={i} className={`pomo-pill-dot${d.done ? ' done' : d.active ? ' active' : ''}`} />)}
-          </div>
-          <div className="pomo-pill-text">
-            <div className={`pomo-pill-clock${clockDanger ? ' danger' : ''}`}>{fmt(secondsLeft)}</div>
-            <div className={`pomo-pill-phase ${phase === 'study' ? 'study-phase' : phase === 'short' ? 'break-phase' : 'long-phase'}`}>
-              {phase === 'study' ? 'Study Block' : phase === 'short' ? 'Short Break' : 'Long Break'}
-            </div>
-          </div>
-          <div className="pomo-pill-toggle" onClick={e => { e.stopPropagation(); toggle(); }} role="button" aria-label={running ? 'Pause' : 'Start'}>
-            {running ? '⏸' : '▶'}
-          </div>
-        </div>
 
-        {/* Inline expanded panel — pushes content down */}
-        <div className={`pomo-panel${panelOpen ? ' open' : ''}`}>
-          <div className="pomo-panel-inner">
-            {/* Left: clock + controls */}
-            <div className="pomo-panel-left">
-              <div className={`pomo-panel-clock${clockDanger ? ' danger' : ''}`}>{fmt(secondsLeft)}</div>
-              <div className="pomo-panel-phase-label">
-                {phase === 'study' ? '📚 Study Block' : phase === 'short' ? '☕ Short Break' : '🛋 Long Break'}
-              </div>
-              <div className="pomo-panel-blocks">
-                {dots.map((d, i) => <span key={i} className={`pomo-panel-block${d.done ? ' done' : d.active ? ' current' : ''}`} />)}
-              </div>
-              <div className="pomo-panel-controls">
-                <button className="btn btn-primary pomo-ctrl-btn" onClick={toggle}>{running ? '⏸ Pause' : '▶ Start'}</button>
-                <button className="btn btn-ghost pomo-ctrl-btn" onClick={reset} aria-label="Reset">↺</button>
-                <button className="btn btn-ghost pomo-ctrl-btn" onClick={skip} aria-label="Skip">⏭</button>
-              </div>
-              <button className={`pomo-notif-btn${notifGranted ? ' granted' : ''}`} onClick={requestNotif}>
-                {notifGranted ? '🔔 Notifications on' : '🔔 Enable notifications'}
-              </button>
+        {/* ── Collapsed pill ── */}
+        {!panelOpen && (
+          <div className="pomo-pill" onClick={() => setPanelOpen(true)}
+            role="button" aria-label="Open pomodoro timer" aria-expanded={false}>
+            <div className="pomo-pill-dots">
+              {dots.map((d, i) => <span key={i} className={`pomo-pill-dot${d.done ? ' done' : d.active ? ' active' : ''}`} />)}
             </div>
-            {/* Right: settings */}
-            <div className="pomo-panel-right">
-              <div className="pomo-settings-label">Settings</div>
-              <div className="pomo-settings">
-                {([
-                  { label: 'Study (min)', key: 'studyMin' as const, min: 1, max: 90 },
-                  { label: 'Short Break', key: 'shortMin' as const, min: 1, max: 30 },
-                  { label: 'Long Break',  key: 'longMin'  as const, min: 5, max: 60 },
-                  { label: 'Blocks/Long', key: 'blocksPerLong' as const, min: 2, max: 8 },
-                ]).map(({ label, key, min, max }) => (
-                  <div key={key} className="pomo-field">
-                    <label>{label}</label>
-                    <input type="number" value={settings[key]} min={min} max={max}
-                      onChange={e => applySetting(key, Number(e.target.value))} onClick={e => e.stopPropagation()} />
-                  </div>
-                ))}
+            <div className="pomo-pill-text">
+              <div className={`pomo-pill-clock${clockDanger ? ' danger' : ''}`}>{fmt(secondsLeft)}</div>
+              <div className={`pomo-pill-phase ${phaseClass}`}>{phaseLabel}</div>
+            </div>
+            <div className="pomo-pill-toggle" onClick={e => { e.stopPropagation(); toggle(); }}
+              role="button" aria-label={running ? 'Pause' : 'Start'}>
+              {running ? '⏸' : '▶'}
+            </div>
+            <span className="pomo-pill-chevron">▾</span>
+          </div>
+        )}
+
+        {/* ── Expanded card ── */}
+        {panelOpen && (
+          <div className="pomo-card">
+            <div className="pomo-card-header" onClick={() => setPanelOpen(false)} role="button" aria-label="Collapse timer">
+              <div className="pomo-pill-dots">
+                {dots.map((d, i) => <span key={i} className={`pomo-pill-dot${d.done ? ' done' : d.active ? ' active' : ''}`} />)}
+              </div>
+              <div className="pomo-card-header-text">
+                <span className="pomo-card-label">POMODORO</span>
+                <span className={`pomo-pill-phase ${phaseClass}`}>{phaseLabel}</span>
+              </div>
+              <div className={`pomo-card-clock${clockDanger ? ' danger' : ''}`}>{fmt(secondsLeft)}</div>
+              <button className="pomo-collapse-btn"
+                onClick={e => { e.stopPropagation(); setPanelOpen(false); }}
+                aria-label="Collapse">▴</button>
+            </div>
+
+            <div className="pomo-panel-inner">
+              {/* Left: clock + controls */}
+              <div className="pomo-panel-left">
+                <div className={`pomo-panel-clock${clockDanger ? ' danger' : ''}`}>{fmt(secondsLeft)}</div>
+                <div className="pomo-panel-phase-label">
+                  {phase === 'study' ? '📚 Study Block' : phase === 'short' ? '☕ Short Break' : '🛋 Long Break'}
+                </div>
+                <div className="pomo-panel-blocks">
+                  {dots.map((d, i) => <span key={i} className={`pomo-panel-block${d.done ? ' done' : d.active ? ' current' : ''}`} />)}
+                </div>
+                <div className="pomo-panel-controls">
+                  <button className="btn btn-primary pomo-ctrl-btn" onClick={toggle}>{running ? '⏸ Pause' : '▶ Start'}</button>
+                  <button className="btn btn-ghost pomo-ctrl-btn" onClick={reset} aria-label="Reset">↺</button>
+                  <button className="btn btn-ghost pomo-ctrl-btn" onClick={skip} aria-label="Skip">⏭</button>
+                </div>
+                <button className={`pomo-notif-btn${notifGranted ? ' granted' : ''}`} onClick={requestNotif}>
+                  {notifGranted ? '🔔 Notifications on' : '🔔 Enable notifications'}
+                </button>
+              </div>
+              {/* Right: settings */}
+              <div className="pomo-panel-right">
+                <div className="pomo-settings-label">Settings</div>
+                <div className="pomo-settings">
+                  {([
+                    { label: 'Study (min)', key: 'studyMin' as const, min: 1, max: 90 },
+                    { label: 'Short Break', key: 'shortMin' as const, min: 1, max: 30 },
+                    { label: 'Long Break',  key: 'longMin'  as const, min: 5, max: 60 },
+                    { label: 'Blocks/Long', key: 'blocksPerLong' as const, min: 2, max: 8 },
+                  ]).map(({ label, key, min, max }) => (
+                    <div key={key} className="pomo-field">
+                      <label>{label}</label>
+                      <input type="number" value={settings[key]} min={min} max={max}
+                        onChange={e => applySetting(key, Number(e.target.value))} onClick={e => e.stopPropagation()} />
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
+
       </div>
     </>
   );
@@ -291,19 +314,47 @@ const miniPillCss = `
 const pomoCss = `
 .pomo-container{width:100%;}
 
-/* Pill stretches to fill .smd-hero-pomodoro column */
+/* Collapsed pill — inline, narrow */
 .pomo-pill{
-  display:flex;align-items:center;gap:10px;
-  width:100%;
+  display:inline-flex;align-items:center;gap:10px;
   background:var(--surface);border:1px solid var(--border);
-  border-radius:50px;padding:6px 14px 6px 10px;
+  border-left:3px solid var(--accent);
+  border-radius:50px;padding:8px 14px 8px 12px;
   cursor:pointer;user-select:none;
-  transition:border-color 0.18s,border-radius 0.25s;
+  transition:border-color 0.18s;
   touch-action:manipulation;
-  box-sizing:border-box;
+  max-width:100%;
 }
-.pomo-pill:hover{border-color:var(--border-bright);}
-.pomo-pill.open{border-radius:14px 14px 0 0;border-color:var(--border-bright);border-bottom-color:transparent;}
+.pomo-pill:hover{border-color:color-mix(in srgb, var(--accent) 60%, transparent);}
+
+/* Expanded card */
+.pomo-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-left:3px solid var(--accent);
+  border-radius:16px;overflow:hidden;
+}
+.pomo-card-header{
+  display:flex;align-items:center;gap:10px;
+  padding:12px 16px 12px 14px;
+  cursor:pointer;user-select:none;
+  border-bottom:1px solid var(--border);
+  transition:background 0.15s;
+}
+.pomo-card-header:hover{background:rgba(255,255,255,0.03);}
+.pomo-card-header-text{display:flex;flex-direction:column;gap:1px;flex:1;min-width:0;}
+.pomo-card-label{font-size:8px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--accent);}
+.pomo-card-clock{
+  font-family:'DM Mono',monospace;font-size:15px;font-weight:500;
+  color:var(--text);letter-spacing:1px;flex-shrink:0;
+}
+.pomo-card-clock.danger{color:var(--danger);}
+.pomo-collapse-btn{
+  background:none;border:none;padding:4px 6px;cursor:pointer;
+  color:var(--text-muted);font-size:12px;line-height:1;
+  border-radius:4px;transition:color 0.15s;flex-shrink:0;
+}
+.pomo-collapse-btn:hover{color:var(--text);}
+.pomo-pill-chevron{font-size:12px;color:var(--text-muted);flex-shrink:0;margin-left:2px;}
 
 .pomo-pill-dots{display:flex;gap:3px;align-items:center;}
 .pomo-pill-dot{width:6px;height:6px;border-radius:50%;background:var(--surface2);border:1px solid var(--border-bright);transition:all .3s;flex-shrink:0;}
@@ -330,22 +381,8 @@ const pomoCss = `
 }
 .pomo-pill-toggle:hover{background:color-mix(in srgb, var(--accent) 28%, transparent);}
 
-.pomo-panel{
-  max-height:0;overflow:hidden;
-  background:var(--surface);
-  border:0px solid var(--border-bright);border-top:none;
-  border-radius:0 0 14px 14px;
-  transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1),padding 0.25s,border-width 0.05s 0.3s;
-  padding:0 18px;
-}
-.pomo-panel.open{
-  max-height:400px;padding:16px 18px 18px;
-  border-width:1px;
-  transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1),padding 0.25s,border-width 0s;
-}
-
-/* Two-column layout: left = clock/controls, right = settings */
-.pomo-panel-inner{display:flex;gap:16px;align-items:flex-start;}
+/* Two-column layout inside expanded card */
+.pomo-panel-inner{display:flex;gap:16px;align-items:flex-start;padding:16px 18px 18px;}
 .pomo-panel-left{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;}
 .pomo-panel-right{flex-shrink:0;width:150px;display:flex;flex-direction:column;}
 

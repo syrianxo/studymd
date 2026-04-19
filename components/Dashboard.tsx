@@ -564,6 +564,8 @@ const dashboardCss = `
   font-size: 13px;
   font-family: 'DM Mono', monospace;
   flex-wrap: wrap;
+  text-align: center;
+  width: 100%;
   position: relative;
 }
 

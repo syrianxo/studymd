@@ -120,7 +120,7 @@ export default function TodaysPlanWidget({ onStartLecture }: TodaysPlanWidgetPro
       {/* ── Expanded card ── */}
       {expanded && (
         <div className={`tpw-card${isCompleted ? ' tpw-card--done' : ''}`}>
-          <div className="tpw-header">
+          <div className="tpw-header" onClick={() => setExpanded(false)} role="button" aria-label="Collapse plan">
             <div className="tpw-icon-wrap">📅</div>
             <div className="tpw-label-wrap">
               <div className="tpw-label">Today&apos;s Plan</div>
@@ -166,7 +166,7 @@ export default function TodaysPlanWidget({ onStartLecture }: TodaysPlanWidgetPro
             <span className="tpw-progress-pct">{pct}%</span>
           </div>
 
-          <div className="tpw-actions">
+          <div className="tpw-actions" onClick={e => e.stopPropagation()}>
             {isCompleted ? (
               <span className="tpw-done-badge">✅ Today complete — great work!</span>
             ) : (
@@ -204,6 +204,7 @@ const widgetCss = `
   justify-content: space-between;
   gap: 0.5rem 12px;
   margin-bottom: 14px;
+  cursor: pointer;
 }
 .tpw-icon-wrap { font-size: 22px; flex-shrink: 0; }
 .tpw-label-wrap { flex: 1; min-width: 0; }
