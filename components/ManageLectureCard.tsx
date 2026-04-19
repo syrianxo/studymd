@@ -696,35 +696,6 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
     };
   }, [onClose]);
 
-  useEffect(() => {
-    if (!menuRef.current || !pos) return;
-    const vw = window.innerWidth, vh = window.innerHeight;
-    const mw = menuRef.current.offsetWidth, mh = menuRef.current.offsetHeight;
-    let left = anchorRect.right - mw, top = anchorRect.bottom + 6;
-    if (left < 8) left = 8;
-    if (left + mw > vw - 8) left = vw - mw - 8;
-    if (top + mh > vh - 8) top = anchorRect.top - mh - 6;
-    if (top < 8) top = 8;
-    setPos({ top, left });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [menuRef.current]);
-
-  // On mobile, submenus are inline and grow the menu — recalculate position to stay on screen
-  useEffect(() => {
-    if (!menuRef.current || window.innerWidth > 639) return;
-    const el = menuRef.current;
-    requestAnimationFrame(() => {
-      const vw = window.innerWidth, vh = window.innerHeight;
-      const mw = el.offsetWidth, mh = el.offsetHeight;
-      let left = anchorRect.right - mw, top = anchorRect.bottom + 6;
-      if (left < 8) left = 8;
-      if (left + mw > vw - 8) left = vw - mw - 8;
-      if (top + mh > vh - 8) top = anchorRect.top - mh - 6;
-      if (top < 8) top = 8;
-      setPos({ top, left });
-    });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showCourse, showColor]);
 
   if (typeof document === 'undefined' || !pos) return null;
 
@@ -736,11 +707,14 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
     <div className="lc-menu" ref={menuRef} role="menu"
       style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 99999 }}
       onTouchStart={stopTouch}>
-      <div className="lc-menu-row"><div className="lc-menu-row-inner">
-        <button className="lc-menu-item" onClick={onEditTags} role="menuitem"><span>🏷</span> Edit Tags</button>
-      </div></div>
+      <div className="lc-menu-row" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }}>
+        <div className="lc-menu-row-inner">
+          <button className="lc-menu-item" onClick={onEditTags} role="menuitem"><span>🏷</span> Edit Tags</button>
+        </div>
+      </div>
 
-      <div className="lc-menu-row">
+      <div className="lc-menu-row"
+        onMouseEnter={() => { setShowCourse(true); setShowColor(false); }}>
         <div className="lc-menu-row-inner">
           <button className={`lc-menu-item${showCourse ? ' active' : ''}`}
             onClick={() => { setShowCourse(v => !v); setShowColor(false); }}
@@ -761,7 +735,8 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
         )}
       </div>
 
-      <div className="lc-menu-row">
+      <div className="lc-menu-row"
+        onMouseEnter={() => { setShowColor(true); setShowCourse(false); }}>
         <div className="lc-menu-row-inner">
           <button className={`lc-menu-item${showColor ? ' active' : ''}`}
             onClick={() => { setShowColor(v => !v); setShowCourse(false); }}
@@ -784,22 +759,22 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
         )}
       </div>
 
-      <div className="lc-menu-divider" />
+      <div className="lc-menu-divider" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }} />
 
       {lecture.settings.archived ? (
-        <div className="lc-menu-row"><div className="lc-menu-row-inner">
+        <div className="lc-menu-row" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }}><div className="lc-menu-row-inner">
           <button className="lc-menu-item" onClick={() => { onRestore(); onClose(); }} role="menuitem"><span>↩️</span> Restore</button>
         </div></div>
       ) : !lecture.settings.visible ? (
-        <div className="lc-menu-row"><div className="lc-menu-row-inner">
+        <div className="lc-menu-row" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }}><div className="lc-menu-row-inner">
           <button className="lc-menu-item" onClick={() => { onRestore(); onClose(); }} role="menuitem"><span>👁</span> Unhide</button>
         </div></div>
       ) : (
         <>
-          <div className="lc-menu-row"><div className="lc-menu-row-inner">
+          <div className="lc-menu-row" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }}><div className="lc-menu-row-inner">
             <button className="lc-menu-item" onClick={() => { onHide(); onClose(); }} role="menuitem"><span>👁</span> Hide</button>
           </div></div>
-          <div className="lc-menu-row"><div className="lc-menu-row-inner">
+          <div className="lc-menu-row" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }}><div className="lc-menu-row-inner">
             <button className="lc-menu-item danger" onClick={() => { onArchive(); onClose(); }} role="menuitem"><span>📦</span> Archive</button>
           </div></div>
         </>
