@@ -17,14 +17,13 @@ export default async function DashboardPage() {
   const preferences = await fetchUserPreferences(session.user.id);
 
   // Name resolution order:
-  // 1. display_name set in user_preferences (editable via Supabase Table Editor)
-  // 2. full_name from Supabase user metadata (set programmatically)
-  // 3. email prefix as last resort
+  // 1. full_name from auth raw_user_meta_data — set via admin or profile update
+  // 2. display_name from user_preferences — editable in profile page
+  // 3. 'there' — never the raw email username
   const userName =
-    preferences?.display_name ||
     session.user.user_metadata?.full_name ||
     session.user.user_metadata?.name ||
-    session.user.email?.split('@')[0] ||
+    preferences?.display_name?.trim() ||
     'there';
 
   return (
