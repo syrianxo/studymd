@@ -305,8 +305,8 @@ export default function Dashboard({
               ? haleySubtitle
               : 'Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.'}
           </p>
-          {/* Compact stats — placeholder; moves to aside in next commit */}
-          <div className="smd-hero-stats-row">
+          {/* Mobile-only compact stats row */}
+          <div className="smd-hero-stats-row smd-mobile-only">
             <span>
               <strong className="smd-stat-accent">{avgScore !== null ? `${avgScore}%` : '—'}</strong>
               {' avg'}
@@ -324,14 +324,45 @@ export default function Dashboard({
           </div>
         </section>
 
-        {/* Plan widget + continue button — layout restructured in next commit */}
-        <TodaysPlanWidget onStartLecture={handleStartFlash} />
-        {continueHref && (
-          <Link href={continueHref} className="smd-continue-btn">
-            Continue Studying
-            <span className="smd-continue-arrow">→</span>
-          </Link>
-        )}
+        {/* ── TWO-COLUMN: plan left, pomodoro + stats right ──────────────── */}
+        <div className="smd-dashboard-columns">
+          <div className="smd-plan-col">
+            <TodaysPlanWidget onStartLecture={handleStartFlash} />
+            {continueHref && (
+              <Link href={continueHref} className="smd-continue-btn">
+                Continue Studying
+                <span className="smd-continue-arrow">→</span>
+              </Link>
+            )}
+          </div>
+          <aside className="smd-side-col">
+            <div className="smd-side-pomodoro">
+              <PomodoroTimer />
+            </div>
+            <div className="smd-aside-stats">
+              <div className="smd-hero-stat">
+                <span className="smd-hero-stat-value accent">
+                  {avgScore !== null ? `${avgScore}%` : '—'}
+                </span>
+                <span className="smd-hero-stat-label">avg score</span>
+              </div>
+              <div className="smd-hero-stat-divider" />
+              <div className="smd-hero-stat">
+                <span className="smd-hero-stat-value dim">
+                  {lecturesLoading ? '—' : visibleLectures.length}
+                </span>
+                <span className="smd-hero-stat-label">lectures</span>
+              </div>
+              <div className="smd-hero-stat-divider" />
+              <div className="smd-hero-stat">
+                <span className="smd-hero-stat-value warning">
+                  🔥 {globalStats.studyStreak ?? 0}
+                </span>
+                <span className="smd-hero-stat-label">day streak</span>
+              </div>
+            </div>
+          </aside>
+        </div>
 
         {/* ── SECTION HEADER ──────────────────────────────────────────────── */}
         <div className="smd-section-header">
@@ -553,7 +584,7 @@ const dashboardCss = `
   line-height: 1.65;
 }
 
-/* Stats row — shown for all screen sizes (moved to aside in next commit) */
+/* Stats row — mobile only; desktop stats live in the aside */
 .smd-hero-stats-row {
   display: flex;
   align-items: center;
@@ -564,6 +595,45 @@ const dashboardCss = `
   font-size: 13px;
   font-family: 'DM Mono', monospace;
   flex-wrap: wrap;
+}
+
+/* ── Two-column layout ─────────────────────────────────────────────────── */
+.smd-dashboard-columns {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 1024px) {
+  .smd-dashboard-columns {
+    grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr);
+    align-items: start;
+  }
+}
+
+.smd-plan-col { min-width: 0; }
+
+.smd-side-col {
+  display: none;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (min-width: 1024px) {
+  .smd-side-col { display: flex; }
+}
+
+.smd-side-pomodoro { width: 100%; }
+
+.smd-aside-stats {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 14px 20px;
 }
 
 .smd-stat-accent  { font-weight: 500; color: var(--accent); }
