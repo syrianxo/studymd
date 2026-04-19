@@ -105,7 +105,7 @@ export default function CustomSessionModal({ isOpen, lectures, onClose, onStart 
               </div>
             </div>
           )}
-          <div className="smd-modal-actions">
+          <div className="smd-modal-footer">
             <button className="btn btn-primary btn-lg" onClick={handleStart} disabled={selectedLectureIds.size === 0} style={{ opacity: selectedLectureIds.size === 0 ? 0.5 : 1 }}>Start Session →</button>
             <button className="btn btn-ghost btn-lg" onClick={onClose}>Cancel</button>
           </div>
@@ -134,6 +134,15 @@ const modalExtraCss = `
 }
 .smd-modal-close-btn:hover { background: rgba(255,255,255,0.07); color: var(--text, #e8eaf0); }
 .smd-modal-topbar .smd-modal-drag-handle { margin: 0; }
+.smd-modal-footer {
+  position: sticky;
+  bottom: 0;
+  margin: 20px -20px -36px;
+  padding: 12px 20px max(env(safe-area-inset-bottom, 0px), 16px);
+  background: var(--surface, #13161d);
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex; gap: 10px; align-items: center;
+}
 `;
 
 export type { CustomSessionConfig };

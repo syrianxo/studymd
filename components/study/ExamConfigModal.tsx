@@ -65,8 +65,11 @@ const CSS = `
 }
 
 .ecm-header {
+  position: sticky; top: 0; z-index: 2;
   padding: 24px 24px 0;
+  background: var(--surface, #13161d);
   display: flex; align-items: flex-start; gap: 14px;
+  border-radius: 20px 20px 0 0;
 }
 .ecm-icon-wrap {
   width: 48px; height: 48px; border-radius: 12px;
@@ -94,10 +97,11 @@ const CSS = `
 .ecm-close-btn {
   background: none; border: none; cursor: pointer;
   color: var(--text-muted, #6b7280); font-size: 18px;
-  padding: 4px; border-radius: 6px; line-height: 1;
+  padding: 4px; border-radius: 8px; line-height: 1;
   transition: color 0.15s, background 0.15s;
-  min-width: 32px; min-height: 32px;
+  min-width: 44px; min-height: 44px;
   display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
 .ecm-close-btn:hover { color: var(--text, #e8eaf0); background: rgba(255,255,255,0.07); }
 
