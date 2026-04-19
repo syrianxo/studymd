@@ -62,7 +62,7 @@ export default function Header({
       <header className="smd-header">
 
         {/* ── Logo ── */}
-        <Link href="/" className="smd-header-logo-link" aria-label="StudyMD — home">
+        <Link href="/app" className="smd-header-logo-link" aria-label="StudyMD — dashboard" prefetch={false}>
           <div className="smd-logo">
             <span className="smd-logo-study">Study</span>
             <span className="smd-logo-md">MD</span>
@@ -72,6 +72,12 @@ export default function Header({
             Lecture Mastery Platform
           </div>
         </Link>
+
+        {/* ── Center nav (desktop only) ── */}
+        <nav className="smd-header-nav smd-hdr-desktop-only" aria-label="Main navigation">
+          <Link href="/app" className="smd-header-nav-link" prefetch={false}>My Lectures</Link>
+          <Link href="/app/plans" className="smd-header-nav-link" prefetch={false}>My Plans</Link>
+        </nav>
 
         {/* ── Right controls ── */}
         <div className="smd-header-right">
@@ -202,6 +208,35 @@ const headerCss = `
 .smd-header-logo-link:focus-visible .smd-logo {
   outline: 2px solid var(--accent);
   border-radius: 4px;
+}
+
+/* ── Center nav ────────────────────────────────────────────────────── */
+.smd-header-nav {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: center;
+  padding: 0 16px;
+}
+
+.smd-header-nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted, #6b7280);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+}
+
+.smd-header-nav-link:hover {
+  background: rgba(255,255,255,0.06);
+  color: var(--text, #e8eaf0);
 }
 
 /* ── Right row ─────────────────────────────────────────────────────── */
