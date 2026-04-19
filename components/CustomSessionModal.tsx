@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import type { Lecture } from '@/hooks/useUserLectures';
+import { useModalShell } from '@/hooks/useModalShell';
 
 type SessionMode = 'flash' | 'exam';
 
@@ -36,21 +37,7 @@ export default function CustomSessionModal({ isOpen, lectures, onClose, onStart 
   const [count, setCount] = useState(20);
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set(ALL_QUESTION_TYPES));
 
-  useEffect(() => {
-    if (isOpen) {
-      const prevOverflow = document.body.style.overflow;
-      const prevPosition = document.body.style.position;
-      const prevWidth = document.body.style.width;
-      document.body.style.overflow = 'hidden';
-      document.body.style.position = 'fixed';
-      document.body.style.width = '100%';
-      return () => {
-        document.body.style.overflow = prevOverflow;
-        document.body.style.position = prevPosition;
-        document.body.style.width = prevWidth;
-      };
-    }
-  }, [isOpen]);
+  useModalShell(isOpen);
 
   const availableTopics = Array.from(new Set(lectures.filter(l => selectedLectureIds.has(l.internal_id)).flatMap(l => l.topics))).sort();
 

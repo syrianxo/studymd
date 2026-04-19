@@ -3,6 +3,7 @@
 // components/study/FlashcardConfigModal.tsx
 
 import { useState, useEffect, useRef } from 'react';
+import { useModalShell } from '@/hooks/useModalShell';
 import type { FlashCard } from './FlashcardView';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -47,7 +48,7 @@ const CSS = `
   border-radius: 20px;
   box-shadow: 0 24px 64px rgba(0,0,0,0.6);
   width: 100%; max-width: 520px;
-  max-height: 90vh; overflow-y: auto;
+  max-height: 90dvh; overflow-y: auto;
   animation: fcm-slide-up 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,0.1) transparent;
@@ -270,6 +271,9 @@ export default function FlashcardConfigModal({
       setCount(Math.max(minCards, filteredCount));
     }
   }, [selectedTopics, filteredCount, count, minCards]);
+
+  // Lock background scroll while modal is open
+  useModalShell(true);
 
   const backdropRef = useRef<HTMLDivElement>(null);
 

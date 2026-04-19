@@ -6,6 +6,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useModalShell } from '@/hooks/useModalShell';
 import { createPortal } from 'react-dom';
 import { createClient } from '@/lib/supabase';
 import Lightbox from './Lightbox';
@@ -198,14 +199,16 @@ export default function LectureViewModal({
   // This prevents the jarring re-render/flicker caused by refetch() in Dashboard.
   useEffect(() => { setLocalColor(color); }, [lectureId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Lock background scroll while modal is open (handles iOS rubber-band too)
+  useModalShell(isOpen);
+
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && lightboxIdx === null && !isEditingTitle) onClose();
     };
     document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+    return () => { document.removeEventListener('keydown', onKey); };
   }, [isOpen, lightboxIdx, isEditingTitle, onClose]);
 
   function handleClose() { onClose(); }
@@ -520,7 +523,7 @@ const modalCss = `
   border: 1px solid var(--border-bright, rgba(255,255,255,0.15));
   border-radius: 20px 20px 0 0;
   padding: 12px 20px 28px; width: 100%; max-width: 640px;
-  max-height: 92vh; overflow-y: auto;
+  max-height: 92dvh; overflow-y: auto;
   transform: translateY(40px);
   transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
   scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
