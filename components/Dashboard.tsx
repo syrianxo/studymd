@@ -55,7 +55,6 @@ export default function Dashboard({
   const [userId, setUserId] = useState<string | null>(null);
   const [theme, setTheme] = useState<Theme>(initialThemeProp);
   const studyConfig = useStudyConfig();
-  const [sectionMenuOpen, setSectionMenuOpen] = useState(false);
 
   // ── Active study plan (for dashboard widget + lecture badges) ────────────────
   const [activePlan, setActivePlan] = useState<StudyPlan | null>(null);
@@ -296,78 +295,43 @@ export default function Dashboard({
 
       <main className="smd-dashboard" id="mainDashboard">
 
-        {/* ── HERO ─────────────────────────────────────────────────────────── */}
+        {/* ── HERO (centered) ─────────────────────────────────────────────── */}
         <section className="smd-hero">
-          <div className="smd-hero-left">
-            <h1 className="smd-hero-heading">
-              {greeting}, master your<br />
-              <em>lectures</em> with ease.
-            </h1>
-
-            {/* Mobile inline stats — sits right below the greeting on small screens */}
-            <div className="smd-hero-inline-stats smd-mobile-only">
-              <span className="smd-inline-stat">
-                <span className="smd-inline-val accent">{avgScore !== null ? `${avgScore}%` : '—'}</span>
-                <span className="smd-inline-label">avg</span>
-              </span>
-              <span className="smd-inline-sep">·</span>
-              <span className="smd-inline-stat">
-                <span className="smd-inline-val">{lecturesLoading ? '—' : visibleLectures.length}</span>
-                <span className="smd-inline-label">lectures</span>
-              </span>
-              <span className="smd-inline-sep">·</span>
-              <span className="smd-inline-stat">
-                <span className="smd-inline-val warning">🔥 {globalStats.studyStreak ?? 0}</span>
-                <span className="smd-inline-label">streak</span>
-              </span>
-            </div>
-
-            <p className="smd-hero-sub">
-              {isPrimary
-                ? haleySubtitle
-                : 'Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.'}
-            </p>
-
-            {/* Today's Plan widget — shows only when there's an active plan with today's lectures */}
-            <TodaysPlanWidget onStartLecture={handleStartFlash} />
-
-            {continueHref && (
-              <Link href={continueHref} className="smd-continue-btn">
-                Continue Studying
-                <span className="smd-continue-arrow">→</span>
-              </Link>
-            )}
-          </div>
-
-          {/* Desktop right column — Pomodoro + stat card (hidden on mobile) */}
-          <div className="smd-hero-right smd-desktop-only">
-            <div className="smd-hero-pomodoro">
-              <PomodoroTimer />
-            </div>
-            <div className="smd-hero-stats">
-              <div className="smd-hero-stat">
-                <span className="smd-hero-stat-value accent">
-                  {avgScore !== null ? `${avgScore}%` : '—'}
-                </span>
-                <span className="smd-hero-stat-label">avg score</span>
-              </div>
-              <div className="smd-hero-stat-divider" />
-              <div className="smd-hero-stat">
-                <span className="smd-hero-stat-value dim">
-                  {lecturesLoading ? '—' : visibleLectures.length}
-                </span>
-                <span className="smd-hero-stat-label">lectures</span>
-              </div>
-              <div className="smd-hero-stat-divider" />
-              <div className="smd-hero-stat">
-                <span className="smd-hero-stat-value warning">
-                  🔥 {globalStats.studyStreak ?? 0}
-                </span>
-                <span className="smd-hero-stat-label">day streak</span>
-              </div>
-            </div>
+          <h1 className="smd-hero-title">
+            {greeting} — master your <em>lectures</em> with ease.
+          </h1>
+          <p className="smd-hero-subtitle">
+            {isPrimary
+              ? haleySubtitle
+              : 'Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.'}
+          </p>
+          {/* Compact stats — placeholder; moves to aside in next commit */}
+          <div className="smd-hero-stats-row">
+            <span>
+              <strong className="smd-stat-accent">{avgScore !== null ? `${avgScore}%` : '—'}</strong>
+              {' avg'}
+            </span>
+            <span aria-hidden>·</span>
+            <span>
+              <strong className="smd-stat-plain">{lecturesLoading ? '—' : visibleLectures.length}</strong>
+              {' lectures'}
+            </span>
+            <span aria-hidden>·</span>
+            <span>
+              <strong className="smd-stat-warning">🔥 {globalStats.studyStreak ?? 0}</strong>
+              {' day streak'}
+            </span>
           </div>
         </section>
+
+        {/* Plan widget + continue button — layout restructured in next commit */}
+        <TodaysPlanWidget onStartLecture={handleStartFlash} />
+        {continueHref && (
+          <Link href={continueHref} className="smd-continue-btn">
+            Continue Studying
+            <span className="smd-continue-arrow">→</span>
+          </Link>
+        )}
 
         {/* ── SECTION HEADER ──────────────────────────────────────────────── */}
         <div className="smd-section-header">
@@ -377,58 +341,21 @@ export default function Dashboard({
               <span className="smd-lecture-count-badge">{visibleLectures.length}</span>
             )}
           </div>
-
-          {/* Desktop: buttons rendered inline */}
-          <div className="smd-section-actions smd-desktop-actions">
-            <Link href="/app/lectures" className="btn btn-ghost">
-              📋 My Lectures
-            </Link>
-            <button
-              className="btn btn-ghost"
-              onClick={() => setManageOpen((v) => !v)}
-            >
-              {manageOpen ? '✓ Done' : '✏️ Manage'}
-            </button>
+          <div className="smd-section-actions">
             <button
               className="btn btn-primary smd-custom-session-btn"
               onClick={() => setCustomModalOpen(true)}
             >
-              ✦ Custom Study
+              ✦ Custom Session
             </button>
-          </div>
-
-          {/* Mobile: "•••" overflow menu */}
-          <div className="smd-mobile-actions">
             <button
-              className="btn btn-ghost smd-mobile-overflow-btn"
-              onClick={() => setSectionMenuOpen(v => !v)}
-              aria-label="More actions"
-              aria-expanded={sectionMenuOpen}
+              className="smd-icon-btn"
+              onClick={() => setManageOpen(v => !v)}
+              aria-label={manageOpen ? 'Done managing' : 'Manage lectures'}
+              title={manageOpen ? 'Done' : 'Manage lectures'}
             >
-              •••
+              {manageOpen ? '✓' : '✎'}
             </button>
-            {sectionMenuOpen && (
-              <div className="smd-mobile-actions-dropdown" onClick={() => setSectionMenuOpen(false)}>
-                <Link
-                  href="/app/lectures"
-                  className="smd-mobile-action-item"
-                >
-                  📋 My Lectures
-                </Link>
-                <button
-                  className="smd-mobile-action-item"
-                  onClick={() => setManageOpen(v => !v)}
-                >
-                  ✏️ {manageOpen ? 'Done Editing' : 'Manage Lectures'}
-                </button>
-                <button
-                  className="smd-mobile-action-item"
-                  onClick={() => setCustomModalOpen(true)}
-                >
-                  ✦ Custom Study Session
-                </button>
-              </div>
-            )}
           </div>
         </div>
 
@@ -594,83 +521,54 @@ const dashboardCss = `
   .smd-desktop-only { display: none !important; }
 }
 
-/* ── Hero ──────────────────────────────────────────────────────────────── */
+/* ── Hero (centered) ───────────────────────────────────────────────────── */
 .smd-hero {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-  margin-bottom: 40px;
-  flex-wrap: wrap;
+  text-align: center;
+  max-width: 860px;
+  margin: 2rem auto 1.5rem;
+  padding: 0 1rem;
 }
 
-.smd-hero-left {
-  flex: 1 1 340px;
-  min-width: 0;
-}
-
-.smd-hero-heading {
+.smd-hero-title {
   font-family: 'Fraunces', serif;
-  font-size: clamp(28px, 4.5vw, 52px);
+  font-size: clamp(1.5rem, 3.5vw, 2.75rem);
   font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -1px;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
   color: var(--text);
-  margin-bottom: 10px;
+  margin-bottom: 0.5rem;
 }
 
-.smd-hero-heading em {
+.smd-hero-title em {
   font-style: italic;
   font-weight: 300;
   color: var(--accent);
 }
 
-.smd-hero-sub {
+.smd-hero-subtitle {
   font-size: 14px;
   color: var(--text-muted);
-  max-width: 460px;
+  max-width: 480px;
+  margin: 0.5rem auto 0;
   line-height: 1.65;
-  margin-bottom: 20px;
 }
 
-/* ── Mobile inline stats (compact text row) ────────────────────────────── */
-.smd-hero-inline-stats {
+/* Stats row — shown for all screen sizes (moved to aside in next commit) */
+.smd-hero-stats-row {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  font-family: 'DM Mono', monospace;
-  font-size: 12px;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
   color: var(--text-muted);
-  margin-bottom: 12px;
+  font-size: 13px;
+  font-family: 'DM Mono', monospace;
   flex-wrap: wrap;
 }
 
-.smd-inline-stat {
-  display: inline-flex;
-  align-items: baseline;
-  gap: 3px;
-}
-
-.smd-inline-val {
-  font-weight: 500;
-  font-size: 13px;
-  color: var(--text);
-}
-
-.smd-inline-val.accent  { color: var(--accent); }
-.smd-inline-val.warning { color: var(--warning, #f59e0b); }
-
-.smd-inline-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-}
-
-.smd-inline-sep {
-  color: var(--text-faint);
-  font-size: 14px;
-  margin: 0 2px;
-}
+.smd-stat-accent  { font-weight: 500; color: var(--accent); }
+.smd-stat-plain   { font-weight: 500; color: var(--text); }
+.smd-stat-warning { font-weight: 500; color: var(--warning, #f59e0b); }
 
 /* ── Continue Studying button ──────────────────────────────────────────── */
 .smd-continue-btn {
@@ -688,6 +586,7 @@ const dashboardCss = `
   transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
   box-shadow: 0 4px 18px rgba(91,141,238,0.3);
   min-height: 44px;
+  margin-top: 12px;
 }
 
 .smd-continue-btn:hover {
@@ -705,34 +604,7 @@ const dashboardCss = `
   transform: translateX(3px);
 }
 
-/* ── Hero right: pomodoro + compact stats stacked ──────────────────────── */
-/* The pomodoro container must be a block-level column so the inline
-   panel can push the stats box down rather than overlay it.            */
-.smd-hero-right {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 12px;
-  padding-top: 8px;
-  flex-shrink: 0;
-  width: 300px;
-  position: relative;
-  z-index: 1;
-}
-
-.smd-hero-pomodoro {
-  width: 100%;
-}
-
-.smd-hero-stats {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 14px 20px;
-}
-
+/* ── Stats values (reused in aside) ────────────────────────────────────── */
 .smd-hero-stat {
   display: flex;
   flex-direction: column;
@@ -747,8 +619,8 @@ const dashboardCss = `
   line-height: 1;
 }
 
-.smd-hero-stat-value.accent { color: var(--accent); }
-.smd-hero-stat-value.dim    { color: var(--text); }
+.smd-hero-stat-value.accent  { color: var(--accent); }
+.smd-hero-stat-value.dim     { color: var(--text); }
 .smd-hero-stat-value.warning { color: var(--warning, #f59e0b); }
 
 .smd-hero-stat-label {
@@ -812,70 +684,22 @@ const dashboardCss = `
   min-height: 36px;
 }
 
-/* Desktop actions visible, mobile hidden by default */
-.smd-desktop-actions { display: flex; }
-.smd-mobile-actions  { display: none; position: relative; }
-
-@media (max-width: 767px) {
-  .smd-desktop-actions { display: none !important; }
-  .smd-mobile-actions  { display: flex !important; }
-}
-
-/* ── Mobile overflow menu ──────────────────────────────────────────────── */
-.smd-mobile-overflow-btn {
-  font-size: 20px !important;
-  min-width: 44px;
-  min-height: 44px;
-  padding: 0 !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.smd-mobile-actions-dropdown {
-  position: absolute;
-  top: calc(100% + 6px);
-  right: 0;
-  background: var(--surface, #13161d);
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 12px;
-  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
-  z-index: 200;
-  min-width: 220px;
-  overflow: hidden;
-  animation: smd-dropdown-in 0.12s ease;
-}
-
-@keyframes smd-dropdown-in {
-  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
-  to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-.smd-mobile-action-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  padding: 12px 18px;
-  min-height: 44px;
-  background: none;
-  border: none;
-  color: var(--text, #e8eaf0);
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
+/* ── Icon button (manage) ──────────────────────────────────────────────── */
+.smd-icon-btn {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text);
   cursor: pointer;
-  text-align: left;
-  transition: background 0.12s;
+  font-size: 16px;
+  transition: background 0.15s, color 0.15s;
 }
 
-.smd-mobile-action-item:hover {
-  background: rgba(255,255,255,0.06);
-}
-
-.smd-mobile-action-item + .smd-mobile-action-item {
-  border-top: 1px solid rgba(255,255,255,0.06);
-}
+.smd-icon-btn:hover { background: rgba(255,255,255,0.06); }
 
 /* ── Footer ────────────────────────────────────────────────────────────── */
 .smd-footer {
@@ -1004,20 +828,10 @@ const dashboardCss = `
 
 .smd-footer-link-inline:hover { opacity: 0.8; }
 
-/* ── Mobile overrides ────────────────────────────────────────────────────── */
+/* ── Mobile overrides ─────────────────────────────────────────────────── */
 @media (max-width: 767px) {
-  /* Hero stacks vertically */
-  .smd-hero {
-    flex-direction: column;
-    gap: 16px;
-    margin-bottom: 28px;
-  }
-
-  /* Section actions: always visible inline on mobile, wrap naturally */
-  .smd-section-actions { flex-wrap: wrap; }
+  .smd-hero { margin: 1.5rem auto 1rem; }
   .smd-section-actions .btn { min-height: 44px; }
-
-  /* Footer */
   .smd-footer-inner { padding: 36px 16px 24px; }
   .smd-footer-top   { flex-direction: column; gap: 32px; }
   .smd-footer-links { flex-wrap: wrap; gap: 28px; }
@@ -1026,9 +840,5 @@ const dashboardCss = `
     align-items: flex-start;
     gap: 8px;
   }
-}
-
-@media (min-width: 768px) and (max-width: 1023px) {
-  .smd-hero-stats { gap: 12px; }
 }
 `;
