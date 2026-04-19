@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import Link from 'next/link';
 import Header from './Header';
 import { FilterBar, type FilterState } from './FilterBar';
 import LectureGrid from './LectureGrid';
@@ -110,21 +109,6 @@ export default function Dashboard({
       }),
     [lectures, filter.courses]
   );
-
-  // ── Last-activity "Continue Studying" ──────────────────────────────────────
-  const [lastActivity, setLastActivity] = useState<{ type: string; id: string } | null>(null);
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem('studymd_last_activity');
-      if (raw) setLastActivity(JSON.parse(raw));
-    } catch {}
-  }, []);
-
-  const continueHref = lastActivity
-    ? `/app/study/${lastActivity.type}?lecture=${lastActivity.id}`
-    : visibleLectures[0]
-      ? `/app/study/flash?lecture=${visibleLectures[0].internal_id}`
-      : null;
 
   // ── Stats ─────────────────────────────────────────────────────────────────
   const avgScore = progressLoading || globalStats.avgExamScore === null
@@ -295,18 +279,13 @@ export default function Dashboard({
 
       <main className="smd-dashboard" id="mainDashboard">
 
-        {/* ── HERO (centered) ─────────────────────────────────────────────── */}
+        {/* ── HERO (centered, Option A glass card) ────────────────────────── */}
         <section className="smd-hero">
           <h1 className="smd-hero-title">
             {greeting} — master your <em>lectures</em> with ease.
           </h1>
-          <p className="smd-hero-subtitle">
-            {isPrimary
-              ? haleySubtitle
-              : 'Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.'}
-          </p>
-          {/* Mobile-only compact stats row */}
-          <div className="smd-hero-stats-row smd-mobile-only">
+          {/* Stats — visible on all screen sizes */}
+          <div className="smd-hero-stats-row">
             <span>
               <strong className="smd-stat-accent">{avgScore !== null ? `${avgScore}%` : '—'}</strong>
               {' avg'}
@@ -324,45 +303,22 @@ export default function Dashboard({
           </div>
         </section>
 
-        {/* ── TWO-COLUMN: plan left, pomodoro + stats right ──────────────── */}
+        {/* ── TWO-COLUMN: plan left, pomodoro right ──────────────────────── */}
         <div className="smd-dashboard-columns">
           <div className="smd-plan-col">
             <TodaysPlanWidget onStartLecture={handleStartFlash} />
-            {continueHref && (
-              <Link href={continueHref} className="smd-continue-btn">
-                Continue Studying
-                <span className="smd-continue-arrow">→</span>
-              </Link>
-            )}
           </div>
           <aside className="smd-side-col">
-            <div className="smd-side-pomodoro">
-              <PomodoroTimer />
-            </div>
-            <div className="smd-aside-stats">
-              <div className="smd-hero-stat">
-                <span className="smd-hero-stat-value accent">
-                  {avgScore !== null ? `${avgScore}%` : '—'}
-                </span>
-                <span className="smd-hero-stat-label">avg score</span>
-              </div>
-              <div className="smd-hero-stat-divider" />
-              <div className="smd-hero-stat">
-                <span className="smd-hero-stat-value dim">
-                  {lecturesLoading ? '—' : visibleLectures.length}
-                </span>
-                <span className="smd-hero-stat-label">lectures</span>
-              </div>
-              <div className="smd-hero-stat-divider" />
-              <div className="smd-hero-stat">
-                <span className="smd-hero-stat-value warning">
-                  🔥 {globalStats.studyStreak ?? 0}
-                </span>
-                <span className="smd-hero-stat-label">day streak</span>
-              </div>
-            </div>
+            <PomodoroTimer />
           </aside>
         </div>
+
+        {/* Subtitle — below widgets, above lecture grid */}
+        <p className="smd-section-subtitle">
+          {isPrimary
+            ? haleySubtitle
+            : 'Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.'}
+        </p>
 
         {/* ── SECTION HEADER ──────────────────────────────────────────────── */}
         <div className="smd-section-header">
@@ -552,22 +508,44 @@ const dashboardCss = `
   .smd-desktop-only { display: none !important; }
 }
 
-/* ── Hero (centered) ───────────────────────────────────────────────────── */
+/* ── Hero (centered, Option A — glass card) ────────────────────────────── */
 .smd-hero {
   text-align: center;
-  max-width: 860px;
-  margin: 2rem auto 1.5rem;
-  padding: 0 1rem;
+  max-width: 720px;
+  margin: 1.5rem auto 1.75rem;
+  padding: 2.25rem 2.5rem 2rem;
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Ambient accent glow behind the title */
+.smd-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 70%;
+  height: 180px;
+  background: radial-gradient(ellipse at center,
+    color-mix(in srgb, var(--accent) 18%, transparent) 0%,
+    transparent 70%);
+  pointer-events: none;
 }
 
 .smd-hero-title {
   font-family: 'Fraunces', serif;
-  font-size: clamp(1.5rem, 3.5vw, 2.75rem);
+  font-size: clamp(1.5rem, 3.5vw, 2.5rem);
   font-weight: 700;
   line-height: 1.2;
   letter-spacing: -0.5px;
   color: var(--text);
-  margin-bottom: 0.5rem;
+  margin-bottom: 1rem;
+  position: relative;
 }
 
 .smd-hero-title em {
@@ -576,25 +554,25 @@ const dashboardCss = `
   color: var(--accent);
 }
 
-.smd-hero-subtitle {
-  font-size: 14px;
-  color: var(--text-muted);
-  max-width: 480px;
-  margin: 0.5rem auto 0;
-  line-height: 1.65;
-}
-
-/* Stats row — mobile only; desktop stats live in the aside */
+/* Stats row — always visible on all screen sizes */
 .smd-hero-stats-row {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
-  margin-top: 1rem;
   color: var(--text-muted);
   font-size: 13px;
   font-family: 'DM Mono', monospace;
   flex-wrap: wrap;
+  position: relative;
+}
+
+/* ── Subtitle below widgets ────────────────────────────────────────────── */
+.smd-section-subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin-bottom: 1.25rem;
 }
 
 /* ── Two-column layout ─────────────────────────────────────────────────── */
@@ -602,12 +580,12 @@ const dashboardCss = `
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 @media (min-width: 1024px) {
   .smd-dashboard-columns {
-    grid-template-columns: minmax(0, 2fr) minmax(240px, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(260px, auto);
     align-items: start;
   }
 }
@@ -616,98 +594,15 @@ const dashboardCss = `
 
 .smd-side-col {
   display: none;
-  flex-direction: column;
-  gap: 12px;
 }
 
 @media (min-width: 1024px) {
-  .smd-side-col { display: flex; }
-}
-
-.smd-side-pomodoro { width: 100%; }
-
-.smd-aside-stats {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 14px 20px;
+  .smd-side-col { display: block; }
 }
 
 .smd-stat-accent  { font-weight: 500; color: var(--accent); }
 .smd-stat-plain   { font-weight: 500; color: var(--text); }
 .smd-stat-warning { font-weight: 500; color: var(--warning, #f59e0b); }
-
-/* ── Continue Studying button ──────────────────────────────────────────── */
-.smd-continue-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: var(--accent);
-  color: #fff;
-  font-family: 'Outfit', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 11px 22px;
-  border-radius: 50px;
-  text-decoration: none;
-  transition: background 0.18s, transform 0.18s, box-shadow 0.18s;
-  box-shadow: 0 4px 18px rgba(91,141,238,0.3);
-  min-height: 44px;
-  margin-top: 12px;
-}
-
-.smd-continue-btn:hover {
-  background: color-mix(in srgb, var(--accent) 82%, black);
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(91,141,238,0.4);
-}
-
-.smd-continue-arrow {
-  display: inline-block;
-  transition: transform 0.18s;
-}
-
-.smd-continue-btn:hover .smd-continue-arrow {
-  transform: translateX(3px);
-}
-
-/* ── Stats values (reused in aside) ────────────────────────────────────── */
-.smd-hero-stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
-}
-
-.smd-hero-stat-value {
-  font-family: 'DM Mono', monospace;
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 1;
-}
-
-.smd-hero-stat-value.accent  { color: var(--accent); }
-.smd-hero-stat-value.dim     { color: var(--text); }
-.smd-hero-stat-value.warning { color: var(--warning, #f59e0b); }
-
-.smd-hero-stat-label {
-  font-size: 10px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  white-space: nowrap;
-}
-
-.smd-hero-stat-divider {
-  width: 1px;
-  height: 28px;
-  background: var(--border);
-  flex-shrink: 0;
-}
 
 /* ── Section header ────────────────────────────────────────────────────── */
 .smd-lecture-count-badge {

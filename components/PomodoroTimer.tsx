@@ -215,34 +215,43 @@ export default function PomodoroTimer() {
 
         {/* Inline expanded panel — pushes content down */}
         <div className={`pomo-panel${panelOpen ? ' open' : ''}`}>
-          <div className={`pomo-panel-clock${clockDanger ? ' danger' : ''}`}>{fmt(secondsLeft)}</div>
-          <div className="pomo-panel-phase-label">
-            {phase === 'study' ? '📚 Study Block' : phase === 'short' ? '☕ Short Break' : '🛋 Long Break'}
-          </div>
-          <div className="pomo-panel-blocks">
-            {dots.map((d, i) => <span key={i} className={`pomo-panel-block${d.done ? ' done' : d.active ? ' current' : ''}`} />)}
-          </div>
-          <div className="pomo-panel-controls">
-            <button className="btn btn-primary pomo-ctrl-btn" onClick={toggle}>{running ? '⏸ Pause' : '▶ Start'}</button>
-            <button className="btn btn-ghost pomo-ctrl-btn" onClick={reset} aria-label="Reset">↺</button>
-            <button className="btn btn-ghost pomo-ctrl-btn" onClick={skip} aria-label="Skip">⏭</button>
-          </div>
-          <button className={`pomo-notif-btn${notifGranted ? ' granted' : ''}`} onClick={requestNotif}>
-            {notifGranted ? '🔔 Notifications on' : '🔔 Enable notifications'}
-          </button>
-          <div className="pomo-settings">
-            {([
-              { label: 'Study (min)', key: 'studyMin' as const, min: 1, max: 90 },
-              { label: 'Short Break', key: 'shortMin' as const, min: 1, max: 30 },
-              { label: 'Long Break',  key: 'longMin'  as const, min: 5, max: 60 },
-              { label: 'Blocks/Long', key: 'blocksPerLong' as const, min: 2, max: 8 },
-            ]).map(({ label, key, min, max }) => (
-              <div key={key} className="pomo-field">
-                <label>{label}</label>
-                <input type="number" value={settings[key]} min={min} max={max}
-                  onChange={e => applySetting(key, Number(e.target.value))} onClick={e => e.stopPropagation()} />
+          <div className="pomo-panel-inner">
+            {/* Left: clock + controls */}
+            <div className="pomo-panel-left">
+              <div className={`pomo-panel-clock${clockDanger ? ' danger' : ''}`}>{fmt(secondsLeft)}</div>
+              <div className="pomo-panel-phase-label">
+                {phase === 'study' ? '📚 Study Block' : phase === 'short' ? '☕ Short Break' : '🛋 Long Break'}
               </div>
-            ))}
+              <div className="pomo-panel-blocks">
+                {dots.map((d, i) => <span key={i} className={`pomo-panel-block${d.done ? ' done' : d.active ? ' current' : ''}`} />)}
+              </div>
+              <div className="pomo-panel-controls">
+                <button className="btn btn-primary pomo-ctrl-btn" onClick={toggle}>{running ? '⏸ Pause' : '▶ Start'}</button>
+                <button className="btn btn-ghost pomo-ctrl-btn" onClick={reset} aria-label="Reset">↺</button>
+                <button className="btn btn-ghost pomo-ctrl-btn" onClick={skip} aria-label="Skip">⏭</button>
+              </div>
+              <button className={`pomo-notif-btn${notifGranted ? ' granted' : ''}`} onClick={requestNotif}>
+                {notifGranted ? '🔔 Notifications on' : '🔔 Enable notifications'}
+              </button>
+            </div>
+            {/* Right: settings */}
+            <div className="pomo-panel-right">
+              <div className="pomo-settings-label">Settings</div>
+              <div className="pomo-settings">
+                {([
+                  { label: 'Study (min)', key: 'studyMin' as const, min: 1, max: 90 },
+                  { label: 'Short Break', key: 'shortMin' as const, min: 1, max: 30 },
+                  { label: 'Long Break',  key: 'longMin'  as const, min: 5, max: 60 },
+                  { label: 'Blocks/Long', key: 'blocksPerLong' as const, min: 2, max: 8 },
+                ]).map(({ label, key, min, max }) => (
+                  <div key={key} className="pomo-field">
+                    <label>{label}</label>
+                    <input type="number" value={settings[key]} min={min} max={max}
+                      onChange={e => applySetting(key, Number(e.target.value))} onClick={e => e.stopPropagation()} />
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -330,41 +339,50 @@ const pomoCss = `
   padding:0 18px;
 }
 .pomo-panel.open{
-  max-height:600px;padding:18px 18px 20px;
+  max-height:400px;padding:16px 18px 18px;
   border-width:1px;
   transition:max-height 0.35s cubic-bezier(0.4,0,0.2,1),padding 0.25s,border-width 0s;
 }
 
+/* Two-column layout: left = clock/controls, right = settings */
+.pomo-panel-inner{display:flex;gap:16px;align-items:flex-start;}
+.pomo-panel-left{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;}
+.pomo-panel-right{flex-shrink:0;width:150px;display:flex;flex-direction:column;}
+
 .pomo-panel-clock{
-  font-family:'DM Mono',monospace;font-size:42px;font-weight:500;
-  text-align:center;letter-spacing:2px;margin-bottom:4px;line-height:1;color:var(--text);
+  font-family:'DM Mono',monospace;font-size:38px;font-weight:500;
+  text-align:center;letter-spacing:2px;margin-bottom:3px;line-height:1;color:var(--text);
 }
 .pomo-panel-clock.danger{color:var(--danger);}
 
 .pomo-panel-phase-label{
   text-align:center;font-family:'Outfit',sans-serif;
-  font-size:13px;color:var(--text-muted);margin-bottom:14px;
+  font-size:12px;color:var(--text-muted);margin-bottom:10px;
 }
 
-.pomo-panel-blocks{display:flex;justify-content:center;gap:6px;margin-bottom:16px;}
+.pomo-panel-blocks{display:flex;justify-content:center;gap:6px;margin-bottom:12px;}
 .pomo-panel-block{width:9px;height:9px;border-radius:50%;background:var(--surface2);border:1px solid var(--border-bright);transition:all .3s;}
 .pomo-panel-block.done{background:var(--accent);border-color:var(--accent);}
 .pomo-panel-block.current{background:var(--warning);border-color:var(--warning);box-shadow:0 0 6px var(--warning);}
 
-.pomo-panel-controls{display:flex;gap:8px;justify-content:center;margin-bottom:14px;}
-.pomo-ctrl-btn{min-width:90px !important;padding:9px 16px !important;}
+.pomo-panel-controls{display:flex;gap:6px;justify-content:center;margin-bottom:10px;}
+.pomo-ctrl-btn{min-width:72px !important;padding:8px 12px !important;font-size:12px !important;}
 
 .pomo-notif-btn{
-  display:block;width:100%;margin-bottom:14px;padding:8px 14px;
+  padding:6px 10px;width:100%;
   background:var(--surface2);border:1px solid var(--border);border-radius:8px;
   color:var(--text-muted);font-family:'Outfit',sans-serif;
-  font-size:12px;cursor:pointer;transition:all 0.15s;min-height:44px;
+  font-size:11px;cursor:pointer;transition:all 0.15s;
 }
 .pomo-notif-btn:hover{border-color:var(--border-bright);color:var(--text);}
 .pomo-notif-btn.granted{color:var(--success);border-color:rgba(16,185,129,0.35);background:rgba(16,185,129,0.07);}
 
-.pomo-settings{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-.pomo-field{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 10px;}
-.pomo-field label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:700;display:block;margin-bottom:4px;}
-.pomo-field input{width:100%;background:transparent;border:none;outline:none;font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:var(--accent);text-align:center;padding:0;}
+.pomo-settings-label{
+  font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--text-muted);margin-bottom:8px;
+}
+.pomo-settings{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.pomo-field{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:6px 8px;}
+.pomo-field label{font-size:8px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);font-weight:700;display:block;margin-bottom:3px;}
+.pomo-field input{width:100%;background:transparent;border:none;outline:none;font-family:'DM Mono',monospace;font-size:15px;font-weight:500;color:var(--accent);text-align:center;padding:0;}
 `;
