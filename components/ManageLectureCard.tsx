@@ -709,9 +709,9 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [menuRef.current]);
 
-  // Recalculate position after submenu toggles change the menu height
+  // On mobile, submenus are inline and grow the menu — recalculate position to stay on screen
   useEffect(() => {
-    if (!menuRef.current) return;
+    if (!menuRef.current || window.innerWidth > 639) return;
     const el = menuRef.current;
     requestAnimationFrame(() => {
       const vw = window.innerWidth, vh = window.innerHeight;
