@@ -61,50 +61,52 @@ export default function CustomSessionModal({ isOpen, lectures, onClose, onStart 
             <div className="smd-modal-drag-handle" />
             <button className="smd-modal-close-btn" onClick={onClose} aria-label="Close">✕</button>
           </div>
-          <div className="smd-modal-title">✦ Custom Study Session</div>
-          <div className="smd-modal-subtitle">Mix lectures, build your own deck or exam.</div>
-          <div className="smd-form-group">
-            <label className="smd-form-label">Session type</label>
-            <div className="smd-custom-mode-tabs">
-              <div className={`smd-custom-mode-tab${mode === 'flash' ? ' active' : ''}`} onClick={() => setMode('flash')}>📇 Flashcards</div>
-              <div className={`smd-custom-mode-tab${mode === 'exam' ? ' active' : ''}`} onClick={() => setMode('exam')}>📝 Practice Exam</div>
+          <div className="smd-modal-body">
+            <div className="smd-modal-title">✦ Custom Study Session</div>
+            <div className="smd-modal-subtitle">Mix lectures, build your own deck or exam.</div>
+            <div className="smd-form-group">
+              <label className="smd-form-label">Session type</label>
+              <div className="smd-custom-mode-tabs">
+                <div className={`smd-custom-mode-tab${mode === 'flash' ? ' active' : ''}`} onClick={() => setMode('flash')}>📇 Flashcards</div>
+                <div className={`smd-custom-mode-tab${mode === 'exam' ? ' active' : ''}`} onClick={() => setMode('exam')}>📝 Practice Exam</div>
+              </div>
             </div>
-          </div>
-          <div className="smd-form-group">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-              <label className="smd-form-label" style={{ margin: 0 }}>Select lectures</label>
-              <button className="smd-select-all-btn" onClick={selectAll}>{selectedLectureIds.size === lectures.length ? 'Deselect all' : 'Select all'}</button>
+            <div className="smd-form-group">
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
+                <label className="smd-form-label" style={{ margin: 0 }}>Select lectures</label>
+                <button className="smd-select-all-btn" onClick={selectAll}>{selectedLectureIds.size === lectures.length ? 'Deselect all' : 'Select all'}</button>
+              </div>
+              <div className="smd-lecture-select-grid">
+                {lectures.map(l => (
+                  <div key={l.internal_id} className={`smd-lecture-select-item${selectedLectureIds.has(l.internal_id) ? ' selected' : ''}`} onClick={() => toggleLecture(l.internal_id)}>
+                    <span>{l.icon}</span>
+                    <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.title}</span>
+                  </div>
+                ))}
+              </div>
             </div>
-            <div className="smd-lecture-select-grid">
-              {lectures.map(l => (
-                <div key={l.internal_id} className={`smd-lecture-select-item${selectedLectureIds.has(l.internal_id) ? ' selected' : ''}`} onClick={() => toggleLecture(l.internal_id)}>
-                  <span>{l.icon}</span>
-                  <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.title}</span>
+            {availableTopics.length > 0 && (
+              <div className="smd-form-group">
+                <label className="smd-form-label">Topics to include <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(from selected lectures)</span></label>
+                <div className="smd-topic-selector">
+                  {availableTopics.map(t => <div key={t} className={`smd-topic-toggle${selectedTopics.has(t) ? ' selected' : ''}`} onClick={() => toggleTopic(t)}>{t}</div>)}
                 </div>
-              ))}
-            </div>
-          </div>
-          {availableTopics.length > 0 && (
-            <div className="smd-form-group">
-              <label className="smd-form-label">Topics to include <span style={{ fontWeight: 400, color: 'var(--text-muted)' }}>(from selected lectures)</span></label>
-              <div className="smd-topic-selector">
-                {availableTopics.map(t => <div key={t} className={`smd-topic-toggle${selectedTopics.has(t) ? ' selected' : ''}`} onClick={() => toggleTopic(t)}>{t}</div>)}
               </div>
-            </div>
-          )}
-          <div className="smd-form-group">
-            <label className="smd-form-label" id="custom-count-label">{mode === 'flash' ? 'Number of cards' : 'Number of questions'}</label>
-            <input type="range" className="smd-form-range" min={5} max={50} step={1} value={count} onChange={e => setCount(Number(e.target.value))} aria-labelledby="custom-count-label" />
-            <div className="smd-range-display">{count} {mode === 'flash' ? 'cards' : 'questions'}</div>
-          </div>
-          {mode === 'exam' && (
+            )}
             <div className="smd-form-group">
-              <label className="smd-form-label">Question types</label>
-              <div className="smd-topic-selector">
-                {ALL_QUESTION_TYPES.map(t => <div key={t} className={`smd-topic-toggle${selectedTypes.has(t) ? ' selected' : ''}`} onClick={() => toggleType(t)}>{TYPE_LABELS[t]}</div>)}
-              </div>
+              <label className="smd-form-label" id="custom-count-label">{mode === 'flash' ? 'Number of cards' : 'Number of questions'}</label>
+              <input type="range" className="smd-form-range" min={5} max={50} step={1} value={count} onChange={e => setCount(Number(e.target.value))} aria-labelledby="custom-count-label" />
+              <div className="smd-range-display">{count} {mode === 'flash' ? 'cards' : 'questions'}</div>
             </div>
-          )}
+            {mode === 'exam' && (
+              <div className="smd-form-group">
+                <label className="smd-form-label">Question types</label>
+                <div className="smd-topic-selector">
+                  {ALL_QUESTION_TYPES.map(t => <div key={t} className={`smd-topic-toggle${selectedTypes.has(t) ? ' selected' : ''}`} onClick={() => toggleType(t)}>{TYPE_LABELS[t]}</div>)}
+                </div>
+              </div>
+            )}
+          </div>
           <div className="smd-modal-footer">
             <button className="btn btn-primary btn-lg" onClick={handleStart} disabled={selectedLectureIds.size === 0} style={{ opacity: selectedLectureIds.size === 0 ? 0.5 : 1 }}>Start Session →</button>
             <button className="btn btn-ghost btn-lg" onClick={onClose}>Cancel</button>
@@ -116,13 +118,26 @@ export default function CustomSessionModal({ isOpen, lectures, onClose, onStart 
 }
 
 const modalExtraCss = `
+/* Flex layout: topbar + scrollable body + footer — avoids sticky positioning bugs on iOS */
+.smd-modal {
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
 .smd-modal-topbar {
-  position: sticky; top: 0; z-index: 10;
+  flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
-  padding: 10px 16px 6px; margin: -20px -20px 0;
+  padding: 10px 16px 6px;
   background: var(--surface, #13161d);
   border-bottom: 1px solid rgba(255,255,255,0.06);
   border-radius: 20px 20px 0 0;
+}
+.smd-modal-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 20px 20px 4px;
 }
 .smd-modal-close-btn {
   position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
@@ -135,9 +150,7 @@ const modalExtraCss = `
 .smd-modal-close-btn:hover { background: rgba(255,255,255,0.07); color: var(--text, #e8eaf0); }
 .smd-modal-topbar .smd-modal-drag-handle { margin: 0; }
 .smd-modal-footer {
-  position: sticky;
-  bottom: 0;
-  margin: 20px -20px -36px;
+  flex-shrink: 0;
   padding: 12px 20px max(env(safe-area-inset-bottom, 0px), 16px);
   background: var(--surface, #13161d);
   border-top: 1px solid rgba(255,255,255,0.06);

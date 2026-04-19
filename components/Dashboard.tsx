@@ -189,11 +189,8 @@ export default function Dashboard({
     }).then(() => refetch()).catch(console.error); // fix #5: refetch after course change
   }
 
-  function handleChangeColor(internalId: string, color: string) {
-    // No-op here: LectureCard and LectureViewModal now call the API directly
-    // with theme-keyed colorOverride, bypassing this to avoid refetch flicker.
-    // ManageMode handles its own API calls too.
-    // We only refetch if called from a path that doesn't do its own optimistic update.
+  function handleChangeColor(_internalId: string, _color: string) {
+    refetch();
   }
 
   async function handleHide(internalId: string) {
@@ -339,7 +336,7 @@ export default function Dashboard({
             </button>
             <button
               className="smd-icon-btn"
-              onClick={() => setManageOpen(v => !v)}
+              onClick={() => setManageOpen(v => { if (v) refetch(); return !v; })}
               aria-label={manageOpen ? 'Done managing' : 'Manage lectures'}
               title={manageOpen ? 'Done' : 'Manage lectures'}
             >

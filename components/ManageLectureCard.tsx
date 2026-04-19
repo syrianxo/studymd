@@ -20,9 +20,9 @@ const COURSES: Course[] = [
 
 // Per-theme color palettes
 const THEME_COLORS: Record<string, string[]> = {
-  midnight: ['#5b8dee', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16'],
-  pink:     ['#f472b6', '#c084fc', '#34d399', '#fbbf24', '#fb7185', '#e879f9', '#67e8f9', '#a3e635'],
-  forest:   ['#34d399', '#6ee7b7', '#38bdf8', '#fbbf24', '#f87171', '#a78bfa', '#22d3ee', '#bef264'],
+  midnight: ['#5b8dee', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#a855f7'],
+  pink:     ['#f472b6', '#ec4899', '#db2777', '#e879f9', '#c084fc', '#a855f7', '#fb7185', '#f43f5e'],
+  forest:   ['#10b981', '#34d399', '#84cc16', '#65a30d', '#f59e0b', '#d97706', '#b45309', '#78716c'],
 };
 function getThemeColors(theme: string): string[] {
   return THEME_COLORS[theme] ?? THEME_COLORS.midnight;
@@ -280,7 +280,7 @@ const cardCss = `
   from { opacity: 0; transform: translateY(-6px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
 }
-.lc-menu-row { position: relative; }
+.lc-menu-row { position: relative; z-index: 1; }
 .lc-menu-row-inner { overflow: hidden; border-radius: 0; }
 .lc-menu > .lc-menu-row:first-child .lc-menu-row-inner { border-radius: 9px 9px 0 0; }
 .lc-menu > .lc-menu-row:last-child  .lc-menu-row-inner { border-radius: 0 0 9px 9px; }
@@ -308,12 +308,13 @@ const cardCss = `
 }
 @media (max-width: 639px) {
   .lc-submenu {
-    position: static !important; right: auto !important; top: auto !important;
-    width: 100% !important; box-shadow: none; border: none;
-    border-left: 2px solid rgba(255,255,255,0.1); border-radius: 0; animation: none;
-    background: rgba(255,255,255,0.02);
+    /* On mobile, float as an overlay below the trigger row rather than growing the menu inline */
+    position: absolute; top: 100%; left: 0; right: 0; width: auto;
+    z-index: 5; border-radius: 0 0 10px 10px;
+    border-left: none; animation: lc-menu-in 0.1s ease;
+    background: var(--surface2, #1a1e27);
   }
-  .lc-submenu .lc-menu-item { padding-left: 32px; }
+  .lc-submenu .lc-menu-item { padding-left: 28px; }
 }
 
 .lc-color-row { display: flex; gap: 8px; padding: 10px 16px; flex-wrap: wrap; }

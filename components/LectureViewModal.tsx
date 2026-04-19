@@ -38,9 +38,9 @@ const PRESET_COLORS = [
 ];
 
 const THEME_COLORS: Record<string, string[]> = {
-  midnight: ['#5b8dee', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16'],
-  pink:     ['#f472b6', '#c084fc', '#34d399', '#fbbf24', '#fb7185', '#e879f9', '#67e8f9', '#a3e635'],
-  forest:   ['#34d399', '#6ee7b7', '#38bdf8', '#fbbf24', '#f87171', '#a78bfa', '#22d3ee', '#bef264'],
+  midnight: ['#5b8dee', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#a855f7'],
+  pink:     ['#f472b6', '#ec4899', '#db2777', '#e879f9', '#c084fc', '#a855f7', '#fb7185', '#f43f5e'],
+  forest:   ['#10b981', '#34d399', '#84cc16', '#65a30d', '#f59e0b', '#d97706', '#b45309', '#78716c'],
 };
 
 const COURSES: Course[] = [
@@ -471,12 +471,11 @@ export default function LectureViewModal({
                 style={{ background: c }}
                 onClick={() => {
                   setLocalColor(c);
-                  // Send theme-keyed colorOverride so other themes' colors are preserved
                   fetch('/api/lectures/settings', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ internalId: lectureId, updates: { colorOverride: { [activeTheme]: c } } }),
-                  }).catch(console.error);
+                  }).then(() => onChangeColor?.(c)).catch(console.error);
                 }}
                 aria-label={`Color ${c}`}
               />
@@ -523,7 +522,8 @@ const modalCss = `
   border: 1px solid var(--border-bright, rgba(255,255,255,0.15));
   border-radius: 20px 20px 0 0;
   padding: 12px 20px 28px; width: 100%; max-width: 640px;
-  max-height: 92dvh; overflow-y: auto;
+  max-height: 92vh; max-height: 92dvh; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   transform: translateY(40px);
   transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
   scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;

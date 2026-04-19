@@ -54,7 +54,8 @@ const CSS = `
   border-radius: 20px;
   box-shadow: 0 24px 64px rgba(0,0,0,0.6);
   width: 100%; max-width: 540px;
-  max-height: 90dvh; overflow-y: auto;
+  max-height: 90vh; max-height: 90dvh; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   animation: ecm-slide-up 0.2s cubic-bezier(0.16, 1, 0.3, 1);
   scrollbar-width: thin;
   scrollbar-color: rgba(255,255,255,0.1) transparent;

@@ -748,9 +748,10 @@ body::before {
   background: var(--surface);
   border: 1px solid var(--border-bright);
   border-radius: 20px 20px 0 0;
-  padding: 20px 20px 36px;
+  padding: 0;
   width: 100%;
   max-width: 640px;
+  max-height: 92vh;
   max-height: 92dvh;
   overflow-y: auto;
   transform: translateY(40px);
@@ -1086,10 +1087,12 @@ body::before {
   .smd-modal-overlay { align-items: flex-end; }
 }
 
-/* Very small screens — section-actions wraps under title */
+/* Very small screens — keep header on single row, shrink title if needed */
 @media (max-width: 479px) {
-  .smd-section-header { flex-wrap: wrap; gap: 8px; }
-  .smd-section-actions { width: 100%; justify-content: flex-end; }
+  .smd-section-header { flex-wrap: nowrap; gap: 6px; }
+  .smd-section-title { font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1; }
+  .smd-section-actions { flex-shrink: 0; }
+  .smd-section-actions .btn { padding: 7px 10px; font-size: 11px; }
 }
 
 /* ─── TABLET ─── */
@@ -1107,6 +1110,7 @@ body::before {
     border-radius: 20px;
     max-width: 680px;
     max-height: 88vh;
+    max-height: 88dvh;
     overflow-y: auto;
   }
   .smd-modal-drag-handle { display: none; }

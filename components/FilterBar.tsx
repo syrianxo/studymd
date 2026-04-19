@@ -18,6 +18,7 @@ interface FilterBarProps {
   filter: FilterState;
   onChange: (next: FilterState) => void;
   showHiddenToggle?: boolean;
+  showArchivedToggle?: boolean;
 }
 
 // ─── CSS ─────────────────────────────────────────────────────────────────────
@@ -29,6 +30,18 @@ const css = `
   flex-wrap: wrap;
   gap: 8px;
   padding: 12px 0;
+}
+@media (max-width: 639px) {
+  .fb-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding: 8px 0;
+    /* let pills extend past the right edge; gutter clips them */
+    padding-right: 16px;
+  }
+  .fb-bar::-webkit-scrollbar { display: none; }
 }
 
 .fb-divider {
@@ -146,7 +159,7 @@ const COURSE_COLORS: Record<Course, string> = {
 
 // ─── Component ───────────────────────────────────────────────────────────────
 
-export function FilterBar({ allCourses, allTags, filter, onChange, showHiddenToggle = false }: FilterBarProps) {
+export function FilterBar({ allCourses, allTags, filter, onChange, showHiddenToggle = false, showArchivedToggle = false }: FilterBarProps) {
   const hasActiveFilters =
     filter.courses.size > 0 || filter.tags.size > 0 || filter.showArchived || filter.showHidden;
 
@@ -234,14 +247,16 @@ export function FilterBar({ allCourses, allTags, filter, onChange, showHiddenTog
           </button>
         )}
 
-        {/* Archived toggle — pushed right */}
-        <button
-          className={`fb-archived-toggle${filter.showArchived ? ' active' : ''}`}
-          onClick={toggleArchived}
-          aria-pressed={filter.showArchived}
-        >
-          📦 Archived
-        </button>
+        {/* Archived toggle — only in manage mode */}
+        {showArchivedToggle && (
+          <button
+            className={`fb-archived-toggle${filter.showArchived ? ' active' : ''}`}
+            onClick={toggleArchived}
+            aria-pressed={filter.showArchived}
+          >
+            📦 Archived
+          </button>
+        )}
 
         {/* Hidden toggle — only in manage mode */}
         {showHiddenToggle && (

@@ -491,6 +491,7 @@ export function ManageMode({
         allTags={allTags}
         filter={filter}
         onChange={setFilter}
+        showArchivedToggle
         showHiddenToggle
       />
 
