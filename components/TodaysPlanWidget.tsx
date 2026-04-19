@@ -144,6 +144,7 @@ export default function TodaysPlanWidget({ onStartLecture }: TodaysPlanWidgetPro
 
 const widgetCss = `
 .tpw-card {
+  container-type: inline-size;
   background: var(--surface);
   border: 1px solid var(--border);
   border-left: 3px solid var(--accent);
@@ -155,8 +156,10 @@ const widgetCss = `
 
 .tpw-header {
   display: flex;
-  align-items: center;
-  gap: 12px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem 12px;
   margin-bottom: 14px;
 }
 .tpw-icon-wrap { font-size: 22px; flex-shrink: 0; }
@@ -186,16 +189,22 @@ const widgetCss = `
 }
 .tpw-countdown-num {
   font-family: 'DM Mono', monospace;
-  font-size: 24px;
+  font-size: clamp(1.5rem, 4cqw, 2.75rem);
   font-weight: 500;
   color: var(--accent);
   line-height: 1;
+  white-space: nowrap;
 }
 .tpw-countdown-unit {
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--text-muted);
+}
+/* Narrow card: push countdown badge to its own row, right-aligned */
+@container (max-width: 380px) {
+  .tpw-countdown { width: 100%; align-items: flex-end; }
+  .tpw-countdown-num { font-size: 1.5rem; }
 }
 
 .tpw-lecs { display: flex; flex-direction: column; gap: 6px; margin-bottom: 14px; }
