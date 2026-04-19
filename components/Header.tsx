@@ -136,7 +136,6 @@ export default function Header({
 
             {settingsOpen && (
               <div className="smd-hdr-settings-panel" role="dialog" aria-label="Settings">
-                <div className="smd-hdr-panel-label">Theme</div>
                 <ThemePicker
                   userId={userId}
                   initialTheme={initialTheme}
