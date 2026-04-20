@@ -70,7 +70,7 @@ export interface LectureWithSettings extends Lecture {
 
 export interface UserPreferences {
   user_id: string;
-  theme: Theme;
+  theme: ThemeId;
   settings: Record<string, unknown>;
 }
 
