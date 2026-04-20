@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { THEME_IDS } from "@/lib/themes";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -17,7 +18,7 @@ interface SettingsUpdates {
   courseOverride?: string | null;
   /**
    * colorOverride: pass an object with theme keys to update per-theme colors.
-   * Example: { midnight: '#5b8dee', pink: '#ec4899' }
+   * Example: { midnight: '#5b8dee', aurora: '#f472b6' }
    * Or pass null to clear all overrides.
    * Legacy: a plain hex string is also accepted and treated as a midnight override.
    */
@@ -86,10 +87,10 @@ function validateUpdates(updates: SettingsUpdates): string | null {
         return "colorOverride string must be a hex color (e.g. #5b8dee)";
       }
     } else if (typeof updates.colorOverride === 'object') {
-      const validThemes = ['midnight', 'pink', 'forest'];
+      const validThemes = THEME_IDS;
       for (const [theme, hex] of Object.entries(updates.colorOverride)) {
         if (!validThemes.includes(theme)) {
-          return `colorOverride key '${theme}' is not a valid theme (midnight|pink|forest)`;
+          return `colorOverride key '${theme}' is not a valid theme (${THEME_IDS.join('|')})`;
         }
         if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
           return `colorOverride['${theme}'] must be a hex color (e.g. #5b8dee)`;
@@ -236,7 +237,7 @@ export async function PUT(req: NextRequest) {
   const columns = toColumnMap(updates);
 
   // For color_override (JSONB), we need to MERGE into the existing value
-  // so that setting midnight color doesn't erase pink color and vice versa.
+  // so that setting midnight color doesn't erase aurora color and vice versa.
   // Strategy: fetch existing row, merge color maps, then upsert full row.
   let finalColorOverride: Record<string, string> | null | undefined = undefined;
   if ("colorOverride" in updates) {
