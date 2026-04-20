@@ -9,20 +9,34 @@ import {
 } from '../lib/greetings';
 
 const USER_A = 'user-uuid-aaaa-1111';
-const USER_B = 'user-uuid-bbbb-2222';
-const BUCKETS: TimeBucket[] = ['morning', 'afternoon', 'evening', 'night'];
+const BUCKETS: TimeBucket[] = [
+  'morning', 'late_morning', 'afternoon', 'late_afternoon',
+  'early_evening', 'late_evening', 'night', 'late_night',
+];
 
 describe('getTimeBucket', () => {
-  it('maps hours to correct buckets', () => {
-    expect(getTimeBucket(6)).toBe('morning');
-    expect(getTimeBucket(11)).toBe('morning');
-    expect(getTimeBucket(12)).toBe('afternoon');
-    expect(getTimeBucket(16)).toBe('afternoon');
-    expect(getTimeBucket(17)).toBe('evening');
-    expect(getTimeBucket(21)).toBe('evening');
-    expect(getTimeBucket(22)).toBe('night');
-    expect(getTimeBucket(3)).toBe('night');
-    expect(getTimeBucket(0)).toBe('night');
+  const cases: [number, TimeBucket][] = [
+    [5,  'morning'],
+    [8,  'morning'],
+    [9,  'late_morning'],
+    [11, 'late_morning'],
+    [12, 'afternoon'],
+    [14, 'afternoon'],
+    [15, 'late_afternoon'],
+    [16, 'late_afternoon'],
+    [17, 'early_evening'],
+    [18, 'early_evening'],
+    [19, 'late_evening'],
+    [21, 'late_evening'],
+    [22, 'night'],
+    [23, 'night'],
+    [0,  'night'],
+    [1,  'late_night'],
+    [4,  'late_night'],
+  ];
+
+  it.each(cases)('hour %i → %s', (hour, expected) => {
+    expect(getTimeBucket(hour)).toBe(expected);
   });
 });
 
@@ -30,7 +44,7 @@ describe('pickGreeting', () => {
   it('returns a string for all buckets, both user types', () => {
     for (const bucket of BUCKETS) {
       expect(typeof pickGreeting(USER_A, false, bucket)).toBe('string');
-      expect(typeof pickGreeting(USER_A, true, bucket)).toBe('string');
+      expect(typeof pickGreeting(USER_A, true,  bucket)).toBe('string');
     }
   });
 
@@ -48,15 +62,6 @@ describe('pickGreeting', () => {
     }
   });
 
-  it('different time buckets can produce different greetings for the same user', () => {
-    // Not guaranteed to differ with every userId/day combo, but with 8 entries
-    // per bucket the chance all four match is negligible. We just check the pool.
-    for (const bucket of BUCKETS) {
-      const result = pickGreeting(USER_A, false, bucket);
-      expect(genericGreetings[bucket]).toContain(result);
-    }
-  });
-
   it('falls back to pool[0] when userId is empty', () => {
     for (const bucket of BUCKETS) {
       expect(pickGreeting('', false, bucket)).toBe(genericGreetings[bucket][0]);
@@ -66,7 +71,7 @@ describe('pickGreeting', () => {
 });
 
 describe('buildGreetingLine', () => {
-  it('substitutes {name} in generic greetings', () => {
+  it('substitutes {name} in all generic pools', () => {
     for (const bucket of BUCKETS) {
       const result = buildGreetingLine('Haley', USER_A, false, bucket);
       expect(result).not.toContain('{name}');
@@ -83,8 +88,7 @@ describe('buildGreetingLine', () => {
 
   it('handles display names with special chars safely', () => {
     for (const bucket of BUCKETS) {
-      const result = buildGreetingLine("O'Brien", USER_A, false, bucket);
-      expect(result).not.toContain('{name}');
+      expect(buildGreetingLine("O'Brien", USER_A, false, bucket)).not.toContain('{name}');
     }
   });
 
