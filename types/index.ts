@@ -5,6 +5,7 @@ export type Course =
   | 'Anatomy & Physiology'
   | 'Laboratory Diagnosis';
 
+import type { ThemeId } from '@/lib/themes';
 export type { ThemeId as Theme } from '@/lib/themes';
 
 export interface Lecture {
@@ -13,7 +14,7 @@ export interface Lecture {
   title: string;
   subtitle: string | null;
   course: Course;
-  theme_colors?: Partial<Record<Theme, string>> | null;
+  theme_colors?: Partial<Record<ThemeId, string>> | null;
   icon: string;
   topics: string[];
   slide_count: number;
