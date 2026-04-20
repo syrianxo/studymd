@@ -267,7 +267,6 @@ export default function Dashboard({
         {/* ── HERO (centered, Option A glass card) ────────────────────────── */}
         <section className="smd-hero">
           <h1 className="smd-hero-title">{greetingLine}</h1>
-          <p className="smd-hero-subtitle">master your <em>lectures</em> with ease.</p>
           {/* Stats — visible on all screen sizes */}
           <div className="smd-hero-stats-row">
             <span>
@@ -533,18 +532,6 @@ const dashboardCss = `
 .smd-hero-title em {
   font-style: italic;
   font-weight: 300;
-  color: var(--accent);
-}
-
-.smd-hero-subtitle {
-  color: var(--text-muted);
-  font-size: 0.9375rem;
-  margin-top: -0.5rem;
-  margin-bottom: 1rem;
-}
-
-.smd-hero-subtitle em {
-  font-style: italic;
   color: var(--accent);
 }
 
