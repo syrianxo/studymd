@@ -89,7 +89,7 @@ function validateUpdates(updates: SettingsUpdates): string | null {
     } else if (typeof updates.colorOverride === 'object') {
       const validThemes = THEME_IDS;
       for (const [theme, hex] of Object.entries(updates.colorOverride)) {
-        if (!validThemes.includes(theme)) {
+        if (!(validThemes as readonly string[]).includes(theme)) {
           return `colorOverride key '${theme}' is not a valid theme (${THEME_IDS.join('|')})`;
         }
         if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
