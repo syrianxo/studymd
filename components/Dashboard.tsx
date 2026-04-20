@@ -18,15 +18,18 @@ import type { Course, Theme, StudyPlan } from '@/types';
 import { migrateThemeId } from '@/lib/themes';
 import type { FlashcardConfig } from '@/components/study/FlashcardConfigModal';
 import type { ExamConfig } from '@/components/study/ExamConfigModal';
+import { buildGreetingLine } from '@/lib/greetings';
 
 interface DashboardProps {
   userName?: string;
+  userId?: string;
   isPrimary?: boolean;
   initialTheme?: Theme;
 }
 
 export default function Dashboard({
   userName = 'there',
+  userId: userIdProp,
   isPrimary = false,
   initialTheme: initialThemeProp = 'midnight',
 }: DashboardProps) {
@@ -243,28 +246,9 @@ export default function Dashboard({
     );
   }
 
-  const greeting = isPrimary ? `Hey Haley 👋` : `Welcome back, ${userName}`;
-
-  // Rotating affirmations for Haley — picked once per mount
-  const HALEY_SUBTITLES = [
-    'Your lecture mastery awaits ✨',
-    'Ready to conquer your exams? Let\'s go. 💪',
-    'Every card you flip is one step closer. Keep going. 🩵',
-    'You\'ve got this, Haley. One lecture at a time.',
-    'Built just for you, studied just by you. 🎓',
-    'Your hard work is paying off. Keep studying. ⭐',
-    'PA school\'s toughest student just logged in. 🩺',
-    'New day, new mastery. What are we studying today?',
-    'Knowledge is power. And you\'re powerfully smart. 💙',
-    'The flashcards are ready. Are you? Let\'s master it.',
-  ];
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const haleySubtitle = useMemo(
-    () => HALEY_SUBTITLES[Math.floor(Math.random() * HALEY_SUBTITLES.length)],
-    // Only pick once per mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  // Deterministic greeting: seeded by userId + UTC date, so it's stable all day
+  // and rotates at midnight without a re-render flash.
+  const greetingLine = buildGreetingLine(userName, userIdProp ?? userId ?? '', isPrimary);
 
   return (
     <>
@@ -282,9 +266,8 @@ export default function Dashboard({
 
         {/* ── HERO (centered, Option A glass card) ────────────────────────── */}
         <section className="smd-hero">
-          <h1 className="smd-hero-title">
-            {greeting} — master your <em>lectures</em> with ease.
-          </h1>
+          <h1 className="smd-hero-title">{greetingLine}</h1>
+          <p className="smd-hero-subtitle">master your <em>lectures</em> with ease.</p>
           {/* Stats — visible on all screen sizes */}
           <div className="smd-hero-stats-row">
             <span>
@@ -316,9 +299,7 @@ export default function Dashboard({
 
         {/* Subtitle — below widgets, above lecture grid */}
         <p className="smd-section-subtitle">
-          {isPrimary
-            ? haleySubtitle
-            : 'Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.'}
+          Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.
         </p>
 
         {/* ── SECTION HEADER ──────────────────────────────────────────────── */}
@@ -552,6 +533,18 @@ const dashboardCss = `
 .smd-hero-title em {
   font-style: italic;
   font-weight: 300;
+  color: var(--accent);
+}
+
+.smd-hero-subtitle {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  margin-top: -0.5rem;
+  margin-bottom: 1rem;
+}
+
+.smd-hero-subtitle em {
+  font-style: italic;
   color: var(--accent);
 }
 
