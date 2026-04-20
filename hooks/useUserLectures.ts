@@ -51,12 +51,19 @@ export interface Lecture {
   course_override: Course | null;
   // color_override is now a per-theme map; use resolveColor() to get the active color
   color_override: ColorOverrideMap | null;
+  // Default color per theme, set on the lectures table (not per-user)
+  theme_colors: ColorOverrideMap | null;
 }
 
-/** Resolve the display color for a lecture given the active theme. */
+/** Resolve the display color for a lecture given the active theme.
+ *  Priority: user color_override[theme] → lectures.theme_colors[theme] → lectures.color → var(--accent)
+ */
 export function resolveColor(lecture: Lecture, activeTheme: Theme): string {
-  if (lecture.color_override && lecture.color_override[activeTheme]) {
+  if (lecture.color_override?.[activeTheme]) {
     return lecture.color_override[activeTheme]!;
+  }
+  if (lecture.theme_colors?.[activeTheme]) {
+    return lecture.theme_colors[activeTheme]!;
   }
   return lecture.color ?? 'var(--accent)';
 }
@@ -91,7 +98,7 @@ export function useUserLectures(): UseUserLecturesResult {
       // ── 1. Fetch base lecture rows ──────────────────────────────────────
       const { data: lectureRows, error: lectureErr } = await supabase
         .from('lectures')
-        .select('internal_id, title, subtitle, icon, course, color, topics, slide_count, created_at, json_data')
+        .select('internal_id, title, subtitle, icon, course, color, theme_colors, topics, slide_count, created_at, json_data')
         .order('internal_id', { ascending: true });
 
       if (lectureErr) throw lectureErr;
@@ -145,6 +152,7 @@ export function useUserLectures(): UseUserLecturesResult {
         group_id:        settingsMap[row.internal_id]?.group_id        ?? null,
         course_override: settingsMap[row.internal_id]?.course_override ?? null,
         color_override:  settingsMap[row.internal_id]?.color_override  ?? null,
+        theme_colors:    (row as any).theme_colors ?? null,
       }));
 
       merged.sort((a, b) => a.display_order - b.display_order);

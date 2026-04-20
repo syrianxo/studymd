@@ -14,6 +14,7 @@ export interface Lecture {
   subtitle: string | null;
   course: Course;
   color: string;
+  theme_colors?: Partial<Record<Theme, string>> | null;
   icon: string;
   topics: string[];
   slide_count: number;
