@@ -6,7 +6,7 @@
 
 ## 🚧 Now (in flight)
 
-_(Slice 4 complete — see Recently Completed. Next: Slice 5 or v3 prerequisites.)_
+_(Aurora rename + theme registry complete — see Recently Completed. Next: v3 prerequisites or v3 features.)_
 
 ---
 
@@ -117,7 +117,8 @@ _(Slice 4 complete — see Recently Completed. Next: Slice 5 or v3 prerequisites
 - [x] **Theme palette upgrade** — Pink = pinks/purples/reds; Forest = greens/browns/yellows; Midnight keeps blues/purples. Consistent across `ManageLectureCard`, `LectureViewModal`.
 - [x] **Per-theme lecture default colors** — Added `theme_colors` JSONB column to `lectures` table; seeded palette-cycled defaults for all existing lectures; cleared `user_lecture_settings.color_override` for fresh start. `resolveColor()` now: `color_override[theme]` → `theme_colors[theme]` → `var(--accent)`. Dropped legacy `lectures.color` TEXT column.
 - [x] **4.4 Admin "click to edit" removed** — Admin sidebar name now links to `/app/profile` instead of opening a redundant in-admin modal. "Click to edit ✏️" label text removed.
-- [x] **Slice 4 complete (4.1/4.3/4.2/4.5)** — Mobile dashboard padding reduced to 16px gutter; theme-aware `::selection` added to `themes.css`; profile page "Lavender" → "Pink" with correct preview swatch colors; filter bar horizontal-scroll cleanup pass verified.
+- [x] **Aurora rename + theme registry** — `lib/themes.ts` created as single source of truth; `pink` theme id renamed to `aurora` across all 9 files, CSS, and DB; `migrateThemeId('pink')` → `'aurora'` handles stale localStorage values. ADR-025.
+- [x] **Slice 4 complete (4.1/4.3/4.2/4.5)** — Mobile dashboard padding reduced to 16px gutter; theme-aware `::selection` added to `themes.css`; profile page "Lavender" → "Pink"/"Aurora" with correct preview swatch colors; filter bar horizontal-scroll cleanup pass verified.
 - [x] Comprehensive documentation pass — README, CLAUDE.md, architecture.md, documentation.md, recommendations.md, development_plan_v3.md, decisions.md, todo.md (this file).
 
 ---

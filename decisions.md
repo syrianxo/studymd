@@ -354,6 +354,19 @@ Dates reflect when the decision landed in the repo (from git history) or, for un
 
 ---
 
+## ADR-025 · Rename `pink` theme to `aurora` + introduce `lib/themes.ts` registry
+- **Date:** 2026-04-19 (commits `01f3d97`–`d5e487d`)
+- **Status:** Accepted
+- **Context:** The "Pink" theme's id `'pink'` was a literal color name, making it hard to rename without hunting magic strings across 13 locations. There was also no single source of truth for valid theme ids — each file maintained its own union or array.
+- **Decision:** Created `lib/themes.ts` as single source of truth (`THEME_IDS`, `ThemeId`, `THEMES`, `isValidThemeId`, `migrateThemeId`). Renamed the theme id from `'pink'` to `'aurora'`; legacy `'pink'` is silently migrated on first client load by `migrateThemeId`. DB rows updated in-place. CSS selector changed from `[data-theme="pink"]` to `[data-theme="aurora"]`.
+- **Consequences:**
+  - (+) One place to add/rename themes going forward.
+  - (+) `migrateThemeId` handles stale localStorage values gracefully with no user-visible flash.
+  - (−) The THEME_INIT_SCRIPT and `app/layout.tsx` inline scripts cannot import modules, so the migration stub is duplicated inline in both. Acceptable — these two strings are short and explicitly comment the duplication.
+  - Revisit when: adding a 4th theme — just add to `THEME_IDS` in `lib/themes.ts`.
+
+---
+
 ## Template for new ADRs
 
 Copy/paste and fill in:
