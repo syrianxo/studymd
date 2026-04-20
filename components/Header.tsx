@@ -38,10 +38,10 @@ function NavLink({
   onClick?: () => void;
 }) {
   const pathname = usePathname();
-  const isActive =
-    href === '/app'
-      ? pathname === '/app'
-      : !!pathname?.startsWith(href);
+  // Exact match for /app (dashboard); prefix match for all other routes
+  const isActive = href === '/app'
+    ? pathname === '/app'
+    : !!pathname?.startsWith(href + '/') || pathname === href;
   return (
     <Link
       href={href}
@@ -117,9 +117,10 @@ export default function Header({
         aria-hidden={!drawerOpen}
       >
         <div className="smd-drawer-title">StudyMD</div>
-        <NavLink href="/app" onClick={() => setDrawerOpen(false)}>My Lectures</NavLink>
+        <NavLink href="/app" onClick={() => setDrawerOpen(false)}>My Dashboard</NavLink>
+        <NavLink href="/app/lectures" onClick={() => setDrawerOpen(false)}>My Lectures</NavLink>
         <NavLink href="/app/plans" onClick={() => setDrawerOpen(false)}>My Plans</NavLink>
-        <NavLink href="/app/progress" onClick={() => setDrawerOpen(false)}>Progress</NavLink>
+        <NavLink href="/app/progress" onClick={() => setDrawerOpen(false)}>My Progress</NavLink>
         {isAdmin && (
           <NavLink href="/admin" onClick={() => setDrawerOpen(false)}>Admin</NavLink>
         )}
@@ -182,9 +183,10 @@ export default function Header({
         <div className="smd-hdr-center">
           {/* Desktop nav */}
           <nav className="smd-header-nav smd-hdr-desktop-only" aria-label="Main navigation">
-            <NavLink href="/app">My Lectures</NavLink>
+            <NavLink href="/app">My Dashboard</NavLink>
+            <NavLink href="/app/lectures">My Lectures</NavLink>
             <NavLink href="/app/plans">My Plans</NavLink>
-            <NavLink href="/app/progress">Progress</NavLink>
+            <NavLink href="/app/progress">My Progress</NavLink>
             {isAdmin && <NavLink href="/admin">Admin</NavLink>}
           </nav>
 

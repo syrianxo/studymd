@@ -2,7 +2,6 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import Link from 'next/link';
 import Header from './Header';
 import { FilterBar, type FilterState } from './FilterBar';
 import LectureGrid from './LectureGrid';
@@ -315,13 +314,6 @@ export default function Dashboard({
             )}
           </div>
           <div className="smd-section-actions">
-            <Link href="/app/upload" className="smd-action-upload-btn" title="Upload Lecture">
-              <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
-                <path d="M10 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L11 6.414V13a1 1 0 11-2 0V6.414L6.707 8.707A1 1 0 015.293 7.293l4-4A1 1 0 0110 3z" />
-                <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
-              </svg>
-              Upload
-            </Link>
             <button
               className="btn btn-primary smd-custom-session-btn"
               onClick={() => setCustomModalOpen(true)}
@@ -642,31 +634,6 @@ const dashboardCss = `
   font-size: 12px;
   padding: 8px 15px;
   min-height: 36px;
-}
-
-/* ── Upload action button ──────────────────────────────────────────────── */
-.smd-action-upload-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  padding: 8px 13px;
-  min-height: 36px;
-  background: none;
-  border: 1px solid rgba(255,255,255,0.1);
-  border-radius: 10px;
-  color: var(--text-muted, #6b7280);
-  font-family: 'Outfit', sans-serif;
-  font-weight: 500;
-  cursor: pointer;
-  text-decoration: none;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-  white-space: nowrap;
-}
-.smd-action-upload-btn:hover {
-  background: rgba(91,141,238,0.1);
-  border-color: rgba(91,141,238,0.3);
-  color: var(--accent, #5b8dee);
 }
 
 /* ── Icon button (manage) ──────────────────────────────────────────────── */

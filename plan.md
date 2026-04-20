@@ -179,7 +179,7 @@ Full design in [`development_plan_v3.md`](./development_plan_v3.md). Suggested i
 - [ ] **F7** OSCE preparation — Option B (checklists) first, then Option A (AI patient roleplay) — `osce_*` tables, `/app/osce/*`
 - [ ] **F8** Editable lecture topics — `user_lecture_settings.topics_override` jsonb, edit UI in modal + manage page
 - [ ] **F9** Header navigation menu (Lectures / Study Plan / Progress) — `Header.tsx` nav links + `/app/progress` route
-- [~] **F10** Dashboard layout polish — Upload + Custom Session above grid; My Lectures → header; Manage → pencil icon in filter bar. *Partial: mobile section header single-row, horizontal-scroll filter pills, Manage pencil always visible, mobile dashboard padding corrected. Full layout polish (hero center, two-column, action row) remains.*
+- [x] **F10** Dashboard layout polish — action row (Custom Session + Manage) above filter bar; Upload intentionally omitted from action row (Upload is in the header nav/drawer — duplicate in action row adds clutter). Mobile section header single-row, horizontal-scroll filter pills, Manage pencil always visible.
 
 ---
 
