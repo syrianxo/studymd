@@ -13,7 +13,6 @@ export interface Lecture {
   title: string;
   subtitle: string | null;
   course: Course;
-  color: string;
   theme_colors?: Partial<Record<Theme, string>> | null;
   icon: string;
   topics: string[];

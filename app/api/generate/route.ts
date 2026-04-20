@@ -25,6 +25,24 @@ import { buildSystemWithCache } from '@/lib/lecture-processor-prompt';
 import { validateLecture, type LectureJSON } from '@/lib/validate-lecture';
 import { extractPptxSlides, formatSlidesForClaude } from '@/lib/pptx-extractor';
 
+// ─── Theme color palette ──────────────────────────────────────────────────────
+const PALETTE = [
+  { midnight: '#5b8dee', pink: '#f472b6', forest: '#10b981' },
+  { midnight: '#8b5cf6', pink: '#ec4899', forest: '#34d399' },
+  { midnight: '#06b6d4', pink: '#db2777', forest: '#84cc16' },
+  { midnight: '#10b981', pink: '#e879f9', forest: '#65a30d' },
+  { midnight: '#f59e0b', pink: '#c084fc', forest: '#f59e0b' },
+  { midnight: '#ef4444', pink: '#a855f7', forest: '#d97706' },
+  { midnight: '#ec4899', pink: '#fb7185', forest: '#b45309' },
+  { midnight: '#a855f7', pink: '#f43f5e', forest: '#78716c' },
+];
+// Pick a palette entry deterministically from the internalId's trailing hex chars
+function pickThemeColors(internalId: string): Record<string, string> {
+  const hex = internalId.replace(/[^0-9a-f]/gi, '');
+  const idx = hex.length ? parseInt(hex.slice(-2), 16) % PALETTE.length : 0;
+  return PALETTE[idx];
+}
+
 // ─── Supabase admin client ────────────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function getSupabaseAdmin(): SupabaseClient<any, 'public', any> {
@@ -456,7 +474,7 @@ export async function POST(request: NextRequest) {
     title: lecture.title || title,
     subtitle: '',
     course: lecture.course,
-    color: '#5b8dee',
+    theme_colors: pickThemeColors(internalId),
     icon: '🩺',
     topics: lecture.topics,
     slide_count: body.slideCount ?? 0,

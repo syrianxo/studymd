@@ -33,7 +33,6 @@ export interface Lecture {
   subtitle: string | null;
   icon: string;
   course: Course;
-  color: string;
   display_order: number;
   topics: string[];
   slide_count: number;
@@ -56,16 +55,13 @@ export interface Lecture {
 }
 
 /** Resolve the display color for a lecture given the active theme.
- *  Priority: user color_override[theme] → lectures.theme_colors[theme] → lectures.color → var(--accent)
+ *  Priority: user color_override[theme] → lectures.theme_colors[theme] → var(--accent)
  */
 export function resolveColor(lecture: Lecture, activeTheme: Theme): string {
   if (lecture.color_override?.[activeTheme]) {
     return lecture.color_override[activeTheme]!;
   }
-  if (lecture.theme_colors?.[activeTheme]) {
-    return lecture.theme_colors[activeTheme]!;
-  }
-  return lecture.color ?? 'var(--accent)';
+  return lecture.theme_colors?.[activeTheme] ?? 'var(--accent)';
 }
 
 interface UseUserLecturesResult {
@@ -98,7 +94,7 @@ export function useUserLectures(): UseUserLecturesResult {
       // ── 1. Fetch base lecture rows ──────────────────────────────────────
       const { data: lectureRows, error: lectureErr } = await supabase
         .from('lectures')
-        .select('internal_id, title, subtitle, icon, course, color, theme_colors, topics, slide_count, created_at, json_data')
+        .select('internal_id, title, subtitle, icon, course, theme_colors, topics, slide_count, created_at, json_data')
         .order('internal_id', { ascending: true });
 
       if (lectureErr) throw lectureErr;
