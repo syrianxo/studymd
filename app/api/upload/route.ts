@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { checkLimits, estimateCost, estimateTokens, TOKEN_PREFLIGHT_LIMIT } from '@/lib/api-limits';
+import { generateLectureInternalId } from '@/lib/id-generator';
 
 // ─── Route config ───────────────────────────────────────────────────────────
 export const maxDuration = 30;
@@ -14,13 +15,6 @@ const STORAGE_BUCKET      = 'uploads';
 function getFileExtension(filename: string): string {
   const dot = filename.lastIndexOf('.');
   return dot >= 0 ? filename.slice(dot).toLowerCase() : '';
-}
-
-function generateInternalId(): string {
-  const hex = Array.from(crypto.getRandomValues(new Uint8Array(4)))
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('');
-  return `lec_${hex}`;
 }
 
 function getSupabaseAdmin() {
@@ -107,7 +101,7 @@ export async function POST(request: NextRequest) {
 
     const estimatedCost = estimateCost(fileSizeBytes);
     const lectureTitle  = titleOverride?.trim() || originalName.replace(/\.[^.]+$/, '');
-    const internalId    = generateInternalId();
+    const internalId    = generateLectureInternalId();
 
     const supabase = getSupabaseAdmin();
 

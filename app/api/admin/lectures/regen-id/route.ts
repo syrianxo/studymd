@@ -11,6 +11,7 @@ import { requireAdmin } from '@/lib/admin-auth';
 import { createClient as createSupabaseClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
+import { INTERNAL_ID_PATTERN } from '@/lib/id-generator';
 
 export async function POST(req: NextRequest) {
   const auth = await requireAdmin();
@@ -20,7 +21,7 @@ export async function POST(req: NextRequest) {
   const { oldId, newId, password } = await req.json() as { oldId: string; newId: string; password?: string };
 
   if (!oldId || !newId) return NextResponse.json({ error: 'oldId and newId required' }, { status: 400 });
-  if (!newId.match(/^lec_[a-f0-9]{8}$/)) return NextResponse.json({ error: 'newId must match lec_xxxxxxxx format' }, { status: 400 });
+  if (!INTERNAL_ID_PATTERN.test(newId)) return NextResponse.json({ error: 'newId must match lec_xxxxxxxx or lec_YYYYMMDD_xxxxxx format' }, { status: 400 });
 
   // If password provided, verify it by attempting a sign-in
   if (password) {
