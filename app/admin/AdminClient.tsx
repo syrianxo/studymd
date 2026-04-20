@@ -1084,7 +1084,6 @@ export default function AdminClient({ adminName }: { adminName: string }) {
   const [section, setSection] = useState<Section>('overview');
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
   const [navOpen, setNavOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
 
   const showToast = useCallback((msg: string, type: 'ok' | 'err') => setToast({ msg, type }), []);
 
@@ -1108,10 +1107,10 @@ export default function AdminClient({ adminName }: { adminName: string }) {
               </button>
             ))}
           </nav>
-          <button className="adm-sidebar-footer adm-profile-btn" onClick={() => setProfileOpen(true)} aria-label="Edit profile">
-            <div className="adm-admin-name">Signed in as · click to edit ✏️</div>
+          <Link href="/app/profile" className="adm-sidebar-footer adm-profile-btn" aria-label="Profile & Settings">
+            <div className="adm-admin-name">Signed in as</div>
             <div className="adm-admin-name-val">{adminName}</div>
-          </button>
+          </Link>
         </aside>
 
         <div className="adm-mobile-bar">
@@ -1138,7 +1137,6 @@ export default function AdminClient({ adminName }: { adminName: string }) {
         </main>
 
         {toast && <Toast msg={toast.msg} type={toast.type} onDone={() => setToast(null)} />}
-        {profileOpen && <ProfileModal adminName={adminName} onClose={() => setProfileOpen(false)} onToast={showToast} />}
       </div>
     </>
   );
@@ -1159,7 +1157,7 @@ const css = `
 .adm-nav-active{background:rgba(91,141,238,.12)!important;color:var(--accent,#5b8dee)!important;font-weight:600}
 .adm-nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
 .adm-sidebar-footer{padding:14px 20px;border-top:1px solid var(--border,rgba(255,255,255,0.08))}
-.adm-profile-btn{background:none;border:none;cursor:pointer;width:100%;text-align:left;border-radius:10px;transition:background .13s}
+.adm-profile-btn{display:block;background:none;border:none;cursor:pointer;width:100%;text-align:left;border-radius:10px;transition:background .13s;text-decoration:none;color:inherit}
 .adm-profile-btn:hover{background:rgba(255,255,255,.05)}
 .adm-admin-name{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em}
 .adm-admin-name-val{font-size:13px;font-weight:600;color:var(--text);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
