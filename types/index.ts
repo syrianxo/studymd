@@ -5,7 +5,7 @@ export type Course =
   | 'Anatomy & Physiology'
   | 'Laboratory Diagnosis';
 
-export type Theme = 'midnight' | 'pink' | 'forest';
+export type { ThemeId as Theme } from '@/lib/themes';
 
 export interface Lecture {
   internal_id: string;
