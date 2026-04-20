@@ -10,6 +10,7 @@ interface DashboardClientProps {
   userName: string;
   userId: string;
   isPrimary?: boolean;
+  isAdmin?: boolean;
 }
 
 export function DashboardClient({
@@ -17,10 +18,11 @@ export function DashboardClient({
   userName,
   userId,
   isPrimary = false,
+  isAdmin = false,
 }: DashboardClientProps) {
   useEffect(() => {
     applyTheme(initialTheme);
   }, [initialTheme]);
 
-  return <Dashboard userName={userName} userId={userId} initialTheme={initialTheme} isPrimary={isPrimary} />;
+  return <Dashboard userName={userName} userId={userId} initialTheme={initialTheme} isPrimary={isPrimary} isAdmin={isAdmin} />;
 }
