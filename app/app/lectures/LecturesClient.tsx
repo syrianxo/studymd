@@ -19,6 +19,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import { createClient } from '@/lib/supabase';
 import type { Theme } from '@/types';
+import { migrateThemeId } from '@/lib/themes';
 import {
   DndContext,
   closestCenter,
@@ -153,7 +154,7 @@ async function apiFetch(path: string, opts?: RequestInit) {
 }
 
 // ─── Color helper ───────────────────────────────────────────────────────────
-// color_override in DB is a JSONB object {midnight: '#hex', pink: '#hex', ...}
+// color_override in DB is a JSONB object {midnight: '#hex', aurora: '#hex', ...}
 // or null, or a plain hex string (legacy). We extract the current theme's hex.
 function resolveColorHex(raw: unknown): string {
   if (!raw) return '#5b8dee';
@@ -161,7 +162,7 @@ function resolveColorHex(raw: unknown): string {
   if (typeof raw === 'object' && raw !== null) {
     const obj = raw as Record<string, string>;
     // Try to get any stored color — prefer midnight, then first value
-    return obj.midnight ?? obj.pink ?? obj.forest ?? Object.values(obj)[0] ?? '#5b8dee';
+    return obj.midnight ?? obj.aurora ?? obj.pink ?? obj.forest ?? Object.values(obj)[0] ?? '#5b8dee';
   }
   return '#5b8dee';
 }
@@ -1318,8 +1319,12 @@ export default function LecturesClient({ initialLectures }: { initialLectures: L
       if (data.user) setUserId(data.user.id);
     });
     try {
-      const stored = localStorage.getItem('studymd_theme') as Theme | null;
-      if (stored === 'midnight' || stored === 'pink' || stored === 'forest') setTheme(stored);
+      const raw = localStorage.getItem('studymd_theme');
+      const migrated = raw ? migrateThemeId(raw) : null;
+      if (migrated) {
+        if (raw !== migrated) localStorage.setItem('studymd_theme', migrated);
+        setTheme(migrated);
+      }
     } catch {}
   }, []);
 

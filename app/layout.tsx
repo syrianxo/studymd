@@ -34,7 +34,8 @@ export default function RootLayout({
               (function() {
                 try {
                   var theme = localStorage.getItem('studymd_theme');
-                  var valid = ['midnight', 'pink', 'forest'];
+                  if (theme === 'pink') { theme = 'aurora'; localStorage.setItem('studymd_theme', 'aurora'); }
+                  var valid = ['midnight', 'aurora', 'forest'];
                   if (theme && valid.indexOf(theme) !== -1) {
                     document.documentElement.setAttribute('data-theme', theme);
                   }

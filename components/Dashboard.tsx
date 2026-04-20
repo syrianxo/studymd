@@ -15,6 +15,7 @@ import PomodoroTimer from '@/components/PomodoroTimer';
 import { StudyConfigManager, useStudyConfig } from '@/components/StudyConfigManager';
 import TodaysPlanWidget from '@/components/TodaysPlanWidget';
 import type { Course, Theme, StudyPlan } from '@/types';
+import { migrateThemeId } from '@/lib/themes';
 import type { FlashcardConfig } from '@/components/study/FlashcardConfigModal';
 import type { ExamConfig } from '@/components/study/ExamConfigModal';
 
@@ -91,11 +92,12 @@ export default function Dashboard({
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('studymd_theme') as Theme | null;
-      if (stored === 'midnight' || stored === 'pink' || stored === 'forest') {
-        setTheme(stored);
-        // Ensure the data-theme attribute is applied on the html element
-        document.documentElement.dataset.theme = stored;
+      const raw = localStorage.getItem('studymd_theme');
+      const migrated = raw ? migrateThemeId(raw) : null;
+      if (migrated) {
+        if (raw !== migrated) localStorage.setItem('studymd_theme', migrated);
+        setTheme(migrated);
+        document.documentElement.dataset.theme = migrated;
       }
     } catch {}
   }, []);

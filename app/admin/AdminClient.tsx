@@ -319,7 +319,7 @@ function UsersSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') => vo
                     </td>
                     <td>
                       <select className="adm-select" value={u.theme ?? 'midnight'} onChange={e => handleThemeChange(u.user_id, e.target.value)}>
-                        <option value="midnight">🌑 Midnight</option><option value="pink">🌸 Pink</option><option value="forest">🌲 Forest</option>
+                        <option value="midnight">🌑 Midnight</option><option value="aurora">🌌 Aurora</option><option value="forest">🌲 Forest</option>
                       </select>
                     </td>
                     <td>{u.lectureCount}</td>
@@ -949,7 +949,7 @@ function ConfigSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') => v
     ]},
     { title: 'Theme Display Names', keys: [
       { key: 'theme_midnight_name', label: 'Midnight theme name', type: 'text' },
-      { key: 'theme_pink_name',     label: 'Pink theme name',     type: 'text' },
+      { key: 'theme_aurora_name',   label: 'Aurora theme name',   type: 'text' },
       { key: 'theme_forest_name',   label: 'Forest theme name',   type: 'text' },
     ]},
     { title: 'Site Content', keys: [
