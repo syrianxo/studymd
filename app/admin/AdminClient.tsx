@@ -34,7 +34,7 @@ interface ExamQuestion { id: string; type: string; question: string; options?: s
 interface LectureRow {
   internal_id: string; title: string; subtitle: string | null; course: string;
   created_at: string; slide_count: number; original_file: string | null;
-  flashcard_count: number; question_count: number; icon: string; color: string;
+  flashcard_count: number; question_count: number; icon: string;
   flashcards?: Flashcard[]; questions?: ExamQuestion[];
 }
 interface FeedbackRow { id: string; user_id: string | null; user_name: string; type: string; message: string; page_url: string | null; status: 'new' | 'reviewed' | 'resolved'; created_at: string; }
@@ -427,7 +427,7 @@ function LecturesSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') =>
       if (data) setLectures(prev => prev.map(x => x.internal_id === l.internal_id ? { ...x, ...data } : x));
     }
     if (!tab[l.internal_id]) setTab(p => ({ ...p, [l.internal_id]: 'meta' }));
-    if (!ef[l.internal_id]) setEf(p => ({ ...p, [l.internal_id]: { title: l.title, subtitle: l.subtitle ?? '', course: l.course, color: l.color, icon: l.icon } }));
+    if (!ef[l.internal_id]) setEf(p => ({ ...p, [l.internal_id]: { title: l.title, subtitle: l.subtitle ?? '', course: l.course, icon: l.icon } }));
   }
 
   async function saveMeta(id: string) {
@@ -559,15 +559,6 @@ function LecturesSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') =>
                             {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
                           </select>
                         </div>
-                        <div className="adm-meta-field">
-                          <label className="adm-form-label">default color</label>
-                          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <input type="color" value={String(fields.color ?? l.color)}
-                              onChange={e => setEf(p => ({ ...p, [l.internal_id]: { ...p[l.internal_id], color: e.target.value } }))}
-                              style={{ width: 44, height: 44, border: 'none', background: 'none', cursor: 'pointer', borderRadius: 8 }} />
-                            <code className="adm-id-code">{String(fields.color ?? l.color)}</code>
-                          </div>
-                        </div>
                         <div className="adm-meta-field adm-meta-field-full">
                           <button className="adm-btn adm-btn-primary" style={{ alignSelf: 'flex-start' }} onClick={() => saveMeta(l.internal_id)}>Save Changes</button>
                         </div>
@@ -630,11 +621,11 @@ function LecturesSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') =>
         <div className="adm-overlay"><div className="adm-dialog" style={{ maxWidth: 620, width: '90vw' }}>
           <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, marginBottom: 8 }}>Add Lecture via JSON</h3>
           <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 14 }}>
-            Paste a full lecture JSON. Required: <code>title</code>, <code>course</code>, <code>icon</code>, <code>color</code>. <code>internal_id</code> is auto-generated if omitted.
+            Paste a full lecture JSON. Required: <code>title</code>, <code>course</code>, <code>icon</code>. <code>internal_id</code> is auto-generated if omitted.
           </p>
           <textarea className="adm-json-textarea" rows={14} value={addJson} spellCheck={false}
             onChange={e => { setAddJson(e.target.value); setAddErr(''); }}
-            placeholder={'{\n  "title": "Lecture Name",\n  "course": "Physical Diagnosis I",\n  "icon": "🫁",\n  "color": "#5b8dee",\n  "json_data": { "flashcards": [], "questions": [] }\n}'} />
+            placeholder={'{\n  "title": "Lecture Name",\n  "course": "Physical Diagnosis I",\n  "icon": "🫁",\n  "json_data": { "flashcards": [], "questions": [] }\n}'} />
           {addErr && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 8 }}>{addErr}</div>}
           <div className="adm-dialog-btns" style={{ marginTop: 14 }}>
             <button className="adm-btn adm-btn-ghost" onClick={() => { setAddOpen(false); setAddErr(''); }}>Cancel</button>
@@ -946,11 +937,6 @@ function ConfigSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') => v
       { key: 'max_daily_calls', label: 'Max Daily API Calls', type: 'number' },
       { key: 'max_daily_input_tokens', label: 'Max Daily Input Tokens', type: 'number' },
       { key: 'max_monthly_cost_usd', label: 'Max Monthly Cost (USD)', type: 'number' },
-    ]},
-    { title: 'Theme Display Names', keys: [
-      { key: 'theme_midnight_name', label: 'Midnight theme name', type: 'text' },
-      { key: 'theme_aurora_name',   label: 'Aurora theme name',   type: 'text' },
-      { key: 'theme_forest_name',   label: 'Forest theme name',   type: 'text' },
     ]},
     { title: 'Site Content', keys: [
       { key: 'site_favicon_url',           label: 'Favicon URL',                       type: 'text' },
