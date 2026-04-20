@@ -796,6 +796,7 @@ const dashboardCss = `
 
 /* ── Mobile overrides ─────────────────────────────────────────────────── */
 @media (max-width: 767px) {
+  .smd-dashboard { padding: 24px 16px; }
   .smd-hero { margin: 1.5rem auto 1rem; }
   .smd-section-actions .btn { min-height: 44px; }
   .smd-footer-inner { padding: 36px 16px 24px; }

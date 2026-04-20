@@ -30,7 +30,7 @@ function avatarColor(str: string): string {
 
 const THEMES: { id: Theme; label: string; bg: string; accent: string; surface: string }[] = [
   { id: 'midnight', label: 'Midnight', bg: '#0d0f14', accent: '#5b8dee', surface: '#13161d' },
-  { id: 'pink',     label: 'Lavender', bg: '#0f0d14', accent: '#c084fc', surface: '#16131d' },
+  { id: 'pink',     label: 'Pink',     bg: '#1a0e16', accent: '#f472b6', surface: '#231320' },
   { id: 'forest',   label: 'Forest',   bg: '#0a0f0d', accent: '#34d399', surface: '#0f1610' },
 ];
 
