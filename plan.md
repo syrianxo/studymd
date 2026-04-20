@@ -179,7 +179,7 @@ Full design in [`development_plan_v3.md`](./development_plan_v3.md). Suggested i
 - [ ] **F7** OSCE preparation — Option B (checklists) first, then Option A (AI patient roleplay) — `osce_*` tables, `/app/osce/*`
 - [ ] **F8** Editable lecture topics — `user_lecture_settings.topics_override` jsonb, edit UI in modal + manage page
 - [ ] **F9** Header navigation menu (Lectures / Study Plan / Progress) — `Header.tsx` nav links + `/app/progress` route
-- [ ] **F10** Dashboard layout polish — Upload + Custom Session above grid; My Lectures → header; Manage → pencil icon in filter bar
+- [~] **F10** Dashboard layout polish — Upload + Custom Session above grid; My Lectures → header; Manage → pencil icon in filter bar. *Partial: mobile section header single-row, horizontal-scroll filter pills, Manage pencil always visible. Full layout polish (hero center, two-column, action row) remains.*
 
 ---
 
@@ -228,7 +228,7 @@ Higher-effort or higher-risk features that depend on v3 stabilizing. These are s
 
 ### Code quality
 
-- [ ] Drop `color_override_legacy` column once no readers remain
+- [ ] Drop `color_override_legacy` column once no readers remain. (Note: `lectures.color` TEXT already dropped — replaced by `theme_colors` JSONB per ADR-023.)
 - [ ] Move admin email + UUIDs out of code into `system_config`
 - [ ] Add `app/sitemap.ts` + `app/robots.ts`
 - [ ] Split `Dashboard.tsx` (33KB) and `ManageLectureCard.tsx` (45KB) into focused subcomponents

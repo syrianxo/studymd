@@ -6,7 +6,12 @@
 
 ## 🚧 Now (in flight)
 
-_(nothing currently in flight — populate when starting v3 prereqs)_
+### Slice 4 — Global polish (remaining)
+
+- [ ] **4.1 Filter bar alignment (N4)** — "Your Lectures" header + filter bar + "COURSE" label need unified horizontal padding. See execution guide Commit 4.1.
+- [ ] **4.2 Text selection highlight (N8)** — Add theme-aware `::selection` CSS in `styles/themes.css`. See execution guide Commit 4.2.
+- [ ] **4.3 "Lavender" → "Pink" on profile page (#23)** — `app/app/profile/page.tsx` still shows "Lavender" label in theme card. Grep for "Lavender"/"lavender" and fix.
+- [ ] **4.5 Mobile filter bar cleanup (#15)** — Verify horizontal-scroll pills haven't regressed; cleanup pass after Slice 1.
 
 ---
 
@@ -110,6 +115,13 @@ _(nothing currently in flight — populate when starting v3 prereqs)_
 
 ## ✅ Recently completed
 
+- [x] **Slice 3 — Kebab menu correctness** — Removed spurious `[menuRef.current]` useEffect causing menu position jump on click; added `onMouseEnter` hover-to-expand on Change Course / Change Color submenus. Commits `fix(kebab)`.
+- [x] **N10 — Color persistence** — `Dashboard.handleChangeColor` now calls `refetch()`; `LectureViewModal` triggers `onChangeColor` after API success; ManageMode closing also calls `refetch()`. Color changes from all entry points now persist.
+- [x] **iOS modal flexbox fixes** — `FlashcardConfigModal`, `ExamConfigModal`, `CustomSessionModal` converted from `position:sticky` to flexbox column layout. Close `[X]` always visible on real iOS Safari.
+- [x] **Mobile lecture section header** — single-row on ≤479px (`flex-wrap: nowrap`); filter pills horizontal-scroll on ≤639px; Archived toggle only in Manage Mode.
+- [x] **Theme palette upgrade** — Pink = pinks/purples/reds; Forest = greens/browns/yellows; Midnight keeps blues/purples. Consistent across `ManageLectureCard`, `LectureViewModal`.
+- [x] **Per-theme lecture default colors** — Added `theme_colors` JSONB column to `lectures` table; seeded palette-cycled defaults for all existing lectures; cleared `user_lecture_settings.color_override` for fresh start. `resolveColor()` now: `color_override[theme]` → `theme_colors[theme]` → `var(--accent)`. Dropped legacy `lectures.color` TEXT column.
+- [x] **4.4 Admin "click to edit" removed** — Admin sidebar name now links to `/app/profile` instead of opening a redundant in-admin modal. "Click to edit ✏️" label text removed.
 - [x] Comprehensive documentation pass — README, CLAUDE.md, architecture.md, documentation.md, recommendations.md, development_plan_v3.md, decisions.md, todo.md (this file).
 
 ---

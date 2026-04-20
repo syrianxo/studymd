@@ -321,6 +321,39 @@ Dates reflect when the decision landed in the repo (from git history) or, for un
 
 ---
 
+## ADR-023 · Per-theme default lecture colors via `lectures.theme_colors` JSONB
+- **Date:** 2026-04-19 (Slice 3 color work)
+- **Status:** Accepted
+- **Context:** Each lecture had a single `color` TEXT column (a theme-agnostic hex). Switching themes didn't change card colors — every theme showed the same hex. The per-user `color_override` JSONB was already keyed by theme, but the base default was not.
+- **Decision:** Replace `lectures.color` TEXT with `lectures.theme_colors` JSONB `{ midnight: "#hex", pink: "#hex", forest: "#hex" }`. Seed existing lectures with palette-cycled colors. New lectures receive `theme_colors` at insert time (deterministic index from trailing hex chars of `internal_id`). Dropped the old `color` column.
+- **SQL:**
+  ```sql
+  ALTER TABLE lectures ADD COLUMN IF NOT EXISTS theme_colors JSONB;
+  -- (seeded via palette CTE — see session history)
+  UPDATE user_lecture_settings SET color_override = NULL; -- reset for clean start
+  ALTER TABLE lectures DROP COLUMN IF EXISTS color;
+  ```
+- **Consequences:**
+  - (+) Switching theme now changes all lecture card colors to the per-theme default.
+  - (+) `resolveColor(lecture, theme)` priority: `color_override[theme]` → `theme_colors[theme]` → `var(--accent)`.
+  - (+) Each theme can have a visually coherent palette (Midnight = blues, Pink = pinks/purples, Forest = greens/browns).
+  - (−) New lectures must set `theme_colors` at insert; both upload routes (`/api/generate`, `/api/admin/lectures/add`) updated.
+  - Revisit when: a user wants different colors for each theme on the same lecture (already supported via `color_override`).
+
+---
+
+## ADR-024 · Admin sidebar name links to `/app/profile` instead of inline modal
+- **Date:** 2026-04-19 (Slice 4 — fix #22)
+- **Status:** Accepted
+- **Context:** The admin sidebar had a "Signed in as · click to edit ✏️" affordance that opened a `ProfileModal` inline in the admin panel. This duplicated the `/app/profile` page that's already accessible from the gear icon in `/app`. Two UIs for the same action, and the admin modal looked inconsistent.
+- **Decision:** Remove "Click to Edit" text and the inline `ProfileModal`. Replace the `<button onClick={() => setProfileOpen(true)}>` with a `<Link href="/app/profile">`. The existing `/app/profile` page is the single canonical settings location.
+- **Consequences:**
+  - (+) Eliminates a redundant UI surface.
+  - (+) Profile editing is consistent across admin and student contexts.
+  - (−) Admin must leave the admin panel briefly to edit their profile. Acceptable since it's an infrequent action.
+
+---
+
 ## Template for new ADRs
 
 Copy/paste and fill in:
