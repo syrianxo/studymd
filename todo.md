@@ -110,6 +110,8 @@ _(Aurora rename + theme registry complete — see Recently Completed. Next: v3 p
 
 ## ✅ Recently completed
 
+- [x] **Slice 5, Fix #11 — internal_id** — extracted `generateLectureInternalId()` into [`lib/id-generator.ts`](./lib/id-generator.ts) with date-prefixed format `lec_YYYYMMDD_xxxxxx`. Updated [`/api/upload`](./app/api/upload/route.ts) and regen-id validator. DB audit: all 17 existing lectures already have IDs set, no backfill needed.
+- [x] **Slice 5, Fix #9 — slide_number** — added `slide_number` (required positive integer) to flashcard + question schema in [`lib/lecture-processor-prompt.ts`](./lib/lecture-processor-prompt.ts) and validator in [`lib/validate-lecture.ts`](./lib/validate-lecture.ts). Missing slide_number now fails validation → triggers Sonnet fallback. Added [`POST /api/admin/reprocess/[internalId]`](./app/api/admin/reprocess/[internalId]/route.ts) to backfill existing 17 lectures (run each one to get slide refs).
 - [x] **Slice 3 — Kebab menu correctness** — Removed spurious `[menuRef.current]` useEffect causing menu position jump on click; added `onMouseEnter` hover-to-expand on Change Course / Change Color submenus. Commits `fix(kebab)`.
 - [x] **N10 — Color persistence** — `Dashboard.handleChangeColor` now calls `refetch()`; `LectureViewModal` triggers `onChangeColor` after API success; ManageMode closing also calls `refetch()`. Color changes from all entry points now persist.
 - [x] **iOS modal flexbox fixes** — `FlashcardConfigModal`, `ExamConfigModal`, `CustomSessionModal` converted from `position:sticky` to flexbox column layout. Close `[X]` always visible on real iOS Safari.
