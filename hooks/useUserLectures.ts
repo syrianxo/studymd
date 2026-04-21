@@ -1,7 +1,7 @@
 // hooks/useUserLectures.ts
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
 import type { Course, Theme } from '@/types';
 
@@ -86,8 +86,13 @@ export function useUserLectures(): UseUserLecturesResult {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // Only show the skeleton on the very first load.
+  // Background refetches (e.g. after move-to-folder) keep the current cards
+  // visible and update them in-place once the new data arrives.
+  const hasLoadedOnce = useRef(false);
+
   const fetchLectures = useCallback(async () => {
-    setLoading(true);
+    if (!hasLoadedOnce.current) setLoading(true);
     setError(null);
 
     try {
@@ -172,10 +177,13 @@ export function useUserLectures(): UseUserLecturesResult {
 
       setLectures(merged);
       setCourses(uniqueCourses);
+      hasLoadedOnce.current = true;
     } catch (err) {
       console.error('[useUserLectures]', err);
       setError((err as Error).message);
     } finally {
+      // Only clear the loading spinner that was shown on initial load.
+      // Background refetches never set loading=true, so this is a no-op for them.
       setLoading(false);
     }
   }, [supabase]);
