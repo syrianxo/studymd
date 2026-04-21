@@ -17,7 +17,6 @@ import { useUserLectures, resolveColor } from '@/hooks/useUserLectures';
 import type { Lecture } from '@/hooks/useUserLectures';
 import { useProgress } from '@/hooks/useProgress';
 import { useFolders } from '@/hooks/useFolders';
-import { FolderBreadcrumb } from '@/components/FolderTree';
 import { createClient } from '@/lib/supabase';
 import PomodoroTimer from '@/components/PomodoroTimer';
 import { StudyConfigManager, useStudyConfig } from '@/components/StudyConfigManager';
@@ -190,14 +189,11 @@ export default function Dashboard({
     [lectures]
   );
 
-  // Breadcrumb ancestors — only relevant when inside a real folder (not __all__ sentinel)
+  // activeFolder is kept for potential future use (e.g. showing folder icon in header)
+  // isRealFolder = navigated into a user folder (not null/unfiled, not __all__)
   const isRealFolder = activeFolderId !== null && activeFolderId !== '__all__';
-  const folderAncestors = useMemo(
-    () => (isRealFolder ? ancestorsOf(activeFolderId!) : []),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [activeFolderId, ancestorsOf]
-  );
   const activeFolder = isRealFolder ? folderById(activeFolderId!) : null;
+  void activeFolder; // referenced below for future use; suppress unused-var lint
 
   // ── Stats ─────────────────────────────────────────────────────────────────
   const avgScore = progressLoading || globalStats.avgExamScore === null
@@ -501,26 +497,11 @@ export default function Dashboard({
           Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.
         </p>
 
-        {/* ── FOLDER BREADCRUMB ─────────────────────────────────────────── */}
-        {isRealFolder && (
-          <div style={{ marginBottom: '0.5rem' }}>
-            <FolderBreadcrumb
-              ancestors={folderAncestors}
-              current={activeFolder ? { name: activeFolder.name, icon: activeFolder.icon } : null}
-              onNavigate={setActiveFolderId}
-            />
-          </div>
-        )}
-
         {/* ── SECTION HEADER ──────────────────────────────────────────────── */}
+        {/* Breadcrumb removed — active pill in FolderBar shows current location */}
         <div className="smd-section-header">
           <div className="smd-section-title">
-            {activeFolderId === '__all__'
-              ? '📚 All Lectures'
-              : isRealFolder && activeFolder
-                ? <>{activeFolder.icon} {activeFolder.name}</>
-                : '📋 Unfiled'
-            }
+            Your Lectures
             {!lecturesLoading && (
               <span className="smd-lecture-count-badge">
                 {visibleLectures.length}
@@ -544,16 +525,6 @@ export default function Dashboard({
             </button>
           </div>
         </div>
-
-        {/* Filter bar only shown in All Lectures view — easy to re-enable elsewhere if needed */}
-        {!manageOpen && activeFolderId === '__all__' && (
-          <FilterBar
-            allCourses={courses}
-            allTags={[]}
-            filter={filter}
-            onChange={setFilter}
-          />
-        )}
 
         {manageOpen && userId && (
           <ManageMode
@@ -604,6 +575,18 @@ export default function Dashboard({
               onMoveUp={(id) => handleReorderFolder(id, 'up')}
               onMoveDown={(id) => handleReorderFolder(id, 'down')}
             />
+
+            {/* Filter bar sits directly below FolderBar and animates in/out
+                without unmounting — max-height transition keeps the grid stable */}
+            <div className={`smd-filter-drawer${activeFolderId === '__all__' ? ' smd-filter-drawer--open' : ''}`}>
+              <FilterBar
+                allCourses={courses}
+                allTags={[]}
+                filter={filter}
+                onChange={setFilter}
+              />
+            </div>
+
             <LectureGrid
               lectures={visibleLectures}
               progressByLecture={progressByLecture}
@@ -751,6 +734,20 @@ export default function Dashboard({
 
 // ── Scoped CSS ───────────────────────────────────────────────────────────────
 const dashboardCss = `
+/* ── Filter drawer — animates below FolderBar without unmounting ────────── */
+/* max-height transition keeps the grid from jumping when toggling All view */
+.smd-filter-drawer {
+  overflow: hidden;
+  max-height: 0;
+  /* margin handled by open state to avoid gap when closed */
+  margin-bottom: 0;
+  transition: max-height 0.22s ease, margin-bottom 0.22s ease;
+}
+.smd-filter-drawer--open {
+  max-height: 120px;   /* generous ceiling; FilterBar is ~48px tall */
+  margin-bottom: 12px;
+}
+
 /* ── Visibility utils ──────────────────────────────────────────────────── */
 .smd-mobile-only  { display: none; }
 .smd-desktop-only { display: flex; }
