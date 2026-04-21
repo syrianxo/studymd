@@ -241,12 +241,13 @@ export default function FolderTile({
         .ft-dropdown button:hover { background: var(--surface2); }
         .ft-danger { color: #ef5350 !important; }
 
-        .ft-color-picker { min-width: 190px; padding: 10px; }
+        .ft-color-picker { min-width: 200px; padding: 10px; }
         .ft-cp-label { font-size: 12px; color: var(--text-muted); margin-bottom: 8px; }
-        .ft-cp-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        /* Fixed pixel columns — 1fr stretches wider than height, producing ovals */
+        .ft-cp-grid { display: grid; grid-template-columns: repeat(7, 24px); gap: 5px; justify-content: start; }
         .ft-cp-swatch {
-          width: 22px;
-          height: 22px;
+          width: 24px;
+          height: 24px;
           border-radius: 50%;
           border: none;
           cursor: pointer;

@@ -2,9 +2,15 @@
 'use client';
 
 import { useState, useMemo, useEffect, useCallback } from 'react';
+import {
+  DndContext, DragOverlay, PointerSensor, useSensor, useSensors,
+  type DragStartEvent, type DragEndEvent,
+} from '@dnd-kit/core';
 import Header from './Header';
 import { FilterBar, type FilterState } from './FilterBar';
 import LectureGrid from './LectureGrid';
+import FolderBar from './FolderBar';
+import NewFolderModal from './NewFolderModal';
 import { ManageMode } from './ManageMode';
 import CustomSessionModal, { type CustomSessionConfig } from './CustomSessionModal';
 import { useUserLectures, resolveColor } from '@/hooks/useUserLectures';
@@ -59,6 +65,13 @@ export default function Dashboard({
     updateFolder,
     deleteFolder,
   } = useFolders();
+
+  // ── DnD state ─────────────────────────────────────────────────────────────
+  const [draggingLectureId, setDraggingLectureId] = useState<string | null>(null);
+  const sensors = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 6 } }));
+
+  // ── Folder modal ──────────────────────────────────────────────────────────
+  const [newFolderModalOpen, setNewFolderModalOpen] = useState(false);
 
   // null = All Lectures (unfiltered); a UUID = drill into that folder
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
@@ -175,6 +188,12 @@ export default function Dashboard({
     }
     return counts;
   }, [folders]);
+
+  // Lectures not yet assigned to any folder — shown in NewFolderModal for immediate assignment
+  const unfiledLectures = useMemo(
+    () => lectures.filter(l => l.visible && !l.archived && !l.group_id),
+    [lectures]
+  );
 
   // Breadcrumb ancestors for the active folder
   const folderAncestors = useMemo(
@@ -301,10 +320,23 @@ export default function Dashboard({
   }
 
   // ── Folder handlers ───────────────────────────────────────────────────────
-  async function handleCreateFolder() {
-    const name = prompt('Folder name:');
-    if (!name?.trim()) return;
-    await createFolder(name.trim(), activeFolderId);
+  function handleCreateFolder() {
+    setNewFolderModalOpen(true);
+  }
+
+  async function handleCreateFolderWithLectures(name: string, icon: string, lectureIds: string[]) {
+    const folder = await createFolder(name, activeFolderId, icon);
+    // Assign selected lectures to the new folder immediately
+    if (lectureIds.length > 0) {
+      await Promise.all(lectureIds.map(id =>
+        fetch('/api/lectures/settings', {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ internalId: id, updates: { groupId: folder.id } }),
+        })
+      ));
+      refetch();
+    }
   }
 
   async function handleRenameFolder(id: string, name: string) {
@@ -320,6 +352,46 @@ export default function Dashboard({
 
   async function handleChangeFolderColor(id: string, color: string | null) {
     await updateFolder(id, { color });
+  }
+
+  // Reorder: swap display_order with the adjacent folder one position earlier/later
+  async function handleReorderFolder(id: string, direction: 'up' | 'down') {
+    const sorted = [...subfolders]; // already sorted by display_order
+    const idx = sorted.findIndex(f => f.id === id);
+    if (idx < 0) return;
+    const swapIdx = direction === 'up' ? idx - 1 : idx + 1;
+    if (swapIdx < 0 || swapIdx >= sorted.length) return;
+    const a = sorted[idx];
+    const b = sorted[swapIdx];
+    // Swap display_orders (use intermediate value to avoid unique-constraint race)
+    const orderA = a.display_order;
+    const orderB = b.display_order;
+    // If they somehow share the same order, use index as fallback
+    const newOrderA = orderB !== orderA ? orderB : swapIdx;
+    const newOrderB = orderB !== orderA ? orderA : idx;
+    await Promise.all([
+      updateFolder(a.id, { display_order: newOrderA }),
+      updateFolder(b.id, { display_order: newOrderB }),
+    ]);
+  }
+
+  // ── DnD handlers ──────────────────────────────────────────────────────────
+  function handleDragStart(event: DragStartEvent) {
+    const id = String(event.active.id);
+    // Draggable IDs are prefixed "lecture-{lectureId}"
+    if (id.startsWith('lecture-')) setDraggingLectureId(id.slice(8));
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    setDraggingLectureId(null);
+    const lectureId = draggingLectureId;
+    if (!lectureId || !event.over) return;
+    const overId = String(event.over.id);
+    // Drop-target IDs are prefixed "folder-{folderId}"
+    if (overId.startsWith('folder-')) {
+      const folderId = overId.slice(7);
+      handleMoveToFolder(lectureId, folderId);
+    }
   }
 
   function handleMoveToFolder(lectureId: string, folderId: string | null) {
@@ -452,7 +524,7 @@ export default function Dashboard({
             }
             {!lecturesLoading && (
               <span className="smd-lecture-count-badge">
-                {visibleLectures.length + subfolders.length}
+                {visibleLectures.length}
               </span>
             )}
           </div>
@@ -522,32 +594,66 @@ export default function Dashboard({
         )}
 
         {!manageOpen && (
-          <LectureGrid
-            lectures={visibleLectures}
-            progressByLecture={progressByLecture}
-            loading={lecturesLoading}
-            activeTheme={theme}
-            onStartFlash={handleStartFlash}
-            onStartExam={handleStartExam}
-            onChangeCourse={handleChangeCourse}
-            onChangeColor={handleChangeColor}
-            onHide={handleHide}
-            onArchive={handleArchive}
-            onRenameTitle={handleRenameTitle}
-            onTopicsChanged={handleTopicsChanged}
-            planNextReview={planNextReview}
-            planTestDate={activePlan?.test_date}
-            subfolders={subfolders}
-            subfoldersCount={subfoldersCount}
-            lectureCounts={lectureCounts}
-            onOpenFolder={setActiveFolderId}
-            onRenameFolder={handleRenameFolder}
-            onDeleteFolder={handleDeleteFolder}
-            onChangeFolderColor={handleChangeFolderColor}
-            onMoveToFolder={handleMoveToFolder}
-            exitingLectureIds={exitingLectureIds}
-            allFolders={folders}
-          />
+          <DndContext
+            sensors={sensors}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            <FolderBar
+              folders={subfolders}
+              activeFolderId={activeFolderId}
+              lectureCounts={lectureCounts}
+              isDragging={draggingLectureId !== null}
+              onNavigate={setActiveFolderId}
+              onCreateFolder={handleCreateFolder}
+              onRenameFolder={handleRenameFolder}
+              onDeleteFolder={handleDeleteFolder}
+              onChangeFolderColor={handleChangeFolderColor}
+              onMoveUp={(id) => handleReorderFolder(id, 'up')}
+              onMoveDown={(id) => handleReorderFolder(id, 'down')}
+            />
+            <LectureGrid
+              lectures={visibleLectures}
+              progressByLecture={progressByLecture}
+              loading={lecturesLoading}
+              activeTheme={theme}
+              onStartFlash={handleStartFlash}
+              onStartExam={handleStartExam}
+              onChangeCourse={handleChangeCourse}
+              onChangeColor={handleChangeColor}
+              onHide={handleHide}
+              onArchive={handleArchive}
+              onRenameTitle={handleRenameTitle}
+              onTopicsChanged={handleTopicsChanged}
+              planNextReview={planNextReview}
+              planTestDate={activePlan?.test_date}
+              onMoveToFolder={handleMoveToFolder}
+              exitingLectureIds={exitingLectureIds}
+              allFolders={folders}
+            />
+            {/* Drag ghost — a lightweight pill that follows the cursor */}
+            <DragOverlay dropAnimation={null}>
+              {draggingLectureId ? (() => {
+                const lec = lectures.find(l => l.internal_id === draggingLectureId);
+                return (
+                  <div style={{
+                    padding: '8px 16px',
+                    background: 'var(--surface)',
+                    border: '1.5px solid var(--accent)',
+                    borderRadius: 100,
+                    fontSize: 13,
+                    fontWeight: 600,
+                    color: 'var(--text)',
+                    boxShadow: '0 4px 16px rgba(0,0,0,.4)',
+                    whiteSpace: 'nowrap',
+                    fontFamily: "'Outfit', sans-serif",
+                  }}>
+                    {lec?.icon ?? '📄'} {lec?.custom_title ?? lec?.title ?? 'Lecture'}
+                  </div>
+                );
+              })() : null}
+            </DragOverlay>
+          </DndContext>
         )}
       </main>
 
@@ -622,6 +728,12 @@ export default function Dashboard({
         </div>
       </footer>
 
+      <NewFolderModal
+        isOpen={newFolderModalOpen}
+        unfiledLectures={unfiledLectures}
+        onClose={() => setNewFolderModalOpen(false)}
+        onCreate={handleCreateFolderWithLectures}
+      />
       <StudyConfigManager
         {...studyConfig}
         onStartFlashcards={(lecture, config) =>
