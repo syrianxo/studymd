@@ -392,6 +392,9 @@ body::before {
   cursor: pointer;
   transition: all var(--transition);
   position: relative;
+  /* Flex column so smd-card-summary can fill the full row height */
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 
@@ -659,12 +662,13 @@ body::before {
   touch-action: manipulation;
 }
 
-/* ─── LECTURE CARD UNIFORM HEIGHT (fix #7) ────────────────────────────── */
-/* Cards use flex-column so action buttons are always at the same height */
+/* ─── LECTURE CARD UNIFORM HEIGHT ─────────────────────────────────────── */
+/* smd-lecture-card is already flex-column, so smd-card-summary can use flex:1
+   to fill the full grid-row height across all cards in a row.             */
 .smd-lecture-card .smd-card-summary {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
   min-height: 240px;
 }
 .smd-lecture-card .smd-card-title {

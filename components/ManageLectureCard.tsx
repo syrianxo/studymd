@@ -85,6 +85,12 @@ const cardCss = `
   background: rgba(255,255,255,0.07); color: var(--text-muted, #6b7280);
   border: 1px solid rgba(255,255,255,0.06);
 }
+/* Folder chip — slightly distinct from regular tags */
+.lc-tag-folder {
+  background: rgba(91,141,238,0.1);
+  color: var(--accent, #5b8dee);
+  border-color: rgba(91,141,238,0.2);
+}
 .lc-slide-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted, #6b7280); margin-top: 10px; }
 
 /* Editable title input */
@@ -810,6 +816,8 @@ interface LectureCardProps {
   onChangeCourse: (course: Course) => void;
   onChangeColor: (color: string) => void;
   onRenameTitle?: (title: string) => void;
+  /** Folder assignment shown as a special chip alongside tags (e.g. "📁 Anatomy") */
+  folderName?: string;
 }
 
 export function ManageLectureCard({
@@ -818,6 +826,7 @@ export function ManageLectureCard({
   onOpen, onFlashcards, onExam,
   onHide, onArchive, onRestore, onEditTags, onEditTopics,
   onChangeCourse, onChangeColor, onRenameTitle,
+  folderName,
 }: LectureCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [kebabRect, setKebabRect] = useState<DOMRect | null>(null);
@@ -1025,8 +1034,11 @@ export function ManageLectureCard({
           <span className="lc-count-item">📝 {(lecture.json_data as any)?.questions?.length ?? 0} questions</span>
         </div>
 
-        {lecture.settings.tags.length > 0 && (
+        {(lecture.settings.tags.length > 0 || folderName) && (
           <div className="lc-tags" aria-label="Tags">
+            {folderName && (
+              <span className="lc-tag lc-tag-folder" title="Folder">{folderName}</span>
+            )}
             {lecture.settings.tags.map(tag => <span key={tag} className="lc-tag">{tag}</span>)}
           </div>
         )}

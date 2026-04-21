@@ -63,6 +63,11 @@ export default function Dashboard({
   // null = All Lectures (unfiltered); a UUID = drill into that folder
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
 
+  // Optimistic overrides for group_id — applied immediately on drag-to-folder
+  // so the lecture disappears from the grid without waiting for a network round-trip.
+  // Cleared automatically after refetch completes.
+  const [groupIdOverrides, setGroupIdOverrides] = useState<Record<string, string | null>>({});
+
   const [filter, setFilter] = useState<FilterState>({
     courses: new Set<Course>(),
     tags: new Set<string>(),
@@ -126,12 +131,16 @@ export default function Dashboard({
       lectures.filter((l) => {
         if (!l.visible || l.archived) return false;
         if (filter.courses.size > 0 && !filter.courses.has(l.course)) return false;
-        // When a folder is active, only show lectures directly in that folder;
-        // null activeFolderId shows everything (no folder filter).
-        if (activeFolderId !== null && (l.group_id ?? null) !== activeFolderId) return false;
+        // Effective group_id: use local optimistic override if present
+        const effectiveGroupId = l.internal_id in groupIdOverrides
+          ? groupIdOverrides[l.internal_id]
+          : (l.group_id ?? null);
+        // Unfiled view (activeFolderId === null) only shows lectures not in any folder.
+        // Folder view shows only lectures directly in that folder.
+        if (effectiveGroupId !== activeFolderId) return false;
         return true;
       }),
-    [lectures, filter.courses, activeFolderId]
+    [lectures, filter.courses, activeFolderId, groupIdOverrides]
   );
 
   // Subfolders of the current folder (or root-level folders when no folder active)
@@ -146,12 +155,14 @@ export default function Dashboard({
   const lectureCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const l of lectures) {
-      if (l.visible && !l.archived && l.group_id) {
-        counts[l.group_id] = (counts[l.group_id] ?? 0) + 1;
-      }
+      if (!l.visible || l.archived) continue;
+      const effectiveGroupId = l.internal_id in groupIdOverrides
+        ? groupIdOverrides[l.internal_id]
+        : (l.group_id ?? null);
+      if (effectiveGroupId) counts[effectiveGroupId] = (counts[effectiveGroupId] ?? 0) + 1;
     }
     return counts;
-  }, [lectures]);
+  }, [lectures, groupIdOverrides]);
 
   // How many immediate subfolders each folder has (for tile badges)
   const subfoldersCount = useMemo(() => {
@@ -308,13 +319,25 @@ export default function Dashboard({
     await updateFolder(id, { color });
   }
 
-  async function handleMoveToFolder(lectureId: string, folderId: string | null) {
-    await fetch('/api/lectures/settings', {
+  function handleMoveToFolder(lectureId: string, folderId: string | null) {
+    // Optimistic: immediately patch local state so the card disappears without a reload flash.
+    setGroupIdOverrides(prev => ({ ...prev, [lectureId]: folderId }));
+    fetch('/api/lectures/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ internalId: lectureId, updates: { groupId: folderId } }),
-    });
-    refetch();
+    })
+      .then(() => {
+        refetch();
+        // Clear the optimistic override after refetch has had time to settle
+        setTimeout(() => setGroupIdOverrides(prev => {
+          const n = { ...prev }; delete n[lectureId]; return n;
+        }), 800);
+      })
+      .catch(() => {
+        // On failure revert the optimistic update
+        setGroupIdOverrides(prev => { const n = { ...prev }; delete n[lectureId]; return n; });
+      });
   }
 
   if (lecturesError) {
@@ -459,6 +482,7 @@ export default function Dashboard({
           <ManageMode
             userId={userId}
             activeTheme={theme}
+            folders={folders}
             initialLectures={lectures.map((l) => ({
               ...l,
               settings: {
@@ -508,6 +532,7 @@ export default function Dashboard({
             onDeleteFolder={handleDeleteFolder}
             onChangeFolderColor={handleChangeFolderColor}
             onMoveToFolder={handleMoveToFolder}
+            allFolders={folders}
           />
         )}
       </main>

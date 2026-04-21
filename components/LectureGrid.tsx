@@ -44,6 +44,8 @@ interface LectureGridProps {
   onChangeFolderColor?: (folderId: string, color: string | null) => void;
   /** Called when a lecture card is dragged onto a folder tile (folderId = null means remove from folder) */
   onMoveToFolder?: (lectureId: string, folderId: string | null) => void;
+  /** All user folders — used to resolve folder name for the folder-as-tag chip */
+  allFolders?: Folder[];
 }
 
 export default function LectureGrid({
@@ -62,6 +64,7 @@ export default function LectureGrid({
   onDeleteFolder,
   onChangeFolderColor,
   onMoveToFolder,
+  allFolders = [],
 }: LectureGridProps) {
   const [openLecture, setOpenLecture] = useState<Lecture | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -230,6 +233,15 @@ export default function LectureGrid({
           } : null);
           onTopicsChanged?.(openLecture.internal_id, override);
         } : undefined}
+        folderName={openLecture?.group_id
+          ? allFolders.find(f => f.id === openLecture.group_id)?.name
+          : undefined}
+        folderIcon={openLecture?.group_id
+          ? allFolders.find(f => f.id === openLecture.group_id)?.icon
+          : undefined}
+        onRemoveFromFolder={onMoveToFolder && openLecture?.group_id
+          ? () => onMoveToFolder(openLecture.internal_id, null)
+          : undefined}
       />
     </>
   );
