@@ -6,7 +6,7 @@
 
 ## 🚧 Now (in flight)
 
-_(nothing currently in flight — populate when starting v3 prereqs)_
+- [x] **Slice A2 — True background processing** — `lib/job-runner.ts`, `/api/cron/process-jobs`, `vercel.json`, `UploadModal.tsx` detailed stage UI. ADR-023.
 
 ---
 
@@ -110,6 +110,7 @@ _(nothing currently in flight — populate when starting v3 prereqs)_
 
 ## ✅ Recently completed
 
+- [x] **Slice A2 — True background processing** — Vercel Cron orphan recovery, `lib/job-runner.ts`, 6-stage progress UI in UploadModal, navigation-away reassurance. 2026-04-21.
 - [x] Comprehensive documentation pass — README, CLAUDE.md, architecture.md, documentation.md, recommendations.md, development_plan_v3.md, decisions.md, todo.md (this file).
 
 ---

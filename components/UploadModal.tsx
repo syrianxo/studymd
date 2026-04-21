@@ -2,15 +2,19 @@
 
 /**
  * UploadModal.tsx
- * Full lecture upload flow for StudyMD v2.
+ * Full lecture upload flow for StudyMD v3.
  *
  * State machine:
  *   idle → converting → uploading-slides → generating → done | error
  *
+ * The "generating" stage now polls processing_jobs for granular sub-stage
+ * progress so the UI reflects server-side work even if the user navigates
+ * away and returns. Processing continues on the server regardless.
+ *
  * The PPTX path short-circuits immediately with a friendly instruction message.
  */
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import {
   convertPdfToSlides,
   uploadSlides,
@@ -32,6 +36,17 @@ type UploadStage =
   | "done"
   | "error";
 
+/** Granular server-side stage IDs, written to processing_jobs.status_detail */
+type ServerStageId =
+  | "fetching_file"
+  | "extracting_text"
+  | "generating_flashcards"
+  | "generating_questions"
+  | "validating"
+  | "saving"
+  | "complete"
+  | "error";
+
 interface UploadState {
   stage: UploadStage;
   /** Progress within the current stage, 0–100 */
@@ -41,6 +56,12 @@ interface UploadState {
   errorMessage: string | null;
   /** The internal ID of the newly created lecture, available in "done" stage */
   createdInternalId: string | null;
+  /** Current server-side stage (populated once generate request fires) */
+  serverStageId?: ServerStageId;
+  /** Human-readable sub-message from the server */
+  serverMessage?: string;
+  /** Whether processing is running in the background (user can navigate away) */
+  isBackgroundProcessing?: boolean;
 }
 
 const INITIAL_STATE: UploadState = {
@@ -81,9 +102,70 @@ export default function UploadModal({
   const [uploadState, setUploadState] = useState<UploadState>(INITIAL_STATE);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const pollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const activeJobIdRef = useRef<string | null>(null);
 
-  // Is the form currently processing?
-  const isProcessing = !["idle", "done", "error"].includes(uploadState.stage);
+  // Is the form currently processing client-side (blocks form interaction)?
+  const isProcessing = !["idle", "done", "error"].includes(uploadState.stage) &&
+    !uploadState.isBackgroundProcessing;
+
+  // ── Stop polling when modal closes or component unmounts ──────────────────
+  useEffect(() => {
+    return () => {
+      if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    };
+  }, []);
+
+  // ── Polling logic ─────────────────────────────────────────────────────────
+  const supabase = createClient();
+
+  function startPolling(jobId: string, internalId: string) {
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    activeJobIdRef.current = jobId;
+
+    pollIntervalRef.current = setInterval(async () => {
+      if (activeJobIdRef.current !== jobId) return; // stale poll
+
+      const { data } = await supabase
+        .from("processing_jobs")
+        .select("status, status_detail, status_message, error_message")
+        .eq("job_id", jobId)
+        .single();
+
+      if (!data) return;
+
+      if (data.status === "complete") {
+        clearInterval(pollIntervalRef.current!);
+        pollIntervalRef.current = null;
+        setUploadState({
+          stage: "done",
+          stageProgress: 100,
+          progressLabel: "Lecture created!",
+          errorMessage: null,
+          createdInternalId: internalId,
+          isBackgroundProcessing: false,
+        });
+        onLectureCreated(internalId);
+      } else if (data.status === "error") {
+        clearInterval(pollIntervalRef.current!);
+        pollIntervalRef.current = null;
+        setUploadState({
+          stage: "error",
+          stageProgress: 0,
+          progressLabel: "",
+          errorMessage: data.error_message ?? "An unexpected error occurred.",
+          createdInternalId: null,
+          isBackgroundProcessing: false,
+        });
+      } else if (data.status_detail) {
+        setUploadState((prev) => ({
+          ...prev,
+          serverStageId: data.status_detail as ServerStageId,
+          serverMessage: data.status_message ?? undefined,
+        }));
+      }
+    }, 2500);
+  }
 
   // ---------------------------------------------------------------------------
   // File selection
@@ -91,6 +173,8 @@ export default function UploadModal({
 
   const handleFile = useCallback((selected: File) => {
     // Reset state when a new file is chosen.
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    activeJobIdRef.current = null;
     setUploadState(INITIAL_STATE);
     setFile(selected);
     // Pre-fill title from filename (strip extension).
@@ -114,7 +198,6 @@ export default function UploadModal({
   // ---------------------------------------------------------------------------
   // Upload flow
   // ---------------------------------------------------------------------------
-  const supabase = createClient();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -240,12 +323,25 @@ export default function UploadModal({
 
       if (jobError) throw new Error(`Failed to create processing job: ${jobError.message}`);
 
-      setUploadState((prev) => ({
-        ...prev,
-        progressLabel: "Generating flashcards and questions with Claude…",
-      }));
+      // ── Stage 3b: Fire generate request + start polling ───────────────────
+      // Switch to background-processing mode so the user can navigate away.
+      setUploadState({
+        stage: "generating",
+        stageProgress: 0,
+        progressLabel: "Sending to Claude…",
+        errorMessage: null,
+        createdInternalId: null,
+        serverStageId: "fetching_file",
+        serverMessage: "Starting…",
+        isBackgroundProcessing: true,
+      });
 
-      const response = await fetch("/api/generate", {
+      // Start polling BEFORE awaiting the fetch so we catch status updates
+      // even if the HTTP response is delayed or the user navigates away.
+      startPolling(jobRow.job_id, tempId);
+
+      // Fire-and-forget: the Vercel function continues even if the client disconnects.
+      const generatePromise = fetch("/api/generate", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -263,26 +359,51 @@ export default function UploadModal({
         }),
       });
 
-      if (!response.ok) {
-        const body = await response.json().catch(() => ({}));
-        throw new Error(
-          body.error ?? `Server error ${response.status}: ${response.statusText}`
-        );
-      }
+      // Handle the direct response (if the user is still on the page).
+      // Polling already handles the navigation-away case.
+      generatePromise
+        .then(async (response) => {
+          if (!activeJobIdRef.current) return; // user already navigated away
+          if (!response.ok) {
+            const body = await response.json().catch(() => ({}));
+            throw new Error(body.error ?? `Server error ${response.status}`);
+          }
+          // Polling will pick up 'complete' status; direct response is redundant
+          // but we clear the interval early to avoid an extra round-trip.
+          const result = await response.json();
+          if (result.success && activeJobIdRef.current === jobRow.job_id) {
+            if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+            const confirmedId: string = result.internalId ?? tempId;
+            setUploadState({
+              stage: "done",
+              stageProgress: 100,
+              progressLabel: "Lecture created!",
+              errorMessage: null,
+              createdInternalId: confirmedId,
+              isBackgroundProcessing: false,
+            });
+            onLectureCreated(confirmedId);
+          }
+        })
+        .catch((err: Error) => {
+          // If still on page and not already resolved by polling, show error.
+          if (activeJobIdRef.current === jobRow.job_id && uploadState.stage !== "done") {
+            if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+            pollIntervalRef.current = null;
+            setUploadState({
+              stage: "error",
+              stageProgress: 0,
+              progressLabel: "",
+              errorMessage: err.message,
+              createdInternalId: null,
+              isBackgroundProcessing: false,
+            });
+          }
+        });
 
-      const result = await response.json();
-      const confirmedId: string = result.internalId ?? tempId;
-
-      // ── Done ─────────────────────────────────────────────────────────────
-      setUploadState({
-        stage: "done",
-        stageProgress: 100,
-        progressLabel: "Lecture created!",
-        errorMessage: null,
-        createdInternalId: confirmedId,
-      });
-
-      onLectureCreated(confirmedId);
+      // Return early — the rest is handled by polling / generatePromise
+      return;
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "An unexpected error occurred.";
@@ -301,7 +422,12 @@ export default function UploadModal({
   // ---------------------------------------------------------------------------
 
   function handleClose() {
-    if (isProcessing) return; // Don't allow close during processing.
+    // Block close only during client-side stages (converting, uploading-slides).
+    // Once in background-processing mode, the user can close — server continues.
+    if (isProcessing) return;
+    if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
+    pollIntervalRef.current = null;
+    activeJobIdRef.current = null;
     setFile(null);
     setTitle("");
     setCourse("Physical Diagnosis I");
@@ -349,7 +475,7 @@ export default function UploadModal({
               PDF files are converted to slides automatically
             </p>
           </div>
-          {!isProcessing && (
+          {(!isProcessing || uploadState.isBackgroundProcessing) && (
             <button
               onClick={handleClose}
               className="rounded-lg p-2 transition-colors"
@@ -486,12 +612,23 @@ export default function UploadModal({
             />
           </div>
 
-          {/* Progress bar + label */}
-          {isProcessing && (
-            <ProgressSection
-              stage={uploadState.stage}
-              progress={uploadState.stageProgress}
-              label={uploadState.progressLabel}
+          {/* Progress — client-side stages */}
+          {uploadState.stage !== "idle" &&
+            uploadState.stage !== "done" &&
+            uploadState.stage !== "error" &&
+            !uploadState.isBackgroundProcessing && (
+              <ProgressSection
+                stage={uploadState.stage}
+                progress={uploadState.stageProgress}
+                label={uploadState.progressLabel}
+              />
+            )}
+
+          {/* Progress — server-side stages (background processing) */}
+          {uploadState.isBackgroundProcessing && (
+            <DetailedProgressSection
+              currentStageId={uploadState.serverStageId ?? "fetching_file"}
+              subMessage={uploadState.serverMessage}
             />
           )}
 
@@ -516,21 +653,38 @@ export default function UploadModal({
 
           {/* Actions */}
           <div className="flex gap-3 pt-1">
-            <button
-              type="button"
-              onClick={handleClose}
-              disabled={isProcessing}
-              className="flex-1 rounded-xl py-2.5 text-sm font-medium transition-colors"
-              style={{
-                background: "var(--surface2)",
-                color: "var(--text-muted)",
-                border: "1px solid rgba(255,255,255,0.07)",
-              }}
-            >
-              {uploadState.stage === "done" ? "Close" : "Cancel"}
-            </button>
+            {!uploadState.isBackgroundProcessing && (
+              <button
+                type="button"
+                onClick={handleClose}
+                disabled={isProcessing}
+                className="flex-1 rounded-xl py-2.5 text-sm font-medium transition-colors"
+                style={{
+                  background: "var(--surface2)",
+                  color: "var(--text-muted)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                {uploadState.stage === "done" ? "Close" : "Cancel"}
+              </button>
+            )}
 
-            {uploadState.stage !== "done" && (
+            {uploadState.isBackgroundProcessing && (
+              <button
+                type="button"
+                onClick={handleClose}
+                className="flex-1 rounded-xl py-2.5 text-sm font-medium transition-colors"
+                style={{
+                  background: "var(--surface2)",
+                  color: "var(--text-muted)",
+                  border: "1px solid rgba(255,255,255,0.07)",
+                }}
+              >
+                Close (processing continues)
+              </button>
+            )}
+
+            {uploadState.stage !== "done" && !uploadState.isBackgroundProcessing && (
               <button
                 type="submit"
                 disabled={!file || isProcessing || isPptxFile}
@@ -657,6 +811,120 @@ function ProgressSection({ stage, progress, label }: ProgressSectionProps) {
       >
         {label}
       </p>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Detailed progress (server-side stages)
+// ---------------------------------------------------------------------------
+
+const SERVER_STAGES: Array<{ id: string; label: string }> = [
+  { id: "fetching_file",         label: "Fetching lecture file" },
+  { id: "extracting_text",       label: "Extracting slide text" },
+  { id: "generating_flashcards", label: "Generating flashcards with Claude" },
+  { id: "generating_questions",  label: "Generating practice questions" },
+  { id: "validating",            label: "Validating structured output" },
+  { id: "saving",                label: "Saving to your library" },
+];
+
+const STAGE_ORDER = SERVER_STAGES.map((s) => s.id);
+
+interface DetailedProgressSectionProps {
+  currentStageId: string;
+  subMessage?: string;
+}
+
+function DetailedProgressSection({ currentStageId, subMessage }: DetailedProgressSectionProps) {
+  const currentIdx = STAGE_ORDER.indexOf(currentStageId);
+
+  return (
+    <div className="space-y-3">
+      {/* Reassurance message */}
+      <p
+        className="text-xs rounded-lg px-3 py-2"
+        style={{
+          background: "rgba(91,141,238,0.08)",
+          border: "1px solid rgba(91,141,238,0.2)",
+          color: "var(--text-muted)",
+        }}
+      >
+        Safe to navigate away. Processing continues in the background.
+      </p>
+
+      {/* Stage list */}
+      <div className="space-y-1.5">
+        {SERVER_STAGES.map((stage, idx) => {
+          const isDone    = idx < currentIdx;
+          const isActive  = idx === currentIdx;
+          const isPending = idx > currentIdx;
+
+          return (
+            <div
+              key={stage.id}
+              className="flex items-center gap-2.5"
+              style={{ opacity: isPending ? 0.35 : 1 }}
+            >
+              {/* Status icon */}
+              <div
+                className="flex-shrink-0 w-4 h-4 rounded-full flex items-center justify-center text-xs"
+                style={{
+                  background: isDone
+                    ? "#10b981"
+                    : isActive
+                    ? "var(--accent, #5b8dee)"
+                    : "rgba(255,255,255,0.08)",
+                  border: isPending ? "1px solid rgba(255,255,255,0.15)" : "none",
+                }}
+              >
+                {isDone ? (
+                  <span style={{ color: "#fff", fontSize: "0.6rem" }}>✓</span>
+                ) : isActive ? (
+                  <span
+                    style={{
+                      display: "block",
+                      width: "6px",
+                      height: "6px",
+                      borderRadius: "50%",
+                      background: "#fff",
+                      animation: "smd-pulse 1.2s ease-in-out infinite",
+                    }}
+                  />
+                ) : null}
+              </div>
+
+              {/* Label */}
+              <span
+                className="text-xs"
+                style={{
+                  color: isDone
+                    ? "#10b981"
+                    : isActive
+                    ? "var(--text)"
+                    : "var(--text-muted)",
+                  fontWeight: isActive ? 500 : 400,
+                }}
+              >
+                {stage.label}
+                {isActive && subMessage ? (
+                  <span style={{ color: "var(--text-muted)", fontWeight: 400 }}>
+                    {" — "}
+                    {subMessage}
+                  </span>
+                ) : null}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Pulse animation */}
+      <style>{`
+        @keyframes smd-pulse {
+          0%, 100% { opacity: 1; transform: scale(1); }
+          50% { opacity: 0.4; transform: scale(0.75); }
+        }
+      `}</style>
     </div>
   );
 }
