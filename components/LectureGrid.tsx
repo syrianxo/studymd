@@ -1,14 +1,16 @@
 // components/LectureGrid.tsx
 // Grid layout of lecture cards. LectureViewModal is kept permanently mounted
 // to prevent the re-render flash on open/close — only its content swaps.
+// Subfolder tiles are rendered at the top of the grid when folders are passed in.
 'use client';
 
 import React, { useState, useCallback } from 'react';
 import LectureCard from './LectureCard';
 import LectureViewModal from './LectureViewModal';
+import FolderTile from './FolderTile';
 import type { Lecture } from '@/hooks/useUserLectures';
 import type { LectureProgress } from '@/hooks/useProgress';
-import type { Course, Theme } from '@/types';
+import type { Course, Theme, Folder } from '@/types';
 
 interface LectureGridProps {
   lectures: Lecture[];
@@ -26,6 +28,14 @@ interface LectureGridProps {
   /** Reserved for future plan integration — passed but not rendered on cards */
   planNextReview?: Record<string, string>;
   planTestDate?: string;
+  /** Subfolder tiles shown before lecture cards (when inside a folder) */
+  subfolders?: Folder[];
+  subfoldersCount?: Record<string, number>; // folderId → # of its children shown here
+  lectureCounts?: Record<string, number>;   // folderId → # lectures directly in it
+  onOpenFolder?: (folderId: string) => void;
+  onRenameFolder?: (folderId: string, name: string) => void;
+  onDeleteFolder?: (folderId: string) => void;
+  onChangeFolderColor?: (folderId: string, color: string | null) => void;
 }
 
 export default function LectureGrid({
@@ -36,6 +46,13 @@ export default function LectureGrid({
   onHide, onArchive, onRenameTitle, onTopicsChanged,
   planNextReview: _planNextReview = {},
   planTestDate: _planTestDate,
+  subfolders = [],
+  subfoldersCount = {},
+  lectureCounts = {},
+  onOpenFolder,
+  onRenameFolder,
+  onDeleteFolder,
+  onChangeFolderColor,
 }: LectureGridProps) {
   const [openLecture, setOpenLecture] = useState<Lecture | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -63,7 +80,7 @@ export default function LectureGrid({
     );
   }
 
-  if (lectures.length === 0) {
+  if (lectures.length === 0 && subfolders.length === 0) {
     return (
       <div className="smd-lecture-grid">
         <div className="smd-empty-state">
@@ -81,6 +98,21 @@ export default function LectureGrid({
   return (
     <>
       <div className="smd-lecture-grid">
+        {/* Subfolder tiles — shown when drilling into a folder */}
+        {subfolders.map(folder => (
+          <FolderTile
+            key={folder.id}
+            folder={folder}
+            lectureCount={lectureCounts[folder.id] ?? 0}
+            subfoldersCount={subfoldersCount[folder.id] ?? 0}
+            activeTheme={activeTheme}
+            onOpen={() => onOpenFolder?.(folder.id)}
+            onRename={(name) => onRenameFolder?.(folder.id, name)}
+            onDelete={() => onDeleteFolder?.(folder.id)}
+            onChangeColor={(color) => onChangeFolderColor?.(folder.id, color)}
+          />
+        ))}
+
         {lectures.map(lecture => {
           const progress = progressByLecture[lecture.internal_id] ?? null;
           return (
