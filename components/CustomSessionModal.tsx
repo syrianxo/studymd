@@ -1,9 +1,10 @@
 // components/CustomSessionModal.tsx
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import type { Lecture } from '@/hooks/useUserLectures';
 import { useModalShell } from '@/hooks/useModalShell';
+import { useFolders } from '@/hooks/useFolders';
 
 type SessionMode = 'flash' | 'exam';
 
@@ -36,10 +37,19 @@ export default function CustomSessionModal({ isOpen, lectures, onClose, onStart 
   const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set());
   const [count, setCount] = useState(20);
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set(ALL_QUESTION_TYPES));
+  const [folderFilter, setFolderFilter] = useState<string>('');  // '' = all, uuid = folder
 
   useModalShell(isOpen);
 
-  const availableTopics = Array.from(new Set(lectures.filter(l => selectedLectureIds.has(l.internal_id)).flatMap(l => l.topics))).sort();
+  const { folders } = useFolders();
+
+  // Lectures visible in the picker (filtered by folder if one is selected)
+  const pickerLectures = useMemo(() => {
+    if (!folderFilter) return lectures.filter(l => l.visible && !l.archived);
+    return lectures.filter(l => l.visible && !l.archived && (l.group_id ?? null) === folderFilter);
+  }, [lectures, folderFilter]);
+
+  const availableTopics = Array.from(new Set(pickerLectures.filter(l => selectedLectureIds.has(l.internal_id)).flatMap(l => l.topics))).sort();
 
   useEffect(() => {
     setSelectedTopics(new Set(availableTopics));
@@ -49,7 +59,15 @@ export default function CustomSessionModal({ isOpen, lectures, onClose, onStart 
   function toggleLecture(id: string) { setSelectedLectureIds(prev => { const n = new Set(prev); n.has(id) ? n.delete(id) : n.add(id); return n; }); }
   function toggleTopic(t: string)   { setSelectedTopics(prev => { const n = new Set(prev); n.has(t) ? n.delete(t) : n.add(t); return n; }); }
   function toggleType(t: string)    { setSelectedTypes(prev => { const n = new Set(prev); n.has(t) ? n.delete(t) : n.add(t); return n; }); }
-  function selectAll() { selectedLectureIds.size === lectures.length ? setSelectedLectureIds(new Set()) : setSelectedLectureIds(new Set(lectures.map(l => l.internal_id))); }
+  function selectAll() {
+    const allInPicker = pickerLectures.map(l => l.internal_id);
+    const allSelected = allInPicker.every(id => selectedLectureIds.has(id));
+    if (allSelected) {
+      setSelectedLectureIds(prev => { const n = new Set(prev); allInPicker.forEach(id => n.delete(id)); return n; });
+    } else {
+      setSelectedLectureIds(prev => new Set([...prev, ...allInPicker]));
+    }
+  }
   function handleStart() { if (selectedLectureIds.size === 0) return; onStart({ mode, lectureIds: Array.from(selectedLectureIds), topics: Array.from(selectedTopics), count, questionTypes: Array.from(selectedTypes) }); }
 
   return (
@@ -74,15 +92,37 @@ export default function CustomSessionModal({ isOpen, lectures, onClose, onStart 
             <div className="smd-form-group">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
                 <label className="smd-form-label" style={{ margin: 0 }}>Select lectures</label>
-                <button className="smd-select-all-btn" onClick={selectAll}>{selectedLectureIds.size === lectures.length ? 'Deselect all' : 'Select all'}</button>
+                <button className="smd-select-all-btn" onClick={selectAll}>
+                  {pickerLectures.every(l => selectedLectureIds.has(l.internal_id)) && pickerLectures.length > 0 ? 'Deselect all' : 'Select all'}
+                </button>
               </div>
+              {/* Folder filter — only show when there are folders */}
+              {folders.length > 0 && (
+                <div style={{ marginBottom: 8 }}>
+                  <select
+                    className="smd-folder-filter-select"
+                    value={folderFilter}
+                    onChange={e => setFolderFilter(e.target.value)}
+                  >
+                    <option value="">All lectures</option>
+                    {folders.map(f => (
+                      <option key={f.id} value={f.id}>{f.icon} {f.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
               <div className="smd-lecture-select-grid">
-                {lectures.map(l => (
+                {pickerLectures.map(l => (
                   <div key={l.internal_id} className={`smd-lecture-select-item${selectedLectureIds.has(l.internal_id) ? ' selected' : ''}`} onClick={() => toggleLecture(l.internal_id)}>
                     <span>{l.icon}</span>
                     <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{l.title}</span>
                   </div>
                 ))}
+                {pickerLectures.length === 0 && (
+                  <div style={{ gridColumn: '1/-1', color: 'var(--text-muted)', fontSize: 13, textAlign: 'center', padding: '12px 0' }}>
+                    No lectures in this folder
+                  </div>
+                )}
               </div>
             </div>
             {availableTopics.length > 0 && (
@@ -156,6 +196,18 @@ const modalExtraCss = `
   border-top: 1px solid rgba(255,255,255,0.06);
   display: flex; gap: 10px; align-items: center;
 }
+.smd-folder-filter-select {
+  width: 100%;
+  padding: 7px 10px;
+  background: var(--surface2, rgba(255,255,255,.04));
+  border: 1px solid var(--border, rgba(255,255,255,.1));
+  border-radius: 8px;
+  color: var(--text, #e8eaf0);
+  font-size: 13px;
+  cursor: pointer;
+  appearance: auto;
+}
+.smd-folder-filter-select:focus { outline: none; border-color: var(--accent); }
 `;
 
 export type { CustomSessionConfig };

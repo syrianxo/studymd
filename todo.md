@@ -9,9 +9,9 @@
 ### Slice 9 — F3 Lecture-grid folders
 - [x] DB migration: `folders` table + `group_id` FK upgrade (ADR-027)
 - [x] API: `GET/POST /api/folders` + `PATCH/DELETE /api/folders/[id]` with cycle prevention
-- [ ] `hooks/useFolders.ts` + `Folder` type + `FolderTile` / `FolderTree` components
-- [ ] Dashboard folder state + breadcrumb + LectureGrid folder tiles
-- [ ] dnd-kit drag-to-folder + CustomSessionModal folder picker
+- [x] `hooks/useFolders.ts` + `Folder` type + `FolderTile` / `FolderTree` components
+- [x] Dashboard folder state + breadcrumb + LectureGrid folder tiles
+- [x] dnd-kit drag-to-folder + CustomSessionModal folder picker
 
 ---
 

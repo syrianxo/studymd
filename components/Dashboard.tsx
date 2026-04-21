@@ -308,6 +308,15 @@ export default function Dashboard({
     await updateFolder(id, { color });
   }
 
+  async function handleMoveToFolder(lectureId: string, folderId: string | null) {
+    await fetch('/api/lectures/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ internalId: lectureId, updates: { groupId: folderId } }),
+    });
+    refetch();
+  }
+
   if (lecturesError) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -498,6 +507,7 @@ export default function Dashboard({
             onRenameFolder={handleRenameFolder}
             onDeleteFolder={handleDeleteFolder}
             onChangeFolderColor={handleChangeFolderColor}
+            onMoveToFolder={handleMoveToFolder}
           />
         )}
       </main>
