@@ -34,6 +34,17 @@ async function buildClient() {
   );
 }
 
+/** Resolve theme_colors JSONB (or legacy plain hex string) to a single hex. ADR-023. */
+function resolveHex(raw: unknown): string {
+  if (!raw) return '#5b8dee';
+  if (typeof raw === 'string') return raw;
+  if (typeof raw === 'object' && raw !== null) {
+    const o = raw as Record<string, string>;
+    return o.midnight ?? o.aurora ?? o.pink ?? o.forest ?? Object.values(o)[0] ?? '#5b8dee';
+  }
+  return '#5b8dee';
+}
+
 export function hashCard(card: object): string {
   return crypto.createHash('sha256').update(JSON.stringify(card)).digest('hex').slice(0, 16);
 }
@@ -51,9 +62,10 @@ export async function GET(
   if (authErr || !user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   // Fetch lecture (no json_data exposure — we only return clean arrays)
+  // ADR-023: lectures.color was dropped; theme_colors JSONB replaced it.
   const { data: lecture, error: lecErr } = await supabase
     .from('lectures')
-    .select('internal_id, title, subtitle, course, color, icon, slide_count, created_at, json_data')
+    .select('internal_id, title, subtitle, course, theme_colors, icon, slide_count, created_at, json_data')
     .eq('internal_id', id)
     .single();
 
@@ -134,7 +146,7 @@ export async function GET(
       title: settings?.custom_title ?? lecture.title,
       subtitle: lecture.subtitle,
       course: settings?.course_override ?? lecture.course,
-      color: settings?.color_override ?? lecture.color,
+      color: resolveHex(settings?.color_override ?? lecture.theme_colors),
       icon: lecture.icon,
       slideCount: lecture.slide_count,
       createdAt: lecture.created_at,
