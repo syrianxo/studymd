@@ -1,6 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { checkLimits, estimateCost, estimateTokens, TOKEN_PREFLIGHT_LIMIT } from '@/lib/api-limits';
+import {
+  API_LIMITS,
+  checkLimits,
+  userIsAdmin,
+  estimateCost,
+  estimateTokens,
+  TOKEN_PREFLIGHT_LIMIT,
+} from '@/lib/api-limits';
 import { generateLectureInternalId } from '@/lib/id-generator';
 
 // ─── Route config ───────────────────────────────────────────────────────────
@@ -8,7 +15,8 @@ export const maxDuration = 30;
 export const dynamic = 'force-dynamic';
 
 // ─── Constants ──────────────────────────────────────────────────────────────
-const MAX_FILE_SIZE_BYTES = 50 * 1024 * 1024;
+// File-size caps are defined in API_LIMITS so they're a single source of truth.
+// Admin cap (250 MB) is checked after the admin status is confirmed server-side.
 const ALLOWED_EXTENSIONS  = new Set(['.pdf', '.pptx', '.ppt']);
 const STORAGE_BUCKET      = 'uploads';
 
@@ -81,14 +89,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Unsupported file type. Only PDF and PPTX files are accepted.' }, { status: 415 });
     }
 
-    if (fileSizeBytes > MAX_FILE_SIZE_BYTES) {
+    // Determine admin status once — used for both the file-size cap and the rate-limit bypass.
+    const isAdmin = await userIsAdmin(user.id);
+    const maxFileSizeBytes = isAdmin
+      ? API_LIMITS.ADMIN_MAX_FILE_SIZE_BYTES
+      : API_LIMITS.MAX_FILE_SIZE_BYTES;
+    const maxFileSizeMB = Math.round(maxFileSizeBytes / 1024 / 1024);
+
+    if (fileSizeBytes > maxFileSizeBytes) {
       return NextResponse.json(
-        { error: `File too large (${(fileSizeBytes / 1024 / 1024).toFixed(1)} MB). Maximum is 50 MB.` },
+        { error: `File too large (${(fileSizeBytes / 1024 / 1024).toFixed(1)} MB). Maximum is ${maxFileSizeMB} MB.` },
         { status: 413 }
       );
     }
 
-    const limitsCheck = await checkLimits(user.id);
+    // Admin uploads bypass per-user daily/monthly caps but still record usage
+    // for cost tracking and respect the admin sanity cap (see api-limits.ts).
+    const limitsCheck = await checkLimits(user.id, { adminBypass: isAdmin });
     if (!limitsCheck.allowed) {
       return NextResponse.json({ error: limitsCheck.reason ?? 'Usage limit reached.' }, { status: 429 });
     }

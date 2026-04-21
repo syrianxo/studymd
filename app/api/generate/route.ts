@@ -20,6 +20,7 @@ import {
   API_LIMITS,
   estimateCost,
   estimateTokensFromBytes,
+  userIsAdmin,
 } from '@/lib/api-limits';
 import { buildSystemWithCache } from '@/lib/lecture-processor-prompt';
 import { validateLecture, type LectureJSON } from '@/lib/validate-lecture';
@@ -161,9 +162,17 @@ async function recordApiUsage(
 async function checkRateLimits(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   supabase: SupabaseClient<any, 'public', any>,
-  estimatedInputTokens: number
+  estimatedInputTokens: number,
+  adminBypass = false,
 ): Promise<{ allowed: boolean; reason?: string }> {
   const today = new Date().toISOString().split('T')[0];
+
+  // Admin bypass: skip per-user daily/monthly caps.
+  // The sanity cap is enforced in checkLimits() at the upload stage; by the
+  // time we reach /api/generate the job is already approved, so we trust it.
+  if (adminBypass) {
+    return { allowed: true };
+  }
 
   const { data: todayUsage } = await supabase
     .from('api_usage')
@@ -368,7 +377,10 @@ export async function POST(request: NextRequest) {
   }
 
   // ── Rate limits ────────────────────────────────────────────────────────────
-  const rateCheck = await checkRateLimits(supabase, estimatedTokens);
+  // Admin uploads bypass per-user caps (same logic as in /api/upload).
+  // Usage is always recorded after the call regardless of bypass status.
+  const isAdmin = await userIsAdmin(userId);
+  const rateCheck = await checkRateLimits(supabase, estimatedTokens, isAdmin);
   if (!rateCheck.allowed) {
     await updateJobStatus(supabase, jobId, 'error', rateCheck.reason);
     return NextResponse.json({ error: rateCheck.reason }, { status: 429 });
