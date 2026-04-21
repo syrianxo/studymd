@@ -55,8 +55,8 @@
   --btn-exam-hover:  rgba(139,92,246,0.12);
 }
 
-/* ── Pink ─────────────────────────────────────────────────────────────────── */
-[data-theme="pink"] {
+/* ── Aurora ───────────────────────────────────────────────────────────────── */
+[data-theme="aurora"] {
   --bg:          #1a0e16;
   --surface:     #231320;
   --surface2:    #2e1a2b;
@@ -192,4 +192,24 @@ body {
 }
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
+}
+
+/* ── Text selection — theme-aware ─────────────────────────────────────────── */
+::selection {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+  color: var(--text);
+}
+::-moz-selection {
+  background: color-mix(in srgb, var(--accent) 35%, transparent);
+  color: var(--text);
+}
+input::selection,
+textarea::selection {
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  color: var(--text);
+}
+input::-moz-selection,
+textarea::-moz-selection {
+  background: color-mix(in srgb, var(--accent) 55%, transparent);
+  color: var(--text);
 }

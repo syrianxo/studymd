@@ -1,11 +1,11 @@
 // components/Header.tsx
-// Mobile: logo (left) + icon-only row (right) — no text labels below 768px
-// Desktop: full labels + subtitle
+// Desktop: logo (left) | centered nav | right controls (upload + pomodoro + gear)
+// Mobile:  hamburger (left) | centered logo | gear (right) — nav + upload live in left drawer
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { PomodoroMiniPill } from '@/components/PomodoroTimer';
 import { ThemePicker } from './ThemePicker';
@@ -23,6 +23,35 @@ interface HeaderProps {
   hideUploadButton?: boolean;
   /** Called immediately when user picks a new theme (before API save). */
   onThemeChange?: (theme: import('@/types').Theme) => void;
+  /** Show Admin link in nav */
+  isAdmin?: boolean;
+}
+
+/** Active-route-aware nav link */
+function NavLink({
+  href,
+  children,
+  onClick,
+}: {
+  href: string;
+  children: React.ReactNode;
+  onClick?: () => void;
+}) {
+  const pathname = usePathname();
+  // Exact match for /app (dashboard); prefix match for all other routes
+  const isActive = href === '/app'
+    ? pathname === '/app'
+    : !!pathname?.startsWith(href + '/') || pathname === href;
+  return (
+    <Link
+      href={href}
+      className={`smd-header-navlink${isActive ? ' smd-header-navlink--active' : ''}`}
+      prefetch={false}
+      onClick={onClick}
+    >
+      {children}
+    </Link>
+  );
 }
 
 export default function Header({
@@ -33,11 +62,14 @@ export default function Header({
   isProcessing = false,
   hideUploadButton = false,
   onThemeChange,
+  isAdmin = false,
 }: HeaderProps) {
   const router = useRouter();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
 
+  // Close settings panel on outside click/tap
   useEffect(() => {
     function onDown(e: MouseEvent | TouchEvent) {
       if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
@@ -52,6 +84,12 @@ export default function Header({
     };
   }, []);
 
+  // Prevent body scroll when drawer is open
+  useEffect(() => {
+    document.body.style.overflow = drawerOpen ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [drawerOpen]);
+
   async function handleSignOut() {
     const supabase = createClient();
     await supabase.auth.signOut();
@@ -59,61 +97,140 @@ export default function Header({
     router.refresh();
   }
 
+  const uploadHref = '/app/upload';
+
   return (
     <>
       <style>{headerCss}</style>
+
+      {/* ── Mobile left drawer ────────────────────────────────────────── */}
+      {drawerOpen && (
+        <div
+          className="smd-drawer-overlay"
+          onClick={() => setDrawerOpen(false)}
+          aria-hidden="true"
+        />
+      )}
+      <nav
+        className={`smd-drawer${drawerOpen ? ' smd-drawer--open' : ''}`}
+        aria-label="Mobile navigation"
+        aria-hidden={!drawerOpen}
+      >
+        <div className="smd-drawer-title">StudyMD</div>
+        <NavLink href="/app" onClick={() => setDrawerOpen(false)}>My Dashboard</NavLink>
+        <NavLink href="/app/lectures" onClick={() => setDrawerOpen(false)}>My Lectures</NavLink>
+        <NavLink href="/app/plans" onClick={() => setDrawerOpen(false)}>My Plans</NavLink>
+        <NavLink href="/app/progress" onClick={() => setDrawerOpen(false)}>My Progress</NavLink>
+        {isAdmin && (
+          <NavLink href="/admin" onClick={() => setDrawerOpen(false)}>Admin</NavLink>
+        )}
+        {!hideUploadButton && (
+          <div className="smd-drawer-divider" />
+        )}
+        {!hideUploadButton && (
+          <Link
+            href={uploadHref}
+            className="smd-drawer-upload"
+            onClick={() => setDrawerOpen(false)}
+          >
+            <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+              <path d="M10 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L11 6.414V13a1 1 0 11-2 0V6.414L6.707 8.707A1 1 0 015.293 7.293l4-4A1 1 0 0110 3z" />
+              <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
+            </svg>
+            {isProcessing ? 'Processing…' : 'Upload Lecture'}
+          </Link>
+        )}
+      </nav>
+
+      {/* ── Header bar ───────────────────────────────────────────────── */}
       <header className="smd-header">
 
-        {/* ── Logo ── */}
-        <Link href="/app" className="smd-header-logo-link" aria-label="StudyMD — dashboard" prefetch={false}>
-          <div className="smd-logo">
-            <span className="smd-logo-study">Study</span>
-            <span className="smd-logo-md">MD</span>
-          </div>
-          {/* Subtitle hidden on mobile via CSS */}
-          <div className="smd-header-subtitle smd-hdr-desktop-only">
-            Lecture Mastery Platform
-          </div>
-        </Link>
+        {/* Left: hamburger (mobile) / logo (desktop) */}
+        <div className="smd-hdr-left">
+          {/* Mobile hamburger */}
+          <button
+            className="smd-hdr-hamburger smd-hdr-mobile-only"
+            onClick={() => setDrawerOpen(o => !o)}
+            aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={drawerOpen}
+          >
+            {drawerOpen ? (
+              /* X icon when open */
+              <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20" aria-hidden="true">
+                <path fillRule="evenodd" clipRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" />
+              </svg>
+            ) : (
+              /* Hamburger icon */
+              <svg viewBox="0 0 20 20" fill="currentColor" width="20" height="20" aria-hidden="true">
+                <path fillRule="evenodd" clipRule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
+              </svg>
+            )}
+          </button>
 
-        {/* ── Center nav (desktop only) ── */}
-        <nav className="smd-header-nav smd-hdr-desktop-only" aria-label="Main navigation">
-          <Link href="/app" className="smd-header-nav-link" prefetch={false}>My Lectures</Link>
-          <Link href="/app/plans" className="smd-header-nav-link" prefetch={false}>My Plans</Link>
-        </nav>
+          {/* Desktop logo */}
+          <Link href="/app" className="smd-header-logo-link smd-hdr-desktop-only" aria-label="StudyMD — dashboard" prefetch={false}>
+            <div className="smd-logo">
+              <span className="smd-logo-study">Study</span>
+              <span className="smd-logo-md">MD</span>
+            </div>
+            <div className="smd-header-subtitle">
+              Lecture Mastery Platform
+            </div>
+          </Link>
+        </div>
 
-        {/* ── Right controls ── */}
+        {/* Center: nav (desktop) / logo (mobile) */}
+        <div className="smd-hdr-center">
+          {/* Desktop nav */}
+          <nav className="smd-header-nav smd-hdr-desktop-only" aria-label="Main navigation">
+            <NavLink href="/app">My Dashboard</NavLink>
+            <NavLink href="/app/lectures">My Lectures</NavLink>
+            <NavLink href="/app/plans">My Plans</NavLink>
+            <NavLink href="/app/progress">My Progress</NavLink>
+            {isAdmin && <NavLink href="/admin">Admin</NavLink>}
+          </nav>
+
+          {/* Mobile centered logo */}
+          <Link href="/app" className="smd-hdr-mobile-logo smd-hdr-mobile-only" aria-label="StudyMD — dashboard" prefetch={false}>
+            <div className="smd-logo">
+              <span className="smd-logo-study">Study</span>
+              <span className="smd-logo-md">MD</span>
+            </div>
+          </Link>
+        </div>
+
+        {/* Right: upload (desktop only) + pomodoro + gear */}
         <div className="smd-header-right">
 
-          {/* 1. Upload — icon-only on mobile, icon+label on desktop */}
-          {!hideUploadButton && (
-            <Link
-              href="/app/upload"
-              className="smd-hdr-btn smd-hdr-upload"
-              aria-label={isProcessing ? 'Processing lecture…' : 'Upload lecture'}
-              title="Upload Lecture"
-            >
-              {isProcessing
-                ? <span className="smd-hdr-spinner" aria-hidden="true" />
-                : (
-                  /* Upload icon SVG — works at any size, scales with CSS */
-                  <svg className="smd-hdr-icon-svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path d="M10 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L11 6.414V13a1 1 0 11-2 0V6.414L6.707 8.707A1 1 0 015.293 7.293l4-4A1 1 0 0110 3z" />
-                    <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
-                  </svg>
-                )}
-              <span className="smd-hdr-label smd-hdr-desktop-only">
-                {isProcessing ? 'Processing…' : 'Upload'}
-              </span>
-            </Link>
-          )}
+          {/* Upload — desktop only (mobile version lives in drawer).
+               Always rendered so right-side width stays constant across pages;
+               visibility:hidden when hideUploadButton to avoid layout shift. */}
+          <Link
+            href={uploadHref}
+            className="smd-hdr-btn smd-hdr-upload smd-hdr-desktop-only"
+            aria-label={isProcessing ? 'Processing lecture…' : 'Upload lecture'}
+            title="Upload Lecture"
+            aria-hidden={hideUploadButton}
+            tabIndex={hideUploadButton ? -1 : undefined}
+            style={hideUploadButton ? { visibility: 'hidden', pointerEvents: 'none' } : undefined}
+          >
+            {isProcessing
+              ? <span className="smd-hdr-spinner" aria-hidden="true" />
+              : (
+                <svg className="smd-hdr-icon-svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M10 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L11 6.414V13a1 1 0 11-2 0V6.414L6.707 8.707A1 1 0 015.293 7.293l4-4A1 1 0 0110 3z" />
+                  <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
+                </svg>
+              )}
+            <span className="smd-hdr-label">
+              {isProcessing ? 'Processing…' : 'Upload'}
+            </span>
+          </Link>
 
-          {/* 2. Pomodoro mini-pill — hidden <768px by design (120px+ min-width collides with mobile icons).
-               Timer state persists because PomoProvider wraps the whole app (see layout.tsx).
-               Accessible via /app/focus in a future release (v3.1). ADR-022. */}
+          {/* Pomodoro mini-pill — hidden <768px (120px+ min-width collides with mobile icons). ADR-022. */}
           <PomodoroMiniPill />
 
-          {/* 3. Settings/Theme — gear icon opens panel with theme picker, profile, sign-out */}
+          {/* Settings/Theme — gear icon opens panel with theme picker, profile, sign-out */}
           <div className="smd-hdr-settings-wrap" ref={settingsRef}>
             <button
               className="smd-hdr-gear"
@@ -122,7 +239,6 @@ export default function Header({
               title="Settings"
               aria-expanded={settingsOpen}
             >
-              {/* Gear icon — shown on all screen sizes */}
               <svg
                 className="smd-hdr-gear-icon"
                 viewBox="0 0 20 20"
@@ -146,7 +262,6 @@ export default function Header({
                   onThemeChange={onThemeChange}
                 />
                 <div className="smd-hdr-panel-divider" />
-                {/* Profile link */}
                 <Link href="/app/profile" className="smd-hdr-panel-link" onClick={() => setSettingsOpen(false)}>
                   <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
                     <path fillRule="evenodd" clipRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
@@ -160,7 +275,6 @@ export default function Header({
               </div>
             )}
           </div>
-
 
         </div>
       </header>
@@ -178,30 +292,24 @@ const headerCss = `
   .smd-hdr-mobile-only  { display: flex !important; }
 }
 
-/* ── Header nav ────────────────────────────────────────────────────── */
-.smd-header-nav {
+/* ── Header bar layout ─────────────────────────────────────────────── */
+.smd-header {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-left: 24px;
+  justify-content: space-between;
 }
-.smd-header-navlink {
-  display: inline-flex;
+
+.smd-hdr-left {
+  display: flex;
   align-items: center;
-  padding: 6px 12px;
-  min-height: 36px;
-  border-radius: 8px;
-  font-family: 'Outfit', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-muted, #6b7280);
-  text-decoration: none;
-  transition: background 0.13s, color 0.13s;
-  white-space: nowrap;
+  flex-shrink: 0;
 }
-.smd-header-navlink:hover {
-  background: rgba(255,255,255,0.06);
-  color: var(--text, #e8eaf0);
+
+.smd-hdr-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ── Logo link ─────────────────────────────────────────────────────── */
@@ -217,17 +325,21 @@ const headerCss = `
   border-radius: 4px;
 }
 
-/* ── Center nav ────────────────────────────────────────────────────── */
+/* Mobile logo (no subtitle) */
+.smd-hdr-mobile-logo {
+  text-decoration: none;
+  outline: none;
+}
+
+/* ── Desktop center nav ────────────────────────────────────────────── */
 .smd-header-nav {
   display: flex;
   align-items: center;
   gap: 4px;
-  flex: 1;
-  justify-content: center;
   padding: 0 16px;
 }
 
-.smd-header-nav-link {
+.smd-header-navlink {
   display: inline-flex;
   align-items: center;
   padding: 6px 14px;
@@ -239,11 +351,24 @@ const headerCss = `
   text-decoration: none;
   transition: background 0.15s, color 0.15s;
   white-space: nowrap;
+  position: relative;
 }
-
-.smd-header-nav-link:hover {
+.smd-header-navlink:hover {
   background: rgba(255,255,255,0.06);
   color: var(--text, #e8eaf0);
+}
+.smd-header-navlink--active {
+  color: var(--text, #e8eaf0);
+}
+.smd-header-navlink--active::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 14px;
+  right: 14px;
+  height: 2px;
+  background: var(--accent, #5b8dee);
+  border-radius: 1px;
 }
 
 /* ── Right row ─────────────────────────────────────────────────────── */
@@ -251,6 +376,7 @@ const headerCss = `
   display: flex;
   align-items: center;
   gap: 8px;
+  flex-shrink: 0;
 }
 
 /* ── Shared SVG icon sizing ────────────────────────────────────────── */
@@ -260,7 +386,7 @@ const headerCss = `
   flex-shrink: 0;
 }
 
-/* ── Upload button ─────────────────────────────────────────────────── */
+/* ── Upload button (desktop) ───────────────────────────────────────── */
 .smd-hdr-btn {
   display: inline-flex;
   align-items: center;
@@ -298,6 +424,28 @@ const headerCss = `
 }
 @keyframes smd-spin { to { transform: rotate(360deg); } }
 
+/* ── Hamburger button (mobile) ─────────────────────────────────────── */
+.smd-hdr-hamburger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  background: none;
+  border: none;
+  border-radius: 10px;
+  color: var(--text-muted, #6b7280);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s, background 0.15s;
+}
+.smd-hdr-hamburger:hover,
+.smd-hdr-hamburger[aria-expanded="true"] {
+  color: var(--text, #e8eaf0);
+  background: rgba(255,255,255,0.06);
+}
+
 /* ── Gear / settings button ────────────────────────────────────────── */
 .smd-hdr-settings-wrap { position: relative; }
 .smd-hdr-gear {
@@ -330,28 +478,6 @@ const headerCss = `
   transform: rotate(45deg);
 }
 
-/* ── Mobile sign-out icon button ───────────────────────────────────── */
-.smd-hdr-signout-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  min-width: 44px;
-  min-height: 44px;
-  background: none;
-  border: none;
-  border-radius: 10px;
-  color: var(--text-muted, #6b7280);
-  cursor: pointer;
-  padding: 0;
-  transition: color 0.15s, background 0.15s;
-}
-.smd-hdr-signout-icon:hover {
-  color: #f87171;
-  background: rgba(248,113,113,0.1);
-}
-
 /* ── Settings dropdown panel ───────────────────────────────────────── */
 .smd-hdr-settings-panel {
   position: absolute;
@@ -369,16 +495,6 @@ const headerCss = `
 @keyframes smd-panel-in {
   from { opacity: 0; transform: translateY(-6px) scale(0.97); }
   to   { opacity: 1; transform: translateY(0) scale(1); }
-}
-.smd-hdr-panel-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 700;
-  color: var(--text-muted, #6b7280);
-  margin-bottom: 6px;
-  padding: 0 10px;
-  font-family: 'DM Mono', monospace;
 }
 .smd-hdr-panel-divider {
   height: 1px;
@@ -429,27 +545,95 @@ const headerCss = `
   color: var(--text, #e8eaf0);
 }
 
-/* ── Mobile (< 768px) ──────────────────────────────────────────────── */
+/* ── Mobile left drawer ────────────────────────────────────────────── */
+.smd-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 9998;
+  animation: smd-fade-in 0.18s ease;
+}
+@keyframes smd-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.smd-drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 260px;
+  background: var(--surface, #13161d);
+  border-right: 1px solid rgba(255, 255, 255, 0.08);
+  z-index: 9999;
+  transform: translateX(-100%);
+  transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  padding: 0 12px 24px;
+  overflow-y: auto;
+}
+.smd-drawer--open {
+  transform: translateX(0);
+}
+
+.smd-drawer-title {
+  font-family: 'Fraunces', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text, #e8eaf0);
+  padding: 20px 8px 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  margin-bottom: 8px;
+}
+
+/* Drawer nav links reuse smd-header-navlink but full-width */
+.smd-drawer .smd-header-navlink {
+  width: 100%;
+  justify-content: flex-start;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+.smd-drawer .smd-header-navlink--active::after {
+  bottom: 4px;
+  left: 12px;
+  right: 12px;
+}
+
+.smd-drawer-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.07);
+  margin: 8px 0;
+}
+
+.smd-drawer-upload {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent, #5b8dee);
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+  min-height: 44px;
+}
+.smd-drawer-upload:hover {
+  background: rgba(91, 141, 238, 0.1);
+}
+
+/* ── Mobile overrides (< 768px) ────────────────────────────────────── */
 @media (max-width: 767px) {
   .smd-header { padding: 10px 16px; }
   .smd-header-right { gap: 2px; }
-
-  /* Upload collapses to icon-only 44×44 square */
-  .smd-hdr-btn {
-    padding: 0;
-    width: 44px;
-    border-radius: 10px;
-  }
 
   /* Settings panel: shift to stay in viewport on narrow screens */
   .smd-hdr-settings-panel {
     right: -8px;
     max-width: calc(100vw - 24px);
-  }
-
-  .smd-hdr-gear[aria-expanded="true"] .smd-hdr-gear-icon {
-    transform: rotate(45deg);
-    color: var(--accent);
   }
 }
 `;

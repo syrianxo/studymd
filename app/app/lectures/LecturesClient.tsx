@@ -19,6 +19,7 @@ import Link from 'next/link';
 import Header from '@/components/Header';
 import { createClient } from '@/lib/supabase';
 import type { Theme } from '@/types';
+import { migrateThemeId } from '@/lib/themes';
 import {
   DndContext,
   closestCenter,
@@ -153,7 +154,7 @@ async function apiFetch(path: string, opts?: RequestInit) {
 }
 
 // ─── Color helper ───────────────────────────────────────────────────────────
-// color_override in DB is a JSONB object {midnight: '#hex', pink: '#hex', ...}
+// color_override in DB is a JSONB object {midnight: '#hex', aurora: '#hex', ...}
 // or null, or a plain hex string (legacy). We extract the current theme's hex.
 function resolveColorHex(raw: unknown): string {
   if (!raw) return '#5b8dee';
@@ -161,7 +162,7 @@ function resolveColorHex(raw: unknown): string {
   if (typeof raw === 'object' && raw !== null) {
     const obj = raw as Record<string, string>;
     // Try to get any stored color — prefer midnight, then first value
-    return obj.midnight ?? obj.pink ?? obj.forest ?? Object.values(obj)[0] ?? '#5b8dee';
+    return obj.midnight ?? obj.aurora ?? obj.pink ?? obj.forest ?? Object.values(obj)[0] ?? '#5b8dee';
   }
   return '#5b8dee';
 }
@@ -1318,8 +1319,12 @@ export default function LecturesClient({ initialLectures }: { initialLectures: L
       if (data.user) setUserId(data.user.id);
     });
     try {
-      const stored = localStorage.getItem('studymd_theme') as Theme | null;
-      if (stored === 'midnight' || stored === 'pink' || stored === 'forest') setTheme(stored);
+      const raw = localStorage.getItem('studymd_theme');
+      const migrated = raw ? migrateThemeId(raw) : null;
+      if (migrated) {
+        if (raw !== migrated) localStorage.setItem('studymd_theme', migrated);
+        setTheme(migrated);
+      }
     } catch {}
   }, []);
 
@@ -1415,7 +1420,7 @@ export default function LecturesClient({ initialLectures }: { initialLectures: L
         />
 
         <div className="lm-page-wrap">
-          {/* Title bar */}
+          {/* Title bar — title + count on left, Upload on right */}
           <div className="lm-title-bar">
             <Link href="/app" className="lm-back">← Dashboard</Link>
             <div className="lm-title-bar-bottom">
@@ -1424,20 +1429,20 @@ export default function LecturesClient({ initialLectures }: { initialLectures: L
                 <span className="lm-count">{lectures.length}</span>
                 {savingOrder && <span className="lm-saving-order">Saving order…</span>}
               </div>
-              <div className="lm-header-controls">
-                <input className="lm-search" placeholder="Search lectures…" value={search} onChange={e => setSearch(e.target.value)} />
-                <select className="lm-filter-select" value={courseFilter} onChange={e => setCourseFilter(e.target.value)}>
-                  <option value="all">All Courses</option>
-                  {courses.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
-              </div>
+              <Link href="/app/upload?from=lectures" className="lm-btn lm-btn-primary lm-btn-sm">↑ Upload Lecture</Link>
             </div>
           </div>
 
-          {/* Table header row */}
+          {/* Table controls row — drag hint on left, search + filter on right */}
           <div className="lm-table-header-row">
             <span className="lm-table-hint">⠿ Drag rows to reorder</span>
-            <Link href="/app/upload?from=lectures" className="lm-btn lm-btn-primary lm-btn-sm">↑ Upload Lecture</Link>
+            <div className="lm-header-controls">
+              <input className="lm-search" placeholder="Search lectures…" value={search} onChange={e => setSearch(e.target.value)} />
+              <select className="lm-filter-select" value={courseFilter} onChange={e => setCourseFilter(e.target.value)}>
+                <option value="all">All Courses</option>
+                {courses.map(c => <option key={c} value={c}>{c}</option>)}
+              </select>
+            </div>
           </div>
 
           <div className="lm-table-outer">
@@ -1530,7 +1535,9 @@ const CSS = `
 .lm-page-wrap { padding: 0 40px; flex: 1; }
 
 /* ── Title bar ── */
-.lm-title-bar { padding: 20px 0 14px; border-bottom: 1px solid var(--border, rgba(255,255,255,0.08)); margin-bottom: 0; }
+/* No border-bottom — search/filter moved to table-header-row, so the rule
+   between title and controls reads more naturally without a divider. */
+.lm-title-bar { padding: 20px 0 10px; margin-bottom: 0; }
 .lm-title-bar-bottom { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 8px; }
 .lm-title-row { display: flex; align-items: center; gap: 10px; }
 .lm-back { font-size: 13px; color: var(--text-muted, #6b7280); text-decoration: none; transition: color .15s; }
@@ -1545,7 +1552,7 @@ const CSS = `
 .lm-filter-select:focus { border-color: var(--accent); }
 
 /* ── Table header row ── */
-.lm-table-header-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0 8px; }
+.lm-table-header-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0 10px; }
 .lm-table-hint { font-size: 12px; color: var(--text-muted); }
 
 /* ── Table ── */

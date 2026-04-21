@@ -26,24 +26,26 @@ Produce exactly ONE JSON object matching this TypeScript type:
 
   // ── Flashcards ────────────────────────────────────────
   flashcards: Array<{
-    id:        string,   // sequential: "F001", "F002", …
-    topic:     string,   // MUST exactly match one entry in topics[]
-    front:     string,   // terse question or stem (≤ 120 chars when possible)
-    back:      string,   // complete answer; may be multi-line; include mnemonics where useful
-    tags:      string[], // 1–4 descriptive tags, e.g. ["pharmacology","mechanism"]
-    difficulty: "easy" | "medium" | "hard"
+    id:           string,   // sequential: "F001", "F002", …
+    topic:        string,   // MUST exactly match one entry in topics[]
+    front:        string,   // terse question or stem (≤ 120 chars when possible)
+    back:         string,   // complete answer; may be multi-line; include mnemonics where useful
+    tags:         string[], // 1–4 descriptive tags, e.g. ["pharmacology","mechanism"]
+    difficulty:   "easy" | "medium" | "hard",
+    slide_number: number    // 1-indexed slide the fact comes from; use earliest if multi-slide
   }>,
 
   // ── Practice Questions ────────────────────────────────
   questions: Array<{
-    id:        string,          // sequential: "Q001", "Q002", …
-    topic:     string,          // MUST exactly match one entry in topics[]
-    type:      "mcq" | "true_false" | "short_answer" | "clinical_vignette",
-    stem:      string,          // question text
-    options?:  string[],        // required for mcq (4 options, A–D); omit for other types
-    answer:    string,          // for mcq: "A", "B", "C", or "D"; otherwise free text
-    explanation: string,        // 2–5 sentences explaining WHY the answer is correct
-    difficulty: "easy" | "medium" | "hard"
+    id:           string,          // sequential: "Q001", "Q002", …
+    topic:        string,          // MUST exactly match one entry in topics[]
+    type:         "mcq" | "true_false" | "short_answer" | "clinical_vignette",
+    stem:         string,          // question text
+    options?:     string[],        // required for mcq (4 options, A–D); omit for other types
+    answer:       string,          // for mcq: "A", "B", "C", or "D"; otherwise free text
+    explanation:  string,          // 2–5 sentences explaining WHY the answer is correct
+    difficulty:   "easy" | "medium" | "hard",
+    slide_number: number           // 1-indexed slide the question comes from; use earliest if multi-slide
   }>
 }
 
@@ -123,6 +125,9 @@ SECTION 5 — STRICT CONSTRAINTS
   "Note (not on slides):".
 - DO NOT include copyrighted drug brand names as the primary term; use generic names
   and note brand names in parentheses where helpful.
+- Every flashcard and question MUST include "slide_number" (positive integer, 1-indexed).
+  Point to the slide the fact or question is drawn from. If it spans multiple slides,
+  use the earliest. NEVER emit a flashcard or question with slide_number: null, 0, or missing.
 - IDs must be strictly sequential with zero-padded 3-digit numbers: F001, F002, …
   and Q001, Q002, … — never skip or repeat an ID.
 - Every flashcard.topic and question.topic must be an EXACT string match to an entry

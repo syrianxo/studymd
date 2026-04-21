@@ -6,7 +6,12 @@
 
 ## 🚧 Now (in flight)
 
-_(nothing currently in flight — populate when starting v3 prereqs)_
+### Slice 9 — F3 Lecture-grid folders
+- [x] DB migration: `folders` table + `group_id` FK upgrade (ADR-027)
+- [x] API: `GET/POST /api/folders` + `PATCH/DELETE /api/folders/[id]` with cycle prevention
+- [x] `hooks/useFolders.ts` + `Folder` type + `FolderTile` / `FolderTree` components
+- [x] Dashboard folder state + breadcrumb + LectureGrid folder tiles
+- [x] dnd-kit drag-to-folder + CustomSessionModal folder picker
 
 ---
 
@@ -31,8 +36,8 @@ _(nothing currently in flight — populate when starting v3 prereqs)_
 
 - [ ] **F1 — Per-user randomized greetings** — `lib/greetings.ts`, replace inline affirmations in `Dashboard.tsx`.
 - [ ] **F9 + F10 — Header nav + dashboard layout polish** — ship together; one UX sprint.
-- [ ] **F8 — Editable lecture topics** — adds `topics_override` jsonb column; UI in `LectureViewModal` and `ManageLectureCard`.
-- [ ] **F3 — Lecture-grid folders** — `folders` table; convert `group_id` to uuid+FK; `FolderTree` and `FolderTile` components.
+- [x] **F8 — Editable lecture topics** — `topics_override` jsonb column in `user_lecture_settings`; edit UI (dnd-kit reorder) in `LectureViewModal`; inline panel in `ManageLectureCard`. See ADR-023.
+- [x] **F3 — Lecture-grid folders** — `folders` table; convert `group_id` to uuid+FK; `FolderTree` and `FolderTile` components. _(in progress — Slice 9)_
 - [ ] **F5 + F6 — Three-tab Lecture Grid + Worksheets** — adds `lectures.kind`; tabs in `Dashboard`.
 - [ ] **F4 — Review tab with AI annotations** — `slide_annotations` table; `SlideReviewView` component; new `lib/slide-annotation-prompt.ts`.
 - [ ] **F2 — Lecture-package subscriptions** — `lecture_packages` + `user_package_access`; revise `lectures` RLS.
@@ -110,6 +115,18 @@ _(nothing currently in flight — populate when starting v3 prereqs)_
 
 ## ✅ Recently completed
 
+- [x] **Slice 8 — F8 editable lecture topics** — `topics_override jsonb` DB column, `PUT /api/lectures/settings` topicsOverride field, dnd-kit topic editor in `LectureViewModal`, inline panel in `ManageLectureCard`. ADR-026.
+- [x] **Slice 5, Fix #11 — internal_id** — extracted `generateLectureInternalId()` into [`lib/id-generator.ts`](./lib/id-generator.ts) with date-prefixed format `lec_YYYYMMDD_xxxxxx`. Updated [`/api/upload`](./app/api/upload/route.ts) and regen-id validator. DB audit: all 17 existing lectures already have IDs set, no backfill needed.
+- [x] **Slice 5, Fix #9 — slide_number** — added `slide_number` (required positive integer) to flashcard + question schema in [`lib/lecture-processor-prompt.ts`](./lib/lecture-processor-prompt.ts) and validator in [`lib/validate-lecture.ts`](./lib/validate-lecture.ts). Missing slide_number now fails validation → triggers Sonnet fallback. Added [`POST /api/admin/reprocess/[internalId]`](./app/api/admin/reprocess/[internalId]/route.ts) to backfill existing 17 lectures (run each one to get slide refs).
+- [x] **Slice 3 — Kebab menu correctness** — Removed spurious `[menuRef.current]` useEffect causing menu position jump on click; added `onMouseEnter` hover-to-expand on Change Course / Change Color submenus. Commits `fix(kebab)`.
+- [x] **N10 — Color persistence** — `Dashboard.handleChangeColor` now calls `refetch()`; `LectureViewModal` triggers `onChangeColor` after API success; ManageMode closing also calls `refetch()`. Color changes from all entry points now persist.
+- [x] **iOS modal flexbox fixes** — `FlashcardConfigModal`, `ExamConfigModal`, `CustomSessionModal` converted from `position:sticky` to flexbox column layout. Close `[X]` always visible on real iOS Safari.
+- [x] **Mobile lecture section header** — single-row on ≤479px (`flex-wrap: nowrap`); filter pills horizontal-scroll on ≤639px; Archived toggle only in Manage Mode.
+- [x] **Theme palette upgrade** — Pink = pinks/purples/reds; Forest = greens/browns/yellows; Midnight keeps blues/purples. Consistent across `ManageLectureCard`, `LectureViewModal`.
+- [x] **Per-theme lecture default colors** — Added `theme_colors` JSONB column to `lectures` table; seeded palette-cycled defaults for all existing lectures; cleared `user_lecture_settings.color_override` for fresh start. `resolveColor()` now: `color_override[theme]` → `theme_colors[theme]` → `var(--accent)`. Dropped legacy `lectures.color` TEXT column.
+- [x] **4.4 Admin "click to edit" removed** — Admin sidebar name now links to `/app/profile` instead of opening a redundant in-admin modal. "Click to edit ✏️" label text removed.
+- [x] **Aurora rename + theme registry** — `lib/themes.ts` created as single source of truth; `pink` theme id renamed to `aurora` across all 9 files, CSS, and DB; `migrateThemeId('pink')` → `'aurora'` handles stale localStorage values. ADR-025.
+- [x] **Slice 4 complete (4.1/4.3/4.2/4.5)** — Mobile dashboard padding reduced to 16px gutter; theme-aware `::selection` added to `themes.css`; profile page "Lavender" → "Pink"/"Aurora" with correct preview swatch colors; filter bar horizontal-scroll cleanup pass verified.
 - [x] Comprehensive documentation pass — README, CLAUDE.md, architecture.md, documentation.md, recommendations.md, development_plan_v3.md, decisions.md, todo.md (this file).
 
 ---

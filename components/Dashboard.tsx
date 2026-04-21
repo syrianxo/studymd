@@ -10,24 +10,32 @@ import CustomSessionModal, { type CustomSessionConfig } from './CustomSessionMod
 import { useUserLectures, resolveColor } from '@/hooks/useUserLectures';
 import type { Lecture } from '@/hooks/useUserLectures';
 import { useProgress } from '@/hooks/useProgress';
+import { useFolders } from '@/hooks/useFolders';
+import { FolderBreadcrumb } from '@/components/FolderTree';
 import { createClient } from '@/lib/supabase';
 import PomodoroTimer from '@/components/PomodoroTimer';
 import { StudyConfigManager, useStudyConfig } from '@/components/StudyConfigManager';
 import TodaysPlanWidget from '@/components/TodaysPlanWidget';
 import type { Course, Theme, StudyPlan } from '@/types';
+import { migrateThemeId } from '@/lib/themes';
 import type { FlashcardConfig } from '@/components/study/FlashcardConfigModal';
 import type { ExamConfig } from '@/components/study/ExamConfigModal';
+import { buildGreetingLine } from '@/lib/greetings';
 
 interface DashboardProps {
   userName?: string;
+  userId?: string;
   isPrimary?: boolean;
   initialTheme?: Theme;
+  isAdmin?: boolean;
 }
 
 export default function Dashboard({
   userName = 'there',
+  userId: userIdProp,
   isPrimary = false,
   initialTheme: initialThemeProp = 'midnight',
+  isAdmin = false,
 }: DashboardProps) {
   const {
     lectures,
@@ -42,6 +50,24 @@ export default function Dashboard({
     globalStats,
     loading: progressLoading,
   } = useProgress();
+
+  const {
+    folders,
+    ancestorsOf,
+    byId: folderById,
+    createFolder,
+    updateFolder,
+    deleteFolder,
+  } = useFolders();
+
+  // null = All Lectures (unfiltered); a UUID = drill into that folder
+  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
+
+  // Optimistic overrides for group_id — applied after CSS fade-out completes
+  // so the card exits smoothly before the grid reflows.
+  const [groupIdOverrides, setGroupIdOverrides] = useState<Record<string, string | null>>({});
+  // IDs currently playing their fade-out CSS transition (~270ms)
+  const [exitingLectureIds, setExitingLectureIds] = useState<Set<string>>(new Set());
 
   const [filter, setFilter] = useState<FilterState>({
     courses: new Set<Course>(),
@@ -91,11 +117,12 @@ export default function Dashboard({
 
   useEffect(() => {
     try {
-      const stored = localStorage.getItem('studymd_theme') as Theme | null;
-      if (stored === 'midnight' || stored === 'pink' || stored === 'forest') {
-        setTheme(stored);
-        // Ensure the data-theme attribute is applied on the html element
-        document.documentElement.dataset.theme = stored;
+      const raw = localStorage.getItem('studymd_theme');
+      const migrated = raw ? migrateThemeId(raw) : null;
+      if (migrated) {
+        if (raw !== migrated) localStorage.setItem('studymd_theme', migrated);
+        setTheme(migrated);
+        document.documentElement.dataset.theme = migrated;
       }
     } catch {}
   }, []);
@@ -105,10 +132,56 @@ export default function Dashboard({
       lectures.filter((l) => {
         if (!l.visible || l.archived) return false;
         if (filter.courses.size > 0 && !filter.courses.has(l.course)) return false;
+        // Exiting cards stay in the list so their CSS fade-out plays before the reflow.
+        if (exitingLectureIds.has(l.internal_id)) return true;
+        // Effective group_id: use local optimistic override if present
+        const effectiveGroupId = l.internal_id in groupIdOverrides
+          ? groupIdOverrides[l.internal_id]
+          : (l.group_id ?? null);
+        // Unfiled view (activeFolderId === null) only shows lectures not in any folder.
+        // Folder view shows only lectures directly in that folder.
+        if (effectiveGroupId !== activeFolderId) return false;
         return true;
       }),
-    [lectures, filter.courses]
+    [lectures, filter.courses, activeFolderId, groupIdOverrides, exitingLectureIds]
   );
+
+  // Subfolders of the current folder (or root-level folders when no folder active)
+  const subfolders = useMemo(
+    () => folders
+      .filter(f => (f.parent_id ?? null) === activeFolderId)
+      .sort((a, b) => a.display_order - b.display_order || a.name.localeCompare(b.name)),
+    [folders, activeFolderId]
+  );
+
+  // How many lectures live directly in each folder (for tile badges)
+  const lectureCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const l of lectures) {
+      if (!l.visible || l.archived) continue;
+      const effectiveGroupId = l.internal_id in groupIdOverrides
+        ? groupIdOverrides[l.internal_id]
+        : (l.group_id ?? null);
+      if (effectiveGroupId) counts[effectiveGroupId] = (counts[effectiveGroupId] ?? 0) + 1;
+    }
+    return counts;
+  }, [lectures, groupIdOverrides]);
+
+  // How many immediate subfolders each folder has (for tile badges)
+  const subfoldersCount = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const f of folders) {
+      if (f.parent_id) counts[f.parent_id] = (counts[f.parent_id] ?? 0) + 1;
+    }
+    return counts;
+  }, [folders]);
+
+  // Breadcrumb ancestors for the active folder
+  const folderAncestors = useMemo(
+    () => (activeFolderId ? ancestorsOf(activeFolderId) : []),
+    [activeFolderId, ancestorsOf]
+  );
+  const activeFolder = activeFolderId ? folderById(activeFolderId) : null;
 
   // ── Stats ─────────────────────────────────────────────────────────────────
   const avgScore = progressLoading || globalStats.avgExamScore === null
@@ -133,10 +206,12 @@ export default function Dashboard({
       course_override: lecture.course_override ?? null,
       color_override: lecture.color_override ?? null,
       custom_title: lecture.custom_title ?? null,
+      topics_override: lecture.topics_override ?? null,
     },
     display_title: lecture.custom_title ?? lecture.title,
     display_course: (lecture.course_override ?? lecture.course) as Course,
     display_color:  resolveColor(lecture, theme),
+    display_topics: lecture.display_topics ?? lecture.topics ?? [],
   }), [userId, theme]);
 
   function handleStartFlash(lectureId: string) {
@@ -189,11 +264,8 @@ export default function Dashboard({
     }).then(() => refetch()).catch(console.error); // fix #5: refetch after course change
   }
 
-  function handleChangeColor(internalId: string, color: string) {
-    // No-op here: LectureCard and LectureViewModal now call the API directly
-    // with theme-keyed colorOverride, bypassing this to avoid refetch flicker.
-    // ManageMode handles its own API calls too.
-    // We only refetch if called from a path that doesn't do its own optimistic update.
+  function handleChangeColor(_internalId: string, _color: string) {
+    refetch();
   }
 
   async function handleHide(internalId: string) {
@@ -222,6 +294,65 @@ export default function Dashboard({
     }).then(() => refetch()).catch(console.error);
   }
 
+  function handleTopicsChanged(internalId: string, override: string[] | null) {
+    // The API call was already made by TopicEditor; just patch local state so
+    // other parts of the dashboard (e.g. flashcard topic filters) stay fresh.
+    refetch();
+  }
+
+  // ── Folder handlers ───────────────────────────────────────────────────────
+  async function handleCreateFolder() {
+    const name = prompt('Folder name:');
+    if (!name?.trim()) return;
+    await createFolder(name.trim(), activeFolderId);
+  }
+
+  async function handleRenameFolder(id: string, name: string) {
+    await updateFolder(id, { name });
+  }
+
+  async function handleDeleteFolder(id: string) {
+    if (!confirm('Delete this folder? Lectures inside will remain but lose their folder assignment.')) return;
+    // If the active folder is the one being deleted, navigate up
+    if (activeFolderId === id) setActiveFolderId(folders.find(f => f.id === id)?.parent_id ?? null);
+    await deleteFolder(id);
+  }
+
+  async function handleChangeFolderColor(id: string, color: string | null) {
+    await updateFolder(id, { color });
+  }
+
+  function handleMoveToFolder(lectureId: string, folderId: string | null) {
+    // Phase 1: trigger CSS fade-out (card stays in DOM taking space, opacity → 0).
+    setExitingLectureIds(prev => new Set([...prev, lectureId]));
+
+    // Phase 2: after the fade completes (~270ms), apply the optimistic group_id override.
+    // This removes the card from visibleLectures so the grid can reflow — but by now
+    // the card is already invisible, so the reflow is imperceptible.
+    setTimeout(() => {
+      setGroupIdOverrides(prev => ({ ...prev, [lectureId]: folderId }));
+      setExitingLectureIds(prev => { const n = new Set(prev); n.delete(lectureId); return n; });
+    }, 270);
+
+    fetch('/api/lectures/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ internalId: lectureId, updates: { groupId: folderId } }),
+    })
+      .then(() => {
+        refetch();
+        // Clear the optimistic override after refetch has had time to settle
+        setTimeout(() => setGroupIdOverrides(prev => {
+          const n = { ...prev }; delete n[lectureId]; return n;
+        }), 800);
+      })
+      .catch(() => {
+        // On failure: revert both the exit animation and the optimistic override
+        setExitingLectureIds(prev => { const n = new Set(prev); n.delete(lectureId); return n; });
+        setGroupIdOverrides(prev => { const n = { ...prev }; delete n[lectureId]; return n; });
+      });
+  }
+
   if (lecturesError) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -231,6 +362,7 @@ export default function Dashboard({
           userId={userId ?? ''}
           initialTheme={theme}
           onThemeChange={setTheme}
+          isAdmin={isAdmin}
         />
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, padding: 40, textAlign: 'center' }}>
           <div style={{ fontSize: 42 }}>⚠️</div>
@@ -244,28 +376,9 @@ export default function Dashboard({
     );
   }
 
-  const greeting = isPrimary ? `Hey Haley 👋` : `Welcome back, ${userName}`;
-
-  // Rotating affirmations for Haley — picked once per mount
-  const HALEY_SUBTITLES = [
-    'Your lecture mastery awaits ✨',
-    'Ready to conquer your exams? Let\'s go. 💪',
-    'Every card you flip is one step closer. Keep going. 🩵',
-    'You\'ve got this, Haley. One lecture at a time.',
-    'Built just for you, studied just by you. 🎓',
-    'Your hard work is paying off. Keep studying. ⭐',
-    'PA school\'s toughest student just logged in. 🩺',
-    'New day, new mastery. What are we studying today?',
-    'Knowledge is power. And you\'re powerfully smart. 💙',
-    'The flashcards are ready. Are you? Let\'s master it.',
-  ];
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const haleySubtitle = useMemo(
-    () => HALEY_SUBTITLES[Math.floor(Math.random() * HALEY_SUBTITLES.length)],
-    // Only pick once per mount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
-  );
+  // Deterministic greeting: seeded by userId + UTC date, so it's stable all day
+  // and rotates at midnight without a re-render flash.
+  const greetingLine = buildGreetingLine(userName, userIdProp ?? userId ?? '', isPrimary);
 
   return (
     <>
@@ -277,15 +390,14 @@ export default function Dashboard({
         userId={userId ?? ''}
         initialTheme={theme}
         onThemeChange={setTheme}
+        isAdmin={isAdmin}
       />
 
       <main className="smd-dashboard" id="mainDashboard">
 
         {/* ── HERO (centered, Option A glass card) ────────────────────────── */}
         <section className="smd-hero">
-          <h1 className="smd-hero-title">
-            {greeting} — master your <em>lectures</em> with ease.
-          </h1>
+          <h1 className="smd-hero-title">{greetingLine}</h1>
           {/* Stats — visible on all screen sizes */}
           <div className="smd-hero-stats-row">
             <span>
@@ -317,20 +429,42 @@ export default function Dashboard({
 
         {/* Subtitle — below widgets, above lecture grid */}
         <p className="smd-section-subtitle">
-          {isPrimary
-            ? haleySubtitle
-            : 'Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.'}
+          Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.
         </p>
+
+        {/* ── FOLDER BREADCRUMB ─────────────────────────────────────────── */}
+        {activeFolderId && (
+          <div style={{ marginBottom: '0.5rem' }}>
+            <FolderBreadcrumb
+              ancestors={folderAncestors}
+              current={activeFolder ? { name: activeFolder.name, icon: activeFolder.icon } : null}
+              onNavigate={setActiveFolderId}
+            />
+          </div>
+        )}
 
         {/* ── SECTION HEADER ──────────────────────────────────────────────── */}
         <div className="smd-section-header">
           <div className="smd-section-title">
-            Your Lectures
+            {activeFolderId && activeFolder
+              ? <>{activeFolder.icon} {activeFolder.name}</>
+              : 'Your Lectures'
+            }
             {!lecturesLoading && (
-              <span className="smd-lecture-count-badge">{visibleLectures.length}</span>
+              <span className="smd-lecture-count-badge">
+                {visibleLectures.length + subfolders.length}
+              </span>
             )}
           </div>
           <div className="smd-section-actions">
+            <button
+              className="btn btn-secondary smd-folder-btn"
+              onClick={handleCreateFolder}
+              title="New folder"
+              aria-label="Create new folder"
+            >
+              📁 New folder
+            </button>
             <button
               className="btn btn-primary smd-custom-session-btn"
               onClick={() => setCustomModalOpen(true)}
@@ -339,7 +473,7 @@ export default function Dashboard({
             </button>
             <button
               className="smd-icon-btn"
-              onClick={() => setManageOpen(v => !v)}
+              onClick={() => setManageOpen(v => { if (v) refetch(); return !v; })}
               aria-label={manageOpen ? 'Done managing' : 'Manage lectures'}
               title={manageOpen ? 'Done' : 'Manage lectures'}
             >
@@ -361,6 +495,7 @@ export default function Dashboard({
           <ManageMode
             userId={userId}
             activeTheme={theme}
+            folders={folders}
             initialLectures={lectures.map((l) => ({
               ...l,
               settings: {
@@ -399,8 +534,19 @@ export default function Dashboard({
             onHide={handleHide}
             onArchive={handleArchive}
             onRenameTitle={handleRenameTitle}
+            onTopicsChanged={handleTopicsChanged}
             planNextReview={planNextReview}
             planTestDate={activePlan?.test_date}
+            subfolders={subfolders}
+            subfoldersCount={subfoldersCount}
+            lectureCounts={lectureCounts}
+            onOpenFolder={setActiveFolderId}
+            onRenameFolder={handleRenameFolder}
+            onDeleteFolder={handleDeleteFolder}
+            onChangeFolderColor={handleChangeFolderColor}
+            onMoveToFolder={handleMoveToFolder}
+            exitingLectureIds={exitingLectureIds}
+            allFolders={folders}
           />
         )}
       </main>
@@ -799,6 +945,7 @@ const dashboardCss = `
 
 /* ── Mobile overrides ─────────────────────────────────────────────────── */
 @media (max-width: 767px) {
+  .smd-dashboard { padding: 24px 16px; }
   .smd-hero { margin: 1.5rem auto 1rem; }
   .smd-section-actions .btn { min-height: 44px; }
   .smd-footer-inner { padding: 36px 16px 24px; }

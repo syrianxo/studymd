@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { Theme } from '@/types';
+import { THEMES, migrateThemeId } from '@/lib/themes';
 
 async function saveUserTheme(userId: string, theme: string): Promise<void> {
   await fetch('/api/preferences', {
@@ -11,19 +12,6 @@ async function saveUserTheme(userId: string, theme: string): Promise<void> {
     body: JSON.stringify({ theme }),
   });
 }
-
-interface ThemeDef {
-  id: Theme;
-  label: string;
-  swatch: string;
-  glow: string;
-}
-
-const THEMES: ThemeDef[] = [
-  { id: 'midnight', label: 'Midnight', swatch: '#5b8dee', glow: '#5b8dee44' },
-  { id: 'pink',     label: 'Pink',     swatch: '#f472b6', glow: '#f472b644' },
-  { id: 'forest',   label: 'Forest',   swatch: '#10b981', glow: '#10b98144' },
-];
 
 export function applyTheme(theme: Theme): void {
   document.documentElement.dataset.theme = theme;
@@ -54,10 +42,12 @@ export function ThemePicker({ userId, initialTheme, variant = 'compact', onTheme
   // localStorage theme on every mount.
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('studymd_theme') as Theme | null;
-      if (saved === 'midnight' || saved === 'pink' || saved === 'forest') {
-        setActive(saved);
-        applyTheme(saved);
+      const raw = localStorage.getItem('studymd_theme');
+      const migrated = raw ? migrateThemeId(raw) : null;
+      if (migrated) {
+        if (raw !== migrated) localStorage.setItem('studymd_theme', migrated);
+        setActive(migrated);
+        applyTheme(migrated);
       } else {
         applyTheme(initialTheme);
       }
@@ -312,11 +302,13 @@ const pickerCss = `
 `;
 
 // ── SSR flash-prevention script ──────────────────────────────────────────────
+// Cannot import modules — migration logic is inlined.
 export const THEME_INIT_SCRIPT = `
 (function() {
   try {
     var t = localStorage.getItem('studymd_theme');
-    if (t === 'midnight' || t === 'pink' || t === 'forest') {
+    if (t === 'pink') { t = 'aurora'; localStorage.setItem('studymd_theme', 'aurora'); }
+    if (t === 'midnight' || t === 'aurora' || t === 'forest') {
       document.documentElement.dataset.theme = t;
     } else {
       document.documentElement.dataset.theme = 'midnight';

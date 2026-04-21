@@ -20,9 +20,9 @@ const COURSES: Course[] = [
 
 // Per-theme color palettes
 const THEME_COLORS: Record<string, string[]> = {
-  midnight: ['#5b8dee', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16'],
-  pink:     ['#f472b6', '#c084fc', '#34d399', '#fbbf24', '#fb7185', '#e879f9', '#67e8f9', '#a3e635'],
-  forest:   ['#34d399', '#6ee7b7', '#38bdf8', '#fbbf24', '#f87171', '#a78bfa', '#22d3ee', '#bef264'],
+  midnight: ['#5b8dee', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#a855f7'],
+  pink:     ['#f472b6', '#ec4899', '#db2777', '#e879f9', '#c084fc', '#a855f7', '#fb7185', '#f43f5e'],
+  forest:   ['#10b981', '#34d399', '#84cc16', '#65a30d', '#f59e0b', '#d97706', '#b45309', '#78716c'],
 };
 function getThemeColors(theme: string): string[] {
   return THEME_COLORS[theme] ?? THEME_COLORS.midnight;
@@ -84,6 +84,12 @@ const cardCss = `
   padding: 2px 8px; border-radius: 100px;
   background: rgba(255,255,255,0.07); color: var(--text-muted, #6b7280);
   border: 1px solid rgba(255,255,255,0.06);
+}
+/* Folder chip — slightly distinct from regular tags */
+.lc-tag-folder {
+  background: rgba(91,141,238,0.1);
+  color: var(--accent, #5b8dee);
+  border-color: rgba(91,141,238,0.2);
 }
 .lc-slide-count { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--text-muted, #6b7280); margin-top: 10px; }
 
@@ -374,6 +380,7 @@ const cardCss = `
 .lc-ctx-item.danger { color: #f87171; }
 .lc-ctx-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 2px 0; }
 @media (max-width: 639px) { .lc-ctx-item { min-height: 44px; font-size: 14px; padding: 10px 18px; } }
+
 `;
 
 // ─── Lightbox ─────────────────────────────────────────────────────────────────
@@ -647,12 +654,13 @@ interface KebabMenuProps {
   activeTheme: string;
   onHide: () => void; onArchive: () => void; onRestore: () => void;
   onEditTags: () => void;
+  onEditTopics: () => void;
   onChangeCourse: (course: Course) => void;
   onChangeColor: (color: string) => void;
   onClose: () => void;
 }
 
-function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRestore, onEditTags, onChangeCourse, onChangeColor, onClose }: KebabMenuProps) {
+function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRestore, onEditTags, onEditTopics, onChangeCourse, onChangeColor, onClose }: KebabMenuProps) {
   const [showCourse, setShowCourse] = useState(false);
   const [showColor, setShowColor] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -696,17 +704,6 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
     };
   }, [onClose]);
 
-  useEffect(() => {
-    if (!menuRef.current || !pos) return;
-    const vw = window.innerWidth, vh = window.innerHeight;
-    const mw = menuRef.current.offsetWidth, mh = menuRef.current.offsetHeight;
-    let left = anchorRect.right - mw, top = anchorRect.bottom + 6;
-    if (left < 8) left = 8;
-    if (left + mw > vw - 8) left = vw - mw - 8;
-    if (top + mh > vh - 8) top = anchorRect.top - mh - 6;
-    setPos({ top, left });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [menuRef.current]);
 
   if (typeof document === 'undefined' || !pos) return null;
 
@@ -718,11 +715,18 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
     <div className="lc-menu" ref={menuRef} role="menu"
       style={{ position: 'fixed', top: pos.top, left: pos.left, zIndex: 99999 }}
       onTouchStart={stopTouch}>
+      <div className="lc-menu-row" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }}>
+        <div className="lc-menu-row-inner">
+          <button className="lc-menu-item" onClick={onEditTags} role="menuitem"><span>🏷</span> Edit Tags</button>
+        </div>
+      </div>
+
       <div className="lc-menu-row"><div className="lc-menu-row-inner">
-        <button className="lc-menu-item" onClick={onEditTags} role="menuitem"><span>🏷</span> Edit Tags</button>
+        <button className="lc-menu-item" onClick={() => { onEditTopics(); onClose(); }} role="menuitem"><span>📋</span> Edit Topics</button>
       </div></div>
 
-      <div className="lc-menu-row">
+      <div className="lc-menu-row"
+        onMouseEnter={() => { setShowCourse(true); setShowColor(false); }}>
         <div className="lc-menu-row-inner">
           <button className={`lc-menu-item${showCourse ? ' active' : ''}`}
             onClick={() => { setShowCourse(v => !v); setShowColor(false); }}
@@ -743,7 +747,8 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
         )}
       </div>
 
-      <div className="lc-menu-row">
+      <div className="lc-menu-row"
+        onMouseEnter={() => { setShowColor(true); setShowCourse(false); }}>
         <div className="lc-menu-row-inner">
           <button className={`lc-menu-item${showColor ? ' active' : ''}`}
             onClick={() => { setShowColor(v => !v); setShowCourse(false); }}
@@ -766,22 +771,22 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
         )}
       </div>
 
-      <div className="lc-menu-divider" />
+      <div className="lc-menu-divider" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }} />
 
       {lecture.settings.archived ? (
-        <div className="lc-menu-row"><div className="lc-menu-row-inner">
+        <div className="lc-menu-row" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }}><div className="lc-menu-row-inner">
           <button className="lc-menu-item" onClick={() => { onRestore(); onClose(); }} role="menuitem"><span>↩️</span> Restore</button>
         </div></div>
       ) : !lecture.settings.visible ? (
-        <div className="lc-menu-row"><div className="lc-menu-row-inner">
+        <div className="lc-menu-row" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }}><div className="lc-menu-row-inner">
           <button className="lc-menu-item" onClick={() => { onRestore(); onClose(); }} role="menuitem"><span>👁</span> Unhide</button>
         </div></div>
       ) : (
         <>
-          <div className="lc-menu-row"><div className="lc-menu-row-inner">
+          <div className="lc-menu-row" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }}><div className="lc-menu-row-inner">
             <button className="lc-menu-item" onClick={() => { onHide(); onClose(); }} role="menuitem"><span>👁</span> Hide</button>
           </div></div>
-          <div className="lc-menu-row"><div className="lc-menu-row-inner">
+          <div className="lc-menu-row" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }}><div className="lc-menu-row-inner">
             <button className="lc-menu-item danger" onClick={() => { onArchive(); onClose(); }} role="menuitem"><span>📦</span> Archive</button>
           </div></div>
         </>
@@ -807,17 +812,21 @@ interface LectureCardProps {
   onArchive: () => void;
   onRestore: () => void;
   onEditTags: () => void;
+  onEditTopics?: () => void;
   onChangeCourse: (course: Course) => void;
   onChangeColor: (color: string) => void;
   onRenameTitle?: (title: string) => void;
+  /** Folder assignment shown as a special chip alongside tags (e.g. "📁 Anatomy") */
+  folderName?: string;
 }
 
 export function ManageLectureCard({
   lecture, isManageMode, activeTheme,
   flashcardProgress = 0, examProgress = 0,
   onOpen, onFlashcards, onExam,
-  onHide, onArchive, onRestore, onEditTags,
+  onHide, onArchive, onRestore, onEditTags, onEditTopics,
   onChangeCourse, onChangeColor, onRenameTitle,
+  folderName,
 }: LectureCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [kebabRect, setKebabRect] = useState<DOMRect | null>(null);
@@ -831,6 +840,7 @@ export function ManageLectureCard({
 
   const [localColor, setLocalColor] = useState<string | null>(null);
   const [localCourse, setLocalCourse] = useState<Course | null>(null);
+
   // Track whether local overrides were set by user interaction (not prop change)
   const localColorSet = useRef(false);
   useEffect(() => {
@@ -953,6 +963,7 @@ export function ManageLectureCard({
             activeTheme={activeTheme}
             onHide={onHide} onArchive={onArchive} onRestore={onRestore}
             onEditTags={onEditTags}
+            onEditTopics={onEditTopics ?? (() => {})}
             onChangeCourse={handleChangeCourse} onChangeColor={handleChangeColor}
             onClose={() => setMenuOpen(false)}
           />
@@ -1023,8 +1034,11 @@ export function ManageLectureCard({
           <span className="lc-count-item">📝 {(lecture.json_data as any)?.questions?.length ?? 0} questions</span>
         </div>
 
-        {lecture.settings.tags.length > 0 && (
+        {(lecture.settings.tags.length > 0 || folderName) && (
           <div className="lc-tags" aria-label="Tags">
+            {folderName && (
+              <span className="lc-tag lc-tag-folder" title="Folder">{folderName}</span>
+            )}
             {lecture.settings.tags.map(tag => <span key={tag} className="lc-tag">{tag}</span>)}
           </div>
         )}

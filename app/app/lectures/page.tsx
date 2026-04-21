@@ -7,6 +7,20 @@ import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import LecturesClient from './LecturesClient';
 
+/**
+ * Resolve a raw color value (string hex or theme_colors JSONB object) to a
+ * plain hex string. Mirrors resolveColorHex() in LecturesClient.tsx.
+ */
+function resolveHex(raw: unknown): string {
+  if (!raw) return '#5b8dee';
+  if (typeof raw === 'string') return raw;
+  if (typeof raw === 'object' && raw !== null) {
+    const o = raw as Record<string, string>;
+    return o.midnight ?? o.aurora ?? o.pink ?? o.forest ?? Object.values(o)[0] ?? '#5b8dee';
+  }
+  return '#5b8dee';
+}
+
 async function getLecturesWithCounts() {
   const cookieStore = await cookies();
   const supabase = createServerClient(
@@ -25,7 +39,8 @@ async function getLecturesWithCounts() {
 
   const { data: lectures } = await supabase
     .from('lectures')
-    .select('internal_id, title, subtitle, course, color, icon, slide_count, created_at, json_data');
+    // ADR-023: lectures.color was dropped; theme_colors JSONB replaced it.
+    .select('internal_id, title, subtitle, course, theme_colors, icon, slide_count, created_at, json_data');
 
   const { data: settings } = await supabase
     .from('user_lecture_settings')
@@ -41,7 +56,7 @@ async function getLecturesWithCounts() {
       title: l.title,
       subtitle: l.subtitle ?? '',
       course: s?.course_override ?? l.course,
-      color: s?.color_override ?? l.color,
+      color: resolveHex(s?.color_override ?? l.theme_colors),
       icon: l.icon,
       slideCount: l.slide_count ?? 0,
       flashcardCount: (l.json_data?.flashcards ?? []).length,

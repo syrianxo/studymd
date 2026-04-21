@@ -203,7 +203,7 @@ Bucket: slides (public, no MIME restriction, no size limit)
 
 **RLS on `storage.objects`:**
 - `uploads` — read/insert/delete restricted to the path-prefix matching the user's UUID. A user cannot list or read another user's uploads.
-- `slides` — public SELECT (anyone can read by URL). **However, the broad SELECT policy currently allows directory listing**, which leaks lecture IDs. Slated for tightening — see `recommendations.md`.
+- `slides` — public SELECT for direct CDN URLs. The broad "Public can read slides" SELECT policy was dropped (ADR-018); directory listing via the Supabase SDK is no longer possible. Direct image URLs continue to work.
 
 ---
 
@@ -269,7 +269,7 @@ When adding a new feature, the typical hook points are:
 | New page | `app/app/<route>/page.tsx` (user) or `app/admin/<route>/page.tsx` (admin) |
 | New table | Supabase MCP `apply_migration` + corresponding TypeScript type in `types/index.ts` + RLS policy + entry in `decisions.md` |
 | New AI prompt | `lib/<feature>-prompt.ts`, mirroring `lecture-processor-prompt.ts`'s shape |
-| New theme | Add a token to `styles/themes.css`, extend the `Theme` union in `types/index.ts`, extend `resolveColor` in `hooks/useUserLectures.ts` |
+| New theme | Add a token to `styles/themes.css`, extend the `Theme` union in `types/index.ts`, extend `resolveColor` in `hooks/useUserLectures.ts`, add a color entry to the `PALETTE` constant in `app/api/generate/route.ts` and `app/api/admin/lectures/add/route.ts`, and backfill `lectures.theme_colors` for existing rows |
 | New global setting | `system_config` table (key/value JSONB) — keep magic strings out of source |
 | New shared component | `components/<Name>.tsx` (study modules go in `components/study/`) |
 | New custom hook | `hooks/use<Name>.ts` |
