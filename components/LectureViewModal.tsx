@@ -64,11 +64,13 @@ type SlideState = 'loading' | 'loaded' | 'empty';
 function useSlides(internalId: string, slideCount: number) {
   const [urls, setUrls] = useState<string[]>([]);
   const [state, setState] = useState<SlideState>('loading');
-  const loaded = useRef(false);
 
   useEffect(() => {
-    if (loaded.current) return;
-    loaded.current = true;
+    // No lecture selected yet — nothing to load
+    if (!internalId) { setState('empty'); return; }
+    setState('loading');
+    setUrls([]);
+    let cancelled = false;
     async function load() {
       const supabase = createClient();
       // If slide_count is 0/null (common for migrated lectures), probe up to 200
@@ -79,12 +81,14 @@ function useSlides(internalId: string, slideCount: number) {
         const { data } = supabase.storage.from('slides').getPublicUrl(path);
         if (data?.publicUrl) built.push(data.publicUrl);
       }
+      if (cancelled) return;
       if (built.length === 0) { setState('empty'); return; }
       // Probe the first URL to confirm slides actually exist in storage
       try {
         const res = await fetch(built[0], { method: 'HEAD' });
+        if (cancelled) return;
         if (!res.ok) { setState('empty'); return; }
-      } catch { setState('empty'); return; }
+      } catch { if (!cancelled) setState('empty'); return; }
       // If slide_count was 0, also probe the end to find real count
       if (!slideCount || slideCount === 0) {
         // Binary-search the actual last slide — stop at first 404
@@ -97,13 +101,14 @@ function useSlides(internalId: string, slideCount: number) {
             if (r.ok) { lo = mid; } else { hi = mid - 1; }
           } catch { hi = mid - 1; }
         }
-        setUrls(built.slice(0, lo));
+        if (!cancelled) setUrls(built.slice(0, lo));
       } else {
-        setUrls(built);
+        if (!cancelled) setUrls(built);
       }
-      setState('loaded');
+      if (!cancelled) setState('loaded');
     }
     load();
+    return () => { cancelled = true; };
   }, [internalId, slideCount]);
 
   return { urls, state };
@@ -172,21 +177,18 @@ export default function LectureViewModal({
   onHide, onArchive, onTopicsChanged,
   folderName, folderIcon = '📁', onRemoveFromFolder,
 }: LectureViewModalProps) {
-  // Guard: nothing to render if no lecture has ever been opened
-  if (!lecture) return null;
-
-  // Capture stable references before hooks so TypeScript knows these are non-null
-  const lectureId       = lecture.internal_id;
-  const lectureSubtitle = lecture.subtitle ?? '';
-
-  const color = resolveColor(lecture, activeTheme);
-  const title = lecture.custom_title ?? lecture.title;
-  const course = (lecture.course_override ?? lecture.course) as Course;
+  // Derive values null-safely so every hook below is called unconditionally.
+  // The early-return guard lives AFTER the hooks (React Rules of Hooks).
+  const lectureId       = lecture?.internal_id ?? '';
+  const lectureSubtitle = lecture?.subtitle ?? '';
+  const color = lecture ? resolveColor(lecture, activeTheme) : '#5b8dee';
+  const title = lecture?.custom_title ?? lecture?.title ?? '';
+  const course = ((lecture?.course_override ?? lecture?.course) ?? '') as Course;
   // Use per-user display_topics override if set, otherwise fall back to shared topics
-  const topics = lecture.display_topics ?? lecture.topics ?? [];
-  const flashcards = lecture.json_data?.flashcards ?? [];
+  const topics = lecture?.display_topics ?? lecture?.topics ?? [];
+  const flashcards = lecture?.json_data?.flashcards ?? [];
   const fcLen = flashcards.length;
-  const qLen = ((lecture.json_data as any)?.questions ?? []).length;
+  const qLen = ((lecture?.json_data as any)?.questions ?? []).length;
 
   const [localSubtitle, setLocalSubtitle] = useState(lectureSubtitle);
   const [isEditingSubtitle, setIsEditingSubtitle] = useState(false);
@@ -224,11 +226,15 @@ export default function LectureViewModal({
     return () => { document.removeEventListener('keydown', onKey); };
   }, [isOpen, lightboxIdx, isEditingTitle, onClose]);
 
+  const { urls: slideUrls, state: slideState } = useSlides(lectureId, lecture?.slide_count ?? 0);
+  const planInfo = usePlanInfo(lectureId, isOpen);
+
+  // Guard: nothing to render if no lecture has ever been opened.
+  // Must come AFTER all hooks so the hook call count stays constant.
+  if (!lecture) return null;
+
   function handleClose() { onClose(); }
   function handleStudyAction(action: () => void) { action(); onClose(); }
-
-  const { urls: slideUrls, state: slideState } = useSlides(lectureId, lecture.slide_count ?? 0);
-  const planInfo = usePlanInfo(lectureId, isOpen);
 
   // Editable title (fix #5)
   function handleTitleSave() {
