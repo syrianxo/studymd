@@ -321,6 +321,22 @@ Dates reflect when the decision landed in the repo (from git history) or, for un
 
 ---
 
+## ADR-023 · Background processing with Vercel Cron + inline fast-path (Slice A2)
+- **Date:** 2026-04-21
+- **Status:** Accepted
+- **Context:** Upload processing was synchronous — if a user navigated away, the HTTP connection dropped and the job silently died. The progress UI said only "Running Claude" with no sub-step detail. Four approaches were considered: (A) in-request synchronous — current approach, dies on navigation; (B) Vercel Cron polling `processing_jobs` every minute — simple, zero cost, latency up to 60s; (C) Supabase Webhooks → edge function — lowest latency but more moving parts; (D) QStash — overkill for current scale.
+- **Decision:** Hybrid of (A) + (B). The inline `/api/generate` call continues to run as a fast-start path — Vercel serverless functions run to completion even when the client disconnects. A per-minute Vercel Cron endpoint (`/api/cron/process-jobs`) re-claims any jobs where `claim_expires_at` has passed (orphaned jobs). Job logic is extracted to `lib/job-runner.ts` so both paths share the same code. The `UploadModal` polls `processing_jobs.status_detail` every 2.5 s for granular progress.
+- **SQL:** See migration `20260421_a2_processing_jobs_background_worker.sql`. Columns added: `heartbeat_at`, `claimed_by`, `claim_expires_at`, `status_detail`, `status_message`. Function added: `claim_processing_job(p_job_id, p_run_id)` returns boolean.
+- **Consequences:**
+  - (+) Users can navigate away during processing; the lecture still appears in their library when done.
+  - (+) Progress UI shows 6 named stages with live sub-messages, not just "Running Claude."
+  - (+) The cron is a true safety net — if the Vercel function times out or the server crashes mid-job, the cron picks it up on the next tick.
+  - (−) Cron fires every minute even when idle (Vercel Hobby/Pro limits: 2 crons max on Hobby, unlimited on Pro). Check plan usage.
+  - (−) `claim_expires_at` is 5 minutes — if Claude takes longer than 5 minutes, the cron will attempt a re-claim. The `claim_processing_job` RPC is idempotent (UPDATE with WHERE, returns 0 rows), so this is safe.
+  - Revisit when: Claude response time consistently exceeds 4 minutes (consider bumping claim TTL to 10 min or switching to QStash).
+
+---
+
 ## Template for new ADRs
 
 Copy/paste and fill in:
