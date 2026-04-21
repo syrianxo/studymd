@@ -57,6 +57,7 @@ async function fetchAllTags(_userId: string): Promise<string[]> {
 }
 import { ManageLectureCard } from './ManageLectureCard';
 import { TagEditor } from './TagEditor';
+import { TopicEditor } from './TopicEditor';
 import { FilterBar, applyFilters, type FilterState } from './FilterBar';
 import type { LectureWithSettings, Course } from '@/types';
 
@@ -256,6 +257,7 @@ export function ManageMode({
   });
 
   const [tagEditorLecture, setTagEditorLecture] = useState<LectureWithSettings | null>(null);
+  const [topicEditorLecture, setTopicEditorLecture] = useState<LectureWithSettings | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
@@ -432,6 +434,22 @@ export function ManageMode({
     []
   );
 
+  const handleTopicSave = useCallback(
+    (id: string, topicsOverride: string[] | null) => {
+      setLectures((ls) =>
+        ls.map((l) => {
+          if (l.internal_id !== id) return l;
+          return {
+            ...l,
+            display_topics: topicsOverride ?? l.topics,
+            settings: { ...l.settings, topics_override: topicsOverride },
+          };
+        })
+      );
+    },
+    []
+  );
+
   // fix #8: title rename in manage mode
   const handleRenameTitle = useCallback(
     (id: string, title: string) => {
@@ -522,6 +540,7 @@ export function ManageMode({
                 onArchive={() => handleArchive(lecture.internal_id)}
                 onRestore={() => handleRestore(lecture.internal_id)}
                 onEditTags={() => setTagEditorLecture(lecture)}
+                onEditTopics={() => setTopicEditorLecture(lecture)}
                 onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
                 onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
                 onRenameTitle={(title) => handleRenameTitle(lecture.internal_id, title)}
@@ -553,6 +572,7 @@ export function ManageMode({
                 onArchive={() => {}}
                 onRestore={() => handleRestore(lecture.internal_id)}
                 onEditTags={() => setTagEditorLecture(lecture)}
+                onEditTopics={() => setTopicEditorLecture(lecture)}
                 onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
                 onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
               />
@@ -583,6 +603,7 @@ export function ManageMode({
                 onArchive={() => {}}
                 onRestore={() => handleUnhide(lecture.internal_id)}
                 onEditTags={() => setTagEditorLecture(lecture)}
+                onEditTopics={() => setTopicEditorLecture(lecture)}
                 onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
                 onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
               />
@@ -601,6 +622,18 @@ export function ManageMode({
           allTags={allTags}
           onSave={(tags) => handleTagSave(tagEditorLecture.internal_id, tags)}
           onClose={() => setTagEditorLecture(null)}
+        />
+      )}
+
+      {/* Topic editor modal */}
+      {topicEditorLecture && (
+        <TopicEditor
+          internalId={topicEditorLecture.internal_id}
+          lectureTitle={topicEditorLecture.display_title}
+          currentTopics={topicEditorLecture.settings.topics_override ?? null}
+          originalTopics={topicEditorLecture.topics}
+          onSave={(override) => handleTopicSave(topicEditorLecture.internal_id, override)}
+          onClose={() => setTopicEditorLecture(null)}
         />
       )}
 
