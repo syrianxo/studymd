@@ -22,6 +22,7 @@ interface LectureGridProps {
   onHide?: (lectureId: string) => void;
   onArchive?: (lectureId: string) => void;
   onRenameTitle?: (lectureId: string, title: string) => void;
+  onTopicsChanged?: (lectureId: string, override: string[] | null) => void;
   /** Reserved for future plan integration — passed but not rendered on cards */
   planNextReview?: Record<string, string>;
   planTestDate?: string;
@@ -32,7 +33,7 @@ export default function LectureGrid({
   activeTheme,
   onStartFlash, onStartExam,
   onChangeCourse, onChangeColor,
-  onHide, onArchive, onRenameTitle,
+  onHide, onArchive, onRenameTitle, onTopicsChanged,
   planNextReview: _planNextReview = {},
   planTestDate: _planTestDate,
 }: LectureGridProps) {
@@ -122,6 +123,15 @@ export default function LectureGrid({
         onRenameTitle={onRenameTitle && openLecture ? (t) => onRenameTitle(openLecture.internal_id, t) : undefined}
         onHide={onHide && openLecture ? () => { onHide(openLecture.internal_id); handleClose(); } : undefined}
         onArchive={onArchive && openLecture ? () => { onArchive(openLecture.internal_id); handleClose(); } : undefined}
+        onTopicsChanged={openLecture ? (override) => {
+          // Update openLecture so chips re-render immediately without waiting for a refetch
+          setOpenLecture(prev => prev ? {
+            ...prev,
+            topics_override: override,
+            display_topics: override ?? prev.topics,
+          } : null);
+          onTopicsChanged?.(openLecture.internal_id, override);
+        } : undefined}
       />
     </>
   );

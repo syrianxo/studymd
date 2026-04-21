@@ -5,31 +5,15 @@
 // footer with color picker + hide/archive.
 'use client';
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useModalShell } from '@/hooks/useModalShell';
 import { createPortal } from 'react-dom';
 import { createClient } from '@/lib/supabase';
 import Lightbox from './Lightbox';
+import { TopicEditor } from './TopicEditor';
 import type { Lecture } from '@/hooks/useUserLectures';
 import { resolveColor } from '@/hooks/useUserLectures';
 import type { Flashcard, Course, Theme, StudyPlan } from '@/types';
-import {
-  DndContext,
-  closestCenter,
-  KeyboardSensor,
-  PointerSensor,
-  useSensor,
-  useSensors,
-  type DragEndEvent,
-} from '@dnd-kit/core';
-import {
-  SortableContext,
-  sortableKeyboardCoordinates,
-  useSortable,
-  verticalListSortingStrategy,
-  arrayMove,
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -47,6 +31,8 @@ interface LectureViewModalProps {
   onRenameTitle?: (title: string) => void;
   onHide?: () => void;
   onArchive?: () => void;
+  /** Called after the user saves topic edits so the parent can update its lecture list. */
+  onTopicsChanged?: (override: string[] | null) => void;
 }
 
 const PRESET_COLORS = [
@@ -65,36 +51,6 @@ const COURSES: Course[] = [
   'Anatomy & Physiology',
   'Laboratory Diagnosis',
 ];
-
-// ─── Sortable Topic Item (for drag-to-reorder in edit mode) ──────────────────
-
-interface SortableTopicItemProps {
-  id: string;
-  value: string;
-  onChange: (v: string) => void;
-  onDelete: () => void;
-}
-
-function SortableTopicItem({ id, value, onChange, onDelete }: SortableTopicItemProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
-  const style: React.CSSProperties = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-  return (
-    <div ref={setNodeRef} style={style} className="lvm-topic-edit-row">
-      <button className="lvm-topic-drag" {...attributes} {...listeners} aria-label="Drag to reorder">≡</button>
-      <input
-        className="lvm-topic-input"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
-      />
-      <button className="lvm-topic-delete" onClick={onDelete} aria-label="Remove topic">✕</button>
-    </div>
-  );
-}
 
 // ─── Slide Loader ────────────────────────────────────────────────────────────
 
@@ -208,7 +164,7 @@ export default function LectureViewModal({
   lecture, isOpen, activeTheme, flashcardProgress, examProgress,
   onClose, onFlashcards, onExam,
   onChangeColor, onChangeCourse, onRenameTitle,
-  onHide, onArchive,
+  onHide, onArchive, onTopicsChanged,
 }: LectureViewModalProps) {
   // Guard: nothing to render if no lecture has ever been opened
   if (!lecture) return null;
@@ -239,62 +195,8 @@ export default function LectureViewModal({
   const overlayRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
-  // ── Topic editing state ───────────────────────────────────────────────────
-  // Items carry stable IDs so dnd-kit can track them across renames.
-  type TopicItem = { id: string; value: string };
-  const [topicItems, setTopicItems] = useState<TopicItem[]>(() =>
-    topics.map((t, i) => ({ id: `t-${i}`, value: t }))
-  );
-  const [isEditingTopics, setIsEditingTopics] = useState(false);
-  const [topicSaving, setTopicSaving] = useState(false);
-  const [newTopicInput, setNewTopicInput] = useState('');
-  const topicSensors = useSensors(
-    useSensor(PointerSensor),
-    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
-  );
-
-  // Sync topic items when the lecture (or its display_topics) changes
-  useEffect(() => {
-    setTopicItems((lecture.display_topics ?? lecture.topics ?? []).map((t, i) => ({ id: `t-${i}`, value: t })));
-    setIsEditingTopics(false);
-    setNewTopicInput('');
-  }, [lectureId]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleTopicDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
-    if (over && active.id !== over.id) {
-      setTopicItems(items => {
-        const oldIdx = items.findIndex(i => i.id === active.id);
-        const newIdx = items.findIndex(i => i.id === over.id);
-        return arrayMove(items, oldIdx, newIdx);
-      });
-    }
-  }, []);
-
-  async function handleSaveTopics() {
-    setTopicSaving(true);
-    try {
-      const values = topicItems.map(i => i.value.trim()).filter(Boolean);
-      await fetch('/api/lectures/settings', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          internalId: lectureId,
-          updates: { topicsOverride: values.length > 0 ? values : null },
-        }),
-      });
-      setIsEditingTopics(false);
-    } finally {
-      setTopicSaving(false);
-    }
-  }
-
-  function handleCancelTopics() {
-    const currentTopics = lecture ? (lecture.display_topics ?? lecture.topics ?? []) : [];
-    setTopicItems(currentTopics.map((t, i) => ({ id: `t-${i}`, value: t })));
-    setNewTopicInput('');
-    setIsEditingTopics(false);
-  }
+  // ── Topic editor ──────────────────────────────────────────────────────────
+  const [topicEditorOpen, setTopicEditorOpen] = useState(false);
 
   // Sync local state when lecture changes
   useEffect(() => { setLocalTitle(title); }, [title]);
@@ -503,74 +405,32 @@ export default function LectureViewModal({
         </div>
 
         {/* ── Topics ── */}
-        {(topicItems.length > 0 || isEditingTopics) && (
+        {topics.length > 0 && (
           <div>
             <div className="lvm-section-row">
               <div className="lvm-section-label">Topics</div>
-              {!isEditingTopics ? (
-                <button className="lvm-edit-topics-btn" onClick={() => setIsEditingTopics(true)}>Edit</button>
-              ) : (
-                <div className="lvm-topic-edit-header-actions">
-                  <button className="lvm-topic-cancel-btn" onClick={handleCancelTopics}>Cancel</button>
-                  <button className="lvm-topic-save-btn" onClick={handleSaveTopics} disabled={topicSaving}>
-                    {topicSaving ? 'Saving…' : 'Save'}
-                  </button>
-                </div>
-              )}
+              <button className="lvm-edit-topics-btn" onClick={() => setTopicEditorOpen(true)}>Edit</button>
             </div>
-
-            {!isEditingTopics ? (
-              <div className="lvm-topics">
-                {topicItems.map(item => (
-                  <span key={item.id} className="lvm-topic-chip">{item.value}</span>
-                ))}
-              </div>
-            ) : (
-              <div className="lvm-topic-editor">
-                <DndContext
-                  sensors={topicSensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleTopicDragEnd}
-                >
-                  <SortableContext items={topicItems.map(i => i.id)} strategy={verticalListSortingStrategy}>
-                    {topicItems.map((item, idx) => (
-                      <SortableTopicItem
-                        key={item.id}
-                        id={item.id}
-                        value={item.value}
-                        onChange={(v) => setTopicItems(prev => prev.map((p, j) => j === idx ? { ...p, value: v } : p))}
-                        onDelete={() => setTopicItems(prev => prev.filter((_, j) => j !== idx))}
-                      />
-                    ))}
-                  </SortableContext>
-                </DndContext>
-                <div className="lvm-topic-add-row">
-                  <input
-                    className="lvm-topic-input lvm-topic-new-input"
-                    placeholder="Add topic…"
-                    value={newTopicInput}
-                    onChange={(e) => setNewTopicInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' && newTopicInput.trim()) {
-                        setTopicItems(prev => [...prev, { id: `t-new-${Date.now()}`, value: newTopicInput.trim() }]);
-                        setNewTopicInput('');
-                      }
-                    }}
-                  />
-                  <button
-                    className="lvm-topic-add-btn"
-                    onClick={() => {
-                      if (newTopicInput.trim()) {
-                        setTopicItems(prev => [...prev, { id: `t-new-${Date.now()}`, value: newTopicInput.trim() }]);
-                        setNewTopicInput('');
-                      }
-                    }}
-                    disabled={!newTopicInput.trim()}
-                  >+ Add</button>
-                </div>
-              </div>
-            )}
+            <div className="lvm-topics">
+              {topics.map((t, i) => (
+                <span key={i} className="lvm-topic-chip">{t}</span>
+              ))}
+            </div>
           </div>
+        )}
+
+        {topicEditorOpen && (
+          <TopicEditor
+            internalId={lectureId}
+            lectureTitle={title}
+            currentTopics={lecture.topics_override ?? null}
+            originalTopics={lecture.topics}
+            onSave={(override) => {
+              setTopicEditorOpen(false);
+              onTopicsChanged?.(override);
+            }}
+            onClose={() => setTopicEditorOpen(false)}
+          />
         )}
 
         {/* ── Slide Deck ── */}
@@ -786,27 +646,8 @@ const modalCss = `
 .lvm-section-row .lvm-section-label { margin-bottom: 0; }
 .lvm-edit-topics-btn { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 500; color: var(--accent); background: rgba(91,141,238,0.1); border: 1px solid rgba(91,141,238,0.2); border-radius: 6px; padding: 3px 10px; cursor: pointer; transition: background 0.15s; min-height: 28px; }
 .lvm-edit-topics-btn:hover { background: rgba(91,141,238,0.18); }
-.lvm-topic-edit-header-actions { display: flex; gap: 6px; align-items: center; }
-.lvm-topic-cancel-btn { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 500; color: var(--text-muted); background: none; border: 1px solid var(--border); border-radius: 6px; padding: 3px 10px; cursor: pointer; transition: background 0.15s; min-height: 28px; }
-.lvm-topic-cancel-btn:hover { background: rgba(255,255,255,0.05); }
-.lvm-topic-save-btn { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600; color: #fff; background: var(--accent); border: 1px solid var(--accent); border-radius: 6px; padding: 3px 12px; cursor: pointer; transition: opacity 0.15s; min-height: 28px; }
-.lvm-topic-save-btn:disabled { opacity: 0.55; cursor: default; }
 .lvm-topics { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
 .lvm-topic-chip { font-size: 11px; color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); padding: 4px 10px; border-radius: 50px; font-family: 'Outfit', sans-serif; }
-/* Topic editor */
-.lvm-topic-editor { display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px; }
-.lvm-topic-edit-row { display: flex; align-items: center; gap: 6px; }
-.lvm-topic-drag { background: none; border: none; color: var(--text-muted); cursor: grab; font-size: 14px; padding: 4px; line-height: 1; flex-shrink: 0; min-width: 24px; min-height: 32px; display: flex; align-items: center; justify-content: center; touch-action: none; }
-.lvm-topic-drag:active { cursor: grabbing; }
-.lvm-topic-input { flex: 1; font-family: 'Outfit', sans-serif; font-size: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 5px 8px; color: var(--text); outline: none; min-height: 32px; }
-.lvm-topic-input:focus { border-color: var(--accent); }
-.lvm-topic-delete { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 13px; padding: 4px 6px; border-radius: 4px; line-height: 1; flex-shrink: 0; min-width: 28px; min-height: 32px; display: flex; align-items: center; justify-content: center; transition: color 0.15s, background 0.15s; }
-.lvm-topic-delete:hover { color: #f87171; background: rgba(248,113,113,0.1); }
-.lvm-topic-add-row { display: flex; gap: 6px; align-items: center; margin-top: 4px; padding-left: 30px; }
-.lvm-topic-new-input { font-style: italic; }
-.lvm-topic-add-btn { font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500; color: var(--accent); background: rgba(91,141,238,0.1); border: 1px solid rgba(91,141,238,0.2); border-radius: 6px; padding: 4px 10px; cursor: pointer; white-space: nowrap; min-height: 32px; transition: background 0.15s; flex-shrink: 0; }
-.lvm-topic-add-btn:disabled { opacity: 0.4; cursor: default; }
-.lvm-topic-add-btn:not(:disabled):hover { background: rgba(91,141,238,0.2); }
 
 /* Slide strip */
 .lvm-slide-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; -webkit-overflow-scrolling: touch; margin-bottom: 4px; }

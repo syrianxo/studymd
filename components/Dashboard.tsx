@@ -228,6 +228,12 @@ export default function Dashboard({
     }).then(() => refetch()).catch(console.error);
   }
 
+  function handleTopicsChanged(internalId: string, override: string[] | null) {
+    // The API call was already made by TopicEditor; just patch local state so
+    // other parts of the dashboard (e.g. flashcard topic filters) stay fresh.
+    refetch();
+  }
+
   if (lecturesError) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -384,6 +390,7 @@ export default function Dashboard({
             onHide={handleHide}
             onArchive={handleArchive}
             onRenameTitle={handleRenameTitle}
+            onTopicsChanged={handleTopicsChanged}
             planNextReview={planNextReview}
             planTestDate={activePlan?.test_date}
           />
