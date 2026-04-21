@@ -384,6 +384,43 @@ Dates reflect when the decision landed in the repo (from git history) or, for un
 
 ---
 
+## ADR-027 · Lecture-grid folders (folders table + group_id FK)
+- **Date:** 2026-04-20 (Slice 9 — Feature #3)
+- **Status:** Accepted
+- **Context:** Users want to organise lectures into named folders (with optional sub-folders). Existing `user_lecture_settings.group_id` was a freeform TEXT column — never used in practice. v3 Feature #3 asks for a proper folder tree with drag-to-reorder and breadcrumb navigation.
+- **Decision:** Create a new `public.folders` table (UUID PK, self-referential `parent_id`, `name`, `icon`, `color`, `display_order`). Convert `user_lecture_settings.group_id` from TEXT → UUID with a FK to `folders(id) ON DELETE SET NULL`. Folders are user-scoped (RLS policy + `user_id` FK on all queries). Cycle prevention is done application-side (walk parent chain upward before accepting a reparent). Folder CRUD lives in `app/api/folders/` (GET, POST, PATCH /:id, DELETE /:id).
+- **Migration SQL:**
+  ```sql
+  CREATE TABLE public.folders (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    parent_id uuid REFERENCES public.folders(id) ON DELETE CASCADE,
+    name text NOT NULL,
+    icon text DEFAULT '📁',
+    color text,
+    display_order integer NOT NULL DEFAULT 0,
+    created_at timestamptz DEFAULT now(),
+    updated_at timestamptz DEFAULT now()
+  );
+  ALTER TABLE public.folders ENABLE ROW LEVEL SECURITY;
+  CREATE POLICY "users manage own folders" ON public.folders
+    FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  ALTER TABLE public.user_lecture_settings
+    ALTER COLUMN group_id TYPE uuid USING NULLIF(group_id, '')::uuid,
+    ADD CONSTRAINT user_lecture_settings_group_fk
+      FOREIGN KEY (group_id) REFERENCES public.folders(id) ON DELETE SET NULL;
+  CREATE TRIGGER folders_updated_at
+    BEFORE UPDATE ON public.folders
+    FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  ```
+- **Consequences:**
+  - (+) Lectures can be organised into a tree of folders without touching shared lecture data.
+  - (+) `ON DELETE CASCADE` on `folders.parent_id` removes the whole subtree when a parent is deleted; `ON DELETE SET NULL` on `group_id` gracefully orphans lectures.
+  - (−) Cycle prevention is in application code, not a DB constraint. Must be enforced in every reparent path.
+  - Revisit when: supporting shared/public folders (would need a `visibility` column and revised RLS).
+
+---
+
 ## Template for new ADRs
 
 Copy/paste and fill in:
