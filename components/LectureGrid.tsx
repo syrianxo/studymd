@@ -1,14 +1,22 @@
 // components/LectureGrid.tsx
 // Grid layout of lecture cards. LectureViewModal is kept permanently mounted
 // to prevent the re-render flash on open/close — only its content swaps.
+// Subfolder tiles are rendered at the top of the grid when folders are passed in.
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import {
+  DndContext, DragOverlay,
+  useDraggable, useDroppable,
+  PointerSensor, useSensor, useSensors,
+  type DragEndEvent, type DragStartEvent,
+} from '@dnd-kit/core';
 import LectureCard from './LectureCard';
 import LectureViewModal from './LectureViewModal';
+import FolderTile from './FolderTile';
 import type { Lecture } from '@/hooks/useUserLectures';
 import type { LectureProgress } from '@/hooks/useProgress';
-import type { Course, Theme } from '@/types';
+import type { Course, Theme, Folder } from '@/types';
 
 interface LectureGridProps {
   lectures: Lecture[];
@@ -26,6 +34,20 @@ interface LectureGridProps {
   /** Reserved for future plan integration — passed but not rendered on cards */
   planNextReview?: Record<string, string>;
   planTestDate?: string;
+  /** Subfolder tiles shown before lecture cards (when inside a folder) */
+  subfolders?: Folder[];
+  subfoldersCount?: Record<string, number>; // folderId → # of its children shown here
+  lectureCounts?: Record<string, number>;   // folderId → # lectures directly in it
+  onOpenFolder?: (folderId: string) => void;
+  onRenameFolder?: (folderId: string, name: string) => void;
+  onDeleteFolder?: (folderId: string) => void;
+  onChangeFolderColor?: (folderId: string, color: string | null) => void;
+  /** Called when a lecture card is dragged onto a folder tile (folderId = null means remove from folder) */
+  onMoveToFolder?: (lectureId: string, folderId: string | null) => void;
+  /** IDs of cards currently playing their CSS fade-out exit animation */
+  exitingLectureIds?: Set<string>;
+  /** All user folders — used to resolve folder name for the folder-as-tag chip */
+  allFolders?: Folder[];
 }
 
 export default function LectureGrid({
@@ -36,9 +58,45 @@ export default function LectureGrid({
   onHide, onArchive, onRenameTitle, onTopicsChanged,
   planNextReview: _planNextReview = {},
   planTestDate: _planTestDate,
+  subfolders = [],
+  subfoldersCount = {},
+  lectureCounts = {},
+  onOpenFolder,
+  onRenameFolder,
+  onDeleteFolder,
+  onChangeFolderColor,
+  onMoveToFolder,
+  exitingLectureIds,
+  allFolders = [],
 }: LectureGridProps) {
   const [openLecture, setOpenLecture] = useState<Lecture | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [draggingLectureId, setDraggingLectureId] = useState<string | null>(null);
+
+  // Distance constraint avoids triggering drag on regular card clicks
+  const sensors = useSensors(
+    useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
+  );
+
+  function handleDragStart(event: DragStartEvent) {
+    const id = String(event.active.id);
+    if (id.startsWith('lecture-')) setDraggingLectureId(id.replace('lecture-', ''));
+  }
+
+  function handleDragEnd(event: DragEndEvent) {
+    setDraggingLectureId(null);
+    if (!event.over || !onMoveToFolder) return;
+    const lectureId = String(event.active.id).replace('lecture-', '');
+    const targetId = String(event.over.id);
+    if (targetId.startsWith('folder-')) {
+      const folderId = targetId.replace('folder-', '');
+      onMoveToFolder(lectureId, folderId);
+    }
+  }
+
+  const draggingLecture = draggingLectureId
+    ? lectures.find(l => l.internal_id === draggingLectureId) ?? null
+    : null;
 
   const openProgress = openLecture
     ? progressByLecture[openLecture.internal_id] ?? null
@@ -63,7 +121,7 @@ export default function LectureGrid({
     );
   }
 
-  if (lectures.length === 0) {
+  if (lectures.length === 0 && subfolders.length === 0) {
     return (
       <div className="smd-lecture-grid">
         <div className="smd-empty-state">
@@ -80,27 +138,79 @@ export default function LectureGrid({
 
   return (
     <>
-      <div className="smd-lecture-grid">
-        {lectures.map(lecture => {
-          const progress = progressByLecture[lecture.internal_id] ?? null;
-          return (
-            <LectureCard
-              key={lecture.internal_id}
-              lecture={lecture}
-              activeTheme={activeTheme}
-              flashcardProgress={progress?.mastery_pct ?? 0}
-              examProgress={progress?.best_exam_score ?? 0}
-              onOpen={() => handleOpen(lecture)}
-              onFlashcards={() => onStartFlash(lecture.internal_id)}
-              onExam={() => onStartExam(lecture.internal_id)}
-              onChangeCourse={onChangeCourse ? (c) => onChangeCourse(lecture.internal_id, c) : undefined}
-              onChangeColor={onChangeColor ? (c) => onChangeColor(lecture.internal_id, c) : undefined}
-              onHide={onHide ? () => onHide(lecture.internal_id) : undefined}
-              onArchive={onArchive ? () => onArchive(lecture.internal_id) : undefined}
-            />
-          );
-        })}
-      </div>
+      <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
+        <div className="smd-lecture-grid">
+          {/* All subfolders grouped into ONE grid cell so they stack compactly */}
+          {subfolders.length > 0 && (
+            <div className="smd-folder-group">
+              {subfolders.map(folder => (
+                <DroppableFolderTile
+                  key={folder.id}
+                  folder={folder}
+                  lectureCount={lectureCounts[folder.id] ?? 0}
+                  subfoldersCount={subfoldersCount[folder.id] ?? 0}
+                  activeTheme={activeTheme}
+                  onOpen={() => onOpenFolder?.(folder.id)}
+                  onRename={(name) => onRenameFolder?.(folder.id, name)}
+                  onDelete={() => onDeleteFolder?.(folder.id)}
+                  onChangeColor={(color) => onChangeFolderColor?.(folder.id, color)}
+                  dragging={!!draggingLectureId && !!onMoveToFolder}
+                />
+              ))}
+            </div>
+          )}
+
+          {lectures.map(lecture => {
+            const progress = progressByLecture[lecture.internal_id] ?? null;
+            const isExiting = exitingLectureIds?.has(lecture.internal_id) ?? false;
+            return (
+              <DraggableLectureCard
+                key={lecture.internal_id}
+                lectureId={lecture.internal_id}
+                enabled={!!onMoveToFolder && subfolders.length > 0}
+                isExiting={isExiting}
+              >
+                <LectureCard
+                  lecture={lecture}
+                  activeTheme={activeTheme}
+                  flashcardProgress={progress?.mastery_pct ?? 0}
+                  examProgress={progress?.best_exam_score ?? 0}
+                  onOpen={() => handleOpen(lecture)}
+                  onFlashcards={() => onStartFlash(lecture.internal_id)}
+                  onExam={() => onStartExam(lecture.internal_id)}
+                  onChangeCourse={onChangeCourse ? (c) => onChangeCourse(lecture.internal_id, c) : undefined}
+                  onChangeColor={onChangeColor ? (c) => onChangeColor(lecture.internal_id, c) : undefined}
+                  onHide={onHide ? () => onHide(lecture.internal_id) : undefined}
+                  onArchive={onArchive ? () => onArchive(lecture.internal_id) : undefined}
+                />
+              </DraggableLectureCard>
+            );
+          })}
+        </div>
+
+        {/* Drag overlay — lightweight ghost while dragging */}
+        <DragOverlay>
+          {draggingLecture ? (
+            <div style={{
+              background: 'var(--surface)',
+              border: '1px solid var(--accent)',
+              borderRadius: 12,
+              padding: '10px 14px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              boxShadow: '0 8px 24px rgba(0,0,0,.3)',
+              opacity: 0.9,
+              maxWidth: 240,
+            }}>
+              <span style={{ fontSize: 20 }}>{draggingLecture.icon}</span>
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {(draggingLecture as any).custom_title ?? draggingLecture.title}
+              </span>
+            </div>
+          ) : null}
+        </DragOverlay>
+      </DndContext>
 
       {/* Modal is always mounted once a lecture has been opened — avoids flash on re-open */}
       <LectureViewModal
@@ -132,10 +242,89 @@ export default function LectureGrid({
           } : null);
           onTopicsChanged?.(openLecture.internal_id, override);
         } : undefined}
+        folderName={openLecture?.group_id
+          ? allFolders.find(f => f.id === openLecture.group_id)?.name
+          : undefined}
+        folderIcon={openLecture?.group_id
+          ? allFolders.find(f => f.id === openLecture.group_id)?.icon
+          : undefined}
+        onRemoveFromFolder={onMoveToFolder && openLecture?.group_id
+          ? () => onMoveToFolder(openLecture.internal_id, null)
+          : undefined}
       />
     </>
   );
 }
+
+// ─── Drag-to-folder helpers ───────────────────────────────────────────────────
+
+interface DroppableFolderTileProps {
+  folder: Folder;
+  lectureCount: number;
+  subfoldersCount: number;
+  activeTheme: Theme;
+  onOpen: () => void;
+  onRename: (name: string) => void;
+  onDelete: () => void;
+  onChangeColor: (color: string | null) => void;
+  dragging: boolean;
+}
+
+function DroppableFolderTile({ folder, dragging, ...props }: DroppableFolderTileProps) {
+  const { setNodeRef, isOver } = useDroppable({ id: `folder-${folder.id}` });
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        borderRadius: 10,
+        outline: dragging ? `2px dashed ${isOver ? 'var(--accent)' : 'var(--border)'}` : undefined,
+        outlineOffset: 2,
+        transition: 'outline-color .15s',
+      }}
+    >
+      <FolderTile
+        folder={folder}
+        {...props}
+      />
+    </div>
+  );
+}
+
+interface DraggableLectureCardProps {
+  lectureId: string;
+  enabled: boolean;
+  isExiting?: boolean;
+  children: React.ReactNode;
+}
+
+function DraggableLectureCard({ lectureId, enabled, isExiting = false, children }: DraggableLectureCardProps) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `lecture-${lectureId}`,
+    disabled: !enabled,
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      {...(enabled ? listeners : {})}
+      {...(enabled ? attributes : {})}
+      style={{
+        // height: 100% is essential — this div is the CSS Grid item.
+        // Without it, .smd-lecture-card inside can't fill the row height.
+        height: '100%',
+        opacity: isDragging ? 0.4 : isExiting ? 0 : 1,
+        transform: isExiting ? 'scale(0.88)' : undefined,
+        // Only apply the transition during exit so normal renders are instant
+        transition: isExiting ? 'opacity 0.25s ease, transform 0.25s ease' : undefined,
+        cursor: enabled ? 'grab' : undefined,
+        pointerEvents: isExiting ? 'none' : undefined,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function SkeletonCard() {
   return (

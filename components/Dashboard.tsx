@@ -10,6 +10,8 @@ import CustomSessionModal, { type CustomSessionConfig } from './CustomSessionMod
 import { useUserLectures, resolveColor } from '@/hooks/useUserLectures';
 import type { Lecture } from '@/hooks/useUserLectures';
 import { useProgress } from '@/hooks/useProgress';
+import { useFolders } from '@/hooks/useFolders';
+import { FolderBreadcrumb } from '@/components/FolderTree';
 import { createClient } from '@/lib/supabase';
 import PomodoroTimer from '@/components/PomodoroTimer';
 import { StudyConfigManager, useStudyConfig } from '@/components/StudyConfigManager';
@@ -48,6 +50,24 @@ export default function Dashboard({
     globalStats,
     loading: progressLoading,
   } = useProgress();
+
+  const {
+    folders,
+    ancestorsOf,
+    byId: folderById,
+    createFolder,
+    updateFolder,
+    deleteFolder,
+  } = useFolders();
+
+  // null = All Lectures (unfiltered); a UUID = drill into that folder
+  const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
+
+  // Optimistic overrides for group_id — applied after CSS fade-out completes
+  // so the card exits smoothly before the grid reflows.
+  const [groupIdOverrides, setGroupIdOverrides] = useState<Record<string, string | null>>({});
+  // IDs currently playing their fade-out CSS transition (~270ms)
+  const [exitingLectureIds, setExitingLectureIds] = useState<Set<string>>(new Set());
 
   const [filter, setFilter] = useState<FilterState>({
     courses: new Set<Course>(),
@@ -112,10 +132,56 @@ export default function Dashboard({
       lectures.filter((l) => {
         if (!l.visible || l.archived) return false;
         if (filter.courses.size > 0 && !filter.courses.has(l.course)) return false;
+        // Exiting cards stay in the list so their CSS fade-out plays before the reflow.
+        if (exitingLectureIds.has(l.internal_id)) return true;
+        // Effective group_id: use local optimistic override if present
+        const effectiveGroupId = l.internal_id in groupIdOverrides
+          ? groupIdOverrides[l.internal_id]
+          : (l.group_id ?? null);
+        // Unfiled view (activeFolderId === null) only shows lectures not in any folder.
+        // Folder view shows only lectures directly in that folder.
+        if (effectiveGroupId !== activeFolderId) return false;
         return true;
       }),
-    [lectures, filter.courses]
+    [lectures, filter.courses, activeFolderId, groupIdOverrides, exitingLectureIds]
   );
+
+  // Subfolders of the current folder (or root-level folders when no folder active)
+  const subfolders = useMemo(
+    () => folders
+      .filter(f => (f.parent_id ?? null) === activeFolderId)
+      .sort((a, b) => a.display_order - b.display_order || a.name.localeCompare(b.name)),
+    [folders, activeFolderId]
+  );
+
+  // How many lectures live directly in each folder (for tile badges)
+  const lectureCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const l of lectures) {
+      if (!l.visible || l.archived) continue;
+      const effectiveGroupId = l.internal_id in groupIdOverrides
+        ? groupIdOverrides[l.internal_id]
+        : (l.group_id ?? null);
+      if (effectiveGroupId) counts[effectiveGroupId] = (counts[effectiveGroupId] ?? 0) + 1;
+    }
+    return counts;
+  }, [lectures, groupIdOverrides]);
+
+  // How many immediate subfolders each folder has (for tile badges)
+  const subfoldersCount = useMemo(() => {
+    const counts: Record<string, number> = {};
+    for (const f of folders) {
+      if (f.parent_id) counts[f.parent_id] = (counts[f.parent_id] ?? 0) + 1;
+    }
+    return counts;
+  }, [folders]);
+
+  // Breadcrumb ancestors for the active folder
+  const folderAncestors = useMemo(
+    () => (activeFolderId ? ancestorsOf(activeFolderId) : []),
+    [activeFolderId, ancestorsOf]
+  );
+  const activeFolder = activeFolderId ? folderById(activeFolderId) : null;
 
   // ── Stats ─────────────────────────────────────────────────────────────────
   const avgScore = progressLoading || globalStats.avgExamScore === null
@@ -234,6 +300,59 @@ export default function Dashboard({
     refetch();
   }
 
+  // ── Folder handlers ───────────────────────────────────────────────────────
+  async function handleCreateFolder() {
+    const name = prompt('Folder name:');
+    if (!name?.trim()) return;
+    await createFolder(name.trim(), activeFolderId);
+  }
+
+  async function handleRenameFolder(id: string, name: string) {
+    await updateFolder(id, { name });
+  }
+
+  async function handleDeleteFolder(id: string) {
+    if (!confirm('Delete this folder? Lectures inside will remain but lose their folder assignment.')) return;
+    // If the active folder is the one being deleted, navigate up
+    if (activeFolderId === id) setActiveFolderId(folders.find(f => f.id === id)?.parent_id ?? null);
+    await deleteFolder(id);
+  }
+
+  async function handleChangeFolderColor(id: string, color: string | null) {
+    await updateFolder(id, { color });
+  }
+
+  function handleMoveToFolder(lectureId: string, folderId: string | null) {
+    // Phase 1: trigger CSS fade-out (card stays in DOM taking space, opacity → 0).
+    setExitingLectureIds(prev => new Set([...prev, lectureId]));
+
+    // Phase 2: after the fade completes (~270ms), apply the optimistic group_id override.
+    // This removes the card from visibleLectures so the grid can reflow — but by now
+    // the card is already invisible, so the reflow is imperceptible.
+    setTimeout(() => {
+      setGroupIdOverrides(prev => ({ ...prev, [lectureId]: folderId }));
+      setExitingLectureIds(prev => { const n = new Set(prev); n.delete(lectureId); return n; });
+    }, 270);
+
+    fetch('/api/lectures/settings', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ internalId: lectureId, updates: { groupId: folderId } }),
+    })
+      .then(() => {
+        refetch();
+        // Clear the optimistic override after refetch has had time to settle
+        setTimeout(() => setGroupIdOverrides(prev => {
+          const n = { ...prev }; delete n[lectureId]; return n;
+        }), 800);
+      })
+      .catch(() => {
+        // On failure: revert both the exit animation and the optimistic override
+        setExitingLectureIds(prev => { const n = new Set(prev); n.delete(lectureId); return n; });
+        setGroupIdOverrides(prev => { const n = { ...prev }; delete n[lectureId]; return n; });
+      });
+  }
+
   if (lecturesError) {
     return (
       <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
@@ -313,15 +432,39 @@ export default function Dashboard({
           Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.
         </p>
 
+        {/* ── FOLDER BREADCRUMB ─────────────────────────────────────────── */}
+        {activeFolderId && (
+          <div style={{ marginBottom: '0.5rem' }}>
+            <FolderBreadcrumb
+              ancestors={folderAncestors}
+              current={activeFolder ? { name: activeFolder.name, icon: activeFolder.icon } : null}
+              onNavigate={setActiveFolderId}
+            />
+          </div>
+        )}
+
         {/* ── SECTION HEADER ──────────────────────────────────────────────── */}
         <div className="smd-section-header">
           <div className="smd-section-title">
-            Your Lectures
+            {activeFolderId && activeFolder
+              ? <>{activeFolder.icon} {activeFolder.name}</>
+              : 'Your Lectures'
+            }
             {!lecturesLoading && (
-              <span className="smd-lecture-count-badge">{visibleLectures.length}</span>
+              <span className="smd-lecture-count-badge">
+                {visibleLectures.length + subfolders.length}
+              </span>
             )}
           </div>
           <div className="smd-section-actions">
+            <button
+              className="btn btn-secondary smd-folder-btn"
+              onClick={handleCreateFolder}
+              title="New folder"
+              aria-label="Create new folder"
+            >
+              📁 New folder
+            </button>
             <button
               className="btn btn-primary smd-custom-session-btn"
               onClick={() => setCustomModalOpen(true)}
@@ -352,6 +495,7 @@ export default function Dashboard({
           <ManageMode
             userId={userId}
             activeTheme={theme}
+            folders={folders}
             initialLectures={lectures.map((l) => ({
               ...l,
               settings: {
@@ -393,6 +537,16 @@ export default function Dashboard({
             onTopicsChanged={handleTopicsChanged}
             planNextReview={planNextReview}
             planTestDate={activePlan?.test_date}
+            subfolders={subfolders}
+            subfoldersCount={subfoldersCount}
+            lectureCounts={lectureCounts}
+            onOpenFolder={setActiveFolderId}
+            onRenameFolder={handleRenameFolder}
+            onDeleteFolder={handleDeleteFolder}
+            onChangeFolderColor={handleChangeFolderColor}
+            onMoveToFolder={handleMoveToFolder}
+            exitingLectureIds={exitingLectureIds}
+            allFolders={folders}
           />
         )}
       </main>

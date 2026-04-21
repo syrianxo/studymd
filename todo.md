@@ -6,7 +6,12 @@
 
 ## 🚧 Now (in flight)
 
-_(Slice 8 — Editable topics shipped; moving to next slice)_
+### Slice 9 — F3 Lecture-grid folders
+- [x] DB migration: `folders` table + `group_id` FK upgrade (ADR-027)
+- [x] API: `GET/POST /api/folders` + `PATCH/DELETE /api/folders/[id]` with cycle prevention
+- [x] `hooks/useFolders.ts` + `Folder` type + `FolderTile` / `FolderTree` components
+- [x] Dashboard folder state + breadcrumb + LectureGrid folder tiles
+- [x] dnd-kit drag-to-folder + CustomSessionModal folder picker
 
 ---
 
@@ -32,7 +37,7 @@ _(Slice 8 — Editable topics shipped; moving to next slice)_
 - [ ] **F1 — Per-user randomized greetings** — `lib/greetings.ts`, replace inline affirmations in `Dashboard.tsx`.
 - [ ] **F9 + F10 — Header nav + dashboard layout polish** — ship together; one UX sprint.
 - [x] **F8 — Editable lecture topics** — `topics_override` jsonb column in `user_lecture_settings`; edit UI (dnd-kit reorder) in `LectureViewModal`; inline panel in `ManageLectureCard`. See ADR-023.
-- [ ] **F3 — Lecture-grid folders** — `folders` table; convert `group_id` to uuid+FK; `FolderTree` and `FolderTile` components.
+- [x] **F3 — Lecture-grid folders** — `folders` table; convert `group_id` to uuid+FK; `FolderTree` and `FolderTile` components. _(in progress — Slice 9)_
 - [ ] **F5 + F6 — Three-tab Lecture Grid + Worksheets** — adds `lectures.kind`; tabs in `Dashboard`.
 - [ ] **F4 — Review tab with AI annotations** — `slide_annotations` table; `SlideReviewView` component; new `lib/slide-annotation-prompt.ts`.
 - [ ] **F2 — Lecture-package subscriptions** — `lecture_packages` + `user_package_access`; revise `lectures` RLS.

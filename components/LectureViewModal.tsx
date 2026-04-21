@@ -33,6 +33,11 @@ interface LectureViewModalProps {
   onArchive?: () => void;
   /** Called after the user saves topic edits so the parent can update its lecture list. */
   onTopicsChanged?: (override: string[] | null) => void;
+  /** Folder name + icon for the folder chip (shown when lecture is in a folder) */
+  folderName?: string;
+  folderIcon?: string;
+  /** Remove from folder — shown as × on the folder chip */
+  onRemoveFromFolder?: () => void;
 }
 
 const PRESET_COLORS = [
@@ -59,11 +64,13 @@ type SlideState = 'loading' | 'loaded' | 'empty';
 function useSlides(internalId: string, slideCount: number) {
   const [urls, setUrls] = useState<string[]>([]);
   const [state, setState] = useState<SlideState>('loading');
-  const loaded = useRef(false);
 
   useEffect(() => {
-    if (loaded.current) return;
-    loaded.current = true;
+    // No lecture selected yet — nothing to load
+    if (!internalId) { setState('empty'); return; }
+    setState('loading');
+    setUrls([]);
+    let cancelled = false;
     async function load() {
       const supabase = createClient();
       // If slide_count is 0/null (common for migrated lectures), probe up to 200
@@ -74,12 +81,14 @@ function useSlides(internalId: string, slideCount: number) {
         const { data } = supabase.storage.from('slides').getPublicUrl(path);
         if (data?.publicUrl) built.push(data.publicUrl);
       }
+      if (cancelled) return;
       if (built.length === 0) { setState('empty'); return; }
       // Probe the first URL to confirm slides actually exist in storage
       try {
         const res = await fetch(built[0], { method: 'HEAD' });
+        if (cancelled) return;
         if (!res.ok) { setState('empty'); return; }
-      } catch { setState('empty'); return; }
+      } catch { if (!cancelled) setState('empty'); return; }
       // If slide_count was 0, also probe the end to find real count
       if (!slideCount || slideCount === 0) {
         // Binary-search the actual last slide — stop at first 404
@@ -92,13 +101,14 @@ function useSlides(internalId: string, slideCount: number) {
             if (r.ok) { lo = mid; } else { hi = mid - 1; }
           } catch { hi = mid - 1; }
         }
-        setUrls(built.slice(0, lo));
+        if (!cancelled) setUrls(built.slice(0, lo));
       } else {
-        setUrls(built);
+        if (!cancelled) setUrls(built);
       }
-      setState('loaded');
+      if (!cancelled) setState('loaded');
     }
     load();
+    return () => { cancelled = true; };
   }, [internalId, slideCount]);
 
   return { urls, state };
@@ -165,22 +175,20 @@ export default function LectureViewModal({
   onClose, onFlashcards, onExam,
   onChangeColor, onChangeCourse, onRenameTitle,
   onHide, onArchive, onTopicsChanged,
+  folderName, folderIcon = '📁', onRemoveFromFolder,
 }: LectureViewModalProps) {
-  // Guard: nothing to render if no lecture has ever been opened
-  if (!lecture) return null;
-
-  // Capture stable references before hooks so TypeScript knows these are non-null
-  const lectureId       = lecture.internal_id;
-  const lectureSubtitle = lecture.subtitle ?? '';
-
-  const color = resolveColor(lecture, activeTheme);
-  const title = lecture.custom_title ?? lecture.title;
-  const course = (lecture.course_override ?? lecture.course) as Course;
+  // Derive values null-safely so every hook below is called unconditionally.
+  // The early-return guard lives AFTER the hooks (React Rules of Hooks).
+  const lectureId       = lecture?.internal_id ?? '';
+  const lectureSubtitle = lecture?.subtitle ?? '';
+  const color = lecture ? resolveColor(lecture, activeTheme) : '#5b8dee';
+  const title = lecture?.custom_title ?? lecture?.title ?? '';
+  const course = ((lecture?.course_override ?? lecture?.course) ?? '') as Course;
   // Use per-user display_topics override if set, otherwise fall back to shared topics
-  const topics = lecture.display_topics ?? lecture.topics ?? [];
-  const flashcards = lecture.json_data?.flashcards ?? [];
+  const topics = lecture?.display_topics ?? lecture?.topics ?? [];
+  const flashcards = lecture?.json_data?.flashcards ?? [];
   const fcLen = flashcards.length;
-  const qLen = ((lecture.json_data as any)?.questions ?? []).length;
+  const qLen = ((lecture?.json_data as any)?.questions ?? []).length;
 
   const [localSubtitle, setLocalSubtitle] = useState(lectureSubtitle);
   const [isEditingSubtitle, setIsEditingSubtitle] = useState(false);
@@ -218,11 +226,15 @@ export default function LectureViewModal({
     return () => { document.removeEventListener('keydown', onKey); };
   }, [isOpen, lightboxIdx, isEditingTitle, onClose]);
 
+  const { urls: slideUrls, state: slideState } = useSlides(lectureId, lecture?.slide_count ?? 0);
+  const planInfo = usePlanInfo(lectureId, isOpen);
+
+  // Guard: nothing to render if no lecture has ever been opened.
+  // Must come AFTER all hooks so the hook call count stays constant.
+  if (!lecture) return null;
+
   function handleClose() { onClose(); }
   function handleStudyAction(action: () => void) { action(); onClose(); }
-
-  const { urls: slideUrls, state: slideState } = useSlides(lectureId, lecture.slide_count ?? 0);
-  const planInfo = usePlanInfo(lectureId, isOpen);
 
   // Editable title (fix #5)
   function handleTitleSave() {
@@ -363,6 +375,23 @@ export default function LectureViewModal({
               )}
             </div>
           </div>
+
+          {/* Folder tag — shown when lecture is assigned to a folder */}
+          {folderName && (
+            <div style={{ marginTop: 8 }}>
+              <span className="lvm-folder-chip">
+                {folderIcon} {folderName}
+                {onRemoveFromFolder && (
+                  <button
+                    className="lvm-folder-chip-remove"
+                    onClick={onRemoveFromFolder}
+                    title="Remove from folder"
+                    aria-label="Remove from folder"
+                  >×</button>
+                )}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* ── Progress ── */}
@@ -648,6 +677,32 @@ const modalCss = `
 .lvm-edit-topics-btn:hover { background: rgba(91,141,238,0.18); }
 .lvm-topics { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
 .lvm-topic-chip { font-size: 11px; color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); padding: 4px 10px; border-radius: 50px; font-family: 'Outfit', sans-serif; }
+
+/* Folder chip — shown below course badge */
+.lvm-folder-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-dim);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 3px 8px 3px 10px;
+  border-radius: 50px;
+}
+.lvm-folder-chip-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1;
+  padding: 0 1px;
+  margin-left: 1px;
+  transition: color 0.1s;
+}
+.lvm-folder-chip-remove:hover { color: #ef5350; }
 
 /* Slide strip */
 .lvm-slide-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; -webkit-overflow-scrolling: touch; margin-bottom: 4px; }

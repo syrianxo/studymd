@@ -76,6 +76,20 @@ export interface UserPreferences {
   settings: Record<string, unknown>;
 }
 
+// ─── Folders ────────────────────────────────────────────────────────────────
+
+export interface Folder {
+  id: string;
+  user_id: string;
+  parent_id: string | null;
+  name: string;
+  icon: string;        // default '📁'
+  color: string | null;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
 // ─── Study Plans ───────────────────────────────────────────────────────────
 
 /**
