@@ -6,6 +6,18 @@
 
 ## 🚧 Now (in flight)
 
+_(nothing active — pick next item from Next up)_
+
+---
+
+## ✅ Recently shipped
+
+### Slice A1 — Admin upload limit bypass (ADR-028)
+- [x] `lib/api-limits.ts`: `ADMIN_DAILY_SANITY_CAP`, `ADMIN_MAX_FILE_SIZE_BYTES`, `userIsAdmin()`, extended `checkLimits({ adminBypass })`
+- [x] `/api/upload`: dynamic file-size cap + `adminBypass` in `checkLimits`
+- [x] `/api/generate`: admin bypass in local `checkRateLimits`
+- [x] `/app/upload/page.tsx`: query `user_profiles` on mount, show "max 250 MB" hint for admins
+
 ### Slice 9 — F3 Lecture-grid folders
 - [x] DB migration: `folders` table + `group_id` FK upgrade (ADR-027)
 - [x] API: `GET/POST /api/folders` + `PATCH/DELETE /api/folders/[id]` with cycle prevention

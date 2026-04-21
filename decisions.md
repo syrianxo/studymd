@@ -421,6 +421,20 @@ Dates reflect when the decision landed in the repo (from git history) or, for un
 
 ---
 
+## ADR-028 · Admin upload bypass: higher cap + rate-limit skip
+- **Date:** 2026-04-21 (commits `02f1e39`, `8a020aa` — Slice A1)
+- **Status:** Accepted
+- **Context:** Admin users seed cohort content — multiple large PPTX/PDF decks at a time. The 50 MB file-size cap and 5 calls/day rate limit are appropriate for students but block legitimate admin workflows. We need a principled bypass that: (a) skips the per-user cap, (b) still records usage for cost tracking, and (c) guards against a compromised admin account draining the API budget.
+- **Decision:** Add `userIsAdmin(userId)` helper in `lib/api-limits.ts` (service-role Supabase query against `user_profiles.role`). Extend `checkLimits()` with `{ adminBypass?: boolean }` option: when true, skip daily call / monthly cost checks but enforce a separate `ADMIN_DAILY_SANITY_CAP` (100/day). File-size cap raised to 250 MB for admins (`ADMIN_MAX_FILE_SIZE_BYTES`). Both `/api/upload` and `/api/generate` check `userIsAdmin` independently; generate uses a local admin bypass that short-circuits its in-flight rate check. Upload page (`/app/upload`) queries `user_profiles` client-side to show the correct file-size hint in the drop-zone.
+- **Consequences:**
+  - (+) Admin uploads no longer hit per-user daily / monthly walls.
+  - (+) Usage is still recorded via `increment_api_usage` RPC — admin cost visible in dashboard.
+  - (+) Sanity cap (100 calls/day) prevents runaway spend from a compromised admin account.
+  - (−) Two independent `userIsAdmin` calls per upload (one in `/api/upload`, one in `/api/generate`) — minor latency overhead (~1 DB round-trip each, ~10 ms).
+  - (−) Client-side admin detection in the upload page is UX only; server enforcement is authoritative.
+
+---
+
 ## Template for new ADRs
 
 Copy/paste and fill in:
