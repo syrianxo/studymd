@@ -202,27 +202,30 @@ export default function Header({
         {/* Right: upload (desktop only) + pomodoro + gear */}
         <div className="smd-header-right">
 
-          {/* Upload — desktop only (mobile version lives in drawer) */}
-          {!hideUploadButton && (
-            <Link
-              href={uploadHref}
-              className="smd-hdr-btn smd-hdr-upload smd-hdr-desktop-only"
-              aria-label={isProcessing ? 'Processing lecture…' : 'Upload lecture'}
-              title="Upload Lecture"
-            >
-              {isProcessing
-                ? <span className="smd-hdr-spinner" aria-hidden="true" />
-                : (
-                  <svg className="smd-hdr-icon-svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                    <path d="M10 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L11 6.414V13a1 1 0 11-2 0V6.414L6.707 8.707A1 1 0 015.293 7.293l4-4A1 1 0 0110 3z" />
-                    <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
-                  </svg>
-                )}
-              <span className="smd-hdr-label">
-                {isProcessing ? 'Processing…' : 'Upload'}
-              </span>
-            </Link>
-          )}
+          {/* Upload — desktop only (mobile version lives in drawer).
+               Always rendered so right-side width stays constant across pages;
+               visibility:hidden when hideUploadButton to avoid layout shift. */}
+          <Link
+            href={uploadHref}
+            className="smd-hdr-btn smd-hdr-upload smd-hdr-desktop-only"
+            aria-label={isProcessing ? 'Processing lecture…' : 'Upload lecture'}
+            title="Upload Lecture"
+            aria-hidden={hideUploadButton}
+            tabIndex={hideUploadButton ? -1 : undefined}
+            style={hideUploadButton ? { visibility: 'hidden', pointerEvents: 'none' } : undefined}
+          >
+            {isProcessing
+              ? <span className="smd-hdr-spinner" aria-hidden="true" />
+              : (
+                <svg className="smd-hdr-icon-svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path d="M10 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L11 6.414V13a1 1 0 11-2 0V6.414L6.707 8.707A1 1 0 015.293 7.293l4-4A1 1 0 0110 3z" />
+                  <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
+                </svg>
+              )}
+            <span className="smd-hdr-label">
+              {isProcessing ? 'Processing…' : 'Upload'}
+            </span>
+          </Link>
 
           {/* Pomodoro mini-pill — hidden <768px (120px+ min-width collides with mobile icons). ADR-022. */}
           <PomodoroMiniPill />
