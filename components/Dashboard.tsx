@@ -144,9 +144,12 @@ export default function Dashboard({
     () =>
       lectures.filter((l) => {
         if (!l.visible || l.archived) return false;
-        if (filter.courses.size > 0 && !filter.courses.has(l.course)) return false;
+        // Course filter only applies in the All Lectures view (easier to roll back if needed)
+        if (activeFolderId === '__all__' && filter.courses.size > 0 && !filter.courses.has(l.course)) return false;
         // Exiting cards stay in the list so their CSS fade-out plays before the reflow.
         if (exitingLectureIds.has(l.internal_id)) return true;
+        // All Lectures view: skip the group_id filter entirely
+        if (activeFolderId === '__all__') return true;
         // Effective group_id: use local optimistic override if present
         const effectiveGroupId = l.internal_id in groupIdOverrides
           ? groupIdOverrides[l.internal_id]
@@ -159,15 +162,16 @@ export default function Dashboard({
     [lectures, filter.courses, activeFolderId, groupIdOverrides, exitingLectureIds]
   );
 
-  // Subfolders of the current folder (or root-level folders when no folder active)
+  // FolderBar always shows root-level folders regardless of which folder is active.
+  // Nested navigation uses the breadcrumb. '__all__' is a sentinel for "show everything".
   const subfolders = useMemo(
     () => folders
-      .filter(f => (f.parent_id ?? null) === activeFolderId)
+      .filter(f => (f.parent_id ?? null) === null)
       .sort((a, b) => a.display_order - b.display_order || a.name.localeCompare(b.name)),
-    [folders, activeFolderId]
+    [folders]
   );
 
-  // How many lectures live directly in each folder (for tile badges)
+  // How many lectures live directly in each folder (for pill badges)
   const lectureCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     for (const l of lectures) {
@@ -180,27 +184,20 @@ export default function Dashboard({
     return counts;
   }, [lectures, groupIdOverrides]);
 
-  // How many immediate subfolders each folder has (for tile badges)
-  const subfoldersCount = useMemo(() => {
-    const counts: Record<string, number> = {};
-    for (const f of folders) {
-      if (f.parent_id) counts[f.parent_id] = (counts[f.parent_id] ?? 0) + 1;
-    }
-    return counts;
-  }, [folders]);
-
   // Lectures not yet assigned to any folder — shown in NewFolderModal for immediate assignment
   const unfiledLectures = useMemo(
     () => lectures.filter(l => l.visible && !l.archived && !l.group_id),
     [lectures]
   );
 
-  // Breadcrumb ancestors for the active folder
+  // Breadcrumb ancestors — only relevant when inside a real folder (not __all__ sentinel)
+  const isRealFolder = activeFolderId !== null && activeFolderId !== '__all__';
   const folderAncestors = useMemo(
-    () => (activeFolderId ? ancestorsOf(activeFolderId) : []),
+    () => (isRealFolder ? ancestorsOf(activeFolderId!) : []),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [activeFolderId, ancestorsOf]
   );
-  const activeFolder = activeFolderId ? folderById(activeFolderId) : null;
+  const activeFolder = isRealFolder ? folderById(activeFolderId!) : null;
 
   // ── Stats ─────────────────────────────────────────────────────────────────
   const avgScore = progressLoading || globalStats.avgExamScore === null
@@ -505,7 +502,7 @@ export default function Dashboard({
         </p>
 
         {/* ── FOLDER BREADCRUMB ─────────────────────────────────────────── */}
-        {activeFolderId && (
+        {isRealFolder && (
           <div style={{ marginBottom: '0.5rem' }}>
             <FolderBreadcrumb
               ancestors={folderAncestors}
@@ -518,9 +515,11 @@ export default function Dashboard({
         {/* ── SECTION HEADER ──────────────────────────────────────────────── */}
         <div className="smd-section-header">
           <div className="smd-section-title">
-            {activeFolderId && activeFolder
-              ? <>{activeFolder.icon} {activeFolder.name}</>
-              : 'Your Lectures'
+            {activeFolderId === '__all__'
+              ? '📚 All Lectures'
+              : isRealFolder && activeFolder
+                ? <>{activeFolder.icon} {activeFolder.name}</>
+                : '📋 Unfiled'
             }
             {!lecturesLoading && (
               <span className="smd-lecture-count-badge">
@@ -529,14 +528,6 @@ export default function Dashboard({
             )}
           </div>
           <div className="smd-section-actions">
-            <button
-              className="btn btn-secondary smd-folder-btn"
-              onClick={handleCreateFolder}
-              title="New folder"
-              aria-label="Create new folder"
-            >
-              📁 New folder
-            </button>
             <button
               className="btn btn-primary smd-custom-session-btn"
               onClick={() => setCustomModalOpen(true)}
@@ -554,7 +545,8 @@ export default function Dashboard({
           </div>
         </div>
 
-        {!manageOpen && (
+        {/* Filter bar only shown in All Lectures view — easy to re-enable elsewhere if needed */}
+        {!manageOpen && activeFolderId === '__all__' && (
           <FilterBar
             allCourses={courses}
             allTags={[]}

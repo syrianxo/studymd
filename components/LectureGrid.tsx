@@ -160,7 +160,12 @@ export default function LectureGrid({
           ? allFolders.find(f => f.id === openLecture.group_id)?.icon
           : undefined}
         onRemoveFromFolder={onMoveToFolder && openLecture?.group_id
-          ? () => onMoveToFolder(openLecture.internal_id, null)
+          ? () => {
+              // Optimistically clear the folder tag immediately so the chip
+              // vanishes in the modal without waiting for the backend round-trip.
+              setOpenLecture(prev => prev ? { ...prev, group_id: null } : null);
+              onMoveToFolder(openLecture.internal_id, null);
+            }
           : undefined}
       />
     </>

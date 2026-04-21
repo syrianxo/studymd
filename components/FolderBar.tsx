@@ -1,14 +1,21 @@
 // components/FolderBar.tsx
-// Horizontal pill row that replaces folder tiles inside the lecture grid.
-// Must be rendered as a descendant of a @dnd-kit DndContext so folder pills
-// can act as droppable targets while lecture cards are dragged.
+// Horizontal pill row above the lecture grid.
+// Always rendered (even when no user folders exist) so the built-in
+// "Unfiled" and "All Lectures" pills are always accessible.
+//
+// Must be a descendant of a @dnd-kit DndContext — folder pills are
+// droppable targets while lecture cards (in LectureGrid) are drag sources.
+//
+// Dropdown overflow fix: the scroll container (overflow-x: auto) clips
+// position:absolute children. Dropdowns use position:fixed with coords
+// from getBoundingClientRect() so they escape the scroll container.
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import type { Folder } from '@/types';
 
-// ─── Per-pill color picker (same presets as FolderTile) ──────────────────────
+// ─── Per-pill color picker presets ───────────────────────────────────────────
 
 const PRESET_COLORS = [
   '#e57373', '#ef9a9a',
@@ -23,20 +30,19 @@ const PRESET_COLORS = [
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 interface FolderBarProps {
-  /** Folders shown at the current navigation level */
+  /** Root-level folders to render as pills */
   folders: Folder[];
+  /** null = Unfiled, '__all__' = All Lectures, uuid = specific folder */
   activeFolderId: string | null;
   lectureCounts: Record<string, number>;
-  /** Whether a lecture card is currently being dragged — shows drop hints on pills */
+  /** Whether a lecture card is currently being dragged — shows drop hints */
   isDragging: boolean;
   onNavigate: (folderId: string | null) => void;
   onCreateFolder: () => void;
   onRenameFolder: (id: string, name: string) => void;
   onDeleteFolder: (id: string) => void;
   onChangeFolderColor: (id: string, color: string | null) => void;
-  /** Swap this folder one position earlier in display_order */
   onMoveUp: (id: string) => void;
-  /** Swap this folder one position later in display_order */
   onMoveDown: (id: string) => void;
 }
 
@@ -48,13 +54,31 @@ export default function FolderBar({
   onRenameFolder, onDeleteFolder, onChangeFolderColor,
   onMoveUp, onMoveDown,
 }: FolderBarProps) {
-  // Don't render the bar at all until the user has at least one folder
-  if (folders.length === 0) return null;
-
   return (
     <div className="fb-bar">
       <style>{barCss}</style>
       <div className="fb-scroll">
+        {/* ── Built-in: Unfiled (default, shows only lectures not in a folder) ── */}
+        <button
+          className={['fb-static-pill', activeFolderId === null ? 'fb-static-pill--active' : ''].filter(Boolean).join(' ')}
+          onClick={() => onNavigate(null)}
+          aria-pressed={activeFolderId === null}
+        >
+          📋 Unfiled
+        </button>
+
+        {/* ── Built-in: All Lectures ── */}
+        <button
+          className={['fb-static-pill', activeFolderId === '__all__' ? 'fb-static-pill--active' : ''].filter(Boolean).join(' ')}
+          onClick={() => onNavigate('__all__')}
+          aria-pressed={activeFolderId === '__all__'}
+        >
+          📚 All
+        </button>
+
+        {/* Divider before user folders */}
+        {folders.length > 0 && <div className="fb-divider" />}
+
         {folders.map((folder, i) => (
           <FolderPill
             key={folder.id}
@@ -109,25 +133,55 @@ function FolderPill({
   const [renaming, setRenaming] = useState(false);
   const [nameValue, setNameValue] = useState(folder.name);
   const [colorOpen, setColorOpen] = useState(false);
+
+  // Fixed-position coords for the dropdown — escapes the scroll container's overflow clip.
+  const [dropPos, setDropPos] = useState<{ top: number; left: number } | null>(null);
+
+  const kebabRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const renameRef = useRef<HTMLInputElement>(null);
 
-  // Close popover on outside click
+  const closeAll = useCallback(() => {
+    setMenuOpen(false);
+    setColorOpen(false);
+  }, []);
+
+  // Close on outside click
   useEffect(() => {
     if (!menuOpen && !colorOpen) return;
     const handler = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        setMenuOpen(false);
-        setColorOpen(false);
-      }
+      if (menuRef.current && !menuRef.current.contains(e.target as Node)) closeAll();
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [menuOpen, colorOpen]);
+  }, [menuOpen, colorOpen, closeAll]);
+
+  // Close on scroll / resize (fixed position would drift)
+  useEffect(() => {
+    if (!menuOpen && !colorOpen) return;
+    const handler = () => closeAll();
+    window.addEventListener('scroll', handler, { passive: true });
+    window.addEventListener('resize', handler, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handler);
+      window.removeEventListener('resize', handler);
+    };
+  }, [menuOpen, colorOpen, closeAll]);
 
   useEffect(() => {
     if (renaming) renameRef.current?.select();
   }, [renaming]);
+
+  function openKebabMenu(e: React.MouseEvent) {
+    e.stopPropagation();
+    if (!menuOpen) {
+      // Capture button position so dropdown can use position:fixed to escape overflow clip
+      const rect = kebabRef.current?.getBoundingClientRect();
+      if (rect) setDropPos({ top: rect.bottom + 6, left: rect.left + rect.width / 2 });
+    }
+    setMenuOpen(p => !p);
+    setColorOpen(false);
+  }
 
   function handleRenameSubmit() {
     const trimmed = nameValue.trim();
@@ -138,6 +192,14 @@ function FolderPill({
 
   const accent = folder.color ?? 'var(--accent)';
   const isDropTarget = isDragging && isOver;
+
+  // Shared style for the fixed-position dropdown
+  const fixedDropStyle: React.CSSProperties | undefined = dropPos ? {
+    position: 'fixed',
+    top: dropPos.top,
+    left: dropPos.left,
+    transform: 'translateX(-50%)',
+  } : undefined;
 
   return (
     <div
@@ -177,42 +239,49 @@ function FolderPill({
       {/* Kebab menu */}
       <div className="fb-menu-wrap" ref={menuRef}>
         <button
+          ref={kebabRef}
           className="fb-kebab"
           aria-label="Folder options"
-          onClick={e => { e.stopPropagation(); setMenuOpen(p => !p); setColorOpen(false); }}
+          onClick={openKebabMenu}
         >
           ···
         </button>
 
         {menuOpen && !colorOpen && (
-          <div className="fb-dropdown">
+          <div className="fb-dropdown" style={fixedDropStyle}>
             {/* Reorder */}
             <div className="fb-dropdown-reorder">
               <button
                 className="fb-dropdown-reorder-btn"
                 disabled={!canMoveUp}
-                onClick={() => { onMoveUp(); setMenuOpen(false); }}
+                onClick={() => { onMoveUp(); closeAll(); }}
                 title="Move left"
               >↑</button>
               <span className="fb-dropdown-reorder-label">Reorder</span>
               <button
                 className="fb-dropdown-reorder-btn"
                 disabled={!canMoveDown}
-                onClick={() => { onMoveDown(); setMenuOpen(false); }}
+                onClick={() => { onMoveDown(); closeAll(); }}
                 title="Move right"
               >↓</button>
             </div>
             <div className="fb-dropdown-divider" />
-            <button onClick={() => { setMenuOpen(false); setRenaming(true); }}>Rename</button>
-            <button onClick={() => setColorOpen(true)}>Change colour</button>
-            <button className="fb-dropdown-danger" onClick={() => { setMenuOpen(false); onDelete(); }}>
+            <button onClick={() => { closeAll(); setRenaming(true); }}>Rename</button>
+            <button onClick={() => {
+              // Recalculate position for color picker (same anchor)
+              const rect = kebabRef.current?.getBoundingClientRect();
+              if (rect) setDropPos({ top: rect.bottom + 6, left: rect.left + rect.width / 2 });
+              setColorOpen(true);
+              setMenuOpen(false);
+            }}>Change colour</button>
+            <button className="fb-dropdown-danger" onClick={() => { closeAll(); onDelete(); }}>
               Delete folder
             </button>
           </div>
         )}
 
         {colorOpen && (
-          <div className="fb-dropdown fb-color-picker">
+          <div className="fb-dropdown fb-color-picker" style={fixedDropStyle}>
             <div className="fb-cp-label">Folder colour</div>
             <div className="fb-cp-grid">
               {PRESET_COLORS.map(c => (
@@ -223,13 +292,13 @@ function FolderPill({
                     background: c,
                     outline: folder.color === c ? '2px solid var(--text)' : undefined,
                   }}
-                  onClick={() => { onChangeColor(c); setColorOpen(false); setMenuOpen(false); }}
+                  onClick={() => { onChangeColor(c); closeAll(); }}
                 />
               ))}
               <button
                 className="fb-cp-swatch fb-cp-clear"
                 title="Clear colour"
-                onClick={() => { onChangeColor(null); setColorOpen(false); setMenuOpen(false); }}
+                onClick={() => { onChangeColor(null); closeAll(); }}
               >✕</button>
             </div>
           </div>
@@ -257,7 +326,45 @@ const barCss = `
 }
 .fb-scroll::-webkit-scrollbar { display: none; }
 
-/* ── Pill ── */
+/* ── Vertical divider between built-in and user pills ── */
+.fb-divider {
+  width: 1px;
+  height: 22px;
+  background: var(--border);
+  flex-shrink: 0;
+  margin: 0 2px;
+}
+
+/* ── Built-in static pills (Unfiled, All Lectures) ── */
+.fb-static-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  padding: 6px 14px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 100px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  transition: border-color .15s, background .15s, color .15s;
+  min-height: 36px;
+}
+.fb-static-pill:hover {
+  border-color: var(--border-bright);
+  color: var(--text);
+}
+.fb-static-pill--active {
+  background: rgba(91,141,238,.1);
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+}
+
+/* ── User-folder pill ── */
 .fb-pill {
   display: inline-flex;
   align-items: center;
@@ -331,13 +438,11 @@ const barCss = `
 }
 .fb-kebab:hover { background: rgba(255,255,255,.06); color: var(--text); }
 
-/* ── Dropdown menu ── */
+/* ── Dropdown menu (position:fixed set inline via JS) ── */
 .fb-dropdown {
-  position: absolute; top: calc(100% + 6px); left: 50%;
-  transform: translateX(-50%);
   background: var(--surface); border: 1px solid var(--border);
   border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.4);
-  z-index: 200; min-width: 168px; overflow: hidden;
+  z-index: 1000; min-width: 168px; overflow: hidden;
   animation: fb-dropdown-in .1s ease;
 }
 @keyframes fb-dropdown-in {
