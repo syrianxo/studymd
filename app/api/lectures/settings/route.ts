@@ -24,6 +24,11 @@ interface SettingsUpdates {
    */
   colorOverride?: Record<string, string> | string | null;
   customTitle?: string | null;
+  /**
+   * topicsOverride: string[] to replace per-user topic labels; null to clear and
+   * fall back to the shared lectures.topics column.
+   */
+  topicsOverride?: string[] | null;
 }
 
 interface PutBody {
@@ -108,6 +113,14 @@ function validateUpdates(updates: SettingsUpdates): string | null {
   ) {
     return "customTitle must be a non-empty string or null";
   }
+  if (updates.topicsOverride !== undefined && updates.topicsOverride !== null) {
+    if (
+      !Array.isArray(updates.topicsOverride) ||
+      updates.topicsOverride.some((t) => typeof t !== "string")
+    ) {
+      return "topicsOverride must be an array of strings or null";
+    }
+  }
   return null;
 }
 
@@ -147,6 +160,7 @@ function toColumnMap(updates: SettingsUpdates): Record<string, unknown> {
     }
   }
   if ("customTitle" in updates) map.custom_title = updates.customTitle;
+  if ("topicsOverride" in updates) map.topics_override = updates.topicsOverride;
   return map;
 }
 
@@ -304,6 +318,7 @@ export async function PUT(req: NextRequest) {
       courseOverride: data.course_override,
       colorOverride: data.color_override,
       customTitle: data.custom_title,
+      topicsOverride: data.topics_override ?? null,
     },
   });
 }

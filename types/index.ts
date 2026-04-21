@@ -58,6 +58,7 @@ export interface UserLectureSettings {
   course_override?: Course | null;
   color_override?: ColorOverrideMap | null;
   custom_title?: string | null;
+  topics_override?: string[] | null;
 }
 
 export interface LectureWithSettings extends Lecture {
@@ -66,6 +67,7 @@ export interface LectureWithSettings extends Lecture {
   display_title: string;
   display_course: Course;
   display_color: string; // resolved for current theme by caller
+  display_topics: string[]; // resolved from settings.topics_override ?? topics
 }
 
 export interface UserPreferences {

@@ -52,6 +52,10 @@ export interface Lecture {
   color_override: ColorOverrideMap | null;
   // Default color per theme, set on the lectures table (not per-user)
   theme_colors: ColorOverrideMap | null;
+  // topics_override: null = use lectures.topics; string[] = per-user override
+  topics_override: string[] | null;
+  // Resolved display topics (topics_override ?? topics)
+  display_topics: string[];
 }
 
 /** Resolve the display color for a lecture given the active theme.
@@ -101,14 +105,14 @@ export function useUserLectures(): UseUserLecturesResult {
 
       let settingsMap: Record<
         string,
-        { display_order: number; visible: boolean; archived: boolean; custom_title: string | null; tags: string[]; group_id: string | null; course_override: Course | null; color_override: ColorOverrideMap | null; }
+        { display_order: number; visible: boolean; archived: boolean; custom_title: string | null; tags: string[]; group_id: string | null; course_override: Course | null; color_override: ColorOverrideMap | null; topics_override: string[] | null; }
       > = {};
 
       // ── 2. Fetch per-user overrides if logged in ────────────────────────
       if (user) {
         const { data: settingsRows } = await supabase
           .from('user_lecture_settings')
-          .select('internal_id, display_order, visible, archived, custom_title, tags, group_id, course_override, color_override')
+          .select('internal_id, display_order, visible, archived, custom_title, tags, group_id, course_override, color_override, topics_override')
           .eq('user_id', user.id);
 
         for (const s of settingsRows ?? []) {
@@ -124,6 +128,9 @@ export function useUserLectures(): UseUserLecturesResult {
               colorOverride = s.color_override as ColorOverrideMap;
             }
           }
+          const topicsOverride: string[] | null =
+            Array.isArray(s.topics_override) ? s.topics_override : null;
+
           settingsMap[s.internal_id] = {
             display_order:   s.display_order   ?? 999,
             visible:         s.visible         ?? true,
@@ -133,23 +140,31 @@ export function useUserLectures(): UseUserLecturesResult {
             group_id:        s.group_id        ?? null,
             course_override: s.course_override ?? null,
             color_override:  colorOverride,
+            topics_override: topicsOverride,
           };
         }
       }
 
       // ── 3. Merge ────────────────────────────────────────────────────────
-      const merged: Lecture[] = (lectureRows ?? []).map((row, idx) => ({
-        ...(row as any),
-        display_order:   settingsMap[row.internal_id]?.display_order   ?? idx,
-        visible:         settingsMap[row.internal_id]?.visible         ?? true,
-        archived:        settingsMap[row.internal_id]?.archived        ?? false,
-        custom_title:    settingsMap[row.internal_id]?.custom_title    ?? null,
-        tags:            settingsMap[row.internal_id]?.tags            ?? [],
-        group_id:        settingsMap[row.internal_id]?.group_id        ?? null,
-        course_override: settingsMap[row.internal_id]?.course_override ?? null,
-        color_override:  settingsMap[row.internal_id]?.color_override  ?? null,
-        theme_colors:    (row as any).theme_colors ?? null,
-      }));
+      const merged: Lecture[] = (lectureRows ?? []).map((row, idx) => {
+        const s = settingsMap[row.internal_id];
+        const topics_override = s?.topics_override ?? null;
+        return {
+          ...(row as any),
+          display_order:   s?.display_order   ?? idx,
+          visible:         s?.visible         ?? true,
+          archived:        s?.archived        ?? false,
+          custom_title:    s?.custom_title    ?? null,
+          tags:            s?.tags            ?? [],
+          group_id:        s?.group_id        ?? null,
+          course_override: s?.course_override ?? null,
+          color_override:  s?.color_override  ?? null,
+          theme_colors:    (row as any).theme_colors ?? null,
+          topics_override,
+          // Resolved display topics: per-user override takes precedence over shared topics
+          display_topics:  topics_override ?? (row as any).topics ?? [],
+        };
+      });
 
       merged.sort((a, b) => a.display_order - b.display_order);
 
