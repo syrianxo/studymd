@@ -63,10 +63,11 @@ export default function Dashboard({
   // null = All Lectures (unfiltered); a UUID = drill into that folder
   const [activeFolderId, setActiveFolderId] = useState<string | null>(null);
 
-  // Optimistic overrides for group_id — applied immediately on drag-to-folder
-  // so the lecture disappears from the grid without waiting for a network round-trip.
-  // Cleared automatically after refetch completes.
+  // Optimistic overrides for group_id — applied after CSS fade-out completes
+  // so the card exits smoothly before the grid reflows.
   const [groupIdOverrides, setGroupIdOverrides] = useState<Record<string, string | null>>({});
+  // IDs currently playing their fade-out CSS transition (~270ms)
+  const [exitingLectureIds, setExitingLectureIds] = useState<Set<string>>(new Set());
 
   const [filter, setFilter] = useState<FilterState>({
     courses: new Set<Course>(),
@@ -131,6 +132,8 @@ export default function Dashboard({
       lectures.filter((l) => {
         if (!l.visible || l.archived) return false;
         if (filter.courses.size > 0 && !filter.courses.has(l.course)) return false;
+        // Exiting cards stay in the list so their CSS fade-out plays before the reflow.
+        if (exitingLectureIds.has(l.internal_id)) return true;
         // Effective group_id: use local optimistic override if present
         const effectiveGroupId = l.internal_id in groupIdOverrides
           ? groupIdOverrides[l.internal_id]
@@ -140,7 +143,7 @@ export default function Dashboard({
         if (effectiveGroupId !== activeFolderId) return false;
         return true;
       }),
-    [lectures, filter.courses, activeFolderId, groupIdOverrides]
+    [lectures, filter.courses, activeFolderId, groupIdOverrides, exitingLectureIds]
   );
 
   // Subfolders of the current folder (or root-level folders when no folder active)
@@ -320,8 +323,17 @@ export default function Dashboard({
   }
 
   function handleMoveToFolder(lectureId: string, folderId: string | null) {
-    // Optimistic: immediately patch local state so the card disappears without a reload flash.
-    setGroupIdOverrides(prev => ({ ...prev, [lectureId]: folderId }));
+    // Phase 1: trigger CSS fade-out (card stays in DOM taking space, opacity → 0).
+    setExitingLectureIds(prev => new Set([...prev, lectureId]));
+
+    // Phase 2: after the fade completes (~270ms), apply the optimistic group_id override.
+    // This removes the card from visibleLectures so the grid can reflow — but by now
+    // the card is already invisible, so the reflow is imperceptible.
+    setTimeout(() => {
+      setGroupIdOverrides(prev => ({ ...prev, [lectureId]: folderId }));
+      setExitingLectureIds(prev => { const n = new Set(prev); n.delete(lectureId); return n; });
+    }, 270);
+
     fetch('/api/lectures/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -335,7 +347,8 @@ export default function Dashboard({
         }), 800);
       })
       .catch(() => {
-        // On failure revert the optimistic update
+        // On failure: revert both the exit animation and the optimistic override
+        setExitingLectureIds(prev => { const n = new Set(prev); n.delete(lectureId); return n; });
         setGroupIdOverrides(prev => { const n = { ...prev }; delete n[lectureId]; return n; });
       });
   }
@@ -532,6 +545,7 @@ export default function Dashboard({
             onDeleteFolder={handleDeleteFolder}
             onChangeFolderColor={handleChangeFolderColor}
             onMoveToFolder={handleMoveToFolder}
+            exitingLectureIds={exitingLectureIds}
             allFolders={folders}
           />
         )}

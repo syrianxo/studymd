@@ -153,21 +153,21 @@ export default function FolderTile({
           display: flex;
           align-items: center;
           background: var(--surface);
-          border: 1.5px solid var(--border);
-          border-left: 4px solid var(--ft-accent, var(--accent));
-          border-radius: 12px;
+          border: 1px solid var(--border);
+          border-left: 3px solid var(--ft-accent, var(--accent));
+          border-radius: 10px;
           overflow: visible;
-          transition: box-shadow .15s, transform .15s;
-          min-height: 76px;
+          transition: box-shadow .15s, border-color .15s;
+          min-height: 52px;
         }
-        .ft-tile:hover { box-shadow: 0 4px 16px var(--shadow); transform: translateY(-1px); }
+        .ft-tile:hover { box-shadow: 0 2px 10px rgba(0,0,0,.18); border-color: var(--border-bright); }
 
         .ft-main {
           flex: 1;
           display: flex;
           align-items: center;
-          gap: 12px;
-          padding: 14px 0 14px 14px;
+          gap: 10px;
+          padding: 10px 0 10px 12px;
           background: none;
           border: none;
           cursor: pointer;
@@ -175,21 +175,20 @@ export default function FolderTile({
           min-width: 0;
         }
         .ft-icon {
-          font-size: 28px;
+          font-size: 20px;
           flex-shrink: 0;
           line-height: 1;
-          filter: drop-shadow(0 1px 2px rgba(0,0,0,.15));
         }
         .ft-body { min-width: 0; flex: 1; }
         .ft-name {
-          font-size: 15px;
+          font-size: 13px;
           font-weight: 600;
           color: var(--text);
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;
         }
-        .ft-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        .ft-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
         .ft-rename-input {
           font-size: 15px;
           font-weight: 600;
@@ -202,16 +201,16 @@ export default function FolderTile({
           outline: none;
         }
 
-        .ft-menu-wrap { position: relative; flex-shrink: 0; padding: 0 10px; }
+        .ft-menu-wrap { position: relative; flex-shrink: 0; padding: 0 8px; }
         .ft-kebab {
           background: none;
           border: none;
-          font-size: 18px;
+          font-size: 15px;
           line-height: 1;
           color: var(--text-muted);
           cursor: pointer;
-          padding: 4px 6px;
-          border-radius: 6px;
+          padding: 3px 5px;
+          border-radius: 5px;
           letter-spacing: 1px;
         }
         .ft-kebab:hover { background: var(--surface2); color: var(--text); }

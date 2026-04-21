@@ -44,6 +44,8 @@ interface LectureGridProps {
   onChangeFolderColor?: (folderId: string, color: string | null) => void;
   /** Called when a lecture card is dragged onto a folder tile (folderId = null means remove from folder) */
   onMoveToFolder?: (lectureId: string, folderId: string | null) => void;
+  /** IDs of cards currently playing their CSS fade-out exit animation */
+  exitingLectureIds?: Set<string>;
   /** All user folders — used to resolve folder name for the folder-as-tag chip */
   allFolders?: Folder[];
 }
@@ -64,6 +66,7 @@ export default function LectureGrid({
   onDeleteFolder,
   onChangeFolderColor,
   onMoveToFolder,
+  exitingLectureIds,
   allFolders = [],
 }: LectureGridProps) {
   const [openLecture, setOpenLecture] = useState<Lecture | null>(null);
@@ -137,29 +140,35 @@ export default function LectureGrid({
     <>
       <DndContext sensors={sensors} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
         <div className="smd-lecture-grid">
-          {/* Subfolder tiles — droppable targets when drag-to-folder is enabled */}
-          {subfolders.map(folder => (
-            <DroppableFolderTile
-              key={folder.id}
-              folder={folder}
-              lectureCount={lectureCounts[folder.id] ?? 0}
-              subfoldersCount={subfoldersCount[folder.id] ?? 0}
-              activeTheme={activeTheme}
-              onOpen={() => onOpenFolder?.(folder.id)}
-              onRename={(name) => onRenameFolder?.(folder.id, name)}
-              onDelete={() => onDeleteFolder?.(folder.id)}
-              onChangeColor={(color) => onChangeFolderColor?.(folder.id, color)}
-              dragging={!!draggingLectureId && !!onMoveToFolder}
-            />
-          ))}
+          {/* All subfolders grouped into ONE grid cell so they stack compactly */}
+          {subfolders.length > 0 && (
+            <div className="smd-folder-group">
+              {subfolders.map(folder => (
+                <DroppableFolderTile
+                  key={folder.id}
+                  folder={folder}
+                  lectureCount={lectureCounts[folder.id] ?? 0}
+                  subfoldersCount={subfoldersCount[folder.id] ?? 0}
+                  activeTheme={activeTheme}
+                  onOpen={() => onOpenFolder?.(folder.id)}
+                  onRename={(name) => onRenameFolder?.(folder.id, name)}
+                  onDelete={() => onDeleteFolder?.(folder.id)}
+                  onChangeColor={(color) => onChangeFolderColor?.(folder.id, color)}
+                  dragging={!!draggingLectureId && !!onMoveToFolder}
+                />
+              ))}
+            </div>
+          )}
 
           {lectures.map(lecture => {
             const progress = progressByLecture[lecture.internal_id] ?? null;
+            const isExiting = exitingLectureIds?.has(lecture.internal_id) ?? false;
             return (
               <DraggableLectureCard
                 key={lecture.internal_id}
                 lectureId={lecture.internal_id}
                 enabled={!!onMoveToFolder && subfolders.length > 0}
+                isExiting={isExiting}
               >
                 <LectureCard
                   lecture={lecture}
@@ -267,7 +276,7 @@ function DroppableFolderTile({ folder, dragging, ...props }: DroppableFolderTile
     <div
       ref={setNodeRef}
       style={{
-        borderRadius: 12,
+        borderRadius: 10,
         outline: dragging ? `2px dashed ${isOver ? 'var(--accent)' : 'var(--border)'}` : undefined,
         outlineOffset: 2,
         transition: 'outline-color .15s',
@@ -284,10 +293,11 @@ function DroppableFolderTile({ folder, dragging, ...props }: DroppableFolderTile
 interface DraggableLectureCardProps {
   lectureId: string;
   enabled: boolean;
+  isExiting?: boolean;
   children: React.ReactNode;
 }
 
-function DraggableLectureCard({ lectureId, enabled, children }: DraggableLectureCardProps) {
+function DraggableLectureCard({ lectureId, enabled, isExiting = false, children }: DraggableLectureCardProps) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
     id: `lecture-${lectureId}`,
     disabled: !enabled,
@@ -297,7 +307,17 @@ function DraggableLectureCard({ lectureId, enabled, children }: DraggableLecture
       ref={setNodeRef}
       {...(enabled ? listeners : {})}
       {...(enabled ? attributes : {})}
-      style={{ opacity: isDragging ? 0.4 : 1, cursor: enabled ? 'grab' : undefined }}
+      style={{
+        // height: 100% is essential — this div is the CSS Grid item.
+        // Without it, .smd-lecture-card inside can't fill the row height.
+        height: '100%',
+        opacity: isDragging ? 0.4 : isExiting ? 0 : 1,
+        transform: isExiting ? 'scale(0.88)' : undefined,
+        // Only apply the transition during exit so normal renders are instant
+        transition: isExiting ? 'opacity 0.25s ease, transform 0.25s ease' : undefined,
+        cursor: enabled ? 'grab' : undefined,
+        pointerEvents: isExiting ? 'none' : undefined,
+      }}
     >
       {children}
     </div>
