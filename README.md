@@ -34,12 +34,15 @@ When the test date is in sight, you can also build a **Study Plan**: pick the le
 | **AI-generated study packages** | Each lecture becomes 20–50+ flashcards and 10–25+ board-style questions, automatically. |
 | **Three study modes** | Flashcards, full practice exams, custom multi-lecture sessions. |
 | **Study plans** | Test-date-driven schedules that show you exactly what to review today. |
+| **Lecture folders** | Drag lectures into folders for course-level or topic-level organization. |
+| **Editable topics** | Reorder, rename, add, or remove the auto-generated topics on any lecture. |
+| **Personalized greetings** | Time-aware greetings (8 buckets from morning through late night) with your display name. |
 | **Pomodoro timer** | Built-in 25/5 focus timer with a mini-pill in the header. |
-| **Three themes** | Midnight (default), pink, forest. Theme syncs across devices. |
+| **Three themes** | Midnight (default), Aurora, Forest. Theme syncs across devices. |
 | **Customizable lecture grid** | Drag-to-reorder, hide, archive, retitle, recolor, retag — it stays your shelf. |
 | **Slide viewer with lightbox** | Click any slide thumbnail to view full-screen. |
 | **Cross-device progress sync** | Mark a card "got it" on your phone, see it on your laptop. |
-| **Feedback widget** | Floating button in every page sends bugs and suggestions straight to the admin inbox. |
+| **Feedback widget** | Floating button on every page sends bugs and suggestions straight to the admin inbox. |
 | **Admin dashboard** | Cohort-wide overview: usage, costs, users, lectures, feedback, configuration. |
 
 ---
@@ -48,7 +51,7 @@ When the test date is in sight, you can also build a **Study Plan**: pick the le
 
 - **PDF** — preferred. Scanned and digital PDFs both work.
 - **PPTX** — works for text-based PowerPoints. If your PPTX is mostly images of text, you'll get a friendlier result by exporting it to PDF first (PowerPoint → File → Export → PDF).
-- **Maximum file size:** 50 MB.
+- **Maximum file size:** 50 MB (users) / 250 MB (admin accounts).
 
 Worksheets and assignment uploads (Practice-only mode) are coming in v3.
 
@@ -72,9 +75,9 @@ You can override the course assignment per lecture from the lecture's view modal
 2. **Upload your first lecture** — click **Upload** in the header, drop in the PDF or PPTX, pick the course, and click submit.
 3. **Wait ~60 seconds** while Claude processes the slides. You'll see a progress bar.
 4. **Study** — when the lecture appears on your dashboard, click **Flashcards** or **Practice Exam**.
-5. **Build a Study Plan** when a test is on the horizon — go to **Study Plans** and tell it the test date.
+5. **Build a Study Plan** when a test is on the horizon — go to **My Plans** and tell it the test date.
 
-You can change your theme any time from the settings dropdown in the header. You can also reorder, hide, and customize lectures from the **Manage Lectures** page.
+You can change your theme any time from the settings dropdown (⚙) in the header. Reorder, hide, archive, and customize lectures from the **Manage** button on the dashboard or the **My Lectures** page. Organize lectures into folders by dragging them in manage mode.
 
 ---
 
@@ -122,13 +125,14 @@ Click the floating **Feedback** button on the right edge of any page. Bug report
 
 If you're here to work on the codebase, start with:
 
+- [`CLAUDE.md`](./CLAUDE.md) — conventions, hard rules, common pitfalls, and where-to-look-for-what. **Read this first.**
+- [`CLAUDE_CODE_EXECUTION_GUIDE_V3_REVISED.md`](./CLAUDE_CODE_EXECUTION_GUIDE_V3_REVISED.md) — slice-by-slice implementation guide for in-progress v3 work.
 - [`documentation.md`](./documentation.md) — comprehensive engineer-facing reference (file audit, API reference, function registry, database reference, feature walkthroughs).
-- [`CLAUDE.md`](./CLAUDE.md) — conventions and gotchas for future Claude Code sessions and human contributors alike.
 - [`architecture.md`](./architecture.md) — high-level system design with diagrams.
 - [`recommendations.md`](./recommendations.md) — prioritized backlog of improvements (security, performance, code quality, new features).
 - [`development_plan_v3.md`](./development_plan_v3.md) — the v3 feature roadmap.
 - [`plan.md`](./plan.md) — the master plan tracking v2, v2.5, v3, and v4 progress.
-- [`decisions.md`](./decisions.md) — Architecture Decision Records.
-- [`todo.md`](./todo.md) — the living working checklist.
+- [`decisions.md`](./decisions.md) — Architecture Decision Records (ADR-001 through ADR-028+).
+- [`todo.md`](./todo.md) — the living working checklist (Now / Next / Backlog).
 
 Made with care.

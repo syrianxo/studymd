@@ -76,10 +76,11 @@ Every meaningful file in the repo, grouped by directory. For each: 1-line purpos
 | `app/login/page.tsx` | Login form (Supabase email/password) |
 | `app/pricing/page.tsx` | Pricing page (mostly static) |
 | `app/app/layout.tsx` | Authenticated user shell: Header, ToastContainer wrapper |
-| `app/app/page.tsx` | Dashboard server component: fetches user, prefs, lectures, plan; passes to `DashboardClient` |
-| `app/app/DashboardClient.tsx` | Client wrapper around `Dashboard` (passes `initialTheme`, `userName`, `isPrimary`) |
-| `app/app/lectures/page.tsx` | "My Lectures" management page (drag-reorder, hide/archive/tag, customize) |
-| `app/app/upload/page.tsx` | Upload form: client-side direct-to-Storage flow + status polling |
+| `app/app/page.tsx` | Dashboard server component: fetches user, prefs, lectures, plan, folders; passes to `DashboardClient` |
+| `app/app/DashboardClient.tsx` | Client wrapper around `Dashboard` (passes `initialTheme`, `userName`, `isPrimary`, `initialFolders`) |
+| `app/app/lectures/page.tsx` | "My Lectures" management page (drag-reorder, hide/archive/tag, customize, topic editing) |
+| `app/app/upload/page.tsx` | Upload form: client-side direct-to-Storage flow + status polling; shows 250 MB hint for admins |
+| `app/app/progress/page.tsx` | Progress page stub (placeholder for v3 Feature F5) |
 | `app/app/study/flash/page.tsx` | Flashcard session route (renders `FlashcardView`) |
 | `app/app/study/exam/page.tsx` | Exam session route (renders `ExamView`) |
 | `app/app/study/custom/page.tsx` | Custom session builder route (renders `CustomSessionModal` results) |
@@ -95,32 +96,38 @@ Every meaningful file in the repo, grouped by directory. For each: 1-line purpos
 | Group | Files |
 |---|---|
 | **Lectures** | `app/api/lectures/route.ts`, `[id]/route.ts`, `reorder/route.ts`, `settings/route.ts`, `tags/route.ts`, `[id]/flashcards/route.ts`, `[id]/flashcards/[fcId]/route.ts`, `[id]/questions/route.ts`, `[id]/questions/[qId]/route.ts`, `[id]/slides/route.ts`, `[id]/slides/[slideNum]/route.ts` |
+| **Folders** | `app/api/folders/route.ts` (GET list, POST create), `folders/[id]/route.ts` (PATCH, DELETE with cycle prevention) |
 | **Upload + Generate** | `app/api/upload/route.ts`, `upload/status/route.ts`, `generate/route.ts` |
 | **Plans** | `app/api/plans/route.ts`, `plans/[id]/route.ts` |
 | **Progress** | `app/api/progress/save/route.ts`, `progress/load/route.ts` |
 | **Profile + Preferences** | `app/api/profile/route.ts`, `profile/change-password/route.ts`, `preferences/route.ts`, `usage/route.ts` |
 | **Feedback** | `app/api/feedback/notify/route.ts` |
-| **Admin** | `app/api/admin/overview/route.ts`, `config/route.ts`, `feedback/route.ts`, `users/route.ts`, `users/create/route.ts`, `users/lectures/route.ts`, `users/progress/route.ts`, `users/theme/route.ts`, `lectures/route.ts`, `lectures/add/route.ts`, `lectures/card/route.ts`, `lectures/detail/route.ts`, `lectures/regen-id/route.ts` |
+| **Admin** | `app/api/admin/overview/route.ts`, `config/route.ts`, `feedback/route.ts`, `users/route.ts`, `users/create/route.ts`, `users/lectures/route.ts`, `users/progress/route.ts`, `users/theme/route.ts`, `lectures/route.ts`, `lectures/add/route.ts`, `lectures/card/route.ts`, `lectures/detail/route.ts`, `lectures/regen-id/route.ts`, `reprocess/[internalId]/route.ts` |
 | **Debug** | `app/api/debug/pptx-extract/route.ts` |
 
 ### 2.4 `components/` — React components
 
 | File | Size | Purpose |
 |---|---|---|
-| `Dashboard.tsx` | ~33KB | Main dashboard: filters, grid, study buttons, popovers, manage-mode toggle |
+| `Dashboard.tsx` | ~33KB | Main dashboard: FolderBar, filters, grid, study buttons, action row, manage-mode toggle |
 | `LectureGrid.tsx` | medium | Grid of `LectureCard`s; keeps `LectureViewModal` permanently mounted |
 | `LectureCard.tsx` | medium | Individual lecture tile with progress bars and three-dot menu |
-| `LectureViewModal.tsx` | ~32KB | Full-screen modal: lecture info, slides, study buttons, edit |
-| `ManageLectureCard.tsx` | ~45KB | Detailed admin/manage card: edit title, color, icon, flashcards, questions |
+| `LectureViewModal.tsx` | ~32KB | Full-screen modal: lecture info, slides, study buttons, topic editor |
+| `ManageLectureCard.tsx` | ~45KB | Detailed manage card: edit title, color, icon, topics, flashcards, questions |
 | `ManageMode.tsx` | ~19KB | Bulk-edit mode wrapper for the manage page |
-| `Header.tsx` | medium | Top nav: logo, theme picker, sign-out, settings popover |
+| `Header.tsx` | medium | Top nav: logo, desktop nav links (My Lectures / My Plans / Progress), settings gear, mobile hamburger drawer |
 | `FilterBar.tsx` | small | Course pills + tag filter + show archived/hidden toggles |
+| `FolderBar.tsx` | small | Horizontal pill row for folder navigation (All + per-folder pills + New Folder) |
+| `FolderTile.tsx` | small | Folder card shown inside `LectureGrid` when browsing a folder |
+| `FolderTree.tsx` | small | Nested folder tree for folder-picker context menus |
+| `NewFolderModal.tsx` | small | Themed modal for creating a new folder |
+| `TopicEditor.tsx` | small | dnd-kit topic reorder + add/remove; used in `LectureViewModal` and `ManageLectureCard` |
 | `UploadModal.tsx` | ~22KB | File picker + progress timeline + course/title metadata form |
-| `PomodoroTimer.tsx` | ~17KB | Context provider + UI for 25/5 pomodoro; mini-pill in header |
-| `CustomSessionModal.tsx` | medium | Build a custom flashcard or exam session across lectures |
+| `PomodoroTimer.tsx` | ~17KB | Context provider + UI for 25/5 pomodoro; collapsible pill in dashboard |
+| `CustomSessionModal.tsx` | medium | Build a custom flashcard or exam session across lectures + optional folder filter |
 | `FeedbackWidget.tsx` | ~14KB | Floating feedback button + form; exports `openFeedbackWidget()` |
 | `TodaysPlanWidget.tsx` | small | Renders today's lectures from the active study plan |
-| `ThemePicker.tsx` | small | Dropdown for theme switching (midnight/pink/forest) |
+| `ThemePicker.tsx` | small | Dropdown for theme switching (Midnight / Aurora / Forest) |
 | `TagEditor.tsx` | small | Multi-select tag input |
 | `StudyConfigManager.tsx` | medium | Pomodoro on/off, toast on/off, sound on/off |
 | `ErrorBoundary.tsx` | small | React error boundary fallback |
@@ -128,8 +135,8 @@ Every meaningful file in the repo, grouped by directory. For each: 1-line purpos
 | `SignOutButton.tsx` | small | Sign-out button (clears session) |
 | `StatsRow.tsx` | small | Aggregate stats display (cards reviewed, exams taken, streak) |
 | `Lightbox.tsx` (root) | small | Generic lightbox (separate from `study/Lightbox.tsx`) |
-| `LoginForm.tsx` | placeholder | TODO from "Workstream 3" — currently minimal |
-| `AppBootstrap.tsx` | small | One-time app bootstrap (e.g. progress online listener setup) |
+| `LoginForm.tsx` | placeholder | Placeholder — not yet implemented |
+| `AppBootstrap.tsx` | small | One-time app bootstrap (progress online listener setup) |
 
 #### `components/study/` — Study session UI
 
@@ -151,9 +158,12 @@ Every meaningful file in the repo, grouped by directory. For each: 1-line purpos
 | `supabase-middleware.ts` | 24 | `createMiddlewareClient(req, res)` for `proxy.ts` |
 | `supabase-server.ts` | 121 | Server-component client + data-fetch helpers |
 | `admin-auth.ts` | 76 | `requireAdmin()` guard, service-client factory |
-| `api-limits.ts` | 226 | Cost controls: limits, pricing, token estimation, `checkLimits()` |
+| `api-limits.ts` | ~260 | Cost controls: limits, pricing, token estimation, `checkLimits()`, `userIsAdmin()`, `ADMIN_MAX_FILE_SIZE_BYTES`, `ADMIN_DAILY_SANITY_CAP` |
+| `themes.ts` | ~35 | Theme registry: `THEME_IDS`, `ThemeId`, `THEMES`, `migrateThemeId()` (single source of truth, ADR-025) |
+| `greetings.ts` | ~80 | Time-aware greeting pools (8 buckets), `buildGreetingLine(name, isPrimary)`, session-stable daily rotation |
+| `id-generator.ts` | ~20 | `generateLectureInternalId()` — date-prefixed `lec_YYYYMMDD_xxxxxx` format |
 | `lecture-processor-prompt.ts` | 151 | Anthropic system prompt + `buildSystemWithCache()` wrapper |
-| `validate-lecture.ts` | 278 | Validates Claude's lecture JSON output |
+| `validate-lecture.ts` | 278 | Validates Claude's lecture JSON output; requires `slide_number` on every item |
 | `pptx-extractor.ts` | 257 | ZIP-parses PPTX → text per slide |
 | `slide-converter.ts` | 246 | PDF → slide image conversion + Storage upload |
 | `progress-sync.ts` | 278 | localStorage-first progress sync with offline queue |
@@ -164,22 +174,25 @@ Every meaningful file in the repo, grouped by directory. For each: 1-line purpos
 | File | Purpose |
 |---|---|
 | `useUserLectures.ts` | Fetches lectures+settings, applies theme color, exports `resolveColor`, `getSlideThumbUrl` |
+| `useFolders.ts` | Fetches and manages the user's folder tree; exports `folders`, `createFolder`, `updateFolder`, `deleteFolder`, `moveToFolder` |
 | `useProgress.ts` | Loads progress (local-first), computes mastery %, study streak, global stats |
 | `useToast.ts` | Toast queue context |
 | `useApiCall.ts` | Wrapper around `fetch` with loading/error state |
+| `useModalShell.ts` | Shared open/close + focus-trap logic for modals |
 
 ### 2.7 `types/` — Shared TypeScript types
 
 | File | Exports |
 |---|---|
-| `types/index.ts` | `Course`, `Theme`, `Lecture`, `LectureData`, `Flashcard`, `Question`, `UserLectureSettings`, `LectureWithSettings`, `UserPreferences`, `StudyPlan`, `StudySchedule`, `CreateStudyPlanInput` |
+| `types/index.ts` | `Course`, `Theme` (alias for `ThemeId`), `Lecture`, `LectureData`, `Flashcard`, `Question`, `UserLectureSettings`, `LectureWithSettings`, `UserPreferences`, `StudyPlan`, `StudySchedule`, `CreateStudyPlanInput`, `Folder` |
+| `lib/themes.ts` | `ThemeId`, `THEME_IDS`, `THEMES`, `ThemeDef`, `isValidThemeId`, `migrateThemeId` |
 
 ### 2.8 `styles/` — CSS
 
 | File | Purpose |
 |---|---|
-| `themes.css` | CSS custom properties for the three themes (midnight/pink/forest) |
-| `dashboard.css` | ~27KB; dashboard, grid, modals, header layout |
+| `themes.css` | CSS custom properties for the three themes (midnight/aurora/forest); theme-aware `::selection` |
+| `dashboard.css` | ~27KB; dashboard, grid, modals, header layout, FolderBar, action row |
 | `study.css` | ~18KB; flashcard flip animation, exam UI, timer |
 | `globals.css` | Resets, fonts, accessibility |
 
@@ -207,7 +220,7 @@ All routes live under `app/api/`. Default behavior:
 | `GET /api/lectures/[id]` | Fetch one lecture (json_data + settings) | path: `id` (internal_id) | — |
 | `PUT /api/lectures/[id]` | Update lecture metadata (admin/owner) | body: partial lecture | UPDATE `lectures` |
 | `PUT /api/lectures/reorder` | Persist drag-reorder state | body: `{ items: [{ id, display_order }] }` | UPDATE `user_lecture_settings.display_order` |
-| `PUT /api/lectures/settings` | Update per-user lecture settings (visibility, archive, color, custom_title, course_override, tags) | body: partial `UserLectureSettings` | UPSERT `user_lecture_settings` |
+| `PUT /api/lectures/settings` | Update per-user lecture settings (visibility, archive, color, custom_title, course_override, tags, topicsOverride, group_id) | body: partial `UserLectureSettings` | UPSERT `user_lecture_settings` |
 | `GET /api/lectures/tags` | Returns the user's distinct tag set | — | — |
 | `POST /api/lectures/[id]/flashcards` | Add a new flashcard | body: `{ question, answer, topic, ... }` | UPDATE `lectures.json_data.flashcards` |
 | `PUT /api/lectures/[id]/flashcards/[fcId]` | Update a single flashcard | body: partial flashcard | UPDATE `lectures.json_data.flashcards` |
@@ -288,7 +301,22 @@ All routes live under `app/api/`. Default behavior:
 | `PUT /api/admin/lectures/detail` | Update lecture detail |
 | `POST /api/admin/lectures/regen-id` | Generate a new internal_id (e.g. for collisions) |
 
-### 3.8 Debug
+### 3.8 Folders
+
+| Method + Path | Purpose | Body / Params | Side effects |
+|---|---|---|---|
+| `GET /api/folders` | List all folders for the current user | — | — |
+| `POST /api/folders` | Create a new folder | `{ name, parent_id? }` | INSERT `folders` |
+| `PATCH /api/folders/[id]` | Rename, re-parent, or reposition a folder | `{ name?, parent_id?, position? }` | UPDATE `folders`; cycle check prevents loops |
+| `DELETE /api/folders/[id]` | Delete a folder (lectures inside become unfoldered) | — | DELETE `folders`; SET `user_lecture_settings.group_id = null` |
+
+### 3.9 Admin reprocess
+
+| Method + Path | Purpose |
+|---|---|
+| `POST /api/admin/reprocess/[internalId]` | Re-run Claude on a lecture to backfill `slide_number` fields or regenerate content |
+
+### 3.10 Debug
 
 | Method + Path | Purpose |
 |---|---|
@@ -337,13 +365,39 @@ requireAdmin(): Promise<{ user, error? }>            // returns { error: 'unauth
 
 ```ts
 API_LIMITS                                           // single source of truth for caps and model selection
+ADMIN_MAX_FILE_SIZE_BYTES = 250 * 1024 * 1024        // 250 MB; admin upload cap
+ADMIN_DAILY_SANITY_CAP                               // max admin calls/day
 TOKEN_PREFLIGHT_LIMIT = API_LIMITS.TOKEN_WARNING_THRESHOLD
 MODEL_PRICING: Record<string, {...}>                 // input/output USD per token by model name
-estimateTokensFromBytes(bytes): number               // PDF-aware byte→token estimate (5K floor, 180K ceiling)
-estimateTokens(bytes): number                        // alias
-estimateCost(model, inputTokens, outputTokens, isBatch?)  // overload 1: full cost
-estimateCost(fileSizeBytes)                          // overload 2: rough pre-upload estimate
-checkLimits(userId): Promise<{ allowed, reason? }>   // daily call cap + monthly cost cap
+estimateTokensFromBytes(bytes): number               // PDF-aware byte→token estimate
+estimateCost(...)                                    // cost calculation overloads
+userIsAdmin(userId: string): Promise<boolean>        // queries user_profiles.role
+checkLimits(userId, opts?: { adminBypass }): Promise<{ allowed, reason? }>
+                                                     // daily call cap + monthly cost cap; admin bypass skips user caps
+```
+
+### 4.5a `lib/themes.ts`
+
+```ts
+THEME_IDS: readonly ['midnight', 'aurora', 'forest']
+ThemeId: 'midnight' | 'aurora' | 'forest'
+THEMES: ThemeDef[]                                   // id, label, swatch hex, glow hex
+isValidThemeId(value: unknown): value is ThemeId
+migrateThemeId(raw: string): ThemeId | null          // maps 'pink' → 'aurora'; null for unknown
+```
+
+### 4.5b `lib/greetings.ts`
+
+```ts
+buildGreetingLine(displayName: string, isPrimary: boolean): string
+                                                     // time-of-day bucket → greeting with name substitution
+                                                     // session-stable: deterministic per (userId, date) seed
+```
+
+### 4.5c `lib/id-generator.ts`
+
+```ts
+generateLectureInternalId(): string                  // returns 'lec_YYYYMMDD_xxxxxx'
 ```
 
 ### 4.6 `lib/lecture-processor-prompt.ts`
@@ -407,6 +461,14 @@ useUserLectures(): UseUserLecturesResult                                        
 getSlideThumbUrl(internalId: string, slideNumber: number): string                // builds public Storage URL
 ```
 
+### 4.12a `hooks/useFolders.ts`
+
+```ts
+Folder                                                                           // { id, user_id, name, parent_id, position }
+useFolders(): { folders, loading, createFolder, updateFolder, deleteFolder, moveToFolder }
+                                                                                 // fetches GET /api/folders; optimistic local updates
+```
+
 ### 4.13 `hooks/useProgress.ts`
 
 ```ts
@@ -433,7 +495,7 @@ useApiCall(): { call, loading, error, reset }                                   
 
 Supabase project: **`vimuhpoeuvfzpzfeorsw`** ("StudyMD"), region `us-east-2`, Postgres 17.6.
 
-15 tables in `public`. RLS enabled on all except `subscription_tiers` (security gap — see [`recommendations.md`](./recommendations.md)).
+16 tables in `public` (plus `folders`). RLS enabled on all tables. `subscription_tiers` RLS was disabled but was fixed in prereq P1 (see ADR recorded in `decisions.md`).
 
 ### 5.1 Tables in active use
 
@@ -441,18 +503,18 @@ Supabase project: **`vimuhpoeuvfzpzfeorsw`** ("StudyMD"), region `us-east-2`, Po
 Immutable lecture content registry. Written by the server at upload time.
 | Column | Type | Notes |
 |---|---|---|
-| `internal_id` | text PK | Format: `lec_<8 hex chars>` |
+| `internal_id` | text PK | Format: `lec_YYYYMMDD_xxxxxx` (ADR, `lib/id-generator.ts`) |
 | `original_file` | text | Original filename |
 | `title` | text | |
 | `subtitle` | text | |
 | `course` | text | One of the three course strings |
-| `color` | text | Hex |
 | `icon` | text | Emoji or icon name |
 | `topics` | jsonb | `string[]` |
 | `slide_count` | integer | |
-| `json_data` | jsonb | `{ flashcards: [...], questions: [...] }` |
+| `json_data` | jsonb | `{ flashcards: [...], questions: [...] }` — every item has a `slide_number` (integer) |
+| `theme_colors` | jsonb | `Record<ThemeId, hex>` — per-theme default palette colors; assigned at upload time |
 | `created_at` | timestamptz | |
-**RLS**: `lectures: authenticated users can read` (SELECT for any authenticated user). Writes are server-only via service role.
+**RLS**: `lectures: authenticated users can read` (SELECT for any authenticated user). Writes are server-only via service role. Note: `lectures.color` TEXT column was dropped in ADR-023; `theme_colors` JSONB replaced it.
 
 #### `user_lecture_settings`
 Per-user display preferences for each lecture.
@@ -463,12 +525,13 @@ Per-user display preferences for each lecture.
 | `display_order` | integer | Lower = higher in grid |
 | `visible` | boolean | |
 | `archived` | boolean | |
-| `group_id` | text | **Unused today; reserved for v3 folders** |
+| `group_id` | uuid | FK → `public.folders.id` (nullable). Assigns the lecture to a folder. |
 | `tags` | jsonb | `string[]` |
 | `course_override` | text | Overrides `lectures.course` |
-| `color_override_legacy` | text | **Deprecated** |
+| `color_override_legacy` | text | **Deprecated** — present in DB, no longer written |
 | `custom_title` | text | Overrides `lectures.title` |
-| `color_override` | jsonb | New theme-keyed color overrides (`ColorOverrideMap`) |
+| `color_override` | jsonb | Theme-keyed color overrides (`Record<ThemeId, hex>`) |
+| `topics_override` | jsonb | User-curated topic list (`string[]`) — overrides `lectures.topics` when set |
 | `updated_at` | timestamptz | |
 **RLS**: ALL with `auth.uid() = user_id`.
 
@@ -489,7 +552,7 @@ Global per-user settings synced across devices.
 | Column | Type | Notes |
 |---|---|---|
 | `user_id` | uuid PK | FK → `auth.users.id` |
-| `theme` | text | Default `'midnight'`. Note: comment in DB says "midnight, lavender, forest" but app code uses `'midnight' \| 'pink' \| 'forest'` — comment is stale |
+| `theme` | text | Default `'midnight'`. Valid values: `'midnight' \| 'aurora' \| 'forest'` (ADR-025). Stale rows with `'pink'` are migrated via `migrateThemeId()` in `lib/themes.ts`. |
 | `settings` | jsonb | Free-form |
 | `display_name` | text | **Duplicate** with `user_profiles.display_name` |
 | `updated_at` | timestamptz | |
@@ -591,13 +654,27 @@ Per-user overrides on individual flashcards/questions (e.g., the user has edited
 | `created_at` / `updated_at` | timestamptz | |
 **RLS**: own SELECT/INSERT/UPDATE/DELETE.
 
+#### `folders`
+Per-user folder tree for organizing lectures in the grid.
+| Column | Type | Notes |
+|---|---|---|
+| `id` | uuid PK | |
+| `user_id` | uuid | FK → `auth.users.id` |
+| `name` | text | Display name |
+| `parent_id` | uuid (nullable) | Self-referential FK → `folders.id`; `null` = root-level |
+| `position` | integer | Display order within parent |
+| `created_at` / `updated_at` | timestamptz | |
+**RLS**: ALL with `auth.uid() = user_id`.
+
+Lectures are assigned to folders via `user_lecture_settings.group_id` (uuid FK → `folders.id`). The API enforces cycle prevention on `parent_id` updates.
+
 ### 5.2 Tables shipped but not yet used
 
 These exist in the schema but no code references them today. They are scaffolding for v3 / v4 features.
 
 | Table | Intended use |
 |---|---|
-| `subscription_tiers` (3 rows) | Subscription tier catalog. **RLS DISABLED — security ERROR — fix before exposing** |
+| `subscription_tiers` (3 rows) | Subscription tier catalog. RLS enabled + public SELECT policy added in prereq P1. |
 | `user_subscriptions` (0 rows) | Per-user tier assignment. RLS enabled |
 | `sr_card_state` (0 rows) | Spaced-repetition state (SM-2 fields: `ease_factor`, `interval_days`, `repetitions`, `lapses`, `due_date`) |
 | `shared_decks` (0 rows) | Shareable lecture decks via `share_code` |
@@ -606,7 +683,7 @@ These exist in the schema but no code references them today. They are scaffoldin
 
 | Bucket | Public? | Limits | Path convention |
 |---|---|---|---|
-| `uploads` | Private | 50 MB max; PDF/PPTX MIME only | `uploads/<user_id>/<unix_ts>_<filename>` |
+| `uploads` | Private | 50 MB max for users; 250 MB for admins (`ADMIN_MAX_FILE_SIZE_BYTES`); PDF/PPTX MIME only | `uploads/<user_id>/<unix_ts>_<filename>` |
 | `slides` | **Public** | None | `slides/<internal_id>/slide_NN.jpg` |
 
 **RLS on `storage.objects`:**
@@ -624,7 +701,7 @@ These exist in the schema but no code references them today. They are scaffoldin
 | `update_user_card_overrides_updated_at()` | trigger | Specific to `user_card_overrides` |
 | `update_user_profiles_updated_at()` | trigger | Specific to `user_profiles` |
 
-All six functions have a `mutable search_path` flagged WARN by Supabase advisors — they should set `search_path = public, pg_temp` explicitly (see `recommendations.md`).
+All six functions had their `search_path` fixed in prereq P5 — they now set `search_path = public, pg_temp` explicitly (see `decisions.md`).
 
 ---
 
@@ -693,18 +770,19 @@ Same shape as flashcards, but in `ExamView`:
 
 This split (auth in middleware, role at page level) was adopted in commit `76f01b8` after a redirect-loop bug — the Edge runtime couldn't reliably query `user_profiles`.
 
-### 6.6 Theme + `is_primary` propagation
+### 6.6 Theme + greetings + `is_primary` propagation
 
 1. **`/app/page.tsx`** Server Component:
    - Fetches `user` via `auth.getUser()`.
    - Fetches `user_preferences` row (theme, display_name, settings).
-   - Fetches `user_profiles` row (`is_primary`).
-2. Passes `initialTheme`, `userName`, `isPrimary` props to `DashboardClient`.
+   - Fetches `user_profiles` row (`is_primary`, `display_name`).
+2. Passes `initialTheme`, `userName` (display_name from `user_profiles`), `isPrimary` props to `DashboardClient`.
 3. `DashboardClient` is a thin client wrapper that forwards props to `Dashboard`.
 4. `Dashboard.tsx`:
-   - Uses `initialTheme` to set CSS variables (`document.documentElement.style.setProperty('--smd-...')`).
-   - Uses `isPrimary` to choose a greeting source: rotating affirmations for the primary user (Haley), generic "Hi there" for others.
+   - Uses `initialTheme` to set CSS variables.
+   - Calls `buildGreetingLine(displayName, isPrimary)` from `lib/greetings.ts` to produce a time-aware greeting. Primary user gets personalized affirmations; others get generic greetings.
 5. Theme picker writes back via `PUT /api/preferences` and updates the live DOM.
+6. Aurora/Midnight/Forest themes are defined in `lib/themes.ts` and their CSS tokens in `styles/themes.css`.
 
 ### 6.7 Feedback widget → admin inbox → email
 
@@ -719,18 +797,11 @@ This split (auth in middleware, role at page level) was adopted in commit `76f01
 
 A running list of pitfalls discovered during this audit. These are documented here for visibility; fixes are tracked in [`recommendations.md`](./recommendations.md) and [`development_plan_v3.md`](./development_plan_v3.md).
 
-### 7.1 `is_primary` source-of-truth confusion
-- **Live schema** has `is_primary` on `public.user_profiles` (boolean, default false).
-- **Recent commit message** (`f784bc9`) says "fetch is_primary flag from user_preferences".
-- **Some code paths** read it from `user_preferences`, others from `user_profiles`.
-- **Resolution**: `user_profiles` is the truth. `user_preferences.is_primary` (if present) should be removed. Update `fetchUserPreferences()` accordingly.
+### 7.1 `is_primary` source-of-truth — RESOLVED
+**Live schema**: `is_primary` is on `public.user_profiles` (boolean, default false). Earlier commits fetched it from `user_preferences` — this was incorrect and has been fixed (prereq P6). All code now reads from `user_profiles.is_primary`.
 
-### 7.2 Hard-coded admin UUID in RLS
-The `api_usage: admin read only` policy is:
-```sql
-auth.uid() = '930150fc-372b-4b61-98db-10e9ee25bdc4'::uuid
-```
-Replace with the role-based pattern already used on `user_profiles`:
+### 7.2 Hard-coded admin UUID in RLS — RESOLVED
+The old `api_usage: admin read only` policy used a literal UUID. This was replaced in prereq P2 with the role-based EXISTS pattern:
 ```sql
 EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role = 'admin')
 ```
@@ -738,27 +809,27 @@ EXISTS (SELECT 1 FROM user_profiles WHERE user_id = auth.uid() AND role = 'admin
 ### 7.3 `proxy.ts` vs `middleware.ts` history
 Earlier commits (`1741f4c`) tried to use `middleware.ts`. Vercel's Next.js 16 build for this project requires `proxy.ts` (commit `5226520`). **Do not re-introduce `middleware.ts`.** This is documented in the file header of `proxy.ts:6-9`.
 
-### 7.4 No test scripts
-`package.json` has only `dev`, `build`, `start`. There are no Vitest, Jest, Playwright, or any other test config files. Adding minimal coverage for the upload + generate flow is the highest-priority test investment (see `recommendations.md`).
+### 7.4 Test scripts — RESOLVED
+`package.json` now has `typecheck`, `lint`, and `test` scripts (prereq P7). Vitest is configured in `vitest.config.ts`. The test suite is sparse; adding coverage for upload/generate remains the highest-priority investment.
 
 ### 7.5 `color_override_legacy` column
-Old TEXT-typed override column on `user_lecture_settings`. The current code writes to `color_override` (jsonb, theme-keyed). The legacy column is still present in the schema; treat it as deprecated.
+Old TEXT-typed override column on `user_lecture_settings`. The current code writes only to `color_override` (jsonb, theme-keyed). The legacy column is still present in the schema; treat it as deprecated. Drop in a future cleanup.
 
 ### 7.6 `processing_jobs` duplicated columns
 - `original_file` vs `original_filename`
 - `internal_id` vs `lecture_id`
 - `estimated_cost` vs `estimated_cost_usd`
 
-Each pair likely originates from incremental schema changes without a migrations process. Pick the more recent column in each pair (`original_filename`, `lecture_id`, `estimated_cost_usd`) and drop the other in a future cleanup.
+Each pair originates from incremental schema changes without a migrations process. The newer column in each pair is the one to use; drop the other in a future cleanup.
 
-### 7.7 Theme value comment is stale
-`user_preferences.theme` column comment says "midnight, lavender, forest". The app uses **`pink`** not `lavender`. Update the comment.
+### 7.7 Theme rename: pink → aurora (ADR-025)
+`lib/themes.ts` is the single source of truth. Theme IDs are `'midnight' | 'aurora' | 'forest'`. `'pink'` was the pre-ADR-025 id; it is migrated via `migrateThemeId()`. Any DB row still storing `'pink'` will be corrected on next preference save.
 
-### 7.8 `slides` bucket broad SELECT policy (fixed — Slice 0 P3)
-~~The `Public can read slides` policy permitted directory listing of `slides/<internal_id>/`.~~ **Fixed in Slice 0 P3 (ADR-018).** The policy was dropped; the bucket remains public for direct-URL access (slide images still load via CDN). The remaining `Users can read their own uploads` policy covers authenticated SDK reads.
+### 7.8 `slides` bucket broad SELECT policy — RESOLVED (Slice 0 P3)
+The broad SELECT that permitted directory listing was dropped in prereq P3 (ADR-018). Slide images still load via public CDN URL (`slides/<internal_id>/slide_NN.jpg`).
 
 ### 7.9 `system_config` has RLS enabled but no policy — intentional
-`system_config` RLS-on-no-policy is **intentional design** (ADR-019). No user should ever read config directly. All reads go through `GET /api/admin/config` or `GET /api/preferences` (both use the service-role client). The Supabase advisor warning is acknowledged and suppressed.
+`system_config` RLS-on-no-policy is **intentional design** (ADR-019). No user should ever read config directly; all reads go through server-side routes using the service-role client. The Supabase advisor warning is acknowledged.
 
 ### 7.10 `subscription_tiers` RLS (fixed — Slice 0 P1)
 ~~`subscription_tiers` had RLS disabled (Supabase advisor ERROR).~~ **Fixed in Slice 0 P1 (ADR-016).** RLS is now enabled with a public SELECT policy and a service-role-only ALL policy.

@@ -18,49 +18,67 @@ _(nothing active — pick next item from Next up)_
 - [x] `/api/generate`: admin bypass in local `checkRateLimits`
 - [x] `/app/upload/page.tsx`: query `user_profiles` on mount, show "max 250 MB" hint for admins
 
-### Slice 9 — F3 Lecture-grid folders
-- [x] DB migration: `folders` table + `group_id` FK upgrade (ADR-027)
+### Slice 9 — F3 Lecture-grid folders (ADR-027)
+- [x] DB migration: `folders` table + `group_id` FK upgrade
 - [x] API: `GET/POST /api/folders` + `PATCH/DELETE /api/folders/[id]` with cycle prevention
-- [x] `hooks/useFolders.ts` + `Folder` type + `FolderTile` / `FolderTree` components
-- [x] Dashboard folder state + breadcrumb + LectureGrid folder tiles
-- [x] dnd-kit drag-to-folder + CustomSessionModal folder picker
+- [x] `hooks/useFolders.ts` + `Folder` type + `FolderTile` / `FolderTree` / `FolderBar` / `NewFolderModal` components
+- [x] Dashboard FolderBar pill row (replaced folder tiles), folder navigation + breadcrumb
+- [x] dnd-kit drag-to-folder + `CustomSessionModal` folder picker
+- [x] UX polish: suppress skeleton flash on background refresh, fix layout shift on folder switch
+
+### Slice 8 — F8 Editable lecture topics (ADR-026)
+- [x] DB: `user_lecture_settings.topics_override` jsonb column
+- [x] API: `PUT /api/lectures/settings` accepts `topicsOverride`
+- [x] `TopicEditor.tsx` component with dnd-kit reorder; integrated into `LectureViewModal` and `ManageLectureCard`
+
+### Slices 6–7 — F1 Greetings + F9/F10 Header nav
+- [x] `lib/greetings.ts`: 8 time-of-day buckets, display_name substitution, session-stable
+- [x] `Header.tsx`: desktop nav with active-route styling, mobile hamburger drawer, My Lectures + My Plans + Progress links
+- [x] `/app/progress` stub page
 
 ---
 
-## ▶️ Next up (committed, not started)
+## ▶️ Next up (committed, in order)
 
-### v3 prerequisites — security, correctness, hygiene
+### Slice A2 — True background processing
+- [ ] Processing continues if user navigates away from the upload page (polling persists in background)
+- [ ] Richer progress steps — replace "Running Claude" with per-step messages (extracting, generating, validating, done)
+- [ ] See N12, N13 in `CLAUDE_CODE_EXECUTION_GUIDE_V3_REVISED.md`
 
-- [ ] **Enable RLS + policies on `subscription_tiers`** — blocks v3 Feature #2. SQL in [`recommendations.md`](./recommendations.md#11-🔴-enable-rls-on-subscription_tiers).
-- [ ] **Replace hard-coded admin UUID in `api_usage` policy** — use the `EXISTS user_profiles WHERE role='admin'` pattern. SQL in [`recommendations.md`](./recommendations.md#12-🔴-replace-hard-coded-admin-uuid-in-api_usage-policy).
-- [ ] **Tighten `slides` storage bucket SELECT policy** — currently allows directory listing. Decide between option A (drop the broad SELECT) or option B (private + signed URLs). See [`recommendations.md`](./recommendations.md#13-🔴-tighten-slides-storage-bucket-select-policy).
-- [ ] **Add `system_config` policy** — currently RLS-on, no-policy. See [`recommendations.md`](./recommendations.md#14-🔴-add-a-policy-for-system_config-or-document-the-design).
-- [ ] **Set `search_path` on all 6 SECURITY DEFINER functions** — `ensure_user_preferences`, `increment_api_usage`, `set_updated_at`, `update_study_plans_updated_at`, `update_user_card_overrides_updated_at`, `update_user_profiles_updated_at`. See [`recommendations.md`](./recommendations.md#15-🔴-set-search_path-on-the-6-public-functions).
-- [ ] **Resolve `is_primary` source-of-truth** — confirm column lives only on `user_profiles`; remove any reference to `user_preferences.is_primary` in code. See [`recommendations.md`](./recommendations.md#17-🔴-resolve-is_primary-source-of-truth-confusion).
-- [ ] **Enable HaveIBeenPwned password protection** — Supabase dashboard toggle. See [`recommendations.md`](./recommendations.md#16-🟡-enable-haveibeenpwned-leaked-password-protection).
+### Slice A3 — Admin panel additions
+- [ ] Courses section in admin (or merge into Lectures tab) — N15
+- [ ] Admin→app navigation link: easy jump from `/admin` back to `/app` dashboard — N16
 
-### Tooling
+### Slice 10 — F4 + F5 Review mode + 3-tab lecture grid
+- [ ] `slide_annotations` table + RLS + migration
+- [ ] API: `POST /api/lectures/[id]/annotate` → calls Claude, stores annotations
+- [ ] `SlideReviewView` component + `lib/slide-annotation-prompt.ts`
+- [ ] Three-tab `LectureGrid` (Review / Learn / Practice) — `Dashboard.tsx` refactor
 
-- [ ] **Add `lint`, `typecheck`, `test` scripts to `package.json`** — wire Vitest, run tsc --noEmit. See [`recommendations.md`](./recommendations.md#21-🟡-add-lint-typecheck-and-test-scripts).
-- [ ] **Adopt `supabase/migrations/` workflow** — `supabase db pull`, commit, repeat for every change. See [`recommendations.md`](./recommendations.md#18-🟡-add-a-migrations-workflow).
+### Slice F1 — Flashcard missed-only mode
+- [ ] "Review missed only" toggle in `FlashcardView` / `FlashcardConfigModal`
+- [ ] Filter deck to cards where `got_it = false` from prior session progress
 
-### v3 features (in suggested implementation order — see [`development_plan_v3.md`](./development_plan_v3.md))
+### Slice 11 — F6 Worksheet uploads (Practice-only mode)
+- [ ] `lectures.kind` column (`'lecture' | 'worksheet'`)
+- [ ] `lib/worksheet-processor-prompt.ts`
+- [ ] Upload UI: worksheet type selection; worksheet cards render as Practice Exam only (no flashcard mode)
 
-- [ ] **F1 — Per-user randomized greetings** — `lib/greetings.ts`, replace inline affirmations in `Dashboard.tsx`.
-- [ ] **F9 + F10 — Header nav + dashboard layout polish** — ship together; one UX sprint.
-- [x] **F8 — Editable lecture topics** — `topics_override` jsonb column in `user_lecture_settings`; edit UI (dnd-kit reorder) in `LectureViewModal`; inline panel in `ManageLectureCard`. See ADR-023.
-- [x] **F3 — Lecture-grid folders** — `folders` table; convert `group_id` to uuid+FK; `FolderTree` and `FolderTile` components. _(in progress — Slice 9)_
-- [ ] **F5 + F6 — Three-tab Lecture Grid + Worksheets** — adds `lectures.kind`; tabs in `Dashboard`.
-- [ ] **F4 — Review tab with AI annotations** — `slide_annotations` table; `SlideReviewView` component; new `lib/slide-annotation-prompt.ts`.
-- [ ] **F2 — Lecture-package subscriptions** — `lecture_packages` + `user_package_access`; revise `lectures` RLS.
-- [ ] **F7 — OSCE preparation (Option B first)** — `osce_cases`, `osce_checklist_items`, `osce_attempts`, `osce_attempt_scores`; `/app/osce/*`.
+### Slice 12 — F2 Lecture-package subscriptions
+- [ ] `lecture_packages` + `user_package_access` tables + RLS
+- [ ] Revise `lectures` RLS to gate on package access
+- [ ] Admin UI: assign lectures to packages; assign packages to users
 
-### v3 bug-fix bundle
+### Slice 13 — F7 OSCE preparation (Option B)
+- [ ] `osce_cases`, `osce_checklist_items`, `osce_attempts`, `osce_attempt_scores` tables + RLS
+- [ ] `/app/osce/*` pages
+- [ ] Admin: create/manage OSCE cases
 
+### Remaining bug fixes
 - [ ] **Implement or delete `LoginForm.tsx`** — it's a placeholder.
 - [ ] **Render `planNextReview` / `planTestDate` badges on `LectureCard`** — props are passed but unused.
-- [ ] **One-time backfill: `lectures.slide_count`** — to stop the wasteful slide-count probing.
-- [ ] **Decide fate of unused tables** — `sr_card_state`, `shared_decks`. Implement (per recommendations §6.1, §6.2) or drop.
+- [ ] **One-time backfill: `lectures.slide_count`** — stop wasteful slide-count probing.
+- [ ] **Decide fate of unused tables** — `sr_card_state`, `shared_decks`. Implement or drop.
 
 ---
 
@@ -125,21 +143,20 @@ _(nothing active — pick next item from Next up)_
 
 ---
 
-## ✅ Recently completed
+## ✅ Recently completed (v3 slices 0–9 + A1)
 
-- [x] **Slice 8 — F8 editable lecture topics** — `topics_override jsonb` DB column, `PUT /api/lectures/settings` topicsOverride field, dnd-kit topic editor in `LectureViewModal`, inline panel in `ManageLectureCard`. ADR-026.
-- [x] **Slice 5, Fix #11 — internal_id** — extracted `generateLectureInternalId()` into [`lib/id-generator.ts`](./lib/id-generator.ts) with date-prefixed format `lec_YYYYMMDD_xxxxxx`. Updated [`/api/upload`](./app/api/upload/route.ts) and regen-id validator. DB audit: all 17 existing lectures already have IDs set, no backfill needed.
-- [x] **Slice 5, Fix #9 — slide_number** — added `slide_number` (required positive integer) to flashcard + question schema in [`lib/lecture-processor-prompt.ts`](./lib/lecture-processor-prompt.ts) and validator in [`lib/validate-lecture.ts`](./lib/validate-lecture.ts). Missing slide_number now fails validation → triggers Sonnet fallback. Added [`POST /api/admin/reprocess/[internalId]`](./app/api/admin/reprocess/[internalId]/route.ts) to backfill existing 17 lectures (run each one to get slide refs).
-- [x] **Slice 3 — Kebab menu correctness** — Removed spurious `[menuRef.current]` useEffect causing menu position jump on click; added `onMouseEnter` hover-to-expand on Change Course / Change Color submenus. Commits `fix(kebab)`.
-- [x] **N10 — Color persistence** — `Dashboard.handleChangeColor` now calls `refetch()`; `LectureViewModal` triggers `onChangeColor` after API success; ManageMode closing also calls `refetch()`. Color changes from all entry points now persist.
-- [x] **iOS modal flexbox fixes** — `FlashcardConfigModal`, `ExamConfigModal`, `CustomSessionModal` converted from `position:sticky` to flexbox column layout. Close `[X]` always visible on real iOS Safari.
-- [x] **Mobile lecture section header** — single-row on ≤479px (`flex-wrap: nowrap`); filter pills horizontal-scroll on ≤639px; Archived toggle only in Manage Mode.
-- [x] **Theme palette upgrade** — Pink = pinks/purples/reds; Forest = greens/browns/yellows; Midnight keeps blues/purples. Consistent across `ManageLectureCard`, `LectureViewModal`.
-- [x] **Per-theme lecture default colors** — Added `theme_colors` JSONB column to `lectures` table; seeded palette-cycled defaults for all existing lectures; cleared `user_lecture_settings.color_override` for fresh start. `resolveColor()` now: `color_override[theme]` → `theme_colors[theme]` → `var(--accent)`. Dropped legacy `lectures.color` TEXT column.
-- [x] **4.4 Admin "click to edit" removed** — Admin sidebar name now links to `/app/profile` instead of opening a redundant in-admin modal. "Click to edit ✏️" label text removed.
-- [x] **Aurora rename + theme registry** — `lib/themes.ts` created as single source of truth; `pink` theme id renamed to `aurora` across all 9 files, CSS, and DB; `migrateThemeId('pink')` → `'aurora'` handles stale localStorage values. ADR-025.
-- [x] **Slice 4 complete (4.1/4.3/4.2/4.5)** — Mobile dashboard padding reduced to 16px gutter; theme-aware `::selection` added to `themes.css`; profile page "Lavender" → "Pink"/"Aurora" with correct preview swatch colors; filter bar horizontal-scroll cleanup pass verified.
-- [x] Comprehensive documentation pass — README, CLAUDE.md, architecture.md, documentation.md, recommendations.md, development_plan_v3.md, decisions.md, todo.md (this file).
+- [x] **Prereqs P1–P8** — RLS on `subscription_tiers` (P1), role-based admin policy for `api_usage` (P2), `slides` bucket tightened (P3), `system_config` policy (P4), `search_path` on 6 SECURITY DEFINER functions (P5), `is_primary` source-of-truth confirmed on `user_profiles` (P6), Vitest + lint + typecheck scripts (P7), `supabase/migrations/` workflow (P8).
+- [x] **Slices 1+CSS — Dashboard simplification + mobile CSS** — display_name greeting, centered hero, two-column plan/timer layout, action row (Upload + Custom Session + Manage pencil), iOS Safari header banner fixes, mobile header refinements.
+- [x] **Slice 3 — Kebab menu correctness** — removed spurious `useEffect` causing menu shift; hover-to-expand submenus for Change Course / Change Color.
+- [x] **N10 — Color persistence** — `Dashboard.handleChangeColor` calls `refetch()`; `LectureViewModal` triggers `onChangeColor` after API success.
+- [x] **Slice 4 — Mobile + global polish** — iOS modal flexbox fixes (FlashcardConfigModal, ExamConfigModal, CustomSessionModal), mobile section header single-row, filter pills horizontal-scroll, theme-aware `::selection`, profile page Aurora label.
+- [x] **Aurora rename (ADR-025)** — `lib/themes.ts` single source of truth; `pink` → `aurora` across all files + DB; `migrateThemeId()` handles stale values.
+- [x] **Per-theme lecture colors** — `lectures.theme_colors` JSONB; dropped legacy `lectures.color` TEXT; `resolveColor()` priority: override → default → `var(--accent)`.
+- [x] **Slice 5 — Slide ref + internal_id** — `slide_number` required in prompt + validator; `generateLectureInternalId()` in `lib/id-generator.ts`; admin reprocess endpoint.
+- [x] **Slices 6–7 — F1 Greetings + F9/F10 Header nav** — `lib/greetings.ts`, 8 time-of-day buckets; desktop nav with active-route styling; mobile hamburger drawer; `/app/progress` stub.
+- [x] **Slice 8 — F8 Topic editing (ADR-026)** — `user_lecture_settings.topics_override` jsonb, `TopicEditor.tsx`, integrated into `LectureViewModal` + `ManageLectureCard`.
+- [x] **Slice 9 — F3 Folders (ADR-027)** — `folders` table; `useFolders.ts`; `FolderBar` + `FolderTile` + `FolderTree` + `NewFolderModal`; drag-to-folder; folder picker in `CustomSessionModal`.
+- [x] **Slice A1 — Admin upload bypass (ADR-028)** — 250 MB cap for admins; `userIsAdmin()`; `ADMIN_DAILY_SANITY_CAP`.
 
 ---
 
