@@ -374,6 +374,22 @@ const cardCss = `
 .lc-ctx-item.danger { color: #f87171; }
 .lc-ctx-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 2px 0; }
 @media (max-width: 639px) { .lc-ctx-item { min-height: 44px; font-size: 14px; padding: 10px 18px; } }
+
+/* ── Inline topic editor ──────────────────────────────────────────────────── */
+.lc-topic-editor { margin-top: 10px; padding: 10px 12px; background: var(--surface2, #1a1e27); border: 1px solid var(--border, rgba(255,255,255,0.08)); border-radius: 10px; display: flex; flex-direction: column; gap: 6px; }
+.lc-topic-editor-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.lc-topic-editor-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted, #6b7280); font-weight: 700; }
+.lc-topic-editor-actions { display: flex; gap: 6px; }
+.lc-topic-cancel-btn { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 500; color: var(--text-muted, #6b7280); background: none; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 3px 8px; cursor: pointer; min-height: 28px; }
+.lc-topic-save-btn { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 600; color: #fff; background: var(--accent, #5b8dee); border: 1px solid var(--accent, #5b8dee); border-radius: 6px; padding: 3px 10px; cursor: pointer; min-height: 28px; }
+.lc-topic-save-btn:disabled { opacity: 0.55; cursor: default; }
+.lc-topic-row { display: flex; align-items: center; gap: 6px; }
+.lc-topic-input { flex: 1; font-family: 'Outfit', sans-serif; font-size: 12px; background: var(--surface, #13161d); border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: 5px 8px; color: var(--text, #e8eaf0); outline: none; min-height: 32px; }
+.lc-topic-input:focus { border-color: var(--accent, #5b8dee); }
+.lc-topic-delete { background: none; border: none; color: var(--text-muted, #6b7280); cursor: pointer; font-size: 13px; padding: 4px 6px; border-radius: 4px; min-width: 28px; min-height: 32px; display: flex; align-items: center; justify-content: center; transition: color 0.15s, background 0.15s; }
+.lc-topic-delete:hover { color: #f87171; background: rgba(248,113,113,0.1); }
+.lc-topic-add-btn { font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500; color: var(--accent, #5b8dee); background: rgba(91,141,238,0.1); border: 1px solid rgba(91,141,238,0.2); border-radius: 6px; padding: 4px 8px; cursor: pointer; white-space: nowrap; min-height: 32px; flex-shrink: 0; }
+.lc-topic-add-btn:disabled { opacity: 0.4; cursor: default; }
 `;
 
 // ─── Lightbox ─────────────────────────────────────────────────────────────────
@@ -647,12 +663,13 @@ interface KebabMenuProps {
   activeTheme: string;
   onHide: () => void; onArchive: () => void; onRestore: () => void;
   onEditTags: () => void;
+  onEditTopics: () => void;
   onChangeCourse: (course: Course) => void;
   onChangeColor: (color: string) => void;
   onClose: () => void;
 }
 
-function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRestore, onEditTags, onChangeCourse, onChangeColor, onClose }: KebabMenuProps) {
+function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRestore, onEditTags, onEditTopics, onChangeCourse, onChangeColor, onClose }: KebabMenuProps) {
   const [showCourse, setShowCourse] = useState(false);
   const [showColor, setShowColor] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -712,6 +729,10 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
           <button className="lc-menu-item" onClick={onEditTags} role="menuitem"><span>🏷</span> Edit Tags</button>
         </div>
       </div>
+
+      <div className="lc-menu-row"><div className="lc-menu-row-inner">
+        <button className="lc-menu-item" onClick={() => { onEditTopics(); onClose(); }} role="menuitem"><span>📋</span> Edit Topics</button>
+      </div></div>
 
       <div className="lc-menu-row"
         onMouseEnter={() => { setShowCourse(true); setShowColor(false); }}>
@@ -803,6 +824,7 @@ interface LectureCardProps {
   onChangeCourse: (course: Course) => void;
   onChangeColor: (color: string) => void;
   onRenameTitle?: (title: string) => void;
+  onTopicsSaved?: () => void;
 }
 
 export function ManageLectureCard({
@@ -811,6 +833,7 @@ export function ManageLectureCard({
   onOpen, onFlashcards, onExam,
   onHide, onArchive, onRestore, onEditTags,
   onChangeCourse, onChangeColor, onRenameTitle,
+  onTopicsSaved,
 }: LectureCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [kebabRect, setKebabRect] = useState<DOMRect | null>(null);
@@ -824,6 +847,12 @@ export function ManageLectureCard({
 
   const [localColor, setLocalColor] = useState<string | null>(null);
   const [localCourse, setLocalCourse] = useState<Course | null>(null);
+
+  // Inline topic editor state (triggered from kebab "Edit Topics")
+  const [isEditingTopics, setIsEditingTopics] = useState(false);
+  const [editTopics, setEditTopics] = useState<string[]>([]);
+  const [newTopicInput, setNewTopicInput] = useState('');
+  const [topicSaving, setTopicSaving] = useState(false);
   // Track whether local overrides were set by user interaction (not prop change)
   const localColorSet = useRef(false);
   useEffect(() => {
@@ -841,6 +870,35 @@ export function ManageLectureCard({
     onChangeColor(c);
   }, [onChangeColor]);
   const handleChangeCourse = useCallback((c: Course) => { setLocalCourse(c); onChangeCourse(c); }, [onChangeCourse]);
+
+  function openTopicEditor() {
+    // Compute display topics: settings override ?? base topics
+    const display = (lecture.settings.topics_override != null
+      ? lecture.settings.topics_override
+      : lecture.topics) ?? [];
+    setEditTopics([...display]);
+    setNewTopicInput('');
+    setIsEditingTopics(true);
+  }
+
+  async function saveTopics() {
+    setTopicSaving(true);
+    try {
+      const values = editTopics.map(t => t.trim()).filter(Boolean);
+      await fetch('/api/lectures/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          internalId: lecture.internal_id,
+          updates: { topicsOverride: values.length > 0 ? values : null },
+        }),
+      });
+      setIsEditingTopics(false);
+      onTopicsSaved?.();
+    } finally {
+      setTopicSaving(false);
+    }
+  }
 
   type CtxMode = { x: number; y: number; showColor: boolean; showCourse: boolean; showVisibility: boolean } | null;
   const [ctxMenu, setCtxMenu] = useState<CtxMode>(null);
@@ -946,6 +1004,7 @@ export function ManageLectureCard({
             activeTheme={activeTheme}
             onHide={onHide} onArchive={onArchive} onRestore={onRestore}
             onEditTags={onEditTags}
+            onEditTopics={openTopicEditor}
             onChangeCourse={handleChangeCourse} onChangeColor={handleChangeColor}
             onClose={() => setMenuOpen(false)}
           />
@@ -1019,6 +1078,55 @@ export function ManageLectureCard({
         {lecture.settings.tags.length > 0 && (
           <div className="lc-tags" aria-label="Tags">
             {lecture.settings.tags.map(tag => <span key={tag} className="lc-tag">{tag}</span>)}
+          </div>
+        )}
+
+        {/* ── Inline topic editor (manage mode kebab → Edit Topics) ── */}
+        {isEditingTopics && (
+          <div className="lc-topic-editor" onClick={(e) => e.stopPropagation()}>
+            <div className="lc-topic-editor-header">
+              <span className="lc-topic-editor-label">Edit Topics</span>
+              <div className="lc-topic-editor-actions">
+                <button className="lc-topic-cancel-btn" onClick={() => setIsEditingTopics(false)}>Cancel</button>
+                <button className="lc-topic-save-btn" onClick={saveTopics} disabled={topicSaving}>
+                  {topicSaving ? 'Saving…' : 'Save'}
+                </button>
+              </div>
+            </div>
+            {editTopics.map((t, i) => (
+              <div key={i} className="lc-topic-row">
+                <input
+                  className="lc-topic-input"
+                  value={t}
+                  onChange={(e) => setEditTopics(prev => prev.map((p, j) => j === i ? e.target.value : p))}
+                  onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+                />
+                <button
+                  className="lc-topic-delete"
+                  onClick={() => setEditTopics(prev => prev.filter((_, j) => j !== i))}
+                  aria-label="Remove topic"
+                >✕</button>
+              </div>
+            ))}
+            <div className="lc-topic-row lc-topic-add-row">
+              <input
+                className="lc-topic-input"
+                placeholder="Add topic…"
+                value={newTopicInput}
+                onChange={(e) => setNewTopicInput(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newTopicInput.trim()) {
+                    setEditTopics(prev => [...prev, newTopicInput.trim()]);
+                    setNewTopicInput('');
+                  }
+                }}
+              />
+              <button
+                className="lc-topic-add-btn"
+                onClick={() => { if (newTopicInput.trim()) { setEditTopics(prev => [...prev, newTopicInput.trim()]); setNewTopicInput(''); } }}
+                disabled={!newTopicInput.trim()}
+              >+ Add</button>
+            </div>
           </div>
         )}
 

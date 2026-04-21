@@ -6,7 +6,7 @@
 
 ## 🚧 Now (in flight)
 
-_(Aurora rename + theme registry complete — see Recently Completed. Next: v3 prerequisites or v3 features.)_
+_(Slice 8 — Editable topics shipped; moving to next slice)_
 
 ---
 
@@ -31,7 +31,7 @@ _(Aurora rename + theme registry complete — see Recently Completed. Next: v3 p
 
 - [ ] **F1 — Per-user randomized greetings** — `lib/greetings.ts`, replace inline affirmations in `Dashboard.tsx`.
 - [ ] **F9 + F10 — Header nav + dashboard layout polish** — ship together; one UX sprint.
-- [ ] **F8 — Editable lecture topics** — adds `topics_override` jsonb column; UI in `LectureViewModal` and `ManageLectureCard`.
+- [x] **F8 — Editable lecture topics** — `topics_override` jsonb column in `user_lecture_settings`; edit UI (dnd-kit reorder) in `LectureViewModal`; inline panel in `ManageLectureCard`. See ADR-023.
 - [ ] **F3 — Lecture-grid folders** — `folders` table; convert `group_id` to uuid+FK; `FolderTree` and `FolderTile` components.
 - [ ] **F5 + F6 — Three-tab Lecture Grid + Worksheets** — adds `lectures.kind`; tabs in `Dashboard`.
 - [ ] **F4 — Review tab with AI annotations** — `slide_annotations` table; `SlideReviewView` component; new `lib/slide-annotation-prompt.ts`.
@@ -110,6 +110,7 @@ _(Aurora rename + theme registry complete — see Recently Completed. Next: v3 p
 
 ## ✅ Recently completed
 
+- [x] **Slice 8 — F8 editable lecture topics** — `topics_override jsonb` DB column, `PUT /api/lectures/settings` topicsOverride field, dnd-kit topic editor in `LectureViewModal`, inline panel in `ManageLectureCard`. ADR-026.
 - [x] **Slice 5, Fix #11 — internal_id** — extracted `generateLectureInternalId()` into [`lib/id-generator.ts`](./lib/id-generator.ts) with date-prefixed format `lec_YYYYMMDD_xxxxxx`. Updated [`/api/upload`](./app/api/upload/route.ts) and regen-id validator. DB audit: all 17 existing lectures already have IDs set, no backfill needed.
 - [x] **Slice 5, Fix #9 — slide_number** — added `slide_number` (required positive integer) to flashcard + question schema in [`lib/lecture-processor-prompt.ts`](./lib/lecture-processor-prompt.ts) and validator in [`lib/validate-lecture.ts`](./lib/validate-lecture.ts). Missing slide_number now fails validation → triggers Sonnet fallback. Added [`POST /api/admin/reprocess/[internalId]`](./app/api/admin/reprocess/[internalId]/route.ts) to backfill existing 17 lectures (run each one to get slide refs).
 - [x] **Slice 3 — Kebab menu correctness** — Removed spurious `[menuRef.current]` useEffect causing menu position jump on click; added `onMouseEnter` hover-to-expand on Change Course / Change Color submenus. Commits `fix(kebab)`.

@@ -140,10 +140,12 @@ export default function Dashboard({
       course_override: lecture.course_override ?? null,
       color_override: lecture.color_override ?? null,
       custom_title: lecture.custom_title ?? null,
+      topics_override: lecture.topics_override ?? null,
     },
     display_title: lecture.custom_title ?? lecture.title,
     display_course: (lecture.course_override ?? lecture.course) as Course,
     display_color:  resolveColor(lecture, theme),
+    display_topics: lecture.display_topics ?? lecture.topics ?? [],
   }), [userId, theme]);
 
   function handleStartFlash(lectureId: string) {
