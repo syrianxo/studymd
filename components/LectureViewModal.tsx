@@ -6,9 +6,11 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
+import { useModalShell } from '@/hooks/useModalShell';
 import { createPortal } from 'react-dom';
 import { createClient } from '@/lib/supabase';
 import Lightbox from './Lightbox';
+import { TopicEditor } from './TopicEditor';
 import type { Lecture } from '@/hooks/useUserLectures';
 import { resolveColor } from '@/hooks/useUserLectures';
 import type { Flashcard, Course, Theme, StudyPlan } from '@/types';
@@ -29,6 +31,13 @@ interface LectureViewModalProps {
   onRenameTitle?: (title: string) => void;
   onHide?: () => void;
   onArchive?: () => void;
+  /** Called after the user saves topic edits so the parent can update its lecture list. */
+  onTopicsChanged?: (override: string[] | null) => void;
+  /** Folder name + icon for the folder chip (shown when lecture is in a folder) */
+  folderName?: string;
+  folderIcon?: string;
+  /** Remove from folder — shown as × on the folder chip */
+  onRemoveFromFolder?: () => void;
 }
 
 const PRESET_COLORS = [
@@ -37,9 +46,9 @@ const PRESET_COLORS = [
 ];
 
 const THEME_COLORS: Record<string, string[]> = {
-  midnight: ['#5b8dee', '#8b5cf6', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#06b6d4', '#84cc16'],
-  pink:     ['#f472b6', '#c084fc', '#34d399', '#fbbf24', '#fb7185', '#e879f9', '#67e8f9', '#a3e635'],
-  forest:   ['#34d399', '#6ee7b7', '#38bdf8', '#fbbf24', '#f87171', '#a78bfa', '#22d3ee', '#bef264'],
+  midnight: ['#5b8dee', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#a855f7'],
+  pink:     ['#f472b6', '#ec4899', '#db2777', '#e879f9', '#c084fc', '#a855f7', '#fb7185', '#f43f5e'],
+  forest:   ['#10b981', '#34d399', '#84cc16', '#65a30d', '#f59e0b', '#d97706', '#b45309', '#78716c'],
 };
 
 const COURSES: Course[] = [
@@ -55,11 +64,13 @@ type SlideState = 'loading' | 'loaded' | 'empty';
 function useSlides(internalId: string, slideCount: number) {
   const [urls, setUrls] = useState<string[]>([]);
   const [state, setState] = useState<SlideState>('loading');
-  const loaded = useRef(false);
 
   useEffect(() => {
-    if (loaded.current) return;
-    loaded.current = true;
+    // No lecture selected yet — nothing to load
+    if (!internalId) { setState('empty'); return; }
+    setState('loading');
+    setUrls([]);
+    let cancelled = false;
     async function load() {
       const supabase = createClient();
       // If slide_count is 0/null (common for migrated lectures), probe up to 200
@@ -70,12 +81,14 @@ function useSlides(internalId: string, slideCount: number) {
         const { data } = supabase.storage.from('slides').getPublicUrl(path);
         if (data?.publicUrl) built.push(data.publicUrl);
       }
+      if (cancelled) return;
       if (built.length === 0) { setState('empty'); return; }
       // Probe the first URL to confirm slides actually exist in storage
       try {
         const res = await fetch(built[0], { method: 'HEAD' });
+        if (cancelled) return;
         if (!res.ok) { setState('empty'); return; }
-      } catch { setState('empty'); return; }
+      } catch { if (!cancelled) setState('empty'); return; }
       // If slide_count was 0, also probe the end to find real count
       if (!slideCount || slideCount === 0) {
         // Binary-search the actual last slide — stop at first 404
@@ -88,13 +101,14 @@ function useSlides(internalId: string, slideCount: number) {
             if (r.ok) { lo = mid; } else { hi = mid - 1; }
           } catch { hi = mid - 1; }
         }
-        setUrls(built.slice(0, lo));
+        if (!cancelled) setUrls(built.slice(0, lo));
       } else {
-        setUrls(built);
+        if (!cancelled) setUrls(built);
       }
-      setState('loaded');
+      if (!cancelled) setState('loaded');
     }
     load();
+    return () => { cancelled = true; };
   }, [internalId, slideCount]);
 
   return { urls, state };
@@ -160,22 +174,21 @@ export default function LectureViewModal({
   lecture, isOpen, activeTheme, flashcardProgress, examProgress,
   onClose, onFlashcards, onExam,
   onChangeColor, onChangeCourse, onRenameTitle,
-  onHide, onArchive,
+  onHide, onArchive, onTopicsChanged,
+  folderName, folderIcon = '📁', onRemoveFromFolder,
 }: LectureViewModalProps) {
-  // Guard: nothing to render if no lecture has ever been opened
-  if (!lecture) return null;
-
-  // Capture stable references before hooks so TypeScript knows these are non-null
-  const lectureId       = lecture.internal_id;
-  const lectureSubtitle = lecture.subtitle ?? '';
-
-  const color = resolveColor(lecture, activeTheme);
-  const title = lecture.custom_title ?? lecture.title;
-  const course = (lecture.course_override ?? lecture.course) as Course;
-  const topics = lecture.topics ?? [];
-  const flashcards = lecture.json_data?.flashcards ?? [];
+  // Derive values null-safely so every hook below is called unconditionally.
+  // The early-return guard lives AFTER the hooks (React Rules of Hooks).
+  const lectureId       = lecture?.internal_id ?? '';
+  const lectureSubtitle = lecture?.subtitle ?? '';
+  const color = lecture ? resolveColor(lecture, activeTheme) : '#5b8dee';
+  const title = lecture?.custom_title ?? lecture?.title ?? '';
+  const course = ((lecture?.course_override ?? lecture?.course) ?? '') as Course;
+  // Use per-user display_topics override if set, otherwise fall back to shared topics
+  const topics = lecture?.display_topics ?? lecture?.topics ?? [];
+  const flashcards = lecture?.json_data?.flashcards ?? [];
   const fcLen = flashcards.length;
-  const qLen = ((lecture.json_data as any)?.questions ?? []).length;
+  const qLen = ((lecture?.json_data as any)?.questions ?? []).length;
 
   const [localSubtitle, setLocalSubtitle] = useState(lectureSubtitle);
   const [isEditingSubtitle, setIsEditingSubtitle] = useState(false);
@@ -190,6 +203,9 @@ export default function LectureViewModal({
   const overlayRef = useRef<HTMLDivElement>(null);
   const titleInputRef = useRef<HTMLInputElement>(null);
 
+  // ── Topic editor ──────────────────────────────────────────────────────────
+  const [topicEditorOpen, setTopicEditorOpen] = useState(false);
+
   // Sync local state when lecture changes
   useEffect(() => { setLocalTitle(title); }, [title]);
   useEffect(() => { setLocalSubtitle(lectureSubtitle); }, [lectureSubtitle]);
@@ -198,21 +214,27 @@ export default function LectureViewModal({
   // This prevents the jarring re-render/flicker caused by refetch() in Dashboard.
   useEffect(() => { setLocalColor(color); }, [lectureId]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Lock background scroll while modal is open (handles iOS rubber-band too)
+  useModalShell(isOpen);
+
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && lightboxIdx === null && !isEditingTitle) onClose();
     };
     document.addEventListener('keydown', onKey);
-    document.body.style.overflow = 'hidden';
-    return () => { document.removeEventListener('keydown', onKey); document.body.style.overflow = ''; };
+    return () => { document.removeEventListener('keydown', onKey); };
   }, [isOpen, lightboxIdx, isEditingTitle, onClose]);
+
+  const { urls: slideUrls, state: slideState } = useSlides(lectureId, lecture?.slide_count ?? 0);
+  const planInfo = usePlanInfo(lectureId, isOpen);
+
+  // Guard: nothing to render if no lecture has ever been opened.
+  // Must come AFTER all hooks so the hook call count stays constant.
+  if (!lecture) return null;
 
   function handleClose() { onClose(); }
   function handleStudyAction(action: () => void) { action(); onClose(); }
-
-  const { urls: slideUrls, state: slideState } = useSlides(lectureId, lecture.slide_count ?? 0);
-  const planInfo = usePlanInfo(lectureId, isOpen);
 
   // Editable title (fix #5)
   function handleTitleSave() {
@@ -353,6 +375,23 @@ export default function LectureViewModal({
               )}
             </div>
           </div>
+
+          {/* Folder tag — shown when lecture is assigned to a folder */}
+          {folderName && (
+            <div style={{ marginTop: 8 }}>
+              <span className="lvm-folder-chip">
+                {folderIcon} {folderName}
+                {onRemoveFromFolder && (
+                  <button
+                    className="lvm-folder-chip-remove"
+                    onClick={onRemoveFromFolder}
+                    title="Remove from folder"
+                    aria-label="Remove from folder"
+                  >×</button>
+                )}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* ── Progress ── */}
@@ -394,16 +433,33 @@ export default function LectureViewModal({
           </button>
         </div>
 
-        {/* ── Topics (fix #4) ── */}
+        {/* ── Topics ── */}
         {topics.length > 0 && (
-          <>
-            <div className="lvm-section-label">Topics</div>
+          <div>
+            <div className="lvm-section-row">
+              <div className="lvm-section-label">Topics</div>
+              <button className="lvm-edit-topics-btn" onClick={() => setTopicEditorOpen(true)}>Edit</button>
+            </div>
             <div className="lvm-topics">
-              {topics.map(t => (
-                <span key={t} className="lvm-topic-chip">{t}</span>
+              {topics.map((t, i) => (
+                <span key={i} className="lvm-topic-chip">{t}</span>
               ))}
             </div>
-          </>
+          </div>
+        )}
+
+        {topicEditorOpen && (
+          <TopicEditor
+            internalId={lectureId}
+            lectureTitle={title}
+            currentTopics={lecture.topics_override ?? null}
+            originalTopics={lecture.topics}
+            onSave={(override) => {
+              setTopicEditorOpen(false);
+              onTopicsChanged?.(override);
+            }}
+            onClose={() => setTopicEditorOpen(false)}
+          />
         )}
 
         {/* ── Slide Deck ── */}
@@ -468,12 +524,11 @@ export default function LectureViewModal({
                 style={{ background: c }}
                 onClick={() => {
                   setLocalColor(c);
-                  // Send theme-keyed colorOverride so other themes' colors are preserved
                   fetch('/api/lectures/settings', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ internalId: lectureId, updates: { colorOverride: { [activeTheme]: c } } }),
-                  }).catch(console.error);
+                  }).then(() => onChangeColor?.(c)).catch(console.error);
                 }}
                 aria-label={`Color ${c}`}
               />
@@ -520,7 +575,8 @@ const modalCss = `
   border: 1px solid var(--border-bright, rgba(255,255,255,0.15));
   border-radius: 20px 20px 0 0;
   padding: 12px 20px 28px; width: 100%; max-width: 640px;
-  max-height: 92vh; overflow-y: auto;
+  max-height: 92vh; max-height: 92dvh; overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
   transform: translateY(40px);
   transition: transform 0.3s cubic-bezier(0.34, 1.2, 0.64, 1);
   scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent;
@@ -615,8 +671,38 @@ const modalCss = `
 .lvm-btn-sub { font-size: 10px; color: var(--text-muted); }
 
 /* Topics */
+.lvm-section-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.lvm-section-row .lvm-section-label { margin-bottom: 0; }
+.lvm-edit-topics-btn { font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 500; color: var(--accent); background: rgba(91,141,238,0.1); border: 1px solid rgba(91,141,238,0.2); border-radius: 6px; padding: 3px 10px; cursor: pointer; transition: background 0.15s; min-height: 28px; }
+.lvm-edit-topics-btn:hover { background: rgba(91,141,238,0.18); }
 .lvm-topics { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
 .lvm-topic-chip { font-size: 11px; color: var(--text-dim); background: var(--surface2); border: 1px solid var(--border); padding: 4px 10px; border-radius: 50px; font-family: 'Outfit', sans-serif; }
+
+/* Folder chip — shown below course badge */
+.lvm-folder-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-dim);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 3px 8px 3px 10px;
+  border-radius: 50px;
+}
+.lvm-folder-chip-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1;
+  padding: 0 1px;
+  margin-left: 1px;
+  transition: color 0.1s;
+}
+.lvm-folder-chip-remove:hover { color: #ef5350; }
 
 /* Slide strip */
 .lvm-slide-strip { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; -webkit-overflow-scrolling: touch; margin-bottom: 4px; }

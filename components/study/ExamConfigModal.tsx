@@ -3,6 +3,7 @@
 // components/study/ExamConfigModal.tsx
 
 import { useState, useEffect, useRef } from 'react';
+import { useModalShell } from '@/hooks/useModalShell';
 import type { ExamQuestion, QuestionType } from './ExamView';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -53,10 +54,10 @@ const CSS = `
   border-radius: 20px;
   box-shadow: 0 24px 64px rgba(0,0,0,0.6);
   width: 100%; max-width: 540px;
-  max-height: 90vh; overflow-y: auto;
+  max-height: 90vh; max-height: 90dvh;
+  overflow: hidden;
+  display: flex; flex-direction: column;
   animation: ecm-slide-up 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.1) transparent;
 }
 @keyframes ecm-slide-up {
   from { opacity: 0; transform: translateY(16px) scale(0.98); }
@@ -64,8 +65,11 @@ const CSS = `
 }
 
 .ecm-header {
+  flex-shrink: 0;
   padding: 24px 24px 0;
+  background: var(--surface, #13161d);
   display: flex; align-items: flex-start; gap: 14px;
+  border-radius: 20px 20px 0 0;
 }
 .ecm-icon-wrap {
   width: 48px; height: 48px; border-radius: 12px;
@@ -93,16 +97,17 @@ const CSS = `
 .ecm-close-btn {
   background: none; border: none; cursor: pointer;
   color: var(--text-muted, #6b7280); font-size: 18px;
-  padding: 4px; border-radius: 6px; line-height: 1;
+  padding: 4px; border-radius: 8px; line-height: 1;
   transition: color 0.15s, background 0.15s;
-  min-width: 32px; min-height: 32px;
+  min-width: 44px; min-height: 44px;
   display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
 }
 .ecm-close-btn:hover { color: var(--text, #e8eaf0); background: rgba(255,255,255,0.07); }
 
-.ecm-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0 0; }
+.ecm-divider { flex-shrink: 0; height: 1px; background: rgba(255,255,255,0.06); margin: 20px 0 0; }
 
-.ecm-body { padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 24px; }
+.ecm-body { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 24px; scrollbar-width: thin; scrollbar-color: rgba(255,255,255,0.1) transparent; }
 
 .ecm-section-label {
   font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em;
@@ -215,6 +220,7 @@ const CSS = `
 
 /* Footer */
 .ecm-footer {
+  flex-shrink: 0;
   padding: 0 24px 24px;
   display: flex; align-items: center; justify-content: space-between; gap: 12px;
 }
@@ -239,14 +245,13 @@ const CSS = `
 .ecm-start-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 @media (max-width: 480px) {
-  .ecm-modal { border-radius: 16px 16px 0 0; max-height: 95vh; }
+  .ecm-modal { border-radius: 16px 16px 0 0; max-height: 95vh; max-height: 95dvh; }
   .ecm-backdrop { align-items: flex-end; padding: 0; }
-  .ecm-footer { flex-direction: column-reverse; align-items: stretch; }
+  .ecm-footer { flex-direction: column-reverse; align-items: stretch; padding: 0 18px max(env(safe-area-inset-bottom,0px),24px); }
   .ecm-start-btn { width: 100%; justify-content: center; }
   .ecm-type-grid { grid-template-columns: 1fr 1fr; }
   .ecm-header { padding: 20px 18px 0; }
-  .ecm-body { padding: 16px 18px 20px; }
-  .ecm-footer { padding: 0 18px 28px; }
+  .ecm-body { padding: 16px 18px 12px; }
   .ecm-type-toggle { padding: 10px 10px; }
   .ecm-type-label { font-size: 11px; }
 }
@@ -292,6 +297,9 @@ export default function ExamConfigModal({
       setCount(Math.max(minQ, filteredCount));
     }
   }, [selectedTopics, selectedTypes, filteredCount, count, minQ]);
+
+  // Lock background scroll while modal is open
+  useModalShell(true);
 
   const backdropRef = useRef<HTMLDivElement>(null);
 

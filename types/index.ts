@@ -5,7 +5,8 @@ export type Course =
   | 'Anatomy & Physiology'
   | 'Laboratory Diagnosis';
 
-export type Theme = 'midnight' | 'pink' | 'forest';
+import type { ThemeId } from '@/lib/themes';
+export type { ThemeId as Theme } from '@/lib/themes';
 
 export interface Lecture {
   internal_id: string;
@@ -13,7 +14,7 @@ export interface Lecture {
   title: string;
   subtitle: string | null;
   course: Course;
-  color: string;
+  theme_colors?: Partial<Record<ThemeId, string>> | null;
   icon: string;
   topics: string[];
   slide_count: number;
@@ -57,6 +58,7 @@ export interface UserLectureSettings {
   course_override?: Course | null;
   color_override?: ColorOverrideMap | null;
   custom_title?: string | null;
+  topics_override?: string[] | null;
 }
 
 export interface LectureWithSettings extends Lecture {
@@ -65,12 +67,27 @@ export interface LectureWithSettings extends Lecture {
   display_title: string;
   display_course: Course;
   display_color: string; // resolved for current theme by caller
+  display_topics: string[]; // resolved from settings.topics_override ?? topics
 }
 
 export interface UserPreferences {
   user_id: string;
-  theme: Theme;
+  theme: ThemeId;
   settings: Record<string, unknown>;
+}
+
+// ─── Folders ────────────────────────────────────────────────────────────────
+
+export interface Folder {
+  id: string;
+  user_id: string;
+  parent_id: string | null;
+  name: string;
+  icon: string;        // default '📁'
+  color: string | null;
+  display_order: number;
+  created_at: string;
+  updated_at: string;
 }
 
 // ─── Study Plans ───────────────────────────────────────────────────────────

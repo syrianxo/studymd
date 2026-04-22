@@ -2,6 +2,7 @@ import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { THEME_IDS } from "@/lib/themes";
 
 // ---------------------------------------------------------------------------
 // Types
@@ -17,12 +18,17 @@ interface SettingsUpdates {
   courseOverride?: string | null;
   /**
    * colorOverride: pass an object with theme keys to update per-theme colors.
-   * Example: { midnight: '#5b8dee', pink: '#ec4899' }
+   * Example: { midnight: '#5b8dee', aurora: '#f472b6' }
    * Or pass null to clear all overrides.
    * Legacy: a plain hex string is also accepted and treated as a midnight override.
    */
   colorOverride?: Record<string, string> | string | null;
   customTitle?: string | null;
+  /**
+   * topicsOverride: string[] to replace per-user topic labels; null to clear and
+   * fall back to the shared lectures.topics column.
+   */
+  topicsOverride?: string[] | null;
 }
 
 interface PutBody {
@@ -86,10 +92,10 @@ function validateUpdates(updates: SettingsUpdates): string | null {
         return "colorOverride string must be a hex color (e.g. #5b8dee)";
       }
     } else if (typeof updates.colorOverride === 'object') {
-      const validThemes = ['midnight', 'pink', 'forest'];
+      const validThemes = THEME_IDS;
       for (const [theme, hex] of Object.entries(updates.colorOverride)) {
-        if (!validThemes.includes(theme)) {
-          return `colorOverride key '${theme}' is not a valid theme (midnight|pink|forest)`;
+        if (!(validThemes as readonly string[]).includes(theme)) {
+          return `colorOverride key '${theme}' is not a valid theme (${THEME_IDS.join('|')})`;
         }
         if (!/^#[0-9A-Fa-f]{6}$/.test(hex)) {
           return `colorOverride['${theme}'] must be a hex color (e.g. #5b8dee)`;
@@ -106,6 +112,14 @@ function validateUpdates(updates: SettingsUpdates): string | null {
       updates.customTitle.trim().length === 0)
   ) {
     return "customTitle must be a non-empty string or null";
+  }
+  if (updates.topicsOverride !== undefined && updates.topicsOverride !== null) {
+    if (
+      !Array.isArray(updates.topicsOverride) ||
+      updates.topicsOverride.some((t) => typeof t !== "string")
+    ) {
+      return "topicsOverride must be an array of strings or null";
+    }
   }
   return null;
 }
@@ -146,6 +160,7 @@ function toColumnMap(updates: SettingsUpdates): Record<string, unknown> {
     }
   }
   if ("customTitle" in updates) map.custom_title = updates.customTitle;
+  if ("topicsOverride" in updates) map.topics_override = updates.topicsOverride;
   return map;
 }
 
@@ -236,7 +251,7 @@ export async function PUT(req: NextRequest) {
   const columns = toColumnMap(updates);
 
   // For color_override (JSONB), we need to MERGE into the existing value
-  // so that setting midnight color doesn't erase pink color and vice versa.
+  // so that setting midnight color doesn't erase aurora color and vice versa.
   // Strategy: fetch existing row, merge color maps, then upsert full row.
   let finalColorOverride: Record<string, string> | null | undefined = undefined;
   if ("colorOverride" in updates) {
@@ -303,6 +318,7 @@ export async function PUT(req: NextRequest) {
       courseOverride: data.course_override,
       colorOverride: data.color_override,
       customTitle: data.custom_title,
+      topicsOverride: data.topics_override ?? null,
     },
   });
 }

@@ -162,9 +162,10 @@ function UploadPageInner() {
   const backLabel = fromParam === 'lectures' ? 'My Lectures' : 'Dashboard';
 
   const supabase = createClient();
-  const [theme,  setTheme]  = useState<Theme>('midnight');
-  const [userId, setUserId] = useState('');
-  const [mode,   setMode]   = useState<'single' | 'batch'>('single');
+  const [theme,   setTheme]   = useState<Theme>('midnight');
+  const [userId,  setUserId]  = useState('');
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [mode,    setMode]    = useState<'single' | 'batch'>('single');
 
   // ── Single mode ──────────────────────────────────────────────────────────────
   const [singleFile,    setSingleFile]    = useState<File | null>(null);
@@ -190,9 +191,17 @@ function UploadPageInner() {
 
   // ── Auth + theme + resume ─────────────────────────────────────────────────────
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => {
-      if (data.user) setUserId(data.user.id);
-      else router.push('/login');
+    supabase.auth.getUser().then(async ({ data }) => {
+      if (!data.user) { router.push('/login'); return; }
+      setUserId(data.user.id);
+      // Check admin status so we can show the correct file-size limit in the UI.
+      // Server-side enforcement is authoritative; this is UX only.
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('role')
+        .eq('user_id', data.user.id)
+        .maybeSingle();
+      if (profile?.role === 'admin') setIsAdmin(true);
     });
     try {
       const stored = localStorage.getItem('studymd_theme') as Theme | null;
@@ -630,7 +639,7 @@ function UploadPageInner() {
                   <div className="upl-drop-inner">
                     <div className="upl-drop-icon">⬆</div>
                     <p className="upl-drop-headline">Drop your lecture file here</p>
-                    <p className="upl-drop-sub">or click to browse — PDF or PPTX, max 50 MB</p>
+                    <p className="upl-drop-sub">or click to browse — PDF or PPTX, max {isAdmin ? '250' : '50'} MB</p>
                   </div>
                 )}
               </div>

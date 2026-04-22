@@ -17,6 +17,7 @@ export interface LectureFlashcard {
   back: string;
   tags: string[];
   difficulty: 'easy' | 'medium' | 'hard';
+  slide_number: number;    // 1-indexed; required for slide-link UI
 }
 
 export interface LectureQuestion {
@@ -28,6 +29,7 @@ export interface LectureQuestion {
   answer: string;
   explanation: string;
   difficulty: 'easy' | 'medium' | 'hard';
+  slide_number: number;    // 1-indexed; required for slide-link UI
 }
 
 export interface LectureJSON {
@@ -66,11 +68,11 @@ const REQUIRED_TOP_LEVEL = [
 const OPTIONAL_TOP_LEVEL = ['lecture_id', 'course'] as const;
 
 const REQUIRED_FLASHCARD_FIELDS = [
-  'id', 'topic', 'front', 'back', 'tags', 'difficulty',
+  'id', 'topic', 'front', 'back', 'tags', 'difficulty', 'slide_number',
 ] as const;
 
 const REQUIRED_QUESTION_FIELDS = [
-  'id', 'topic', 'type', 'stem', 'answer', 'explanation', 'difficulty',
+  'id', 'topic', 'type', 'stem', 'answer', 'explanation', 'difficulty', 'slide_number',
 ] as const;
 
 // ─── ID helpers ───────────────────────────────────────────────────────────────
@@ -174,6 +176,11 @@ export function validateLecture(data: unknown): ValidationResult {
       if (typeof card.back !== 'string' || card.back.trim().length === 0) {
         errors.push(`${label} (${card.id}): "back" must be a non-empty string.`);
       }
+
+      // slide_number: must be a positive integer
+      if (typeof card.slide_number !== 'number' || !Number.isInteger(card.slide_number) || card.slide_number < 1) {
+        errors.push(`${label} (${card.id}): "slide_number" must be a positive integer (got ${JSON.stringify(card.slide_number)}).`);
+      }
     });
   }
 
@@ -246,6 +253,11 @@ export function validateLecture(data: unknown): ValidationResult {
       // stem non-empty
       if (typeof question.stem !== 'string' || question.stem.trim().length === 0) {
         errors.push(`${label} (${question.id}): "stem" must be a non-empty string.`);
+      }
+
+      // slide_number: must be a positive integer
+      if (typeof question.slide_number !== 'number' || !Number.isInteger(question.slide_number) || question.slide_number < 1) {
+        errors.push(`${label} (${question.id}): "slide_number" must be a positive integer (got ${JSON.stringify(question.slide_number)}).`);
       }
     });
 

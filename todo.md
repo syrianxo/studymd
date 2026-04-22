@@ -6,44 +6,79 @@
 
 ## 🚧 Now (in flight)
 
-- [x] **Slice A2 — True background processing** — `lib/job-runner.ts`, `/api/cron/process-jobs`, `vercel.json`, `UploadModal.tsx` detailed stage UI. ADR-023.
+_(nothing active — pick next item from Next up)_
 
 ---
 
-## ▶️ Next up (committed, not started)
+## ✅ Recently shipped
 
-### v3 prerequisites — security, correctness, hygiene
+### Slice A1 — Admin upload limit bypass (ADR-028)
+- [x] `lib/api-limits.ts`: `ADMIN_DAILY_SANITY_CAP`, `ADMIN_MAX_FILE_SIZE_BYTES`, `userIsAdmin()`, extended `checkLimits({ adminBypass })`
+- [x] `/api/upload`: dynamic file-size cap + `adminBypass` in `checkLimits`
+- [x] `/api/generate`: admin bypass in local `checkRateLimits`
+- [x] `/app/upload/page.tsx`: query `user_profiles` on mount, show "max 250 MB" hint for admins
 
-- [ ] **Enable RLS + policies on `subscription_tiers`** — blocks v3 Feature #2. SQL in [`recommendations.md`](./recommendations.md#11-🔴-enable-rls-on-subscription_tiers).
-- [ ] **Replace hard-coded admin UUID in `api_usage` policy** — use the `EXISTS user_profiles WHERE role='admin'` pattern. SQL in [`recommendations.md`](./recommendations.md#12-🔴-replace-hard-coded-admin-uuid-in-api_usage-policy).
-- [ ] **Tighten `slides` storage bucket SELECT policy** — currently allows directory listing. Decide between option A (drop the broad SELECT) or option B (private + signed URLs). See [`recommendations.md`](./recommendations.md#13-🔴-tighten-slides-storage-bucket-select-policy).
-- [ ] **Add `system_config` policy** — currently RLS-on, no-policy. See [`recommendations.md`](./recommendations.md#14-🔴-add-a-policy-for-system_config-or-document-the-design).
-- [ ] **Set `search_path` on all 6 SECURITY DEFINER functions** — `ensure_user_preferences`, `increment_api_usage`, `set_updated_at`, `update_study_plans_updated_at`, `update_user_card_overrides_updated_at`, `update_user_profiles_updated_at`. See [`recommendations.md`](./recommendations.md#15-🔴-set-search_path-on-the-6-public-functions).
-- [ ] **Resolve `is_primary` source-of-truth** — confirm column lives only on `user_profiles`; remove any reference to `user_preferences.is_primary` in code. See [`recommendations.md`](./recommendations.md#17-🔴-resolve-is_primary-source-of-truth-confusion).
-- [ ] **Enable HaveIBeenPwned password protection** — Supabase dashboard toggle. See [`recommendations.md`](./recommendations.md#16-🟡-enable-haveibeenpwned-leaked-password-protection).
+### Slice 9 — F3 Lecture-grid folders (ADR-027)
+- [x] DB migration: `folders` table + `group_id` FK upgrade
+- [x] API: `GET/POST /api/folders` + `PATCH/DELETE /api/folders/[id]` with cycle prevention
+- [x] `hooks/useFolders.ts` + `Folder` type + `FolderTile` / `FolderTree` / `FolderBar` / `NewFolderModal` components
+- [x] Dashboard FolderBar pill row (replaced folder tiles), folder navigation + breadcrumb
+- [x] dnd-kit drag-to-folder + `CustomSessionModal` folder picker
+- [x] UX polish: suppress skeleton flash on background refresh, fix layout shift on folder switch
 
-### Tooling
+### Slice 8 — F8 Editable lecture topics (ADR-026)
+- [x] DB: `user_lecture_settings.topics_override` jsonb column
+- [x] API: `PUT /api/lectures/settings` accepts `topicsOverride`
+- [x] `TopicEditor.tsx` component with dnd-kit reorder; integrated into `LectureViewModal` and `ManageLectureCard`
 
-- [ ] **Add `lint`, `typecheck`, `test` scripts to `package.json`** — wire Vitest, run tsc --noEmit. See [`recommendations.md`](./recommendations.md#21-🟡-add-lint-typecheck-and-test-scripts).
-- [ ] **Adopt `supabase/migrations/` workflow** — `supabase db pull`, commit, repeat for every change. See [`recommendations.md`](./recommendations.md#18-🟡-add-a-migrations-workflow).
+### Slices 6–7 — F1 Greetings + F9/F10 Header nav
+- [x] `lib/greetings.ts`: 8 time-of-day buckets, display_name substitution, session-stable
+- [x] `Header.tsx`: desktop nav with active-route styling, mobile hamburger drawer, My Lectures + My Plans + Progress links
+- [x] `/app/progress` stub page
 
-### v3 features (in suggested implementation order — see [`development_plan_v3.md`](./development_plan_v3.md))
+---
 
-- [ ] **F1 — Per-user randomized greetings** — `lib/greetings.ts`, replace inline affirmations in `Dashboard.tsx`.
-- [ ] **F9 + F10 — Header nav + dashboard layout polish** — ship together; one UX sprint.
-- [ ] **F8 — Editable lecture topics** — adds `topics_override` jsonb column; UI in `LectureViewModal` and `ManageLectureCard`.
-- [ ] **F3 — Lecture-grid folders** — `folders` table; convert `group_id` to uuid+FK; `FolderTree` and `FolderTile` components.
-- [ ] **F5 + F6 — Three-tab Lecture Grid + Worksheets** — adds `lectures.kind`; tabs in `Dashboard`.
-- [ ] **F4 — Review tab with AI annotations** — `slide_annotations` table; `SlideReviewView` component; new `lib/slide-annotation-prompt.ts`.
-- [ ] **F2 — Lecture-package subscriptions** — `lecture_packages` + `user_package_access`; revise `lectures` RLS.
-- [ ] **F7 — OSCE preparation (Option B first)** — `osce_cases`, `osce_checklist_items`, `osce_attempts`, `osce_attempt_scores`; `/app/osce/*`.
+## ▶️ Next up (committed, in order)
 
-### v3 bug-fix bundle
+### ~~Slice A2 — True background processing~~ ✅ Done
+- [x] Processing continues if user navigates away — `lib/job-runner.ts` + Vercel Cron orphan recovery
+- [x] 6-stage progress UI in UploadModal with live polling + "Safe to navigate away" message
+- [x] ADR-029, `supabase/migrations/20260421_a2_processing_jobs_background_worker.sql`
 
+### Slice A3 — Admin panel additions
+- [ ] Courses section in admin (or merge into Lectures tab) — N15
+- [ ] Admin→app navigation link: easy jump from `/admin` back to `/app` dashboard — N16
+
+### Slice 10 — F4 + F5 Review mode + 3-tab lecture grid
+- [ ] `slide_annotations` table + RLS + migration
+- [ ] API: `POST /api/lectures/[id]/annotate` → calls Claude, stores annotations
+- [ ] `SlideReviewView` component + `lib/slide-annotation-prompt.ts`
+- [ ] Three-tab `LectureGrid` (Review / Learn / Practice) — `Dashboard.tsx` refactor
+
+### Slice F1 — Flashcard missed-only mode
+- [ ] "Review missed only" toggle in `FlashcardView` / `FlashcardConfigModal`
+- [ ] Filter deck to cards where `got_it = false` from prior session progress
+
+### Slice 11 — F6 Worksheet uploads (Practice-only mode)
+- [ ] `lectures.kind` column (`'lecture' | 'worksheet'`)
+- [ ] `lib/worksheet-processor-prompt.ts`
+- [ ] Upload UI: worksheet type selection; worksheet cards render as Practice Exam only (no flashcard mode)
+
+### Slice 12 — F2 Lecture-package subscriptions
+- [ ] `lecture_packages` + `user_package_access` tables + RLS
+- [ ] Revise `lectures` RLS to gate on package access
+- [ ] Admin UI: assign lectures to packages; assign packages to users
+
+### Slice 13 — F7 OSCE preparation (Option B)
+- [ ] `osce_cases`, `osce_checklist_items`, `osce_attempts`, `osce_attempt_scores` tables + RLS
+- [ ] `/app/osce/*` pages
+- [ ] Admin: create/manage OSCE cases
+
+### Remaining bug fixes
 - [ ] **Implement or delete `LoginForm.tsx`** — it's a placeholder.
 - [ ] **Render `planNextReview` / `planTestDate` badges on `LectureCard`** — props are passed but unused.
-- [ ] **One-time backfill: `lectures.slide_count`** — to stop the wasteful slide-count probing.
-- [ ] **Decide fate of unused tables** — `sr_card_state`, `shared_decks`. Implement (per recommendations §6.1, §6.2) or drop.
+- [ ] **One-time backfill: `lectures.slide_count`** — stop wasteful slide-count probing.
+- [ ] **Decide fate of unused tables** — `sr_card_state`, `shared_decks`. Implement or drop.
 
 ---
 
@@ -108,10 +143,20 @@
 
 ---
 
-## ✅ Recently completed
+## ✅ Recently completed (v3 slices 0–9 + A1)
 
-- [x] **Slice A2 — True background processing** — Vercel Cron orphan recovery, `lib/job-runner.ts`, 6-stage progress UI in UploadModal, navigation-away reassurance. 2026-04-21.
-- [x] Comprehensive documentation pass — README, CLAUDE.md, architecture.md, documentation.md, recommendations.md, development_plan_v3.md, decisions.md, todo.md (this file).
+- [x] **Prereqs P1–P8** — RLS on `subscription_tiers` (P1), role-based admin policy for `api_usage` (P2), `slides` bucket tightened (P3), `system_config` policy (P4), `search_path` on 6 SECURITY DEFINER functions (P5), `is_primary` source-of-truth confirmed on `user_profiles` (P6), Vitest + lint + typecheck scripts (P7), `supabase/migrations/` workflow (P8).
+- [x] **Slices 1+CSS — Dashboard simplification + mobile CSS** — display_name greeting, centered hero, two-column plan/timer layout, action row (Upload + Custom Session + Manage pencil), iOS Safari header banner fixes, mobile header refinements.
+- [x] **Slice 3 — Kebab menu correctness** — removed spurious `useEffect` causing menu shift; hover-to-expand submenus for Change Course / Change Color.
+- [x] **N10 — Color persistence** — `Dashboard.handleChangeColor` calls `refetch()`; `LectureViewModal` triggers `onChangeColor` after API success.
+- [x] **Slice 4 — Mobile + global polish** — iOS modal flexbox fixes (FlashcardConfigModal, ExamConfigModal, CustomSessionModal), mobile section header single-row, filter pills horizontal-scroll, theme-aware `::selection`, profile page Aurora label.
+- [x] **Aurora rename (ADR-025)** — `lib/themes.ts` single source of truth; `pink` → `aurora` across all files + DB; `migrateThemeId()` handles stale values.
+- [x] **Per-theme lecture colors** — `lectures.theme_colors` JSONB; dropped legacy `lectures.color` TEXT; `resolveColor()` priority: override → default → `var(--accent)`.
+- [x] **Slice 5 — Slide ref + internal_id** — `slide_number` required in prompt + validator; `generateLectureInternalId()` in `lib/id-generator.ts`; admin reprocess endpoint.
+- [x] **Slices 6–7 — F1 Greetings + F9/F10 Header nav** — `lib/greetings.ts`, 8 time-of-day buckets; desktop nav with active-route styling; mobile hamburger drawer; `/app/progress` stub.
+- [x] **Slice 8 — F8 Topic editing (ADR-026)** — `user_lecture_settings.topics_override` jsonb, `TopicEditor.tsx`, integrated into `LectureViewModal` + `ManageLectureCard`.
+- [x] **Slice 9 — F3 Folders (ADR-027)** — `folders` table; `useFolders.ts`; `FolderBar` + `FolderTile` + `FolderTree` + `NewFolderModal`; drag-to-folder; folder picker in `CustomSessionModal`.
+- [x] **Slice A1 — Admin upload bypass (ADR-028)** — 250 MB cap for admins; `userIsAdmin()`; `ADMIN_DAILY_SANITY_CAP`.
 
 ---
 

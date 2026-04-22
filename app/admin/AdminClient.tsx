@@ -34,7 +34,7 @@ interface ExamQuestion { id: string; type: string; question: string; options?: s
 interface LectureRow {
   internal_id: string; title: string; subtitle: string | null; course: string;
   created_at: string; slide_count: number; original_file: string | null;
-  flashcard_count: number; question_count: number; icon: string; color: string;
+  flashcard_count: number; question_count: number; icon: string;
   flashcards?: Flashcard[]; questions?: ExamQuestion[];
 }
 interface FeedbackRow { id: string; user_id: string | null; user_name: string; type: string; message: string; page_url: string | null; status: 'new' | 'reviewed' | 'resolved'; created_at: string; }
@@ -319,7 +319,7 @@ function UsersSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') => vo
                     </td>
                     <td>
                       <select className="adm-select" value={u.theme ?? 'midnight'} onChange={e => handleThemeChange(u.user_id, e.target.value)}>
-                        <option value="midnight">🌑 Midnight</option><option value="pink">🌸 Pink</option><option value="forest">🌲 Forest</option>
+                        <option value="midnight">🌑 Midnight</option><option value="aurora">🌌 Aurora</option><option value="forest">🌲 Forest</option>
                       </select>
                     </td>
                     <td>{u.lectureCount}</td>
@@ -427,7 +427,7 @@ function LecturesSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') =>
       if (data) setLectures(prev => prev.map(x => x.internal_id === l.internal_id ? { ...x, ...data } : x));
     }
     if (!tab[l.internal_id]) setTab(p => ({ ...p, [l.internal_id]: 'meta' }));
-    if (!ef[l.internal_id]) setEf(p => ({ ...p, [l.internal_id]: { title: l.title, subtitle: l.subtitle ?? '', course: l.course, color: l.color, icon: l.icon } }));
+    if (!ef[l.internal_id]) setEf(p => ({ ...p, [l.internal_id]: { title: l.title, subtitle: l.subtitle ?? '', course: l.course, icon: l.icon } }));
   }
 
   async function saveMeta(id: string) {
@@ -559,15 +559,6 @@ function LecturesSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') =>
                             {COURSES.map(c => <option key={c} value={c}>{c}</option>)}
                           </select>
                         </div>
-                        <div className="adm-meta-field">
-                          <label className="adm-form-label">default color</label>
-                          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                            <input type="color" value={String(fields.color ?? l.color)}
-                              onChange={e => setEf(p => ({ ...p, [l.internal_id]: { ...p[l.internal_id], color: e.target.value } }))}
-                              style={{ width: 44, height: 44, border: 'none', background: 'none', cursor: 'pointer', borderRadius: 8 }} />
-                            <code className="adm-id-code">{String(fields.color ?? l.color)}</code>
-                          </div>
-                        </div>
                         <div className="adm-meta-field adm-meta-field-full">
                           <button className="adm-btn adm-btn-primary" style={{ alignSelf: 'flex-start' }} onClick={() => saveMeta(l.internal_id)}>Save Changes</button>
                         </div>
@@ -630,11 +621,11 @@ function LecturesSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') =>
         <div className="adm-overlay"><div className="adm-dialog" style={{ maxWidth: 620, width: '90vw' }}>
           <h3 style={{ fontFamily: "'Fraunces',serif", fontSize: 18, marginBottom: 8 }}>Add Lecture via JSON</h3>
           <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 14 }}>
-            Paste a full lecture JSON. Required: <code>title</code>, <code>course</code>, <code>icon</code>, <code>color</code>. <code>internal_id</code> is auto-generated if omitted.
+            Paste a full lecture JSON. Required: <code>title</code>, <code>course</code>, <code>icon</code>. <code>internal_id</code> is auto-generated if omitted.
           </p>
           <textarea className="adm-json-textarea" rows={14} value={addJson} spellCheck={false}
             onChange={e => { setAddJson(e.target.value); setAddErr(''); }}
-            placeholder={'{\n  "title": "Lecture Name",\n  "course": "Physical Diagnosis I",\n  "icon": "🫁",\n  "color": "#5b8dee",\n  "json_data": { "flashcards": [], "questions": [] }\n}'} />
+            placeholder={'{\n  "title": "Lecture Name",\n  "course": "Physical Diagnosis I",\n  "icon": "🫁",\n  "json_data": { "flashcards": [], "questions": [] }\n}'} />
           {addErr && <div style={{ color: '#ef4444', fontSize: 12, marginTop: 8 }}>{addErr}</div>}
           <div className="adm-dialog-btns" style={{ marginTop: 14 }}>
             <button className="adm-btn adm-btn-ghost" onClick={() => { setAddOpen(false); setAddErr(''); }}>Cancel</button>
@@ -947,11 +938,6 @@ function ConfigSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') => v
       { key: 'max_daily_input_tokens', label: 'Max Daily Input Tokens', type: 'number' },
       { key: 'max_monthly_cost_usd', label: 'Max Monthly Cost (USD)', type: 'number' },
     ]},
-    { title: 'Theme Display Names', keys: [
-      { key: 'theme_midnight_name', label: 'Midnight theme name', type: 'text' },
-      { key: 'theme_pink_name',     label: 'Pink theme name',     type: 'text' },
-      { key: 'theme_forest_name',   label: 'Forest theme name',   type: 'text' },
-    ]},
     { title: 'Site Content', keys: [
       { key: 'site_favicon_url',           label: 'Favicon URL',                       type: 'text' },
       { key: 'homepage_demo_lecture_id',   label: 'Demo Lecture ID (homepage)',         type: 'text' },
@@ -1084,7 +1070,6 @@ export default function AdminClient({ adminName }: { adminName: string }) {
   const [section, setSection] = useState<Section>('overview');
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
   const [navOpen, setNavOpen] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
 
   const showToast = useCallback((msg: string, type: 'ok' | 'err') => setToast({ msg, type }), []);
 
@@ -1108,10 +1093,10 @@ export default function AdminClient({ adminName }: { adminName: string }) {
               </button>
             ))}
           </nav>
-          <button className="adm-sidebar-footer adm-profile-btn" onClick={() => setProfileOpen(true)} aria-label="Edit profile">
-            <div className="adm-admin-name">Signed in as · click to edit ✏️</div>
+          <Link href="/app/profile" className="adm-sidebar-footer adm-profile-btn" aria-label="Profile & Settings">
+            <div className="adm-admin-name">Signed in as</div>
             <div className="adm-admin-name-val">{adminName}</div>
-          </button>
+          </Link>
         </aside>
 
         <div className="adm-mobile-bar">
@@ -1138,7 +1123,6 @@ export default function AdminClient({ adminName }: { adminName: string }) {
         </main>
 
         {toast && <Toast msg={toast.msg} type={toast.type} onDone={() => setToast(null)} />}
-        {profileOpen && <ProfileModal adminName={adminName} onClose={() => setProfileOpen(false)} onToast={showToast} />}
       </div>
     </>
   );
@@ -1159,7 +1143,7 @@ const css = `
 .adm-nav-active{background:rgba(91,141,238,.12)!important;color:var(--accent,#5b8dee)!important;font-weight:600}
 .adm-nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
 .adm-sidebar-footer{padding:14px 20px;border-top:1px solid var(--border,rgba(255,255,255,0.08))}
-.adm-profile-btn{background:none;border:none;cursor:pointer;width:100%;text-align:left;border-radius:10px;transition:background .13s}
+.adm-profile-btn{display:block;background:none;border:none;cursor:pointer;width:100%;text-align:left;border-radius:10px;transition:background .13s;text-decoration:none;color:inherit}
 .adm-profile-btn:hover{background:rgba(255,255,255,.05)}
 .adm-admin-name{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em}
 .adm-admin-name-val{font-size:13px;font-weight:600;color:var(--text);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}

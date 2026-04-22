@@ -321,19 +321,117 @@ Dates reflect when the decision landed in the repo (from git history) or, for un
 
 ---
 
-## ADR-023 · Background processing with Vercel Cron + inline fast-path (Slice A2)
-- **Date:** 2026-04-21
+## ADR-023 · Per-theme default lecture colors via `lectures.theme_colors` JSONB
+- **Date:** 2026-04-19 (Slice 3 color work)
 - **Status:** Accepted
-- **Context:** Upload processing was synchronous — if a user navigated away, the HTTP connection dropped and the job silently died. The progress UI said only "Running Claude" with no sub-step detail. Four approaches were considered: (A) in-request synchronous — current approach, dies on navigation; (B) Vercel Cron polling `processing_jobs` every minute — simple, zero cost, latency up to 60s; (C) Supabase Webhooks → edge function — lowest latency but more moving parts; (D) QStash — overkill for current scale.
-- **Decision:** Hybrid of (A) + (B). The inline `/api/generate` call continues to run as a fast-start path — Vercel serverless functions run to completion even when the client disconnects. A per-minute Vercel Cron endpoint (`/api/cron/process-jobs`) re-claims any jobs where `claim_expires_at` has passed (orphaned jobs). Job logic is extracted to `lib/job-runner.ts` so both paths share the same code. The `UploadModal` polls `processing_jobs.status_detail` every 2.5 s for granular progress.
-- **SQL:** See migration `20260421_a2_processing_jobs_background_worker.sql`. Columns added: `heartbeat_at`, `claimed_by`, `claim_expires_at`, `status_detail`, `status_message`. Function added: `claim_processing_job(p_job_id, p_run_id)` returns boolean.
+- **Context:** Each lecture had a single `color` TEXT column (a theme-agnostic hex). Switching themes didn't change card colors — every theme showed the same hex. The per-user `color_override` JSONB was already keyed by theme, but the base default was not.
+- **Decision:** Replace `lectures.color` TEXT with `lectures.theme_colors` JSONB `{ midnight: "#hex", pink: "#hex", forest: "#hex" }`. Seed existing lectures with palette-cycled colors. New lectures receive `theme_colors` at insert time (deterministic index from trailing hex chars of `internal_id`). Dropped the old `color` column.
+- **SQL:**
+  ```sql
+  ALTER TABLE lectures ADD COLUMN IF NOT EXISTS theme_colors JSONB;
+  -- (seeded via palette CTE — see session history)
+  UPDATE user_lecture_settings SET color_override = NULL; -- reset for clean start
+  ALTER TABLE lectures DROP COLUMN IF EXISTS color;
+  ```
 - **Consequences:**
-  - (+) Users can navigate away during processing; the lecture still appears in their library when done.
-  - (+) Progress UI shows 6 named stages with live sub-messages, not just "Running Claude."
-  - (+) The cron is a true safety net — if the Vercel function times out or the server crashes mid-job, the cron picks it up on the next tick.
-  - (−) Cron fires every minute even when idle (Vercel Hobby/Pro limits: 2 crons max on Hobby, unlimited on Pro). Check plan usage.
-  - (−) `claim_expires_at` is 5 minutes — if Claude takes longer than 5 minutes, the cron will attempt a re-claim. The `claim_processing_job` RPC is idempotent (UPDATE with WHERE, returns 0 rows), so this is safe.
-  - Revisit when: Claude response time consistently exceeds 4 minutes (consider bumping claim TTL to 10 min or switching to QStash).
+  - (+) Switching theme now changes all lecture card colors to the per-theme default.
+  - (+) `resolveColor(lecture, theme)` priority: `color_override[theme]` → `theme_colors[theme]` → `var(--accent)`.
+  - (+) Each theme can have a visually coherent palette (Midnight = blues, Pink = pinks/purples, Forest = greens/browns).
+  - (−) New lectures must set `theme_colors` at insert; both upload routes (`/api/generate`, `/api/admin/lectures/add`) updated.
+  - Revisit when: a user wants different colors for each theme on the same lecture (already supported via `color_override`).
+
+---
+
+## ADR-024 · Admin sidebar name links to `/app/profile` instead of inline modal
+- **Date:** 2026-04-19 (Slice 4 — fix #22)
+- **Status:** Accepted
+- **Context:** The admin sidebar had a "Signed in as · click to edit ✏️" affordance that opened a `ProfileModal` inline in the admin panel. This duplicated the `/app/profile` page that's already accessible from the gear icon in `/app`. Two UIs for the same action, and the admin modal looked inconsistent.
+- **Decision:** Remove "Click to Edit" text and the inline `ProfileModal`. Replace the `<button onClick={() => setProfileOpen(true)}>` with a `<Link href="/app/profile">`. The existing `/app/profile` page is the single canonical settings location.
+- **Consequences:**
+  - (+) Eliminates a redundant UI surface.
+  - (+) Profile editing is consistent across admin and student contexts.
+  - (−) Admin must leave the admin panel briefly to edit their profile. Acceptable since it's an infrequent action.
+
+---
+
+## ADR-025 · Rename `pink` theme to `aurora` + introduce `lib/themes.ts` registry
+- **Date:** 2026-04-19 (commits `01f3d97`–`d5e487d`)
+- **Status:** Accepted
+- **Context:** The "Pink" theme's id `'pink'` was a literal color name, making it hard to rename without hunting magic strings across 13 locations. There was also no single source of truth for valid theme ids — each file maintained its own union or array.
+- **Decision:** Created `lib/themes.ts` as single source of truth (`THEME_IDS`, `ThemeId`, `THEMES`, `isValidThemeId`, `migrateThemeId`). Renamed the theme id from `'pink'` to `'aurora'`; legacy `'pink'` is silently migrated on first client load by `migrateThemeId`. DB rows updated in-place. CSS selector changed from `[data-theme="pink"]` to `[data-theme="aurora"]`.
+- **Consequences:**
+  - (+) One place to add/rename themes going forward.
+  - (+) `migrateThemeId` handles stale localStorage values gracefully with no user-visible flash.
+  - (−) The THEME_INIT_SCRIPT and `app/layout.tsx` inline scripts cannot import modules, so the migration stub is duplicated inline in both. Acceptable — these two strings are short and explicitly comment the duplication.
+  - Revisit when: adding a 4th theme — just add to `THEME_IDS` in `lib/themes.ts`.
+
+---
+
+## ADR-026 · Per-user editable lecture topics (topics_override)
+- **Date:** 2026-04-20 (Slice 8 — Feature #8)
+- **Status:** Accepted
+- **Context:** Lectures have a shared `topics: string[]` column generated by Claude during processing. All students see the same topic labels, even though different users may prefer different names or groupings. Feature request: allow each user to rename topics without changing the shared lecture data.
+- **Decision:** Add `topics_override jsonb` column to `user_lecture_settings`. `null` = use shared `lectures.topics`; a non-null `string[]` replaces topic labels index-by-index. The `useUserLectures` hook resolves `display_topics = topics_override ?? topics` and exposes both. Flashcard filtering and progress aggregation continue to use the canonical `lectures.topics`; display only reads `display_topics`. Edit UI lives in `LectureViewModal` (dnd-kit drag-to-reorder, rename, add, delete) and `ManageLectureCard` (simpler inline panel, no drag—avoids nested sortable context conflict with the manage-mode DnD context).
+- **Migration SQL:**
+  ```sql
+  ALTER TABLE public.user_lecture_settings ADD COLUMN IF NOT EXISTS topics_override jsonb;
+  ```
+- **Consequences:**
+  - (+) Each user can label topics however they like without touching shared data.
+  - (+) Backwards-compatible: null = use shared topics, so existing rows are unaffected.
+  - (−) If `lectures.topics` is updated (e.g., lecture regenerated), the override array may be stale/misaligned by index. Recommend surfacing a "reset to original" button in a future iteration.
+  - Revisit when: topic ordering within flashcard sessions is driven by `display_topics` (currently still uses `lectures.topics` for the study-session filter page).
+
+---
+
+## ADR-027 · Lecture-grid folders (folders table + group_id FK)
+- **Date:** 2026-04-20 (Slice 9 — Feature #3)
+- **Status:** Accepted
+- **Context:** Users want to organise lectures into named folders (with optional sub-folders). Existing `user_lecture_settings.group_id` was a freeform TEXT column — never used in practice. v3 Feature #3 asks for a proper folder tree with drag-to-reorder and breadcrumb navigation.
+- **Decision:** Create a new `public.folders` table (UUID PK, self-referential `parent_id`, `name`, `icon`, `color`, `display_order`). Convert `user_lecture_settings.group_id` from TEXT → UUID with a FK to `folders(id) ON DELETE SET NULL`. Folders are user-scoped (RLS policy + `user_id` FK on all queries). Cycle prevention is done application-side (walk parent chain upward before accepting a reparent). Folder CRUD lives in `app/api/folders/` (GET, POST, PATCH /:id, DELETE /:id).
+- **Migration SQL:**
+  ```sql
+  CREATE TABLE public.folders (
+    id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    user_id uuid NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+    parent_id uuid REFERENCES public.folders(id) ON DELETE CASCADE,
+    name text NOT NULL,
+    icon text DEFAULT '📁',
+    color text,
+    display_order integer NOT NULL DEFAULT 0,
+    created_at timestamptz DEFAULT now(),
+    updated_at timestamptz DEFAULT now()
+  );
+  ALTER TABLE public.folders ENABLE ROW LEVEL SECURITY;
+  CREATE POLICY "users manage own folders" ON public.folders
+    FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+  ALTER TABLE public.user_lecture_settings
+    ALTER COLUMN group_id TYPE uuid USING NULLIF(group_id, '')::uuid,
+    ADD CONSTRAINT user_lecture_settings_group_fk
+      FOREIGN KEY (group_id) REFERENCES public.folders(id) ON DELETE SET NULL;
+  CREATE TRIGGER folders_updated_at
+    BEFORE UPDATE ON public.folders
+    FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  ```
+- **Consequences:**
+  - (+) Lectures can be organised into a tree of folders without touching shared lecture data.
+  - (+) `ON DELETE CASCADE` on `folders.parent_id` removes the whole subtree when a parent is deleted; `ON DELETE SET NULL` on `group_id` gracefully orphans lectures.
+  - (−) Cycle prevention is in application code, not a DB constraint. Must be enforced in every reparent path.
+  - Revisit when: supporting shared/public folders (would need a `visibility` column and revised RLS).
+
+---
+
+## ADR-028 · Admin upload bypass: higher cap + rate-limit skip
+- **Date:** 2026-04-21 (commits `02f1e39`, `8a020aa` — Slice A1)
+- **Status:** Accepted
+- **Context:** Admin users seed cohort content — multiple large PPTX/PDF decks at a time. The 50 MB file-size cap and 5 calls/day rate limit are appropriate for students but block legitimate admin workflows. We need a principled bypass that: (a) skips the per-user cap, (b) still records usage for cost tracking, and (c) guards against a compromised admin account draining the API budget.
+- **Decision:** Add `userIsAdmin(userId)` helper in `lib/api-limits.ts` (service-role Supabase query against `user_profiles.role`). Extend `checkLimits()` with `{ adminBypass?: boolean }` option: when true, skip daily call / monthly cost checks but enforce a separate `ADMIN_DAILY_SANITY_CAP` (100/day). File-size cap raised to 250 MB for admins (`ADMIN_MAX_FILE_SIZE_BYTES`). Both `/api/upload` and `/api/generate` check `userIsAdmin` independently; generate uses a local admin bypass that short-circuits its in-flight rate check. Upload page (`/app/upload`) queries `user_profiles` client-side to show the correct file-size hint in the drop-zone.
+- **Consequences:**
+  - (+) Admin uploads no longer hit per-user daily / monthly walls.
+  - (+) Usage is still recorded via `increment_api_usage` RPC — admin cost visible in dashboard.
+  - (+) Sanity cap (100 calls/day) prevents runaway spend from a compromised admin account.
+  - (−) Two independent `userIsAdmin` calls per upload (one in `/api/upload`, one in `/api/generate`) — minor latency overhead (~1 DB round-trip each, ~10 ms).
+  - (−) Client-side admin detection in the upload page is UX only; server enforcement is authoritative.
 
 ---
 
@@ -342,6 +440,22 @@ Dates reflect when the decision landed in the repo (from git history) or, for un
 Copy/paste and fill in:
 
 ```markdown
+## ADR-029 · Background processing with Vercel Cron + inline fast-path (Slice A2)
+- **Date:** 2026-04-22
+- **Status:** Accepted
+- **Context:** Upload processing was synchronous — if a user navigated away mid-upload, the HTTP connection dropped and the job silently died. The progress UI showed only "Running Claude" with no sub-step detail. Four options: (A) in-request synchronous (current, dies on navigation); (B) Vercel Cron polling every minute — simple, zero cost, ≤60s latency; (C) Supabase Webhooks → edge function — lowest latency but more moving parts; (D) QStash — overkill for current scale.
+- **Decision:** Hybrid of (A) + (B). The inline `/api/generate` call runs as a fast-start path (Vercel functions run to completion even if the client disconnects). A per-minute Vercel Cron (`/api/cron/process-jobs`) re-claims any jobs where `claim_expires_at` has passed. All processing logic is extracted to `lib/job-runner.ts` so both paths share one code path. The UploadModal polls `processing_jobs.status_detail` every 2.5s for granular progress and shows "Safe to navigate away" once the request fires.
+- **SQL:** Migration `20260421_a2_processing_jobs_background_worker.sql` — adds `heartbeat_at`, `claimed_by`, `claim_expires_at`, `status_detail`, `status_message` columns; adds partial index; adds `claim_processing_job(p_job_id, p_run_id)` SECURITY DEFINER function.
+- **Consequences:**
+  - (+) Users can navigate away during processing; the lecture still appears when done.
+  - (+) Progress UI shows 6 named stages with live sub-messages.
+  - (+) Cron is a true safety net for timeouts or crashes mid-job.
+  - (−) Cron fires every minute even when idle — check Vercel plan cron limits.
+  - (−) Claim TTL is 5 min; if Claude exceeds that the cron re-claims (safe, RPC is idempotent).
+  - Revisit when: Claude p99 latency consistently exceeds 4 minutes (bump TTL or switch to QStash).
+
+---
+
 ## ADR-XXX · <Title>
 - **Date:** YYYY-MM-DD (commit `<shortsha>` — "<commit message>")
 - **Status:** Proposed | Accepted | Superseded by ADR-YYY | Deprecated

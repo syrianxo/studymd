@@ -75,8 +75,8 @@ The original v2 master plan (STUDYMD_V2_DEVELOPMENT_PLAN.md, dated 2026-04-07) c
 - [~] Grouping — *`group_id` column exists but unused in UI; folder feature in v3 will fill this in*
 - [x] Tagging — *`TagEditor.tsx` + `tags` jsonb column*
 - [x] Course reassignment via `course_override` — *commit `56e5443`*
-- [x] Three themes (midnight, pink, forest) with CSS custom properties — *`styles/themes.css` + `ThemePicker.tsx` (ADR-008)*
-  - Note: original v2 plan said "lavender"; final implementation is `pink`. The `user_preferences.theme` column comment is still stale.
+- [x] Three themes (midnight, aurora, forest) with CSS custom properties — *`lib/themes.ts` + `styles/themes.css` + `ThemePicker.tsx` (ADR-008, ADR-025)*
+  - Note: original v2 plan said "lavender"; implemented as `pink`, then renamed to `aurora` in ADR-025.
 
 ### Workstream 6 — StudyMD Homepage & Multi-Student Architecture
 
@@ -155,31 +155,41 @@ Full design in [`development_plan_v3.md`](./development_plan_v3.md). Suggested i
 
 ### v3.0 Prerequisites (security & hygiene)
 
-- [ ] 🔴 Enable RLS + policies on `subscription_tiers` — *blocks F2*
-- [ ] 🔴 Replace hard-coded admin UUID in `api_usage` policy — *use role-based EXISTS pattern*
-- [ ] 🔴 Tighten `slides` bucket SELECT policy — *currently allows directory listing*
-- [ ] 🔴 Add policy for `system_config` — *RLS-on-no-policy*
-- [ ] 🔴 Set `search_path` on 6 SECURITY DEFINER functions
-- [ ] 🔴 Resolve `is_primary` source-of-truth confusion (column lives on `user_profiles`)
-- [ ] 🟡 Adopt `supabase/migrations/` workflow
-- [ ] 🟡 Add `lint`, `typecheck`, `test` scripts to `package.json`
+- [x] 🔴 Enable RLS + policies on `subscription_tiers` — *P1, ADR recorded*
+- [x] 🔴 Replace hard-coded admin UUID in `api_usage` policy — *P2, role-based EXISTS pattern*
+- [x] 🔴 Tighten `slides` bucket SELECT policy — *P3*
+- [x] 🔴 Add policy for `system_config` — *P4*
+- [x] 🔴 Set `search_path` on 6 SECURITY DEFINER functions — *P5*
+- [x] 🔴 Resolve `is_primary` source-of-truth confusion — *P6, confirmed on `user_profiles`*
+- [x] 🟡 Adopt `supabase/migrations/` workflow — *P8, `supabase/migrations/` directory in repo*
+- [x] 🟡 Add `lint`, `typecheck`, `test` scripts to `package.json` — *P7, Vitest configured*
 - [ ] 🟡 Implement or delete `LoginForm.tsx` placeholder
 - [ ] 🟡 Consolidate `processing_jobs` duplicated columns
 - [ ] 🟡 Render `planNextReview` / `planTestDate` badges on `LectureCard`
 - [ ] 🟡 One-time backfill of `lectures.slide_count`
 
-### v3 Features (10)
+### v3 Features (10 + admin slices)
 
-- [ ] **F1** Per-user randomized greetings — `lib/greetings.ts` with primary/generic pools, daily-deterministic
+- [x] **F1** Per-user randomized greetings — `lib/greetings.ts` with 8 time-of-day buckets, display_name substitution, stable within session, rotates across day
 - [ ] **F2** Lecture-package subscriptions — `lecture_packages`, `user_package_access`, revised `lectures` RLS
-- [ ] **F3** Lecture-grid folders — `folders` table, `FolderTree`/`FolderTile` components, integrate with Custom Sessions, My Lectures, Study Plans
+- [x] **F3** Lecture-grid folders — `folders` table, `FolderBar`/`FolderTile`/`FolderTree` components, drag-to-folder, `CustomSessionModal` folder picker (ADR-027)
 - [ ] **F4** Review tab with AI slide annotations — `slide_annotations` table, `SlideReviewView`, new `lib/slide-annotation-prompt.ts`
 - [ ] **F5** Three-tab Lecture Grid (Review / Learn / Practice) — refactor `Dashboard`, `LectureCard`, `LectureViewModal`
 - [ ] **F6** Worksheet uploads → static Practice exams — `lectures.kind` column, `lib/worksheet-processor-prompt.ts`
 - [ ] **F7** OSCE preparation — Option B (checklists) first, then Option A (AI patient roleplay) — `osce_*` tables, `/app/osce/*`
-- [ ] **F8** Editable lecture topics — `user_lecture_settings.topics_override` jsonb, edit UI in modal + manage page
-- [ ] **F9** Header navigation menu (Lectures / Study Plan / Progress) — `Header.tsx` nav links + `/app/progress` route
-- [ ] **F10** Dashboard layout polish — Upload + Custom Session above grid; My Lectures → header; Manage → pencil icon in filter bar
+- [x] **F8** Editable lecture topics — `user_lecture_settings.topics_override` jsonb, dnd-kit editor in `LectureViewModal` + inline panel in `ManageLectureCard` (ADR-026)
+- [x] **F9** Header navigation menu — `Header.tsx` desktop nav with active-route styling + mobile hamburger drawer; `/app/progress` stub route added
+- [x] **F10** Dashboard layout polish — action row (Upload + Custom Session + Manage pencil), centered hero, FolderBar pill row replacing folder tiles, horizontal-scroll filter pills
+
+### v3 Admin Slices
+
+- [x] **A1** Admin upload bypass — `userIsAdmin()`, `ADMIN_MAX_FILE_SIZE_BYTES` (250 MB), `ADMIN_DAILY_SANITY_CAP`; upload page shows "max 250 MB" for admins (ADR-028)
+- [ ] **A2** True background processing — continue processing if user navigates away; richer progress steps (N12, N13)
+- [ ] **A3** Admin panel additions — Courses section + admin→app navigation link (N15, N16)
+
+### v3 Feature Slice F1
+
+- [ ] **F1-flashcard** Missed-only mode in flashcard review — "Review missed only" button/toggle in `FlashcardView` (N17)
 
 ---
 
@@ -228,7 +238,7 @@ Higher-effort or higher-risk features that depend on v3 stabilizing. These are s
 
 ### Code quality
 
-- [ ] Drop `color_override_legacy` column once no readers remain
+- [ ] Drop `color_override_legacy` column once no readers remain. (Note: `lectures.color` TEXT already dropped — replaced by `theme_colors` JSONB per ADR-023.)
 - [ ] Move admin email + UUIDs out of code into `system_config`
 - [ ] Add `app/sitemap.ts` + `app/robots.ts`
 - [ ] Split `Dashboard.tsx` (33KB) and `ManageLectureCard.tsx` (45KB) into focused subcomponents

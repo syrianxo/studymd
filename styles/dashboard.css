@@ -392,7 +392,15 @@ body::before {
   cursor: pointer;
   transition: all var(--transition);
   position: relative;
+  /* Flex column so smd-card-summary can fill the full row height */
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
+  /* Fill DraggableLectureCard wrapper which is the CSS Grid item (stretched to row height).
+     Without this, the card only grows to its natural content height even though the
+     wrapper fills the full row — the wrapper was added in Slice 9 for DnD and broke
+     the prior auto-stretch behaviour. */
+  height: 100%;
 }
 
 .smd-lecture-card::before {
@@ -659,12 +667,17 @@ body::before {
   touch-action: manipulation;
 }
 
-/* ─── LECTURE CARD UNIFORM HEIGHT (fix #7) ────────────────────────────── */
-/* Cards use flex-column so action buttons are always at the same height */
+/* ─── LECTURE CARD UNIFORM HEIGHT ─────────────────────────────────────── */
+/* Height chain:
+   .smd-lecture-grid (CSS Grid, auto-fill rows)
+     → DraggableLectureCard div (grid item, stretched to row height by grid)
+       → .smd-lecture-card (height: 100% fills the wrapper div)
+         → .smd-card-summary (flex: 1 fills the card)
+           → .smd-card-progress (margin-top: auto pushes progress+buttons to bottom) */
 .smd-lecture-card .smd-card-summary {
   display: flex;
   flex-direction: column;
-  height: 100%;
+  flex: 1;
   min-height: 240px;
 }
 .smd-lecture-card .smd-card-title {
@@ -681,9 +694,20 @@ body::before {
   -webkit-box-orient: vertical;
   min-height: 1em;
 }
-/* Spacer pushes progress + buttons to the bottom */
+/* Spacer pushes progress + buttons to the bottom of every card equally */
 .smd-lecture-card .smd-card-progress { margin-top: auto; margin-bottom: 12px; }
 .smd-lecture-card .smd-card-actions  { margin-top: 0; }
+
+/* ─── FOLDER GROUP — all subfolders in a single grid cell ─────────────── */
+/* The folder group takes ONE grid cell and stacks folder tiles vertically.
+   This keeps folders compact (no wasted space) while lecture cards fill the
+   remaining cells at full height.                                           */
+.smd-folder-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-self: start; /* don't stretch to row height — only as tall as needed */
+}
 
 /* Theme-aware Flashcard / Exam button hover (fix #2 & #3) */
 .btn-flash {
@@ -748,10 +772,11 @@ body::before {
   background: var(--surface);
   border: 1px solid var(--border-bright);
   border-radius: 20px 20px 0 0;
-  padding: 20px 20px 36px;
+  padding: 0;
   width: 100%;
   max-width: 640px;
   max-height: 92vh;
+  max-height: 92dvh;
   overflow-y: auto;
   transform: translateY(40px);
   transition: transform 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
@@ -1086,10 +1111,12 @@ body::before {
   .smd-modal-overlay { align-items: flex-end; }
 }
 
-/* Very small screens — section-actions wraps under title */
+/* Very small screens — keep header on single row, shrink title if needed */
 @media (max-width: 479px) {
-  .smd-section-header { flex-wrap: wrap; gap: 8px; }
-  .smd-section-actions { width: 100%; justify-content: flex-end; }
+  .smd-section-header { flex-wrap: nowrap; gap: 6px; }
+  .smd-section-title { font-size: 17px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; flex: 1; }
+  .smd-section-actions { flex-shrink: 0; }
+  .smd-section-actions .btn { padding: 7px 10px; font-size: 11px; }
 }
 
 /* ─── TABLET ─── */
@@ -1107,6 +1134,7 @@ body::before {
     border-radius: 20px;
     max-width: 680px;
     max-height: 88vh;
+    max-height: 88dvh;
     overflow-y: auto;
   }
   .smd-modal-drag-handle { display: none; }

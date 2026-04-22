@@ -57,6 +57,7 @@ async function fetchAllTags(_userId: string): Promise<string[]> {
 }
 import { ManageLectureCard } from './ManageLectureCard';
 import { TagEditor } from './TagEditor';
+import { TopicEditor } from './TopicEditor';
 import { FilterBar, applyFilters, type FilterState } from './FilterBar';
 import type { LectureWithSettings, Course } from '@/types';
 
@@ -229,6 +230,7 @@ interface ManageModeProps {
   examProgress?: Record<string, number>;
   onOpenLecture?: (internalId: string) => void;
   renderHeaderRight?: React.ReactNode;
+  folders?: Array<{ id: string; name: string; icon: string }>;
 }
 
 export function ManageMode({
@@ -239,6 +241,7 @@ export function ManageMode({
   examProgress = {},
   onOpenLecture,
   renderHeaderRight,
+  folders = [],
 }: ManageModeProps) {
   // ── State ──────────────────────────────────────────────────────────────────
   const [lectures, setLectures] = useState<LectureWithSettings[]>(initialLectures);
@@ -256,6 +259,7 @@ export function ManageMode({
   });
 
   const [tagEditorLecture, setTagEditorLecture] = useState<LectureWithSettings | null>(null);
+  const [topicEditorLecture, setTopicEditorLecture] = useState<LectureWithSettings | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
 
@@ -432,6 +436,22 @@ export function ManageMode({
     []
   );
 
+  const handleTopicSave = useCallback(
+    (id: string, topicsOverride: string[] | null) => {
+      setLectures((ls) =>
+        ls.map((l) => {
+          if (l.internal_id !== id) return l;
+          return {
+            ...l,
+            display_topics: topicsOverride ?? l.topics,
+            settings: { ...l.settings, topics_override: topicsOverride },
+          };
+        })
+      );
+    },
+    []
+  );
+
   // fix #8: title rename in manage mode
   const handleRenameTitle = useCallback(
     (id: string, title: string) => {
@@ -491,6 +511,7 @@ export function ManageMode({
         allTags={allTags}
         filter={filter}
         onChange={setFilter}
+        showArchivedToggle
         showHiddenToggle
       />
 
@@ -508,24 +529,31 @@ export function ManageMode({
                 No lectures match your filters
               </div>
             )}
-            {visibleLectures.map((lecture) => (
-              <ManageLectureCard
-                key={lecture.internal_id}
-                lecture={lecture}
-                isManageMode={isManageMode}
-                activeTheme={activeTheme}
-                flashcardProgress={flashcardProgress[lecture.internal_id]}
-                examProgress={examProgress[lecture.internal_id]}
-                onOpen={() => onOpenLecture?.(lecture.internal_id)}
-                onHide={() => handleHide(lecture.internal_id)}
-                onArchive={() => handleArchive(lecture.internal_id)}
-                onRestore={() => handleRestore(lecture.internal_id)}
-                onEditTags={() => setTagEditorLecture(lecture)}
-                onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
-                onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
-                onRenameTitle={(title) => handleRenameTitle(lecture.internal_id, title)}
-              />
-            ))}
+            {visibleLectures.map((lecture) => {
+              const folder = lecture.settings.group_id
+                ? folders.find(f => f.id === lecture.settings.group_id)
+                : undefined;
+              return (
+                <ManageLectureCard
+                  key={lecture.internal_id}
+                  lecture={lecture}
+                  isManageMode={isManageMode}
+                  activeTheme={activeTheme}
+                  flashcardProgress={flashcardProgress[lecture.internal_id]}
+                  examProgress={examProgress[lecture.internal_id]}
+                  folderName={folder ? `${folder.icon} ${folder.name}` : undefined}
+                  onOpen={() => onOpenLecture?.(lecture.internal_id)}
+                  onHide={() => handleHide(lecture.internal_id)}
+                  onArchive={() => handleArchive(lecture.internal_id)}
+                  onRestore={() => handleRestore(lecture.internal_id)}
+                  onEditTags={() => setTagEditorLecture(lecture)}
+                  onEditTopics={() => setTopicEditorLecture(lecture)}
+                  onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
+                  onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
+                  onRenameTitle={(title) => handleRenameTitle(lecture.internal_id, title)}
+                />
+              );
+            })}
           </div>
         </SortableContext>
       </DndContext>
@@ -539,23 +567,30 @@ export function ManageMode({
             <div className="mm-archived-divider" />
           </div>
           <div className="mm-grid">
-            {archivedLectures.map((lecture) => (
-              <ManageLectureCard
-                key={lecture.internal_id}
-                lecture={lecture}
-                isManageMode={isManageMode}
-                activeTheme={activeTheme}
-                flashcardProgress={flashcardProgress[lecture.internal_id]}
-                examProgress={examProgress[lecture.internal_id]}
-                onOpen={undefined}
-                onHide={() => {}}
-                onArchive={() => {}}
-                onRestore={() => handleRestore(lecture.internal_id)}
-                onEditTags={() => setTagEditorLecture(lecture)}
-                onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
-                onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
-              />
-            ))}
+            {archivedLectures.map((lecture) => {
+              const folder = lecture.settings.group_id
+                ? folders.find(f => f.id === lecture.settings.group_id)
+                : undefined;
+              return (
+                <ManageLectureCard
+                  key={lecture.internal_id}
+                  lecture={lecture}
+                  isManageMode={isManageMode}
+                  activeTheme={activeTheme}
+                  flashcardProgress={flashcardProgress[lecture.internal_id]}
+                  examProgress={examProgress[lecture.internal_id]}
+                  folderName={folder ? `${folder.icon} ${folder.name}` : undefined}
+                  onOpen={undefined}
+                  onHide={() => {}}
+                  onArchive={() => {}}
+                  onRestore={() => handleRestore(lecture.internal_id)}
+                  onEditTags={() => setTagEditorLecture(lecture)}
+                  onEditTopics={() => setTopicEditorLecture(lecture)}
+                  onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
+                  onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
+                />
+              );
+            })}
           </div>
         </div>
       )}
@@ -569,23 +604,30 @@ export function ManageMode({
             <div className="mm-archived-divider" />
           </div>
           <div className="mm-grid">
-            {hiddenLectures.map((lecture) => (
-              <ManageLectureCard
-                key={lecture.internal_id}
-                lecture={lecture}
-                isManageMode={isManageMode}
-                activeTheme={activeTheme}
-                flashcardProgress={flashcardProgress[lecture.internal_id]}
-                examProgress={examProgress[lecture.internal_id]}
-                onOpen={undefined}
-                onHide={() => {}}
-                onArchive={() => {}}
-                onRestore={() => handleUnhide(lecture.internal_id)}
-                onEditTags={() => setTagEditorLecture(lecture)}
-                onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
-                onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
-              />
-            ))}
+            {hiddenLectures.map((lecture) => {
+              const folder = lecture.settings.group_id
+                ? folders.find(f => f.id === lecture.settings.group_id)
+                : undefined;
+              return (
+                <ManageLectureCard
+                  key={lecture.internal_id}
+                  lecture={lecture}
+                  isManageMode={isManageMode}
+                  activeTheme={activeTheme}
+                  flashcardProgress={flashcardProgress[lecture.internal_id]}
+                  examProgress={examProgress[lecture.internal_id]}
+                  folderName={folder ? `${folder.icon} ${folder.name}` : undefined}
+                  onOpen={undefined}
+                  onHide={() => {}}
+                  onArchive={() => {}}
+                  onRestore={() => handleUnhide(lecture.internal_id)}
+                  onEditTags={() => setTagEditorLecture(lecture)}
+                  onEditTopics={() => setTopicEditorLecture(lecture)}
+                  onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
+                  onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
+                />
+              );
+            })}
           </div>
         </div>
       )}
@@ -600,6 +642,18 @@ export function ManageMode({
           allTags={allTags}
           onSave={(tags) => handleTagSave(tagEditorLecture.internal_id, tags)}
           onClose={() => setTagEditorLecture(null)}
+        />
+      )}
+
+      {/* Topic editor modal */}
+      {topicEditorLecture && (
+        <TopicEditor
+          internalId={topicEditorLecture.internal_id}
+          lectureTitle={topicEditorLecture.display_title}
+          currentTopics={topicEditorLecture.settings.topics_override ?? null}
+          originalTopics={topicEditorLecture.topics}
+          onSave={(override) => handleTopicSave(topicEditorLecture.internal_id, override)}
+          onClose={() => setTopicEditorLecture(null)}
         />
       )}
 
