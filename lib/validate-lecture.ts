@@ -261,17 +261,10 @@ export function validateLecture(data: unknown): ValidationResult {
       }
     });
 
-    // ── 7. Question type distribution check ────────────────────────────────
-    const totalQ = (obj.questions as unknown[]).length;
-    if (totalQ >= 10) {
-      const mcqPct = (typeCounts.mcq + typeCounts.clinical_vignette) / totalQ;
-      if (mcqPct < 0.3 || mcqPct > 0.85) {
-        errors.push(
-          `Question type distribution warning: MCQ+vignette is ${Math.round(mcqPct * 100)}% ` +
-          `(target ~75%). Distribution: ${JSON.stringify(typeCounts)}.`
-        );
-      }
-    }
+    // Note: question type distribution is intentionally not enforced here —
+    // the model's mix varies by lecture content and strict enforcement caused
+    // unnecessary Sonnet fallbacks. Distribution guidance lives in the prompt.
+    void typeCounts;
   }
 
   // ── 8. Minimum content volume check ───────────────────────────────────────

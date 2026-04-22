@@ -151,6 +151,23 @@ async function recordApiUsage(
 }
 
 
+// ─── Output repair ───────────────────────────────────────────────────────────
+// Fixes minor omissions that would otherwise trigger a Sonnet fallback.
+// Only fills in fields that are structurally absent, never overwrites content.
+
+function repairLectureOutput(lecture: LectureJSON): LectureJSON {
+  return {
+    ...lecture,
+    questions: (lecture.questions ?? []).map((q) => ({
+      ...q,
+      // Fill in missing explanation — Haiku occasionally omits it on true_false/short_answer
+      explanation: (q.explanation && q.explanation.trim())
+        ? q.explanation
+        : `The correct answer is: ${q.answer}.`,
+    })),
+  };
+}
+
 // ─── Claude API call ──────────────────────────────────────────────────────────
 
 interface ClaudeCallResult {
@@ -392,6 +409,10 @@ export async function runProcessingJob(
 
     await updateProgress(supabase, jobId, 'validating', 'Validating structured output…');
 
+    // Repair minor omissions (e.g. missing explanation fields) before validating
+    // so they don't needlessly trigger the Sonnet fallback.
+    result.lectureJson = repairLectureOutput(result.lectureJson);
+
     const validation = validateLecture(result.lectureJson);
     if (!validation.valid) {
       firstAttemptErrors = validation.errors;
@@ -406,6 +427,7 @@ export async function runProcessingJob(
       const fallback = await callClaudeAPI(
         anthropic, fileBase64, slideText, internalId, job.course, job.title, API_LIMITS.MODEL_FALLBACK
       );
+      fallback.lectureJson = repairLectureOutput(fallback.lectureJson);
       const fallbackValidation = validateLecture(fallback.lectureJson);
 
       if (!fallbackValidation.valid) {

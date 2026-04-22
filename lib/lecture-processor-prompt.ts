@@ -115,8 +115,12 @@ CLINICAL VIGNETTES
   mechanism, or treatment — not trivia.
 
 EXPLANATIONS
-- State what makes the correct answer correct.
-- For MCQ/vignette, briefly state why each wrong option is incorrect (1 clause each).
+- REQUIRED for every single question — mcq, clinical_vignette, true_false, and short_answer.
+  Never omit the "explanation" field.
+- For true_false: explain why the statement is true or false, citing the relevant fact or mechanism.
+- For short_answer: confirm the answer and add one sentence of supporting context.
+- For MCQ/vignette: state what makes the correct answer correct, then briefly explain
+  why each wrong option is incorrect (1 clause each).
 
 DIFFICULTY CALIBRATION
 - easy   — direct recall of a single fact from the slide
