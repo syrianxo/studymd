@@ -32,8 +32,29 @@ export async function GET(request: NextRequest) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  // ── Find claimable jobs ────────────────────────────────────────────────────
+  // ── Expire jobs stuck in pending/converting/generating for > 20 minutes ───
+  // Prevents the processing pill from showing stale jobs indefinitely.
   const supabase = getSupabaseAdmin();
+  const staleThreshold = new Date(Date.now() - 20 * 60 * 1000).toISOString();
+  const { error: expireError } = await supabase
+    .from('processing_jobs')
+    .update({
+      status: 'error',
+      status_detail: 'error',
+      status_message: 'Processing timed out — please try uploading again.',
+      error_message: 'Job timed out after 20 minutes without completing.',
+      completed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .in('status', ['pending', 'converting', 'generating'])
+    .is('completed_at', null)
+    .lt('created_at', staleThreshold);
+
+  if (expireError) {
+    console.error('[cron/process-jobs] Failed to expire stale jobs:', expireError.message);
+  }
+
+  // ── Find claimable jobs ────────────────────────────────────────────────────
 
   const { data: jobs, error } = await supabase
     .from('processing_jobs')

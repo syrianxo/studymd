@@ -243,7 +243,7 @@ async function getGlobalTodayCallCount(): Promise<number> {
  * account compromise.
  */
 export async function checkLimits(
-  _userId: string,
+  userId: string,
   opts?: CheckLimitsOptions,
 ): Promise<LimitsCheckResult> {
   const supabase = getSupabaseAdmin();
@@ -263,23 +263,24 @@ export async function checkLimits(
 
   // ── Standard user path ──────────────────────────────────────────────────────
 
-  // Daily call cap
-  const { data: todayUsage } = await supabase
-    .from('api_usage')
-    .select('calls_count, input_tokens')
+  // Per-user daily call cap — only successful lecture completions count.
+  // Reads from user_daily_calls (incremented by recordUserCall after a
+  // lecture is successfully saved, not on every Claude API attempt).
+  const { data: userCalls } = await supabase
+    .from('user_daily_calls')
+    .select('calls')
+    .eq('user_id', userId)
     .eq('date', today)
     .maybeSingle();
 
-  if (todayUsage) {
-    if (todayUsage.calls_count >= API_LIMITS.MAX_DAILY_CALLS) {
-      return {
-        allowed: false,
-        reason: `Daily processing limit reached (${API_LIMITS.MAX_DAILY_CALLS} lectures/day). Try again tomorrow.`,
-      };
-    }
+  if (userCalls && userCalls.calls >= API_LIMITS.MAX_DAILY_CALLS) {
+    return {
+      allowed: false,
+      reason: `Daily processing limit reached (${API_LIMITS.MAX_DAILY_CALLS} lectures/day). Try again tomorrow.`,
+    };
   }
 
-  // Monthly cost cap
+  // Monthly cost cap (global — protects total API budget regardless of who uses it)
   const monthStart = new Date();
   monthStart.setDate(1);
   monthStart.setHours(0, 0, 0, 0);
@@ -301,4 +302,24 @@ export async function checkLimits(
   }
 
   return { allowed: true };
+}
+
+/**
+ * Records a successful lecture processing call for a specific user.
+ * Called ONLY after the lecture is confirmed saved to the database — not on
+ * every Claude API attempt. This keeps the per-user call count accurate.
+ */
+export async function recordUserCall(userId: string): Promise<void> {
+  const supabase = getSupabaseAdmin();
+  const today = new Date().toISOString().split('T')[0];
+
+  const { error } = await supabase.rpc('increment_user_calls', {
+    p_user_id: userId,
+    p_date: today,
+  });
+
+  if (error) {
+    // Non-fatal: log but don't fail the job — the lecture is already saved.
+    console.error('[api-limits] increment_user_calls RPC failed (non-fatal):', error.message);
+  }
 }

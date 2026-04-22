@@ -18,6 +18,7 @@ import {
   estimateTokensFromBytes,
   userIsAdmin,
   checkLimits,
+  recordUserCall,
 } from '@/lib/api-limits';
 import { buildSystemWithCache } from '@/lib/lecture-processor-prompt';
 import { validateLecture, type LectureJSON } from '@/lib/validate-lecture';
@@ -500,6 +501,9 @@ export async function runProcessingJob(
   }
 
   // ── Record usage and mark complete ─────────────────────────────────────────
+  // recordUserCall: increment per-user successful lecture count ONLY here, after
+  // confirmed DB insert. Failed attempts and Haiku→Sonnet retries don't count.
+  await recordUserCall(userId);
   await recordApiUsage(supabase, result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED);
 
   const finalCost = estimateCost(result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED);
