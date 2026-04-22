@@ -61,9 +61,11 @@ function getAnthropicClient() {
 }
 
 // ─── Per-model output token limits ───────────────────────────────────────────
+// Haiku max: 8,192. Sonnet max: 64,000 — we use 48K to give room for large
+// lectures (40+ flashcards + 30+ questions) without hitting the hard ceiling.
 const MODEL_MAX_OUTPUT: Record<string, number> = {
   'claude-haiku-4-5-20251001': 8000,
-  'claude-sonnet-4-6':        16000,
+  'claude-sonnet-4-6':        48000,
 };
 
 // ─── Progress helpers ─────────────────────────────────────────────────────────
@@ -413,41 +415,74 @@ export async function runProcessingJob(
 
     await updateProgress(supabase, jobId, 'validating', 'Validating structured output…');
 
-    // Repair minor omissions (e.g. missing explanation fields) before validating
-    // so they don't needlessly trigger the Sonnet fallback.
-    result.lectureJson = repairLectureOutput(result.lectureJson);
+    // Detect truncation before repair/validate — a truncated response has no
+    // usable content and will always fail with misleading "missing field" errors.
+    const isTruncated = (result.lectureJson as unknown as Record<string, unknown>)._truncated === true;
 
-    const validation = validateLecture(result.lectureJson);
-    if (!validation.valid) {
-      firstAttemptErrors = validation.errors;
-      console.warn(
-        `[job-runner] ${API_LIMITS.MODEL_DEFAULT} validation failed (${validation.errors.length} errors). ` +
-        `Retrying with ${API_LIMITS.MODEL_FALLBACK}…`
-      );
+    if (isTruncated) {
+      firstAttemptErrors = ['Output was truncated (max_tokens reached).'];
+      console.warn(`[job-runner] ${API_LIMITS.MODEL_DEFAULT} output truncated. Retrying with ${API_LIMITS.MODEL_FALLBACK}…`);
       await recordApiUsage(supabase, result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED);
-
-      await updateProgress(supabase, jobId, 'generating_questions', `Retrying with ${API_LIMITS.MODEL_FALLBACK}…`);
+      await updateProgress(supabase, jobId, 'generating_questions', `Output too large for Haiku — retrying with ${API_LIMITS.MODEL_FALLBACK}…`);
       usedFallback = true;
       const fallback = await callClaudeAPI(
         anthropic, fileBase64, slideText, internalId, job.course, job.title, API_LIMITS.MODEL_FALLBACK
       );
+      const fallbackTruncated = (fallback.lectureJson as unknown as Record<string, unknown>)._truncated === true;
+      if (fallbackTruncated) {
+        const msg = 'Lecture is too large to process — output exceeded the maximum token limit for both models. Try splitting the lecture into smaller sections.';
+        await recordApiUsage(supabase, fallback.model, fallback.inputTokens, fallback.outputTokens, API_LIMITS.BATCH_API_ENABLED);
+        await markJobError(supabase, jobId, msg);
+        throw new Error(msg);
+      }
       fallback.lectureJson = repairLectureOutput(fallback.lectureJson);
       const fallbackValidation = validateLecture(fallback.lectureJson);
-
       if (!fallbackValidation.valid) {
-        const msg = `Both models produced invalid output. Errors: ${fallbackValidation.errors.slice(0, 5).join('; ')}`;
+        const msg = `Sonnet output invalid after truncation retry. Errors: ${fallbackValidation.errors.slice(0, 5).join('; ')}`;
         await recordApiUsage(supabase, fallback.model, fallback.inputTokens, fallback.outputTokens, API_LIMITS.BATCH_API_ENABLED);
         await markJobError(supabase, jobId, msg);
         throw new Error(msg);
       }
       result = fallback;
+    } else {
+      // Repair minor omissions (e.g. missing explanation fields) before validating
+      // so they don't needlessly trigger the Sonnet fallback.
+      result.lectureJson = repairLectureOutput(result.lectureJson);
+
+      const validation = validateLecture(result.lectureJson);
+      if (!validation.valid) {
+        firstAttemptErrors = validation.errors;
+        console.warn(
+          `[job-runner] ${API_LIMITS.MODEL_DEFAULT} validation failed (${validation.errors.length} errors). ` +
+          `Retrying with ${API_LIMITS.MODEL_FALLBACK}…`
+        );
+        await recordApiUsage(supabase, result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED);
+
+        await updateProgress(supabase, jobId, 'generating_questions', `Retrying with ${API_LIMITS.MODEL_FALLBACK}…`);
+        usedFallback = true;
+        const fallback = await callClaudeAPI(
+          anthropic, fileBase64, slideText, internalId, job.course, job.title, API_LIMITS.MODEL_FALLBACK
+        );
+        fallback.lectureJson = repairLectureOutput(fallback.lectureJson);
+        const fallbackValidation = validateLecture(fallback.lectureJson);
+
+        if (!fallbackValidation.valid) {
+          const msg = `Both models produced invalid output. Errors: ${fallbackValidation.errors.slice(0, 5).join('; ')}`;
+          await recordApiUsage(supabase, fallback.model, fallback.inputTokens, fallback.outputTokens, API_LIMITS.BATCH_API_ENABLED);
+          await markJobError(supabase, jobId, msg);
+          throw new Error(msg);
+        }
+        result = fallback;
+      }
     }
   } catch (err) {
-    // Don't double-wrap errors that already called markJobError
-    if (!(err as Error).message.startsWith('Both models')) {
-      const msg = `Claude API error: ${(err as Error).message}`;
-      await markJobError(supabase, jobId, msg);
-      throw new Error(msg);
+    const msg = (err as Error).message;
+    // These prefixes indicate markJobError was already called — don't double-wrap.
+    const alreadyHandled = ['Both models', 'Lecture is too large', 'Sonnet output invalid', 'Output exceeded'];
+    if (!alreadyHandled.some((prefix) => msg.startsWith(prefix))) {
+      const wrapped = `Claude API error: ${msg}`;
+      await markJobError(supabase, jobId, wrapped);
+      throw new Error(wrapped);
     }
     throw err;
   }
