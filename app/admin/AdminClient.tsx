@@ -32,14 +32,16 @@ interface UserProgress { internal_id: string; lecture_title: string; flashcard_p
 interface Flashcard { id: string; question: string; answer: string; topic: string; slide_number?: number | null; }
 interface ExamQuestion { id: string; type: string; question: string; options?: string[]; correct_answer: string; topic: string; explanation?: string; }
 interface LectureRow {
-  internal_id: string; title: string; subtitle: string | null; course: string;
+  internal_id: string; title: string; subtitle: string | null; course: string; course_id: string | null;
   created_at: string; slide_count: number; original_file: string | null;
   flashcard_count: number; question_count: number; icon: string;
   flashcards?: Flashcard[]; questions?: ExamQuestion[];
 }
 interface FeedbackRow { id: string; user_id: string | null; user_name: string; type: string; message: string; page_url: string | null; status: 'new' | 'reviewed' | 'resolved'; created_at: string; }
+interface CourseRow { id: string; name: string; code: string | null; description: string | null; display_order: number; color: string | null; created_at: string; archived_at: string | null; }
+interface CourseLecture { internal_id: string; title: string; course: string | null; course_id: string | null; }
 interface ConfigRow { key: string; value: unknown; updated_at: string; }
-type Section = 'overview' | 'usage' | 'users' | 'lectures' | 'feedback' | 'config' | 'progress';
+type Section = 'overview' | 'usage' | 'users' | 'lectures' | 'courses' | 'progress' | 'feedback' | 'config';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -893,6 +895,305 @@ await supabase.from('feedback').insert({
   );
 }
 
+// ─── Courses ──────────────────────────────────────────────────────────────────
+
+function CoursesSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') => void }) {
+  const [courses, setCourses] = useState<CourseRow[]>([]);
+  const [lectures, setLectures] = useState<CourseLecture[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [drawerCourse, setDrawerCourse] = useState<CourseRow | null>(null);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editCode, setEditCode] = useState('');
+  const [editColor, setEditColor] = useState('');
+  const [showNew, setShowNew] = useState(false);
+  const [newName, setNewName] = useState('');
+  const [newCode, setNewCode] = useState('');
+  const [newColor, setNewColor] = useState('');
+  const [showArchived, setShowArchived] = useState(false);
+  const [assignSearch, setAssignSearch] = useState('');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [cs, ls] = await Promise.all([
+        apiFetch('/api/admin/courses'),
+        apiFetch('/api/admin/lectures'),
+      ]);
+      setCourses(Array.isArray(cs) ? cs : []);
+      // lectures endpoint returns { lectures: [...] }
+      const lectureArr: CourseLecture[] = (Array.isArray(ls) ? ls : (ls.lectures ?? []));
+      setLectures(lectureArr);
+    } catch (e: any) { onToast(e.message, 'err'); }
+    finally { setLoading(false); }
+  }, [onToast]);
+
+  useEffect(() => { load(); }, [load]);
+
+  function startEdit(c: CourseRow) {
+    setEditId(c.id);
+    setEditName(c.name);
+    setEditCode(c.code ?? '');
+    setEditColor(c.color ?? '');
+  }
+
+  async function saveEdit(id: string) {
+    try {
+      await apiFetch(`/api/admin/courses/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editName, code: editCode || null, color: editColor || null }),
+      });
+      onToast('Course updated.', 'ok');
+      setEditId(null);
+      load();
+    } catch (e: any) { onToast(e.message, 'err'); }
+  }
+
+  async function toggleArchive(c: CourseRow) {
+    try {
+      await apiFetch(`/api/admin/courses/${c.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ archived: !c.archived_at }),
+      });
+      onToast(c.archived_at ? 'Course restored.' : 'Course archived.', 'ok');
+      load();
+    } catch (e: any) { onToast(e.message, 'err'); }
+  }
+
+  async function createCourse() {
+    if (!newName.trim()) { onToast('Name is required.', 'err'); return; }
+    try {
+      await apiFetch('/api/admin/courses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: newName, code: newCode || null, color: newColor || null }),
+      });
+      onToast('Course created.', 'ok');
+      setShowNew(false);
+      setNewName(''); setNewCode(''); setNewColor('');
+      load();
+    } catch (e: any) { onToast(e.message, 'err'); }
+  }
+
+  async function assignLecture(lectureId: string) {
+    if (!drawerCourse) return;
+    try {
+      await apiFetch(`/api/admin/courses/${drawerCourse.id}/assign-lectures`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lectureIds: [lectureId] }),
+      });
+      onToast('Lecture assigned.', 'ok');
+      load();
+    } catch (e: any) { onToast(e.message, 'err'); }
+  }
+
+  async function unassignLecture(lectureId: string) {
+    if (!drawerCourse) return;
+    try {
+      await apiFetch(`/api/admin/courses/${drawerCourse.id}/unassign-lectures`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ lectureIds: [lectureId] }),
+      });
+      onToast('Lecture removed.', 'ok');
+      load();
+    } catch (e: any) { onToast(e.message, 'err'); }
+  }
+
+  const visible = courses.filter(c => showArchived ? true : !c.archived_at);
+  const drawerLectures = drawerCourse
+    ? lectures.filter(l => l.course_id === drawerCourse.id)
+    : [];
+  const assignableLectures = drawerCourse
+    ? lectures.filter(l =>
+        l.course_id !== drawerCourse.id &&
+        (!assignSearch || l.title.toLowerCase().includes(assignSearch.toLowerCase()))
+      )
+    : [];
+
+  return (
+    <div className="adm-section">
+      <div className="adm-section-header-row">
+        <h2 className="adm-section-title" style={{ margin: 0 }}>
+          Courses <span className="adm-count-badge">{visible.length}</span>
+        </h2>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+          <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: 'var(--text-muted)', cursor: 'pointer' }}>
+            <input type="checkbox" checked={showArchived} onChange={e => setShowArchived(e.target.checked)} />
+            Show archived
+          </label>
+          <button className="adm-btn adm-btn-primary" onClick={() => setShowNew(v => !v)}>+ New Course</button>
+          <button className="adm-btn adm-btn-ghost" style={{ fontSize: 12 }} onClick={load}>↻ Refresh</button>
+        </div>
+      </div>
+
+      {/* ── New course form ── */}
+      {showNew && (
+        <div className="adm-course-new-form">
+          <input className="adm-input" placeholder="Course name *" value={newName} onChange={e => setNewName(e.target.value)} />
+          <input className="adm-input" placeholder="Course code (e.g. PAS 5216)" value={newCode} onChange={e => setNewCode(e.target.value)} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <input type="color" value={newColor || '#5b8dee'} onChange={e => setNewColor(e.target.value)} style={{ width: 36, height: 36, border: 'none', borderRadius: 6, cursor: 'pointer', padding: 2, background: 'none' }} />
+            <span style={{ fontSize: 12, color: 'var(--text-muted)' }}>Accent color</span>
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button className="adm-btn adm-btn-primary" onClick={createCourse}>Create</button>
+            <button className="adm-btn adm-btn-ghost" onClick={() => setShowNew(false)}>Cancel</button>
+          </div>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="adm-loading">Loading…</div>
+      ) : visible.length === 0 ? (
+        <p className="adm-empty">No courses yet.</p>
+      ) : (
+        <div className="adm-table-wrap">
+          <table className="adm-table">
+            <thead>
+              <tr>
+                <th>Color</th>
+                <th>Name</th>
+                <th>Code</th>
+                <th>Lectures</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visible.map(c => {
+                const lecCount = lectures.filter(l => l.course_id === c.id).length;
+                const isEditing = editId === c.id;
+                return (
+                  <tr key={c.id} style={{ opacity: c.archived_at ? 0.5 : 1 }}>
+                    <td>
+                      <div
+                        style={{
+                          width: 20, height: 20, borderRadius: 4,
+                          background: c.color ?? 'var(--border)',
+                          border: '1px solid rgba(255,255,255,0.1)',
+                        }}
+                      />
+                    </td>
+                    <td>
+                      {isEditing ? (
+                        <input className="adm-input adm-input-sm" value={editName} onChange={e => setEditName(e.target.value)} style={{ minWidth: 160 }} />
+                      ) : (
+                        <span style={{ fontWeight: 600 }}>{c.name}</span>
+                      )}
+                    </td>
+                    <td>
+                      {isEditing ? (
+                        <input className="adm-input adm-input-sm" value={editCode} onChange={e => setEditCode(e.target.value)} placeholder="code" style={{ width: 100 }} />
+                      ) : (
+                        <span className="adm-mono" style={{ fontSize: 11 }}>{c.code ?? '—'}</span>
+                      )}
+                    </td>
+                    <td>
+                      <button className="adm-btn adm-btn-ghost" style={{ fontSize: 12 }} onClick={() => setDrawerCourse(c)}>
+                        {lecCount} lecture{lecCount !== 1 ? 's' : ''} ›
+                      </button>
+                    </td>
+                    <td>
+                      {c.archived_at
+                        ? <span className="adm-status-badge adm-status-failed">Archived</span>
+                        : <span className="adm-status-badge adm-status-success">Active</span>}
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                        {isEditing ? (
+                          <>
+                            {/* Color picker inline when editing */}
+                            <input type="color" value={editColor || '#5b8dee'} onChange={e => setEditColor(e.target.value)} style={{ width: 28, height: 28, border: 'none', borderRadius: 4, cursor: 'pointer', padding: 2, background: 'none' }} />
+                            <button className="adm-btn adm-btn-primary" style={{ fontSize: 12 }} onClick={() => saveEdit(c.id)}>Save</button>
+                            <button className="adm-btn adm-btn-ghost" style={{ fontSize: 12 }} onClick={() => setEditId(null)}>Cancel</button>
+                          </>
+                        ) : (
+                          <>
+                            <button className="adm-btn adm-btn-ghost" style={{ fontSize: 12 }} onClick={() => startEdit(c)}>Edit</button>
+                            <button className="adm-btn adm-btn-ghost" style={{ fontSize: 12 }} onClick={() => toggleArchive(c)}>
+                              {c.archived_at ? 'Restore' : 'Archive'}
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {/* ── Lectures drawer ── */}
+      {drawerCourse && (
+        <div className="adm-overlay" onClick={() => { setDrawerCourse(null); setAssignSearch(''); }}>
+          <div className="adm-dialog adm-course-drawer" onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <h3 style={{ margin: 0, fontSize: 18, fontFamily: "'Fraunces', serif" }}>{drawerCourse.name}</h3>
+              <button className="adm-btn adm-btn-ghost" onClick={() => { setDrawerCourse(null); setAssignSearch(''); }}>✕</button>
+            </div>
+
+            <div className="adm-course-drawer-cols">
+              {/* Assigned lectures */}
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', marginBottom: 10 }}>
+                  Assigned ({drawerLectures.length})
+                </div>
+                {drawerLectures.length === 0 ? (
+                  <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>No lectures assigned.</p>
+                ) : (
+                  <div className="adm-course-lecture-list">
+                    {drawerLectures.map(l => (
+                      <div key={l.internal_id} className="adm-course-lecture-row">
+                        <span style={{ flex: 1, fontSize: 13 }}>{l.title}</span>
+                        <button className="adm-btn adm-btn-danger" style={{ fontSize: 11, padding: '3px 8px' }} onClick={() => unassignLecture(l.internal_id)}>Remove</button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Add lectures */}
+              <div>
+                <div style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', color: 'var(--text-muted)', marginBottom: 10 }}>
+                  Add Lectures
+                </div>
+                <input
+                  className="adm-input adm-input-sm"
+                  placeholder="Search lectures…"
+                  value={assignSearch}
+                  onChange={e => setAssignSearch(e.target.value)}
+                  style={{ marginBottom: 8, width: '100%' }}
+                />
+                <div className="adm-course-lecture-list">
+                  {assignableLectures.length === 0 ? (
+                    <p style={{ color: 'var(--text-muted)', fontSize: 13 }}>
+                      {assignSearch ? 'No matches.' : 'All lectures assigned.'}
+                    </p>
+                  ) : assignableLectures.map(l => (
+                    <div key={l.internal_id} className="adm-course-lecture-row">
+                      <span style={{ flex: 1, fontSize: 13 }}>
+                        {l.title}
+                        {l.course && <span style={{ fontSize: 11, color: 'var(--text-muted)', marginLeft: 6 }}>({l.course})</span>}
+                      </span>
+                      <button className="adm-btn adm-btn-primary" style={{ fontSize: 11, padding: '3px 8px' }} onClick={() => assignLecture(l.internal_id)}>+ Add</button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Config ───────────────────────────────────────────────────────────────────
 
 function ConfigSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') => void }) {
@@ -1061,6 +1362,7 @@ const NAV: { id: Section; label: string; icon: string }[] = [
   { id: 'usage',     label: 'API Usage', icon: '⚡' },
   { id: 'users',     label: 'Users',     icon: '👥' },
   { id: 'lectures',  label: 'Lectures',  icon: '📚' },
+  { id: 'courses',   label: 'Courses',   icon: '🗂️' },
   { id: 'progress',  label: 'Progress',  icon: '📈' },
   { id: 'feedback',  label: 'Feedback',  icon: '💬' },
   { id: 'config',    label: 'System',    icon: '⚙️' },
@@ -1117,6 +1419,7 @@ export default function AdminClient({ adminName }: { adminName: string }) {
           {section === 'usage'     && <UsageSection />}
           {section === 'users'     && <UsersSection onToast={showToast} />}
           {section === 'lectures'  && <LecturesSection onToast={showToast} />}
+          {section === 'courses'   && <CoursesSection onToast={showToast} />}
           {section === 'progress'  && <ProgressSection onToast={showToast} />}
           {section === 'feedback'  && <FeedbackSection onToast={showToast} />}
           {section === 'config'    && <ConfigSection onToast={showToast} />}
@@ -1327,5 +1630,17 @@ const css = `
   .adm-user-detail{grid-template-columns:1fr}
   .adm-card-grid{grid-template-columns:1fr}
   .adm-lec-row-counts{display:none}
+  .adm-course-drawer-cols{grid-template-columns:1fr}
+  .adm-course-drawer{max-width:100%!important}
 }
+
+/* ── Courses section ──────────────────────────────────────────────────────── */
+.adm-course-new-form{display:flex;flex-direction:column;gap:10px;padding:16px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:12px;margin-bottom:20px;max-width:480px}
+.adm-input-sm{background:var(--bg,#0d0f14);border:1px solid var(--border,rgba(255,255,255,0.1));border-radius:8px;color:var(--text);font-family:'DM Mono',monospace;font-size:12px;padding:6px 10px;outline:none;min-height:36px}
+.adm-input-sm:focus{border-color:var(--accent)}
+.adm-course-drawer{max-width:760px!important;width:100%}
+.adm-course-drawer-cols{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:8px}
+.adm-course-lecture-list{display:flex;flex-direction:column;gap:6px;max-height:340px;overflow-y:auto}
+.adm-course-lecture-row{display:flex;align-items:center;gap:8px;padding:8px 10px;background:rgba(255,255,255,.03);border-radius:8px;border:1px solid rgba(255,255,255,.06)}
+.adm-course-lecture-row:hover{background:rgba(255,255,255,.06)}
 `;
