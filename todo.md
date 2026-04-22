@@ -45,9 +45,11 @@ _(nothing active — pick next item from Next up)_
 - [x] 6-stage progress UI in UploadModal with live polling + "Safe to navigate away" message
 - [x] ADR-029, `supabase/migrations/20260421_a2_processing_jobs_background_worker.sql`
 
-### Slice A3 — Admin panel additions
-- [ ] Courses section in admin (or merge into Lectures tab) — N15
-- [ ] Admin→app navigation link: easy jump from `/admin` back to `/app` dashboard — N16
+### Slice A3 — Admin panel additions ✅
+- [x] Courses section in admin — separate Courses tab (🗂️) with CRUD, color, archive, lecture-assignment drawer — N15
+- [x] Admin link in header nav with amber ADMIN badge (desktop nav + mobile drawer) — N16
+- [x] `public.courses` table + RLS + 4 seeds; `lectures.course_id` FK + full backfill — ADR-030
+- [x] API: `GET/POST /api/admin/courses`, `PATCH/DELETE /api/admin/courses/[id]`, assign/unassign-lectures sub-routes
 
 ### Slice 10 — F4 + F5 Review mode + 3-tab lecture grid
 - [ ] `slide_annotations` table + RLS + migration

@@ -456,6 +456,40 @@ Copy/paste and fill in:
 
 ---
 
+## ADR-030 · Separate Courses tab in admin panel (Slice A3)
+- **Date:** 2026-04-22 (commit `f3271ea`)
+- **Status:** Accepted
+- **Context:** Admin panel had no way to manage the lecture taxonomy (course names, groupings). `lectures.course` was a free-text string, making it fragile to rename and impossible to bulk-reassign. Two options: (A) merge course management into the Lectures tab; (B) separate Courses tab. Option A clutters the per-lecture CRUD; courses are a taxonomy that lectures belong to, not a lecture property.
+- **Decision:** Separate Courses tab (option B). New `public.courses` table with RLS. Lectures gain a `course_id` FK while keeping the legacy `course` free-text column during the transition period. New code writes `course_id`; reads fall back to `course` if `course_id` is null.
+- **SQL:**
+  ```sql
+  CREATE TABLE IF NOT EXISTS public.courses (
+    id text PRIMARY KEY, name text NOT NULL, code text, description text,
+    display_order integer NOT NULL DEFAULT 0, color text,
+    created_at timestamptz DEFAULT now(), archived_at timestamptz
+  );
+  ALTER TABLE public.courses ENABLE ROW LEVEL SECURITY;
+  CREATE POLICY "authenticated read courses" ON public.courses FOR SELECT TO authenticated USING (archived_at IS NULL);
+  CREATE POLICY "admin manages courses" ON public.courses FOR ALL TO authenticated
+    USING (EXISTS (SELECT 1 FROM public.user_profiles WHERE user_id = auth.uid() AND role = 'admin'));
+  INSERT INTO public.courses (id, name, display_order) VALUES
+    ('anatomy-physiology','Anatomy & Physiology',1),('physical-diagnosis-1','Physical Diagnosis I',2),
+    ('laboratory-diagnosis','Laboratory Diagnosis',3),('demo-course','Demo Course',4)
+  ON CONFLICT DO NOTHING;
+  ALTER TABLE public.lectures ADD COLUMN IF NOT EXISTS course_id text REFERENCES public.courses(id);
+  UPDATE public.lectures SET course_id = CASE course
+    WHEN 'Anatomy & Physiology' THEN 'anatomy-physiology'
+    WHEN 'Physical Diagnosis I' THEN 'physical-diagnosis-1'
+    WHEN 'Laboratory Diagnosis' THEN 'laboratory-diagnosis'
+    WHEN 'Demo Course' THEN 'demo-course' ELSE NULL END WHERE course_id IS NULL;
+  ```
+- **Consequences:**
+  - (+) Admin can rename, recolor, archive courses and bulk-assign lectures via a drawer UI.
+  - (+) `courses` table gives a canonical ID for future package and folder integrations.
+  - (+) All 19 existing lectures backfilled 100%.
+  - (−) `lectures.course` free-text string stays until explicitly migrated; two sources of truth temporarily.
+  - Revisit when: all code paths write `course_id` — then drop `lectures.course` column.
+
 ## ADR-XXX · <Title>
 - **Date:** YYYY-MM-DD (commit `<shortsha>` — "<commit message>")
 - **Status:** Proposed | Accepted | Superseded by ADR-YYY | Deprecated

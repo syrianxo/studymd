@@ -12,7 +12,7 @@ export async function GET() {
 
   const { data: lectures, error } = await supabase
     .from('lectures')
-    .select('internal_id, title, course, created_at, slide_count, original_file, json_data, icon')
+    .select('internal_id, title, course, course_id, created_at, slide_count, original_file, json_data, icon')
     .order('created_at', { ascending: false });
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -25,6 +25,7 @@ export async function GET() {
       internal_id:     l.internal_id,
       title:           l.title,
       course:          l.course,
+      course_id:       l.course_id,
       created_at:      l.created_at,
       slide_count:     l.slide_count,
       original_file:   l.original_file,
