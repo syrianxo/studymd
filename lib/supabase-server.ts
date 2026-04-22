@@ -64,7 +64,7 @@ export async function fetchUserPreferences(userId: string) {
       .single(),
     supabase
       .from('user_profiles')
-      .select('is_primary')
+      .select('is_primary, role')
       .eq('user_id', userId)
       .single(),
   ]);
@@ -75,6 +75,7 @@ export async function fetchUserPreferences(userId: string) {
     display_name: prefsResult.data?.display_name ?? null,
     // is_primary is authoritative on user_profiles, not user_preferences
     is_primary: profileResult.data?.is_primary ?? false,
+    role: (profileResult.data?.role ?? 'student') as string,
   };
 }
 

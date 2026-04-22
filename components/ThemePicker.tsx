@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { Theme } from '@/types';
+import { THEMES, migrateThemeId } from '@/lib/themes';
 
 async function saveUserTheme(userId: string, theme: string): Promise<void> {
   await fetch('/api/preferences', {
@@ -11,19 +12,6 @@ async function saveUserTheme(userId: string, theme: string): Promise<void> {
     body: JSON.stringify({ theme }),
   });
 }
-
-interface ThemeDef {
-  id: Theme;
-  label: string;
-  swatch: string;
-  glow: string;
-}
-
-const THEMES: ThemeDef[] = [
-  { id: 'midnight', label: 'Midnight', swatch: '#5b8dee', glow: '#5b8dee44' },
-  { id: 'pink',     label: 'Pink',     swatch: '#f472b6', glow: '#f472b644' },
-  { id: 'forest',   label: 'Forest',   swatch: '#10b981', glow: '#10b98144' },
-];
 
 export function applyTheme(theme: Theme): void {
   document.documentElement.dataset.theme = theme;
@@ -38,12 +26,15 @@ interface ThemePickerProps {
   userId: string;
   initialTheme: Theme;
   variant?: 'compact' | 'panel';
+  /** Called with the new theme after DOM and localStorage are updated (before API response). */
+  onThemeChange?: (theme: Theme) => void;
 }
 
-export function ThemePicker({ userId, initialTheme, variant = 'compact' }: ThemePickerProps) {
-  const [active, setActive]     = useState<Theme>(initialTheme);
-  const [expanded, setExpanded] = useState(false);
-  const [saving, setSaving]     = useState(false);
+export function ThemePicker({ userId, initialTheme, variant = 'compact', onThemeChange }: ThemePickerProps) {
+  const [active, setActive]         = useState<Theme>(initialTheme);
+  const [expanded, setExpanded]     = useState(false);
+  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle');
+  const savedTimerRef               = useRef<ReturnType<typeof setTimeout> | null>(null);
   const wrapRef = useRef<HTMLDivElement>(null);
 
   // Only apply initialTheme if the DOM has no saved theme already set.
@@ -51,10 +42,12 @@ export function ThemePicker({ userId, initialTheme, variant = 'compact' }: Theme
   // localStorage theme on every mount.
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('studymd_theme') as Theme | null;
-      if (saved === 'midnight' || saved === 'pink' || saved === 'forest') {
-        setActive(saved);
-        applyTheme(saved);
+      const raw = localStorage.getItem('studymd_theme');
+      const migrated = raw ? migrateThemeId(raw) : null;
+      if (migrated) {
+        if (raw !== migrated) localStorage.setItem('studymd_theme', migrated);
+        setActive(migrated);
+        applyTheme(migrated);
       } else {
         applyTheme(initialTheme);
       }
@@ -80,11 +73,19 @@ export function ThemePicker({ userId, initialTheme, variant = 'compact' }: Theme
     if (theme === active && variant === 'compact') { setExpanded(false); return; }
     setActive(theme);
     applyTheme(theme);
+    onThemeChange?.(theme);
     if (variant === 'compact') setExpanded(false);
-    setSaving(true);
-    try { await saveUserTheme(userId, theme); }
-    catch (err) { console.error('Failed to save theme:', err); }
-    finally { setSaving(false); }
+    setSaveStatus('saving');
+    if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    try {
+      await saveUserTheme(userId, theme);
+      setSaveStatus('saved');
+      // Auto-hide "Saved" after 2 s
+      savedTimerRef.current = setTimeout(() => setSaveStatus('idle'), 2000);
+    } catch (err) {
+      console.error('Failed to save theme:', err);
+      setSaveStatus('idle');
+    }
   }, [active, userId, variant]);
 
   // ── Panel variant: all swatches always visible ───────────────────────────
@@ -93,6 +94,16 @@ export function ThemePicker({ userId, initialTheme, variant = 'compact' }: Theme
       <>
         <style>{pickerCss}</style>
         <div className="tp-panel-wrap" aria-label="Theme picker">
+          {/* Header row: "Theme" label + inline Saving/Saved indicator */}
+          <div className="tp-panel-header">
+            <span className="tp-panel-heading">Theme</span>
+            {saveStatus === 'saving' && (
+              <span className="tp-saving-inline" aria-live="polite">Saving…</span>
+            )}
+            {saveStatus === 'saved' && (
+              <span className="tp-saving-inline is-saved" aria-live="polite">Saved</span>
+            )}
+          </div>
           {THEMES.map(t => (
             <button
               key={t.id}
@@ -109,7 +120,6 @@ export function ThemePicker({ userId, initialTheme, variant = 'compact' }: Theme
               {active === t.id && <span className="tp-panel-check" aria-hidden>✓</span>}
             </button>
           ))}
-          {saving && <span className="tp-saving" aria-live="polite">saving…</span>}
         </div>
       </>
     );
@@ -151,7 +161,8 @@ export function ThemePicker({ userId, initialTheme, variant = 'compact' }: Theme
           title={`Theme: ${activeDef.label}`}
           onClick={() => setExpanded(o => !o)}
         />
-        {saving && <span className="tp-saving" aria-live="polite">saving…</span>}
+        {saveStatus === 'saving' && <span className="tp-saving" aria-live="polite">saving…</span>}
+        {saveStatus === 'saved'  && <span className="tp-saving" aria-live="polite">saved</span>}
       </div>
     </>
   );
@@ -247,6 +258,38 @@ const pickerCss = `
   flex-shrink: 0;
 }
 
+/* ── Panel header row with inline Saving/Saved indicator ────────────── */
+.tp-panel-header {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 6px;
+  padding: 0 10px;
+}
+.tp-panel-heading {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  color: var(--text-muted, #6b7280);
+  font-family: 'DM Mono', monospace;
+}
+.tp-saving-inline {
+  font-size: 10px;
+  font-family: 'DM Mono', monospace;
+  color: var(--text-muted, #6b7280);
+  opacity: 0;
+  animation: tp-fade-in 180ms forwards;
+  white-space: nowrap;
+}
+.tp-saving-inline.is-saved {
+  color: var(--accent, #5b8dee);
+}
+@keyframes tp-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 0.8; }
+}
+
 /* ── Shared ──────────────────────────────────────────────────────────── */
 .tp-saving {
   font-size: 10px;
@@ -259,11 +302,13 @@ const pickerCss = `
 `;
 
 // ── SSR flash-prevention script ──────────────────────────────────────────────
+// Cannot import modules — migration logic is inlined.
 export const THEME_INIT_SCRIPT = `
 (function() {
   try {
     var t = localStorage.getItem('studymd_theme');
-    if (t === 'midnight' || t === 'pink' || t === 'forest') {
+    if (t === 'pink') { t = 'aurora'; localStorage.setItem('studymd_theme', 'aurora'); }
+    if (t === 'midnight' || t === 'aurora' || t === 'forest') {
       document.documentElement.dataset.theme = t;
     } else {
       document.documentElement.dataset.theme = 'midnight';

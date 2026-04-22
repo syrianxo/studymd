@@ -1,14 +1,19 @@
 // components/LectureGrid.tsx
 // Grid layout of lecture cards. LectureViewModal is kept permanently mounted
 // to prevent the re-render flash on open/close — only its content swaps.
+//
+// Folder tiles are NO LONGER rendered inside the grid — they live in FolderBar
+// above the grid (see Dashboard.tsx). DndContext has been lifted to Dashboard
+// so FolderBar pills can be droppable targets while cards here are drag sources.
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import { useDraggable } from '@dnd-kit/core';
 import LectureCard from './LectureCard';
 import LectureViewModal from './LectureViewModal';
 import type { Lecture } from '@/hooks/useUserLectures';
 import type { LectureProgress } from '@/hooks/useProgress';
-import type { Course, Theme } from '@/types';
+import type { Course, Theme, Folder } from '@/types';
 
 interface LectureGridProps {
   lectures: Lecture[];
@@ -22,9 +27,16 @@ interface LectureGridProps {
   onHide?: (lectureId: string) => void;
   onArchive?: (lectureId: string) => void;
   onRenameTitle?: (lectureId: string, title: string) => void;
+  onTopicsChanged?: (lectureId: string, override: string[] | null) => void;
   /** Reserved for future plan integration — passed but not rendered on cards */
   planNextReview?: Record<string, string>;
   planTestDate?: string;
+  /** When provided, lecture cards become draggable (drag to FolderBar pills) */
+  onMoveToFolder?: (lectureId: string, folderId: string | null) => void;
+  /** IDs of cards currently playing their CSS fade-out exit animation */
+  exitingLectureIds?: Set<string>;
+  /** All user folders — used to resolve folder name for the folder-as-tag chip */
+  allFolders?: Folder[];
 }
 
 export default function LectureGrid({
@@ -32,9 +44,12 @@ export default function LectureGrid({
   activeTheme,
   onStartFlash, onStartExam,
   onChangeCourse, onChangeColor,
-  onHide, onArchive, onRenameTitle,
+  onHide, onArchive, onRenameTitle, onTopicsChanged,
   planNextReview: _planNextReview = {},
   planTestDate: _planTestDate,
+  onMoveToFolder,
+  exitingLectureIds,
+  allFolders = [],
 }: LectureGridProps) {
   const [openLecture, setOpenLecture] = useState<Lecture | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -82,21 +97,28 @@ export default function LectureGrid({
       <div className="smd-lecture-grid">
         {lectures.map(lecture => {
           const progress = progressByLecture[lecture.internal_id] ?? null;
+          const isExiting = exitingLectureIds?.has(lecture.internal_id) ?? false;
           return (
-            <LectureCard
+            <DraggableLectureCard
               key={lecture.internal_id}
-              lecture={lecture}
-              activeTheme={activeTheme}
-              flashcardProgress={progress?.mastery_pct ?? 0}
-              examProgress={progress?.best_exam_score ?? 0}
-              onOpen={() => handleOpen(lecture)}
-              onFlashcards={() => onStartFlash(lecture.internal_id)}
-              onExam={() => onStartExam(lecture.internal_id)}
-              onChangeCourse={onChangeCourse ? (c) => onChangeCourse(lecture.internal_id, c) : undefined}
-              onChangeColor={onChangeColor ? (c) => onChangeColor(lecture.internal_id, c) : undefined}
-              onHide={onHide ? () => onHide(lecture.internal_id) : undefined}
-              onArchive={onArchive ? () => onArchive(lecture.internal_id) : undefined}
-            />
+              lectureId={lecture.internal_id}
+              enabled={!!onMoveToFolder}
+              isExiting={isExiting}
+            >
+              <LectureCard
+                lecture={lecture}
+                activeTheme={activeTheme}
+                flashcardProgress={progress?.mastery_pct ?? 0}
+                examProgress={progress?.best_exam_score ?? 0}
+                onOpen={() => handleOpen(lecture)}
+                onFlashcards={() => onStartFlash(lecture.internal_id)}
+                onExam={() => onStartExam(lecture.internal_id)}
+                onChangeCourse={onChangeCourse ? (c) => onChangeCourse(lecture.internal_id, c) : undefined}
+                onChangeColor={onChangeColor ? (c) => onChangeColor(lecture.internal_id, c) : undefined}
+                onHide={onHide ? () => onHide(lecture.internal_id) : undefined}
+                onArchive={onArchive ? () => onArchive(lecture.internal_id) : undefined}
+              />
+            </DraggableLectureCard>
           );
         })}
       </div>
@@ -122,10 +144,71 @@ export default function LectureGrid({
         onRenameTitle={onRenameTitle && openLecture ? (t) => onRenameTitle(openLecture.internal_id, t) : undefined}
         onHide={onHide && openLecture ? () => { onHide(openLecture.internal_id); handleClose(); } : undefined}
         onArchive={onArchive && openLecture ? () => { onArchive(openLecture.internal_id); handleClose(); } : undefined}
+        onTopicsChanged={openLecture ? (override) => {
+          // Update openLecture so chips re-render immediately without waiting for a refetch
+          setOpenLecture(prev => prev ? {
+            ...prev,
+            topics_override: override,
+            display_topics: override ?? prev.topics,
+          } : null);
+          onTopicsChanged?.(openLecture.internal_id, override);
+        } : undefined}
+        folderName={openLecture?.group_id
+          ? allFolders.find(f => f.id === openLecture.group_id)?.name
+          : undefined}
+        folderIcon={openLecture?.group_id
+          ? allFolders.find(f => f.id === openLecture.group_id)?.icon
+          : undefined}
+        onRemoveFromFolder={onMoveToFolder && openLecture?.group_id
+          ? () => {
+              // Optimistically clear the folder tag immediately so the chip
+              // vanishes in the modal without waiting for the backend round-trip.
+              setOpenLecture(prev => prev ? { ...prev, group_id: null } : null);
+              onMoveToFolder(openLecture.internal_id, null);
+            }
+          : undefined}
       />
     </>
   );
 }
+
+// ─── Drag-to-folder helpers ───────────────────────────────────────────────────
+
+interface DraggableLectureCardProps {
+  lectureId: string;
+  enabled: boolean;
+  isExiting?: boolean;
+  children: React.ReactNode;
+}
+
+function DraggableLectureCard({ lectureId, enabled, isExiting = false, children }: DraggableLectureCardProps) {
+  const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
+    id: `lecture-${lectureId}`,
+    disabled: !enabled,
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      {...(enabled ? listeners : {})}
+      {...(enabled ? attributes : {})}
+      style={{
+        // height: 100% is essential — this div is the CSS Grid item.
+        // Without it, .smd-lecture-card inside can't fill the row height.
+        height: '100%',
+        opacity: isDragging ? 0.4 : isExiting ? 0 : 1,
+        transform: isExiting ? 'scale(0.88)' : undefined,
+        // Only apply the transition during exit so normal renders are instant
+        transition: isExiting ? 'opacity 0.25s ease, transform 0.25s ease' : undefined,
+        cursor: enabled ? 'grab' : undefined,
+        pointerEvents: isExiting ? 'none' : undefined,
+      }}
+    >
+      {children}
+    </div>
+  );
+}
+
+// ─── Skeleton ─────────────────────────────────────────────────────────────────
 
 function SkeletonCard() {
   return (

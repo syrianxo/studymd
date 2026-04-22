@@ -4,6 +4,13 @@
 // - Shows stacked toasts (bottom-center) with auto-dismiss.
 // - Types: 'ok' (green), 'err' (red), 'info' (accent blue)
 //
+// Save-status rule:
+//   INLINE indicator (small text/state next to the control) — preferred when
+//   the save has an obvious UI owner: theme picker, tag editor, topic rename,
+//   button label changes like "Save Tags" → "Saving…".
+//   TOAST (this component) — use only for saves with no obvious anchor:
+//   bulk operations, page-level preference saves, or cross-component actions.
+//
 // Usage:
 //   const { toast } = useToast();
 //   toast('Saved!', 'ok');

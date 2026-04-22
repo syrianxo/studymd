@@ -15,7 +15,7 @@ export async function GET(req: NextRequest) {
 
   const { data, error } = await supabase
     .from('lectures')
-    .select('internal_id, title, subtitle, course, color, icon, slide_count, original_file, json_data, created_at')
+    .select('internal_id, title, subtitle, course, icon, slide_count, original_file, json_data, created_at')
     .eq('internal_id', id)
     .single();
 
@@ -50,9 +50,9 @@ export async function PUT(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  // updates = patch top-level scalar fields (title, subtitle, course, color, icon)
+  // updates = patch top-level scalar fields (title, subtitle, course, icon)
   if (body.updates) {
-    const allowed = ['title', 'subtitle', 'course', 'color', 'icon'];
+    const allowed = ['title', 'subtitle', 'course', 'icon'];
     const patch: Record<string, unknown> = {};
     for (const key of allowed) {
       if (body.updates[key] !== undefined) patch[key] = body.updates[key];

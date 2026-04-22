@@ -7,8 +7,9 @@ import type { NextRequest } from "next/server";
 // Constants
 // ---------------------------------------------------------------------------
 
-const VALID_THEMES = ["midnight", "pink", "forest"] as const;
-type Theme = (typeof VALID_THEMES)[number];
+import { THEME_IDS, isValidThemeId } from "@/lib/themes";
+import type { ThemeId as Theme } from "@/lib/themes";
+const VALID_THEMES = THEME_IDS;
 
 // Default preferences returned when no row exists yet
 const DEFAULT_PREFERENCES = {
