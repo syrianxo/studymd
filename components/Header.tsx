@@ -228,8 +228,8 @@ export default function Header({
             </span>
           </Link>
 
-          {/* Background-processing pill — visible on all pages when a job is in flight */}
-          <ProcessingPill />
+          {/* Background-processing pill — polls DB; visible on all pages when a job is in flight */}
+          {userId && <ProcessingPill userId={userId} />}
 
           {/* Pomodoro mini-pill — hidden <768px (120px+ min-width collides with mobile icons). ADR-022. */}
           <PomodoroMiniPill />

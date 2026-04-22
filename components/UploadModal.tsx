@@ -326,6 +326,8 @@ export default function UploadModal({
         const user = session.user;
 
       // Create a processing_jobs row so the server can track status.
+      // internal_id is stored here so the Vercel Cron recovery path uses the
+      // same ID as the slides that were just uploaded to slides/<tempId>/.
       const { data: jobRow, error: jobError } = await supabase
         .from("processing_jobs")
         .insert({
@@ -336,6 +338,7 @@ export default function UploadModal({
           course,
           title: title.trim() || file.name.replace(/\.[^.]+$/, ""),
           slide_count: blobs.length,
+          internal_id: tempId,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })
@@ -400,6 +403,11 @@ export default function UploadModal({
       generatePromise
         .then(async (response) => {
           if (!activeJobIdRef.current) return; // user already navigated away
+          if (response.status === 409) {
+            // The Vercel cron claimed the job before the inline call.
+            // Polling is already watching for completion — nothing to do here.
+            return;
+          }
           if (!response.ok) {
             const body = await response.json().catch(() => ({}));
             throw new Error(body.error ?? `Server error ${response.status}`);

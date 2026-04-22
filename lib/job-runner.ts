@@ -312,7 +312,7 @@ export async function runProcessingJob(
   // ── Fetch job data ─────────────────────────────────────────────────────────
   const { data: job, error: jobFetchError } = await supabase
     .from('processing_jobs')
-    .select('job_id, user_id, storage_path, course, title, slide_count, file_size_bytes')
+    .select('job_id, user_id, storage_path, course, title, slide_count, file_size_bytes, internal_id')
     .eq('job_id', jobId)
     .single();
 
@@ -320,7 +320,10 @@ export async function runProcessingJob(
     throw new Error(`Could not fetch job ${jobId}: ${jobFetchError?.message ?? 'not found'}`);
   }
 
-  const internalId = opts.internalId ?? `lec_${Date.now().toString(16)}`;
+  // Priority: caller-supplied (inline path) → DB-stored (cron path) → generated fallback.
+  // Storing internal_id at job creation ensures the cron uses the same ID as
+  // the slides already uploaded to slides/<internal_id>/ by the client.
+  const internalId = opts.internalId ?? job.internal_id ?? `lec_${Date.now().toString(16)}`;
   const userId = job.user_id;
 
   // ── Token pre-flight ───────────────────────────────────────────────────────

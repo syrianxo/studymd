@@ -1,27 +1,35 @@
 'use client';
 
 /**
- * ProcessingPill — header indicator for a background lecture processing job.
+ * ProcessingPill — header indicator for an in-flight lecture processing job.
  *
- * Architecture:
- *   - UploadModal writes job metadata to localStorage['smd_active_job'] when
- *     background processing begins, and clears it on completion/error.
- *   - This component reads that key, then polls processing_jobs every 3s to
- *     get the current stage and detect completion.
- *   - A 1-second interval drives the countdown display.
- *   - Uses the 'storage' event to catch updates from other tabs, plus a 2s
- *     local poll to catch same-tab navigation (storage events don't fire on
- *     the originating tab).
+ * Polls processing_jobs every 5 s for any job belonging to this user that is
+ * not yet complete. When found, shows a spinner pill with the lecture title,
+ * current server stage, and a rough countdown based on slide_count.
+ *
+ * Uses DB polling instead of localStorage so it works reliably across page
+ * navigations, SSR, and the cron-recovery path (where localStorage would have
+ * the wrong internalId).
  */
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase';
 
+// Re-exported so UploadModal can import the type (still useful for other
+// consumers that want to store job metadata).
 export interface ActiveJobMeta {
   jobId: string;
   title: string;
-  startedAt: number;       // Date.now() when background processing began
+  startedAt: number;
+  estimatedSeconds: number;
+}
+
+interface PillJob {
+  jobId: string;
+  title: string;
+  stageId: string;
+  startedAt: number;       // ms epoch (created_at of the job)
   estimatedSeconds: number;
 }
 
@@ -32,8 +40,14 @@ const STAGE_LABELS: Record<string, string> = {
   generating_questions:  'Generating questions',
   validating:            'Validating',
   saving:                'Saving',
-  complete:              'Done',
 };
+
+const ACTIVE_STATUSES = ['pending', 'converting', 'generating'];
+
+/** Mirrors estimateProcessingSeconds in UploadModal. */
+function estimateSecs(slideCount: number | null): number {
+  return Math.min(180, Math.max(60, Math.round(25 + (slideCount ?? 20) * 2.2)));
+}
 
 function fmtRemaining(seconds: number): string {
   if (seconds <= 0) return 'almost done…';
@@ -43,94 +57,83 @@ function fmtRemaining(seconds: number): string {
   return s > 0 ? `~${m}m ${s}s` : `~${m}m`;
 }
 
-export function ProcessingPill() {
-  const [activeJob, setActiveJob] = useState<ActiveJobMeta | null>(null);
-  const [stageId, setStageId] = useState<string>('fetching_file');
-  const [secondsLeft, setSecondsLeft] = useState<number>(0);
+interface ProcessingPillProps {
+  userId: string;
+}
+
+export function ProcessingPill({ userId }: ProcessingPillProps) {
+  const [job, setJob] = useState<PillJob | null>(null);
+  const [secondsLeft, setSecondsLeft] = useState(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const countdownRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const localPollRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const supabase = createClient();
 
-  function readJob(): ActiveJobMeta | null {
-    try {
-      const raw = localStorage.getItem('smd_active_job');
-      if (!raw) return null;
-      return JSON.parse(raw) as ActiveJobMeta;
-    } catch { return null; }
-  }
-
-  function applyJob(job: ActiveJobMeta | null) {
-    setActiveJob(job);
-    if (job) {
-      const elapsed = Math.floor((Date.now() - job.startedAt) / 1000);
-      setSecondsLeft(Math.max(0, job.estimatedSeconds - elapsed));
-    }
-  }
-
-  // Bootstrap: read localStorage on mount; re-read on storage events (cross-tab)
-  // and on a local 2s poll (same-tab navigation doesn't fire the storage event).
+  // Poll DB for active jobs belonging to this user
   useEffect(() => {
-    applyJob(readJob());
-
-    function onStorage() { applyJob(readJob()); }
-    window.addEventListener('storage', onStorage);
-
-    localPollRef.current = setInterval(() => applyJob(readJob()), 2000);
-
-    return () => {
-      window.removeEventListener('storage', onStorage);
-      if (localPollRef.current) clearInterval(localPollRef.current);
-    };
-  }, []);
-
-  // DB polling — fires whenever activeJob.jobId changes
-  useEffect(() => {
-    if (pollRef.current) clearInterval(pollRef.current);
-    if (!activeJob) return;
-
-    const jobId = activeJob.jobId;
+    if (!userId) return;
 
     async function poll() {
       const { data } = await supabase
         .from('processing_jobs')
-        .select('status, status_detail')
-        .eq('job_id', jobId)
-        .single();
+        .select('job_id, title, status, status_detail, created_at, slide_count')
+        .eq('user_id', userId)
+        .in('status', ACTIVE_STATUSES)
+        .is('completed_at', null)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
 
-      if (!data) return;
-
-      if (data.status === 'complete' || data.status === 'error') {
-        localStorage.removeItem('smd_active_job');
-        setActiveJob(null);
-        if (pollRef.current) clearInterval(pollRef.current);
+      if (!data) {
+        setJob(null);
         return;
       }
-      if (data.status_detail) setStageId(data.status_detail as string);
+
+      const estSecs = estimateSecs(data.slide_count ?? null);
+      const startedAt = new Date(data.created_at).getTime();
+
+      setJob((prev) => {
+        // Only update if something changed (avoid unnecessary re-renders)
+        if (
+          prev?.jobId === data.job_id &&
+          prev?.stageId === (data.status_detail ?? data.status)
+        ) {
+          return prev;
+        }
+        return {
+          jobId: data.job_id,
+          title: data.title ?? 'Lecture',
+          stageId: data.status_detail ?? data.status,
+          startedAt,
+          estimatedSeconds: estSecs,
+        };
+      });
+
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+      setSecondsLeft(Math.max(0, estSecs - elapsed));
     }
 
     poll();
-    pollRef.current = setInterval(poll, 3000);
+    pollRef.current = setInterval(poll, 5000);
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeJob?.jobId]);
+  }, [userId]);
 
-  // Countdown — ticks every second while there's an active job
+  // Countdown ticker
   useEffect(() => {
     if (countdownRef.current) clearInterval(countdownRef.current);
-    if (!activeJob) return;
+    if (!job) return;
 
     countdownRef.current = setInterval(() => {
-      const elapsed = Math.floor((Date.now() - activeJob.startedAt) / 1000);
-      setSecondsLeft(Math.max(0, activeJob.estimatedSeconds - elapsed));
+      const elapsed = Math.floor((Date.now() - job.startedAt) / 1000);
+      setSecondsLeft(Math.max(0, job.estimatedSeconds - elapsed));
     }, 1000);
 
     return () => { if (countdownRef.current) clearInterval(countdownRef.current); };
-  }, [activeJob?.startedAt, activeJob?.estimatedSeconds]);
+  }, [job?.startedAt, job?.estimatedSeconds]);
 
-  if (!activeJob) return null;
+  if (!job) return null;
 
-  const stageLabel = STAGE_LABELS[stageId] ?? 'Processing';
+  const stageLabel = STAGE_LABELS[job.stageId] ?? 'Processing';
 
   return (
     <>
@@ -138,12 +141,12 @@ export function ProcessingPill() {
       <Link
         href="/app/upload"
         className="smd-proc-pill"
-        aria-label={`Processing lecture: ${activeJob.title} — ${stageLabel}`}
-        title={`${activeJob.title} — ${stageLabel}`}
+        aria-label={`Processing: ${job.title} — ${stageLabel}`}
+        title={`${job.title} — ${stageLabel}`}
       >
         <span className="smd-proc-spinner" aria-hidden="true" />
         <span className="smd-proc-text">
-          <span className="smd-proc-title">{activeJob.title}</span>
+          <span className="smd-proc-title">{job.title}</span>
           <span className="smd-proc-stage">{stageLabel} · {fmtRemaining(secondsLeft)}</span>
         </span>
       </Link>
@@ -205,7 +208,7 @@ const pillCss = `
   font-family: 'DM Mono', monospace;
 }
 
-/* On mobile: only show spinner, hide text to save space */
+/* Mobile: show only the spinner to save header space */
 @media (max-width: 767px) {
   .smd-proc-text { display: none; }
   .smd-proc-pill { padding: 7px 9px; max-width: none; }
