@@ -123,7 +123,9 @@ export default function Header({
         <NavLink href="/app/plans" onClick={() => setDrawerOpen(false)}>My Plans</NavLink>
         <NavLink href="/app/progress" onClick={() => setDrawerOpen(false)}>My Progress</NavLink>
         {isAdmin && (
-          <NavLink href="/admin" onClick={() => setDrawerOpen(false)}>Admin</NavLink>
+          <NavLink href="/admin" onClick={() => setDrawerOpen(false)}>
+            Admin <span className="smd-admin-badge">ADMIN</span>
+          </NavLink>
         )}
         {!hideUploadButton && (
           <div className="smd-drawer-divider" />
@@ -188,7 +190,11 @@ export default function Header({
             <NavLink href="/app/lectures">My Lectures</NavLink>
             <NavLink href="/app/plans">My Plans</NavLink>
             <NavLink href="/app/progress">My Progress</NavLink>
-            {isAdmin && <NavLink href="/admin">Admin</NavLink>}
+            {isAdmin && (
+              <NavLink href="/admin">
+                Admin <span className="smd-admin-badge">ADMIN</span>
+              </NavLink>
+            )}
           </nav>
 
           {/* Mobile centered logo */}
@@ -373,6 +379,22 @@ const headerCss = `
   height: 2px;
   background: var(--accent, #5b8dee);
   border-radius: 1px;
+}
+
+/* Admin nav link badge — elevated route indicator */
+.smd-admin-badge {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  padding: 1px 5px;
+  border-radius: 4px;
+  background: rgba(245, 158, 11, 0.15);
+  color: #f59e0b;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  vertical-align: middle;
+  margin-left: 4px;
+  line-height: 1.5;
 }
 
 /* ── Right row ─────────────────────────────────────────────────────── */
