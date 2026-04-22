@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { PomodoroMiniPill } from '@/components/PomodoroTimer';
+import { ProcessingPill } from '@/components/ProcessingPill';
 import { ThemePicker } from './ThemePicker';
 import type { Theme } from '@/types';
 
@@ -226,6 +227,9 @@ export default function Header({
               {isProcessing ? 'Processing…' : 'Upload'}
             </span>
           </Link>
+
+          {/* Background-processing pill — visible on all pages when a job is in flight */}
+          <ProcessingPill />
 
           {/* Pomodoro mini-pill — hidden <768px (120px+ min-width collides with mobile icons). ADR-022. */}
           <PomodoroMiniPill />

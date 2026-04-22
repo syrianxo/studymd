@@ -22,6 +22,7 @@ import {
   isPptx,
 } from "@/lib/slide-converter";
 import { createClient } from "@/lib/supabase";
+import type { ActiveJobMeta } from "@/components/ProcessingPill";
 
 
 // ---------------------------------------------------------------------------
@@ -62,6 +63,10 @@ interface UploadState {
   serverMessage?: string;
   /** Whether processing is running in the background (user can navigate away) */
   isBackgroundProcessing?: boolean;
+  /** Epoch ms when background processing began (for countdown) */
+  processingStartedAt?: number;
+  /** Estimated total processing time in seconds (for countdown) */
+  estimatedSeconds?: number;
 }
 
 const INITIAL_STATE: UploadState = {
@@ -71,6 +76,20 @@ const INITIAL_STATE: UploadState = {
   errorMessage: null,
   createdInternalId: null,
 };
+
+/** Rough estimate of server-side processing time based on slide count.
+ *  Formula: 25s base overhead + ~2.2s per slide for Claude generation.
+ *  Clamped to [60, 180] seconds. */
+function estimateProcessingSeconds(slideCount: number): number {
+  return Math.min(180, Math.max(60, Math.round(25 + slideCount * 2.2)));
+}
+
+function fmtEstimate(seconds: number): string {
+  if (seconds < 60) return `${seconds}s`;
+  const m = Math.floor(seconds / 60);
+  const s = seconds % 60;
+  return s > 0 ? `${m}m ${s}s` : `${m}m`;
+}
 
 const VALID_COURSES = [
   "Physical Diagnosis I",
@@ -137,6 +156,7 @@ export default function UploadModal({
       if (data.status === "complete") {
         clearInterval(pollIntervalRef.current!);
         pollIntervalRef.current = null;
+        localStorage.removeItem("smd_active_job");
         setUploadState({
           stage: "done",
           stageProgress: 100,
@@ -149,6 +169,7 @@ export default function UploadModal({
       } else if (data.status === "error") {
         clearInterval(pollIntervalRef.current!);
         pollIntervalRef.current = null;
+        localStorage.removeItem("smd_active_job");
         setUploadState({
           stage: "error",
           stageProgress: 0,
@@ -325,15 +346,30 @@ export default function UploadModal({
 
       // ── Stage 3b: Fire generate request + start polling ───────────────────
       // Switch to background-processing mode so the user can navigate away.
+      const procStartedAt = Date.now();
+      const procEstSeconds = estimateProcessingSeconds(blobs.length);
+
+      // Persist job metadata in localStorage so ProcessingPill can pick it up
+      // from any page the user navigates to.
+      const jobMeta: ActiveJobMeta = {
+        jobId: jobRow.job_id,
+        title: title.trim() || file.name.replace(/\.[^.]+$/, ""),
+        startedAt: procStartedAt,
+        estimatedSeconds: procEstSeconds,
+      };
+      localStorage.setItem("smd_active_job", JSON.stringify(jobMeta));
+
       setUploadState({
         stage: "generating",
         stageProgress: 0,
-        progressLabel: "Sending to Claude…",
+        progressLabel: `Sending to Claude… (est. ${fmtEstimate(procEstSeconds)})`,
         errorMessage: null,
         createdInternalId: null,
         serverStageId: "fetching_file",
         serverMessage: "Starting…",
         isBackgroundProcessing: true,
+        processingStartedAt: procStartedAt,
+        estimatedSeconds: procEstSeconds,
       });
 
       // Start polling BEFORE awaiting the fetch so we catch status updates
@@ -374,6 +410,7 @@ export default function UploadModal({
           if (result.success && activeJobIdRef.current === jobRow.job_id) {
             if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
             pollIntervalRef.current = null;
+            localStorage.removeItem("smd_active_job");
             const confirmedId: string = result.internalId ?? tempId;
             setUploadState({
               stage: "done",
@@ -391,6 +428,7 @@ export default function UploadModal({
           if (activeJobIdRef.current === jobRow.job_id && uploadState.stage !== "done") {
             if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
             pollIntervalRef.current = null;
+            localStorage.removeItem("smd_active_job");
             setUploadState({
               stage: "error",
               stageProgress: 0,
@@ -423,7 +461,8 @@ export default function UploadModal({
 
   function handleClose() {
     // Block close only during client-side stages (converting, uploading-slides).
-    // Once in background-processing mode, the user can close — server continues.
+    // Once in background-processing mode, the user can close — server continues
+    // and ProcessingPill in the header will track the job via localStorage.
     if (isProcessing) return;
     if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
     pollIntervalRef.current = null;
@@ -432,6 +471,8 @@ export default function UploadModal({
     setTitle("");
     setCourse("Physical Diagnosis I");
     setUploadState(INITIAL_STATE);
+    // Note: intentionally NOT clearing smd_active_job here — the job is still
+    // running and ProcessingPill should keep showing it in the header.
     onClose();
   }
 
@@ -629,6 +670,8 @@ export default function UploadModal({
             <DetailedProgressSection
               currentStageId={uploadState.serverStageId ?? "fetching_file"}
               subMessage={uploadState.serverMessage}
+              startedAt={uploadState.processingStartedAt ?? Date.now()}
+              estimatedSeconds={uploadState.estimatedSeconds ?? 90}
             />
           )}
 
@@ -833,24 +876,56 @@ const STAGE_ORDER = SERVER_STAGES.map((s) => s.id);
 interface DetailedProgressSectionProps {
   currentStageId: string;
   subMessage?: string;
+  startedAt: number;
+  estimatedSeconds: number;
 }
 
-function DetailedProgressSection({ currentStageId, subMessage }: DetailedProgressSectionProps) {
+function fmtSeconds(s: number): string {
+  if (s <= 0) return 'Almost done…';
+  if (s < 60) return `~${s}s remaining`;
+  const m = Math.floor(s / 60);
+  const rem = s % 60;
+  return rem > 0 ? `~${m}m ${rem}s remaining` : `~${m}m remaining`;
+}
+
+function DetailedProgressSection({ currentStageId, subMessage, startedAt, estimatedSeconds }: DetailedProgressSectionProps) {
   const currentIdx = STAGE_ORDER.indexOf(currentStageId);
+
+  const [secondsLeft, setSecondsLeft] = useState(() => {
+    const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+    return Math.max(0, estimatedSeconds - elapsed);
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const elapsed = Math.floor((Date.now() - startedAt) / 1000);
+      setSecondsLeft(Math.max(0, estimatedSeconds - elapsed));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [startedAt, estimatedSeconds]);
+
+  const overTime = secondsLeft === 0 && currentStageId !== 'complete';
 
   return (
     <div className="space-y-3">
-      {/* Reassurance message */}
-      <p
-        className="text-xs rounded-lg px-3 py-2"
+      {/* Reassurance + countdown */}
+      <div
+        className="rounded-lg px-3 py-2 space-y-0.5"
         style={{
           background: "rgba(91,141,238,0.08)",
           border: "1px solid rgba(91,141,238,0.2)",
-          color: "var(--text-muted)",
         }}
       >
-        Safe to navigate away. Processing continues in the background.
-      </p>
+        <p className="text-xs" style={{ color: "var(--text-muted)" }}>
+          Safe to navigate away — processing continues in the background.
+        </p>
+        <p className="text-xs font-medium tabular-nums" style={{
+          color: overTime ? "var(--text-muted)" : "var(--accent, #5b8dee)",
+          fontFamily: "DM Mono, monospace",
+        }}>
+          {overTime ? "Taking a bit longer than expected — hang tight…" : fmtSeconds(secondsLeft)}
+        </p>
+      </div>
 
       {/* Stage list */}
       <div className="space-y-1.5">

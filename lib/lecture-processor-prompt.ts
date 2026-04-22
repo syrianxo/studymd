@@ -57,8 +57,8 @@ SECTION 2 — CONTENT WEIGHTING RULES
    - Every major concept on every slide must appear in at least one flashcard or question.
    - Slides marked "objectives", "references", "disclosures", or "acknowledgements"
      should be SKIPPED — do not generate items from them.
-   - Tables, figures, and diagrams: describe their key takeaway in a flashcard back or
-     question explanation even if visual detail cannot be reproduced.
+   - Tables, figures, and diagrams: extract their key takeaway as a plain-text fact.
+     NEVER write "see Figure N" or "as shown in Table N". State the finding directly.
 
 2. CONTENT HIERARCHY
    Priority 1 — Bolded, underlined, or highlighted text in slides.
@@ -91,7 +91,14 @@ FLASHCARDS
 - Fronts must be unambiguous — a student should be able to answer without guessing
   what is being asked.
 - Backs must be complete and self-contained; a student should not need the slides
-  to understand the answer.
+  to understand the answer. Write out the fact, value, or finding in full.
+- NEVER reference a figure, table, diagram, or image by name or number (e.g., do not
+  write "see Figure 3", "as shown in Table 2", "refer to the diagram above", "per the
+  chart on slide 12"). Students review cards without the slides in front of them.
+  Instead, state the key takeaway directly: e.g., instead of "see Table 2 for normal
+  values", write the actual normal values.
+- Apply the same rule to MCQ stems, options, and explanations — no "see slide X" or
+  "as depicted in Figure Y" anywhere in the output.
 - Avoid "What is…?" as the entire front. Prefer "What is the mechanism of…?",
   "What are the 3 classic findings of…?", etc.
 - Include First Aid / Pathoma / Sketchy-style mnemonics where they genuinely aid recall.
