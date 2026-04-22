@@ -16,10 +16,31 @@ import {
   API_LIMITS,
   estimateCost,
   estimateTokensFromBytes,
+  userIsAdmin,
+  checkLimits,
 } from '@/lib/api-limits';
 import { buildSystemWithCache } from '@/lib/lecture-processor-prompt';
 import { validateLecture, type LectureJSON } from '@/lib/validate-lecture';
 import { extractPptxSlides, formatSlidesForClaude } from '@/lib/pptx-extractor';
+
+// ─── Theme color palette ──────────────────────────────────────────────────────
+// Mirrors the palette in the original /api/generate route so the cron path
+// produces identical color assignments.
+const PALETTE = [
+  { midnight: '#5b8dee', pink: '#f472b6', forest: '#10b981' },
+  { midnight: '#8b5cf6', pink: '#ec4899', forest: '#34d399' },
+  { midnight: '#06b6d4', pink: '#db2777', forest: '#84cc16' },
+  { midnight: '#10b981', pink: '#e879f9', forest: '#65a30d' },
+  { midnight: '#f59e0b', pink: '#c084fc', forest: '#f59e0b' },
+  { midnight: '#ef4444', pink: '#a855f7', forest: '#d97706' },
+  { midnight: '#ec4899', pink: '#fb7185', forest: '#b45309' },
+  { midnight: '#a855f7', pink: '#f43f5e', forest: '#78716c' },
+];
+function pickThemeColors(internalId: string): Record<string, string> {
+  const hex = internalId.replace(/[^0-9a-f]/gi, '');
+  const idx = hex.length ? parseInt(hex.slice(-2), 16) % PALETTE.length : 0;
+  return PALETTE[idx];
+}
 
 // ─── Supabase admin client ────────────────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -129,45 +150,6 @@ async function recordApiUsage(
   }
 }
 
-// ─── Rate limit check ─────────────────────────────────────────────────────────
-
-async function checkRateLimits(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  supabase: SupabaseClient<any, 'public', any>,
-  estimatedInputTokens: number
-): Promise<{ allowed: boolean; reason?: string }> {
-  const today = new Date().toISOString().split('T')[0];
-
-  const { data: todayUsage } = await supabase
-    .from('api_usage').select('calls_count, input_tokens').eq('date', today).maybeSingle();
-
-  if (todayUsage) {
-    if (todayUsage.calls_count >= API_LIMITS.MAX_DAILY_CALLS) {
-      return { allowed: false, reason: `Daily limit reached (${API_LIMITS.MAX_DAILY_CALLS} lectures/day). Try again tomorrow.` };
-    }
-    if (todayUsage.input_tokens + estimatedInputTokens > API_LIMITS.MAX_DAILY_INPUT_TOKENS) {
-      return { allowed: false, reason: 'Daily token limit would be exceeded. Try again tomorrow.' };
-    }
-  }
-
-  const monthStart = new Date();
-  monthStart.setDate(1);
-  monthStart.setHours(0, 0, 0, 0);
-
-  const { data: monthRows } = await supabase
-    .from('api_usage').select('estimated_cost').gte('date', monthStart.toISOString().split('T')[0]);
-
-  if (monthRows && monthRows.length > 0) {
-    const monthTotal = monthRows.reduce(
-      (sum: number, r: { estimated_cost?: number }) => sum + (r.estimated_cost ?? 0), 0
-    );
-    if (monthTotal >= API_LIMITS.MAX_MONTHLY_COST_USD) {
-      return { allowed: false, reason: `Monthly budget of $${API_LIMITS.MAX_MONTHLY_COST_USD.toFixed(2)} reached. Contact Khalid.` };
-    }
-  }
-
-  return { allowed: true };
-}
 
 // ─── Claude API call ──────────────────────────────────────────────────────────
 
@@ -335,8 +317,9 @@ export async function runProcessingJob(
     throw new Error(msg);
   }
 
-  // ── Rate limits ────────────────────────────────────────────────────────────
-  const rateCheck = await checkRateLimits(supabase, estimatedTokens);
+  // ── Rate limits (admin users bypass per-user caps; sanity cap still applies) ─
+  const isAdmin = await userIsAdmin(userId);
+  const rateCheck = await checkLimits(userId, { adminBypass: isAdmin });
   if (!rateCheck.allowed) {
     await markJobError(supabase, jobId, rateCheck.reason!);
     throw new Error(rateCheck.reason);
@@ -453,7 +436,7 @@ export async function runProcessingJob(
     title: lecture.title || job.title,
     subtitle: '',
     course: lecture.course,
-    color: '#5b8dee',
+    theme_colors: pickThemeColors(internalId),
     icon: '🩺',
     topics: lecture.topics,
     slide_count: job.slide_count ?? 0,

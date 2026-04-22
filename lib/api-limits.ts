@@ -17,6 +17,12 @@ export const API_LIMITS = {
   /** Maximum lecture processing calls per calendar day (UTC). */
   MAX_DAILY_CALLS: 5,
 
+  /**
+   * Admin sanity cap — even admins are blocked if they somehow exceed this many
+   * calls per day. Prevents a compromised admin account from draining the API budget.
+   */
+  ADMIN_DAILY_SANITY_CAP: 100,
+
   /** Maximum input tokens consumed per calendar day across all calls. */
   MAX_DAILY_INPUT_TOKENS: 500_000,
 
@@ -63,8 +69,14 @@ export const API_LIMITS = {
   BATCH_API_ENABLED: false,
 
   // ── Upload limits ───────────────────────────────────────────────────────────
-  /** Maximum allowed file size for lecture uploads, in bytes. */
+  /** Maximum allowed file size for regular (non-admin) lecture uploads, in bytes. */
   MAX_FILE_SIZE_BYTES: 50 * 1024 * 1024, // 50 MB
+
+  /**
+   * Admin upload limit — 250 MB covers virtually all medical-school PPTX/PDF decks.
+   * Admins are seeding cohort content, not personal notes, so the higher cap is expected.
+   */
+  ADMIN_MAX_FILE_SIZE_BYTES: 250 * 1024 * 1024, // 250 MB
 
   /** Accepted MIME types for lecture file uploads. */
   ACCEPTED_MIME_TYPES: [
@@ -175,15 +187,81 @@ function getSupabaseAdmin() {
 export interface LimitsCheckResult {
   allowed: boolean;
   reason?: string;
+  /** True when the normal per-user caps were waived for an admin. */
+  bypassed?: boolean;
+}
+
+export interface CheckLimitsOptions {
+  /**
+   * When true the daily/monthly caps are bypassed — intended for admin users
+   * seeding cohort content. Usage is still recorded via increment_api_usage so
+   * cost tracking in the admin dashboard remains accurate.
+   * An admin-specific sanity cap (ADMIN_DAILY_SANITY_CAP) still applies.
+   */
+  adminBypass?: boolean;
+}
+
+/**
+ * Returns true if the given userId has role = 'admin' in user_profiles.
+ * Uses the service-role client so it bypasses RLS without needing cookies.
+ * Safe to call from any API route handler.
+ */
+export async function userIsAdmin(userId: string): Promise<boolean> {
+  const supabase = getSupabaseAdmin();
+  const { data } = await supabase
+    .from('user_profiles')
+    .select('role')
+    .eq('user_id', userId)
+    .maybeSingle();
+  return data?.role === 'admin';
+}
+
+/**
+ * Returns the number of API calls recorded today for a specific user.
+ * Used for the admin sanity cap (prevents a compromised admin from draining budget).
+ * Note: api_usage is currently a global (per-date) table, not per-user.
+ * We use the global count as a conservative proxy — in practice admins are
+ * the only heavy users, so the global daily count ≈ admin count.
+ */
+async function getGlobalTodayCallCount(): Promise<number> {
+  const supabase = getSupabaseAdmin();
+  const today = new Date().toISOString().split('T')[0];
+  const { data } = await supabase
+    .from('api_usage')
+    .select('calls_count')
+    .eq('date', today)
+    .maybeSingle();
+  return data?.calls_count ?? 0;
 }
 
 /**
  * Checks daily call count and monthly cost caps before allowing a new processing job.
  * Called by upload/route.ts before creating a processing_jobs row.
+ *
+ * Pass `opts.adminBypass = true` for admin users — the normal per-user caps are
+ * waived but a sanity cap (ADMIN_DAILY_SANITY_CAP) still applies to guard against
+ * account compromise.
  */
-export async function checkLimits(_userId: string): Promise<LimitsCheckResult> {
+export async function checkLimits(
+  _userId: string,
+  opts?: CheckLimitsOptions,
+): Promise<LimitsCheckResult> {
   const supabase = getSupabaseAdmin();
   const today = new Date().toISOString().split('T')[0];
+
+  // ── Admin path: skip normal caps, but still enforce the sanity ceiling ──────
+  if (opts?.adminBypass) {
+    const globalCount = await getGlobalTodayCallCount();
+    if (globalCount >= API_LIMITS.ADMIN_DAILY_SANITY_CAP) {
+      return {
+        allowed: false,
+        reason: `Admin daily sanity cap reached (${API_LIMITS.ADMIN_DAILY_SANITY_CAP} calls/day). This is a safety limit — contact Khalid if it's too low.`,
+      };
+    }
+    return { allowed: true, bypassed: true };
+  }
+
+  // ── Standard user path ──────────────────────────────────────────────────────
 
   // Daily call cap
   const { data: todayUsage } = await supabase
