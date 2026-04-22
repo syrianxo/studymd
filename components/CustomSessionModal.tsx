@@ -7,6 +7,8 @@ import { useModalShell } from '@/hooks/useModalShell';
 import { useFolders } from '@/hooks/useFolders';
 
 type SessionMode = 'flash' | 'exam';
+type CardMode = 'all' | 'new' | 'missed';
+type QuestionMode = 'all' | 'new' | 'missed';
 
 interface CustomSessionConfig {
   mode: SessionMode;
@@ -14,6 +16,8 @@ interface CustomSessionConfig {
   topics: string[];
   count: number;
   questionTypes: string[];
+  cardMode: CardMode;
+  questionMode: QuestionMode;
 }
 
 interface CustomSessionModalProps {
@@ -38,6 +42,8 @@ export default function CustomSessionModal({ isOpen, lectures, onClose, onStart 
   const [count, setCount] = useState(20);
   const [selectedTypes, setSelectedTypes] = useState<Set<string>>(new Set(ALL_QUESTION_TYPES));
   const [folderFilter, setFolderFilter] = useState<string>('');  // '' = all, uuid = folder
+  const [cardMode, setCardMode] = useState<CardMode>('all');
+  const [questionMode, setQuestionMode] = useState<QuestionMode>('new');
 
   useModalShell(isOpen);
 
@@ -68,7 +74,7 @@ export default function CustomSessionModal({ isOpen, lectures, onClose, onStart 
       setSelectedLectureIds(prev => new Set([...prev, ...allInPicker]));
     }
   }
-  function handleStart() { if (selectedLectureIds.size === 0) return; onStart({ mode, lectureIds: Array.from(selectedLectureIds), topics: Array.from(selectedTopics), count, questionTypes: Array.from(selectedTypes) }); }
+  function handleStart() { if (selectedLectureIds.size === 0) return; onStart({ mode, lectureIds: Array.from(selectedLectureIds), topics: Array.from(selectedTopics), count, questionTypes: Array.from(selectedTypes), cardMode, questionMode }); }
 
   return (
     <>
@@ -133,6 +139,29 @@ export default function CustomSessionModal({ isOpen, lectures, onClose, onStart 
                 </div>
               </div>
             )}
+            {/* Card / question pool mode */}
+            <div className="smd-form-group">
+              <label className="smd-form-label">{mode === 'flash' ? 'Card pool' : 'Question pool'}</label>
+              <div className="smd-mode-tabs">
+                {mode === 'flash' ? (
+                  <>
+                    {(['all', 'new', 'missed'] as CardMode[]).map((m) => (
+                      <div key={m} className={`smd-mode-tab${cardMode === m ? ' active' : ''}`} onClick={() => setCardMode(m)}>
+                        {m === 'all' ? '📚 All cards' : m === 'new' ? '✨ New only' : '🔁 Missed only'}
+                      </div>
+                    ))}
+                  </>
+                ) : (
+                  <>
+                    {(['all', 'new', 'missed'] as QuestionMode[]).map((m) => (
+                      <div key={m} className={`smd-mode-tab${questionMode === m ? ' active' : ''}`} onClick={() => setQuestionMode(m)}>
+                        {m === 'all' ? '📚 All' : m === 'new' ? '✨ New only' : '🔁 Missed only'}
+                      </div>
+                    ))}
+                  </>
+                )}
+              </div>
+            </div>
             <div className="smd-form-group">
               <label className="smd-form-label" id="custom-count-label">{mode === 'flash' ? 'Number of cards' : 'Number of questions'}</label>
               <input type="range" className="smd-form-range" min={5} max={50} step={1} value={count} onChange={e => setCount(Number(e.target.value))} aria-labelledby="custom-count-label" />
@@ -195,6 +224,25 @@ const modalExtraCss = `
   background: var(--surface, #13161d);
   border-top: 1px solid rgba(255,255,255,0.06);
   display: flex; gap: 10px; align-items: center;
+}
+.smd-mode-tabs {
+  display: flex; gap: 6px; flex-wrap: wrap;
+}
+.smd-mode-tab {
+  flex: 1; min-width: 80px;
+  padding: 8px 10px; border-radius: 8px; cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
+  color: var(--text-muted, #6b7280); text-align: center;
+  transition: all 0.15s; user-select: none; min-height: 36px;
+  display: flex; align-items: center; justify-content: center;
+}
+.smd-mode-tab:hover { border-color: rgba(255,255,255,0.18); color: var(--text, #e8eaf0); }
+.smd-mode-tab.active {
+  border-color: var(--accent, #5b8dee);
+  background: rgba(91,141,238,0.1);
+  color: var(--accent, #5b8dee);
 }
 .smd-folder-filter-select {
   width: 100%;

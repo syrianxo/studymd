@@ -8,10 +8,13 @@ import type { ExamQuestion, QuestionType } from './ExamView';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
+export type QuestionMode = 'all' | 'new' | 'missed';
+
 export interface ExamConfig {
   count: number;
   topics: string[];
   types: QuestionType[];
+  questionMode: QuestionMode;
 }
 
 interface ExamConfigModalProps {
@@ -20,6 +23,8 @@ interface ExamConfigModalProps {
   lectureIcon?: string;
   accentColor?: string;
   allQuestions: ExamQuestion[];
+  initialAttemptedIds?: string[];
+  initialMissedQuestionIds?: string[];
   onStart: (config: ExamConfig) => void;
   onClose: () => void;
 }
@@ -113,6 +118,31 @@ const CSS = `
   font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.08em;
   text-transform: uppercase; color: var(--text-muted, #6b7280);
   margin-bottom: 10px;
+}
+
+/* Question mode (All / New / Missed) */
+.ecm-mode-row { display: flex; gap: 8px; }
+.ecm-mode-option {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 4px; padding: 10px 6px; border-radius: 12px; cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  transition: all 0.15s; user-select: none; min-height: 44px;
+}
+.ecm-mode-option:hover { border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.05); }
+.ecm-mode-option.selected {
+  border-color: var(--accent, #5b8dee);
+  background: rgba(91,141,238,0.1);
+}
+.ecm-mode-option.disabled { opacity: 0.35; cursor: not-allowed; }
+.ecm-mode-icon { font-size: 16px; }
+.ecm-mode-label {
+  font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600;
+  color: var(--text, #e8eaf0);
+}
+.ecm-mode-hint {
+  font-family: 'Outfit', sans-serif; font-size: 10px;
+  color: var(--text-muted, #6b7280); text-align: center; line-height: 1.3;
 }
 
 /* Slider */
@@ -265,6 +295,8 @@ export default function ExamConfigModal({
   lectureIcon = '📝',
   accentColor,
   allQuestions,
+  initialAttemptedIds = [],
+  initialMissedQuestionIds = [],
   onStart,
   onClose,
 }: ExamConfigModalProps) {
@@ -278,25 +310,36 @@ export default function ExamConfigModal({
   const [selectedTypes, setSelectedTypes] = useState<Set<QuestionType>>(
     new Set(['mcq', 'tf', 'matching', 'fillin'])
   );
+  // Default to 'new' for exams — board-style exams should cycle through fresh questions
+  const [questionMode, setQuestionMode] = useState<QuestionMode>(
+    initialAttemptedIds.length > 0 ? 'new' : 'all'
+  );
 
   // Count of each type available in the filtered pool
-  const filteredQuestions = allQuestions.filter(
+  const topicTypeFiltered = allQuestions.filter(
     (q) => selectedTopics.has(q.topic) && selectedTypes.has(q.type)
   );
-  const filteredCount = filteredQuestions.length;
-  const effectiveMax = Math.max(minQ, filteredCount);
-  const effectiveCount = Math.min(count, effectiveMax);
+  const filteredCount = topicTypeFiltered.length;
+
+  const attempted = new Set(initialAttemptedIds);
+  const missedQs = new Set(initialMissedQuestionIds);
+  const newCount = topicTypeFiltered.filter((q) => !attempted.has(q.id)).length;
+  const missedCount = topicTypeFiltered.filter((q) => missedQs.has(q.id)).length;
+
+  const poolSize = questionMode === 'new' ? newCount : questionMode === 'missed' ? missedCount : filteredCount;
+  const effectiveMax = Math.max(minQ, poolSize);
+  const effectiveCount = Math.min(count, Math.max(1, poolSize));
 
   // Count per type (across all topics — for the toggle labels)
   const countByType = (type: QuestionType) =>
     allQuestions.filter((q) => q.type === type).length;
 
-  // Clamp when selection changes
+  // Clamp when selection or mode changes
   useEffect(() => {
-    if (count > filteredCount && filteredCount > 0) {
-      setCount(Math.max(minQ, filteredCount));
+    if (count > poolSize && poolSize > 0) {
+      setCount(Math.max(minQ, poolSize));
     }
-  }, [selectedTopics, selectedTypes, filteredCount, count, minQ]);
+  }, [selectedTopics, selectedTypes, questionMode, poolSize, count, minQ]);
 
   // Lock background scroll while modal is open
   useModalShell(true);
@@ -330,11 +373,12 @@ export default function ExamConfigModal({
   }
 
   function handleStart() {
-    if (filteredCount === 0) return;
+    if (poolSize === 0) return;
     onStart({
       count: effectiveCount,
       topics: Array.from(selectedTopics),
       types: Array.from(selectedTypes),
+      questionMode,
     });
   }
 
@@ -343,7 +387,7 @@ export default function ExamConfigModal({
   }
 
   const accent = accentColor || 'var(--accent, #5b8dee)';
-  const canStart = filteredCount > 0 && selectedTypes.size > 0;
+  const canStart = poolSize > 0 && selectedTypes.size > 0;
 
   return (
     <>
@@ -368,6 +412,39 @@ export default function ExamConfigModal({
 
           <div className="ecm-body">
 
+            {/* Question mode selector */}
+            <div>
+              <div className="ecm-section-label">Question Pool</div>
+              <div className="ecm-mode-row">
+                {([
+                  { value: 'all' as QuestionMode, icon: '📚', label: 'All', hint: `${filteredCount} questions` },
+                  { value: 'new' as QuestionMode, icon: '✨', label: 'New only', hint: newCount > 0 ? `${newCount} unseen` : 'None yet' },
+                  { value: 'missed' as QuestionMode, icon: '🔁', label: 'Missed only', hint: missedCount > 0 ? `${missedCount} wrong` : 'None yet' },
+                ]).map((opt) => {
+                  const isDisabled = (opt.value === 'new' && newCount === 0) || (opt.value === 'missed' && missedCount === 0);
+                  return (
+                    <div
+                      key={opt.value}
+                      className={[
+                        'ecm-mode-option',
+                        questionMode === opt.value ? 'selected' : '',
+                        isDisabled ? 'disabled' : '',
+                      ].filter(Boolean).join(' ')}
+                      onClick={() => !isDisabled && setQuestionMode(opt.value)}
+                      role="radio"
+                      aria-checked={questionMode === opt.value}
+                      aria-disabled={isDisabled}
+                      style={questionMode === opt.value ? { borderColor: accent, background: `${accentColor ?? '#5b8dee'}12` } : {}}
+                    >
+                      <span className="ecm-mode-icon">{opt.icon}</span>
+                      <span className="ecm-mode-label">{opt.label}</span>
+                      <span className="ecm-mode-hint">{opt.hint}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Question count slider */}
             <div>
               <div className="ecm-section-label">Number of Questions</div>
@@ -376,16 +453,17 @@ export default function ExamConfigModal({
                   <input
                     type="range"
                     className="ecm-slider"
-                    min={minQ}
-                    max={effectiveMax}
+                    min={1}
+                    max={Math.max(1, poolSize)}
                     value={effectiveCount}
                     onChange={(e) => setCount(Number(e.target.value))}
+                    disabled={poolSize === 0}
                     style={{ accentColor: accent } as React.CSSProperties}
                   />
                   <div className="ecm-slider-hint">
-                    {minQ} – {effectiveMax} questions available
-                    {(selectedTopics.size < allTopics.length || selectedTypes.size < 4) &&
-                      ' (filtered)'}
+                    {questionMode === 'all' && `${minQ} – ${effectiveMax} questions available${(selectedTopics.size < allTopics.length || selectedTypes.size < 4) ? ' (filtered)' : ''}`}
+                    {questionMode === 'new' && (newCount > 0 ? `${newCount} new questions available` : 'No new questions — try "All"')}
+                    {questionMode === 'missed' && (missedCount > 0 ? `${missedCount} questions answered incorrectly` : 'No missed questions recorded yet')}
                   </div>
                 </div>
                 <div className="ecm-slider-value" style={{ color: accent }}>{effectiveCount}</div>

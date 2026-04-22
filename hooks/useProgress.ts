@@ -23,6 +23,9 @@ export interface LectureProgress {
   // Individual card IDs known/missed — used to pre-mark cards on session open
   got_it_ids: string[];
   missed_ids: string[];
+  // Per-question exam tracking (Slice F1)
+  attempted_question_ids: string[];
+  missed_question_ids: string[];
 }
 
 export interface GlobalStats {
@@ -54,6 +57,8 @@ function recordToProgress(r: ProgressRecord, totalCards?: number): LectureProgre
     mastery_pct,
     got_it_ids: gotItIds,
     missed_ids: missed,
+    attempted_question_ids: r.examProgress.attempted_question_ids ?? [],
+    missed_question_ids: r.examProgress.missed_question_ids ?? [],
   };
 }
 
@@ -225,7 +230,7 @@ export function useProgress() {
     (
       lectureId: string,
       type: 'exam',
-      opts?: { score?: number }
+      opts?: { score?: number; attemptedIds?: string[]; missedQuestionIds?: string[] }
     ) => {
       const now = new Date().toISOString();
       const current = byLectureRef.current[lectureId];
@@ -255,6 +260,11 @@ export function useProgress() {
           sessions: (current?.exam_sessions ?? 0) + 1,
           best_score: bestScore,
           avg_score: avgScore,
+          // Union new attempted IDs with existing
+          attempted_question_ids: opts?.attemptedIds
+            ? Array.from(new Set([...(current?.attempted_question_ids ?? []), ...opts.attemptedIds]))
+            : (current?.attempted_question_ids ?? []),
+          missed_question_ids: opts?.missedQuestionIds ?? (current?.missed_question_ids ?? []),
         },
         lastStudied: now,
         updatedAt: now,

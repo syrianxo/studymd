@@ -490,6 +490,20 @@ Copy/paste and fill in:
   - (−) `lectures.course` free-text string stays until explicitly migrated; two sources of truth temporarily.
   - Revisit when: all code paths write `course_id` — then drop `lectures.course` column.
 
+---
+
+## ADR-031 · Per-question exam progress tracking (Slice F1)
+- **Date:** 2026-04-22
+- **Status:** Accepted
+- **Context:** Flashcards already tracked per-card `got_it_ids` and `missed_ids`. Exams only stored aggregate scores. Adding "New only" and "Missed only" modes for exam questions required per-question tracking. No schema migration runner exists — changes must be backwards-compatible.
+- **Decision:** Extended `examProgress` JSONB in `user_progress` with two optional arrays: `attempted_question_ids` (union across sessions, additive like `got_it_ids`) and `missed_question_ids` (latest session only, like `missed_ids`). Both default to `[]` on read. `ExamView.onSessionComplete` extended to pass `attemptedIds` and `missedIds`. No DB column added — stored within the existing `exam_progress` JSONB column.
+- **Consequences:**
+  - (+) Backwards-compatible — old progress records without the new fields read as empty arrays.
+  - (+) Enables "New only" default for exams (board-style cycling through unseen questions).
+  - (+) Same merge semantics as flashcards (union for attempted, latest-session for missed).
+  - (−) IDs are scoped to lecture — cross-lecture custom sessions attribute all question IDs to every selected lecture, which can over-count "attempted" if the same question ID appears in multiple lectures (unlikely in practice).
+  - Revisit when: question IDs are globally unique across lectures.
+
 ## ADR-XXX · <Title>
 - **Date:** YYYY-MM-DD (commit `<shortsha>` — "<commit message>")
 - **Status:** Proposed | Accepted | Superseded by ADR-YYY | Deprecated

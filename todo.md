@@ -12,6 +12,19 @@ _(nothing active — pick next item from Next up)_
 
 ## ✅ Recently shipped
 
+### Slice F1 — Flashcard/exam missed-only mode
+- [x] `FlashcardConfig` gains `cardMode: 'all'|'new'|'missed'`; `FlashcardConfigModal` shows 3-option mode selector with live counts
+- [x] `ExamConfig` gains `questionMode: 'all'|'new'|'missed'`; `ExamConfigModal` defaults to `new` when prior attempts exist
+- [x] `ExamView.onSessionComplete` extended with `attemptedIds` + `missedIds`
+- [x] `examProgress` JSONB gains `attempted_question_ids[]` + `missed_question_ids[]` (backwards-compat, ADR-031)
+- [x] `flash/page.tsx` + `exam/page.tsx` filter decks by mode using existing progress
+- [x] `StudyConfigManager` passes progress counts to config modals
+- [x] `CustomSessionModal` adds card/question pool mode tabs; `custom/page.tsx` filters per-lecture
+
+---
+
+## ✅ Recently shipped
+
 ### Slice A1 — Admin upload limit bypass (ADR-028)
 - [x] `lib/api-limits.ts`: `ADMIN_DAILY_SANITY_CAP`, `ADMIN_MAX_FILE_SIZE_BYTES`, `userIsAdmin()`, extended `checkLimits({ adminBypass })`
 - [x] `/api/upload`: dynamic file-size cap + `adminBypass` in `checkLimits`
@@ -57,9 +70,10 @@ _(nothing active — pick next item from Next up)_
 - [ ] `SlideReviewView` component + `lib/slide-annotation-prompt.ts`
 - [ ] Three-tab `LectureGrid` (Review / Learn / Practice) — `Dashboard.tsx` refactor
 
-### Slice F1 — Flashcard missed-only mode
-- [ ] "Review missed only" toggle in `FlashcardView` / `FlashcardConfigModal`
-- [ ] Filter deck to cards where `got_it = false` from prior session progress
+### ~~Slice F1 — Flashcard missed-only mode~~ ✅ Done
+- [x] `FlashcardConfigModal` All/New/Missed mode selector with live counts
+- [x] `ExamConfigModal` All/New/Missed with "new" as default when prior exams exist
+- [x] `CustomSessionModal` card/question pool tabs; all study pages filter accordingly
 
 ### Slice 11 — F6 Worksheet uploads (Practice-only mode)
 - [ ] `lectures.kind` column (`'lecture' | 'worksheet'`)

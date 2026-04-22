@@ -35,7 +35,8 @@ function FlashPageInner() {
   const lectureId = params.get('lecture') ?? '';
   const topicsFilter = params.get('topics')?.split(',').filter(Boolean) ?? [];
   const countParam = Number(params.get('count') ?? '0');
-  const order = (params.get('order') ?? 'random') as 'random' | 'sequential' | 'missed';
+  const order = (params.get('order') ?? 'random') as 'random' | 'sequential';
+  const cardMode = (params.get('cardMode') ?? 'all') as 'all' | 'new' | 'missed';
 
   const [lecture, setLecture] = useState<LectureData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -94,6 +95,15 @@ function FlashPageInner() {
   );
   if (topicsFilter.length > 0) {
     cards = cards.filter((c) => topicsFilter.includes(c.topic));
+  }
+
+  // ── Apply card mode filter ─────────────────────────────────────────────
+  if (cardMode === 'new') {
+    const seen = new Set([...knownGotItIds, ...knownMissedIds]);
+    cards = cards.filter((c) => !seen.has(c.id));
+  } else if (cardMode === 'missed') {
+    const missed = new Set(knownMissedIds);
+    cards = cards.filter((c) => missed.has(c.id));
   }
 
   if (order !== 'sequential') {

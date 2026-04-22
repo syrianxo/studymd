@@ -32,12 +32,13 @@ function ExamPageInner() {
   const router = useRouter();
   const params = useSearchParams();
   const supabase = createClient();
-  const { recordSession } = useProgress();
+  const { progressByLecture, recordSession } = useProgress();
 
   const lectureId = params.get('lecture') ?? '';
   const topicsFilter = params.get('topics')?.split(',').filter(Boolean) ?? [];
   const countParam = Number(params.get('count') ?? '0');
   const typesFilter = params.get('types')?.split(',').filter(Boolean) ?? [];
+  const questionMode = (params.get('questionMode') ?? 'all') as 'all' | 'new' | 'missed';
 
   const [lecture, setLecture] = useState<LectureData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -79,9 +80,19 @@ function ExamPageInner() {
   if (topicsFilter.length > 0) {
     questions = questions.filter((q) => topicsFilter.includes(q.topic));
   }
-
   if (typesFilter.length > 0) {
     questions = questions.filter((q) => typesFilter.includes(q.type));
+  }
+
+  // ── Apply question mode filter ─────────────────────────────────────────
+  const existingExam = progressByLecture[lecture.internal_id];
+  const attemptedIds = existingExam?.attempted_question_ids ?? [];
+  const missedQuestionIds = existingExam?.missed_question_ids ?? [];
+
+  if (questionMode === 'new') {
+    questions = questions.filter((q) => !attemptedIds.includes(q.id));
+  } else if (questionMode === 'missed') {
+    questions = questions.filter((q) => missedQuestionIds.includes(q.id));
   }
 
   // Shuffle
@@ -97,8 +108,12 @@ function ExamPageInner() {
       lectureId={lecture.internal_id}
       questions={questions}
       onExit={() => router.push('/app')}
-      onSessionComplete={(score) => {
-        recordSession(lecture.internal_id, 'exam', { score });
+      onSessionComplete={(score, _correct, _total, sessionAttemptedIds, sessionMissedIds) => {
+        recordSession(lecture.internal_id, 'exam', {
+          score,
+          attemptedIds: sessionAttemptedIds,
+          missedQuestionIds: sessionMissedIds,
+        });
       }}
     />
   );

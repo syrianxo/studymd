@@ -247,14 +247,14 @@ export default function Dashboard({
   function handleStartFlashWithConfig(config: FlashcardConfig, lectureId: string) {
     const topicsParam = config.topics.map(encodeURIComponent).join(',');
     window.location.href =
-      `/app/study/flash?lecture=${lectureId}&count=${config.count}&topics=${topicsParam}&order=${config.order}`;
+      `/app/study/flash?lecture=${lectureId}&count=${config.count}&topics=${topicsParam}&order=${config.order}&cardMode=${config.cardMode}`;
   }
 
   function handleStartExamWithConfig(config: ExamConfig, lectureId: string) {
     const topicsParam = config.topics.map(encodeURIComponent).join(',');
     const typesParam = config.types.join(',');
     window.location.href =
-      `/app/study/exam?lecture=${lectureId}&count=${config.count}&topics=${topicsParam}&types=${typesParam}`;
+      `/app/study/exam?lecture=${lectureId}&count=${config.count}&topics=${topicsParam}&types=${typesParam}&questionMode=${config.questionMode}`;
   }
 
   function handleCustomSession(config: CustomSessionConfig) {
@@ -264,6 +264,8 @@ export default function Dashboard({
       topics: config.topics.join(','),
       count: String(config.count),
       types: config.questionTypes.join(','),
+      cardMode: config.cardMode ?? 'all',
+      questionMode: config.questionMode ?? 'all',
     });
     window.location.href = `/app/study/custom?${params.toString()}`;
   }
@@ -711,6 +713,7 @@ export default function Dashboard({
       />
       <StudyConfigManager
         {...studyConfig}
+        progressByLecture={progressByLecture}
         onStartFlashcards={(lecture, config) =>
           handleStartFlashWithConfig(config, lecture.internal_id)
         }
