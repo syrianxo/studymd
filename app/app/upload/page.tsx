@@ -16,19 +16,19 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import { createClient } from '@/lib/supabase';
-import type { Theme } from '@/types';
+import type { Theme, Course } from '@/types';
+import { DEFAULT_COURSES } from '@/types';
+import { useCourses } from '@/hooks/useCourses';
+import { useFolders } from '@/hooks/useFolders';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const VALID_COURSES = [
-  'Physical Diagnosis I',
-  'Anatomy & Physiology',
-  'Laboratory Diagnosis',
-] as const;
-type Course = (typeof VALID_COURSES)[number];
-
 const LS_JOB_KEY   = 'studymd_active_job';   // persisted jobId + title + course
 const POLL_INTERVAL = 2500;                   // ms between status polls
+
+// Sentinel value for the "+ Add new course" option in the course <select>.
+// Picking it swaps the select for an inline text input.
+const ADD_NEW_COURSE = '__add_new_course__';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -132,11 +132,11 @@ function estimateClientCost(bytes: number): number {
   return tokens * (1.0 / 1_000_000) + 15_000 * (5.0 / 1_000_000);
 }
 
-function newBatchItem(): BatchItem {
+function newBatchItem(initialCourse: Course = DEFAULT_COURSES[0]): BatchItem {
   return {
     id: Math.random().toString(36).slice(2, 10),
     file: null,
-    course: 'Physical Diagnosis I',
+    course: initialCourse,
     title: '',
     phase: 'idle',
     steps: buildInitialSteps(),
@@ -167,15 +167,26 @@ function UploadPageInner() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [mode,    setMode]    = useState<'single' | 'batch'>('single');
 
+  // ── Dynamic courses + folders ────────────────────────────────────────────────
+  const { courses, addLocal: addLocalCourse, refetch: refetchCourses } = useCourses();
+  const { folders, createFolder, refetch: refetchFolders } = useFolders();
+
   // ── Single mode ──────────────────────────────────────────────────────────────
   const [singleFile,    setSingleFile]    = useState<File | null>(null);
-  const [singleCourse,  setSingleCourse]  = useState<Course>('Physical Diagnosis I');
+  const [singleCourse,  setSingleCourse]  = useState<Course>(DEFAULT_COURSES[0]);
   const [singleTitle,   setSingleTitle]   = useState('');
+  const [singleFolderId, setSingleFolderId] = useState<string | null>(null);
   const [singleJob,     setSingleJob]     = useState<SingleJobState>({ phase: 'idle' });
   const [singleSteps,   setSingleSteps]   = useState<TimelineStep[]>(buildInitialSteps());
   const [singleWarning, setSingleWarning] = useState<string | undefined>();
   const [singleCost,    setSingleCost]    = useState<number | undefined>();
   const [isDragging,    setIsDragging]    = useState(false);
+  // Inline "add new course" input state (single-mode only).
+  const [addingCourse,  setAddingCourse]  = useState(false);
+  const [newCourseDraft, setNewCourseDraft] = useState('');
+  // Inline "add new folder" input state.
+  const [addingFolder,  setAddingFolder]  = useState(false);
+  const [newFolderDraft, setNewFolderDraft] = useState('');
 
   // ── Batch mode ───────────────────────────────────────────────────────────────
   const [batchItems,   setBatchItems]   = useState<BatchItem[]>([newBatchItem()]);
@@ -328,7 +339,7 @@ function UploadPageInner() {
   }
 
   // ── Core: start polling a jobId ───────────────────────────────────────────────
-  function startPolling(jobId: string, token: string, fallbackTitle: string) {
+  function startPolling(jobId: string, token: string, fallbackTitle: string, folderId: string | null = null) {
     if (singlePollRef.current) clearInterval(singlePollRef.current);
 
     const tick = async () => {
@@ -352,6 +363,19 @@ function UploadPageInner() {
           setSingleJob({ phase: 'complete', jobId, lectureId: data.lectureId, title });
           clearPersistedJob();
           showToast(`New lecture ready: ${title}`);
+          // Assign to folder if the user picked one. We do this client-side after
+          // completion because threading group_id through processing_jobs would
+          // require a migration; patching settings afterwards is simpler.
+          if (folderId && data.lectureId) {
+            fetch(`/api/lectures/${data.lectureId}`, {
+              method: 'PATCH',
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ groupId: folderId }),
+            }).catch(() => { /* non-fatal — user can move it manually */ });
+          }
+          // Refresh course/folder lists so future uploads see the new entries.
+          refetchCourses();
+          refetchFolders();
         } else if (data.status === 'error') {
           clearInterval(singlePollRef.current!);
           setSingleJob({ phase: 'error', errorMessage: data.error ?? 'Processing failed.' });
@@ -419,7 +443,7 @@ function UploadPageInner() {
       }),
     }).catch((err) => console.error('[upload page] /api/generate fetch failed:', err));
 
-    startPolling(result.jobId, token, lecTitle);
+    startPolling(result.jobId, token, lecTitle, singleFolderId);
   }
 
   // ── Batch helpers ─────────────────────────────────────────────────────────────
@@ -656,11 +680,147 @@ function UploadPageInner() {
               <div className="upl-config">
                 <div className="upl-field">
                   <label className="upl-label">Course</label>
-                  <select className="upl-select" value={singleCourse}
-                    onChange={(e) => setSingleCourse(e.target.value as Course)} disabled={singleBusy}>
-                    {VALID_COURSES.map((c) => <option key={c}>{c}</option>)}
-                  </select>
+                  {!addingCourse ? (
+                    <select
+                      className="upl-select"
+                      value={singleCourse}
+                      onChange={(e) => {
+                        if (e.target.value === ADD_NEW_COURSE) {
+                          setAddingCourse(true);
+                          setNewCourseDraft('');
+                        } else {
+                          setSingleCourse(e.target.value as Course);
+                        }
+                      }}
+                      disabled={singleBusy}
+                    >
+                      {courses.map((c) => <option key={c} value={c}>{c}</option>)}
+                      <option value={ADD_NEW_COURSE}>+ Add new course…</option>
+                    </select>
+                  ) : (
+                    <div className="upl-inline-add">
+                      <input
+                        className="upl-input"
+                        type="text"
+                        placeholder="New course name"
+                        value={newCourseDraft}
+                        onChange={(e) => setNewCourseDraft(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const name = newCourseDraft.trim();
+                            if (name) {
+                              addLocalCourse(name);
+                              setSingleCourse(name);
+                              setAddingCourse(false);
+                            }
+                          } else if (e.key === 'Escape') {
+                            setAddingCourse(false);
+                          }
+                        }}
+                        autoFocus
+                        maxLength={60}
+                        disabled={singleBusy}
+                      />
+                      <button
+                        type="button"
+                        className="upl-inline-add-save"
+                        onClick={() => {
+                          const name = newCourseDraft.trim();
+                          if (name) {
+                            addLocalCourse(name);
+                            setSingleCourse(name);
+                            setAddingCourse(false);
+                          }
+                        }}
+                        disabled={!newCourseDraft.trim() || singleBusy}
+                      >Save</button>
+                      <button
+                        type="button"
+                        className="upl-inline-add-cancel"
+                        onClick={() => setAddingCourse(false)}
+                        disabled={singleBusy}
+                      >Cancel</button>
+                    </div>
+                  )}
                 </div>
+
+                <div className="upl-field">
+                  <label className="upl-label">Folder <span className="upl-optional">(optional)</span></label>
+                  {!addingFolder ? (
+                    <select
+                      className="upl-select"
+                      value={singleFolderId ?? ''}
+                      onChange={(e) => {
+                        if (e.target.value === ADD_NEW_COURSE) {
+                          setAddingFolder(true);
+                          setNewFolderDraft('');
+                        } else {
+                          setSingleFolderId(e.target.value || null);
+                        }
+                      }}
+                      disabled={singleBusy}
+                    >
+                      <option value="">— No folder —</option>
+                      {folders.map((f) => (
+                        <option key={f.id} value={f.id}>{f.icon} {f.name}</option>
+                      ))}
+                      <option value={ADD_NEW_COURSE}>+ Add new folder…</option>
+                    </select>
+                  ) : (
+                    <div className="upl-inline-add">
+                      <input
+                        className="upl-input"
+                        type="text"
+                        placeholder="New folder name"
+                        value={newFolderDraft}
+                        onChange={(e) => setNewFolderDraft(e.target.value)}
+                        onKeyDown={async (e) => {
+                          if (e.key === 'Enter') {
+                            e.preventDefault();
+                            const name = newFolderDraft.trim();
+                            if (!name) return;
+                            try {
+                              const created = await createFolder(name);
+                              setSingleFolderId(created.id);
+                              setAddingFolder(false);
+                            } catch (err) {
+                              showToast(`Could not create folder: ${(err as Error).message}`);
+                            }
+                          } else if (e.key === 'Escape') {
+                            setAddingFolder(false);
+                          }
+                        }}
+                        autoFocus
+                        maxLength={60}
+                        disabled={singleBusy}
+                      />
+                      <button
+                        type="button"
+                        className="upl-inline-add-save"
+                        onClick={async () => {
+                          const name = newFolderDraft.trim();
+                          if (!name) return;
+                          try {
+                            const created = await createFolder(name);
+                            setSingleFolderId(created.id);
+                            setAddingFolder(false);
+                          } catch (err) {
+                            showToast(`Could not create folder: ${(err as Error).message}`);
+                          }
+                        }}
+                        disabled={!newFolderDraft.trim() || singleBusy}
+                      >Save</button>
+                      <button
+                        type="button"
+                        className="upl-inline-add-cancel"
+                        onClick={() => setAddingFolder(false)}
+                        disabled={singleBusy}
+                      >Cancel</button>
+                    </div>
+                  )}
+                </div>
+
                 <div className="upl-field">
                   <label className="upl-label">Lecture title <span className="upl-optional">(optional)</span></label>
                   <input className="upl-input" type="text" placeholder="e.g. Head & Neck Exam"
@@ -669,8 +829,8 @@ function UploadPageInner() {
                 </div>
               </div>
 
-              {/* Cost */}
-              {singleFile && singleDisplayCost !== undefined && (
+              {/* Cost — admin only. Students don't see per-upload dollar figures. */}
+              {isAdmin && singleFile && singleDisplayCost !== undefined && (
                 <div className="upl-cost-row">
                   <span className="upl-cost-label">Estimated cost</span>
                   <span className="upl-cost-val">~${singleDisplayCost.toFixed(4)}</span>
@@ -745,6 +905,8 @@ function UploadPageInner() {
                     index={idx}
                     disabled={false}
                     canRemove={batchItems.length > 1}
+                    courses={courses}
+                    onAddCourse={addLocalCourse}
                     onFileChange={(f) => setBatchItems((prev) => prev.map((b) =>
                       b.id === item.id
                         ? { ...b, file: f, title: b.title || f.name.replace(/\.[^.]+$/, '').replace(/[-_]/g, ' ') }
@@ -768,7 +930,7 @@ function UploadPageInner() {
                     + Add Another File
                   </button>
                   <div className="upl-batch-actions-right">
-                    {batchFilledItems.length > 0 && (
+                    {isAdmin && batchFilledItems.length > 0 && (
                       <span className="upl-cost-row">
                         <span className="upl-cost-label">Total est.</span>
                         <span className="upl-cost-val">~${batchTotalCost.toFixed(4)}</span>
@@ -796,13 +958,13 @@ function UploadPageInner() {
                   </p>
                 </div>
 
-                <div className="upl-review-table">
+                <div className={`upl-review-table${isAdmin ? '' : ' upl-review-table--no-cost'}`}>
                   <div className="upl-review-thead">
                     <span>#</span>
                     <span>File</span>
                     <span>Course</span>
                     <span>Title</span>
-                    <span>Est. Cost</span>
+                    {isAdmin && <span>Est. Cost</span>}
                   </div>
                   {batchFilledItems.map((item, idx) => (
                     <div key={item.id} className="upl-review-row">
@@ -820,17 +982,21 @@ function UploadPageInner() {
                       <span className="upl-review-title-val">
                         {item.title || item.file!.name.replace(/\.[^.]+$/, '')}
                       </span>
-                      <span className="upl-review-cost">
-                        ~${estimateClientCost(item.file!.size).toFixed(4)}
-                      </span>
+                      {isAdmin && (
+                        <span className="upl-review-cost">
+                          ~${estimateClientCost(item.file!.size).toFixed(4)}
+                        </span>
+                      )}
                     </div>
                   ))}
-                  <div className="upl-review-total">
-                    <span style={{ gridColumn: '1 / 5', textAlign: 'right', color: 'var(--text-muted)', fontSize: 12 }}>
-                      Total estimated cost
-                    </span>
-                    <span className="upl-cost-val">~${batchTotalCost.toFixed(4)}</span>
-                  </div>
+                  {isAdmin && (
+                    <div className="upl-review-total">
+                      <span style={{ gridColumn: '1 / 5', textAlign: 'right', color: 'var(--text-muted)', fontSize: 12 }}>
+                        Total estimated cost
+                      </span>
+                      <span className="upl-cost-val">~${batchTotalCost.toFixed(4)}</span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="upl-review-footer">
@@ -981,14 +1147,18 @@ interface BatchItemRowProps {
   index: number;
   disabled: boolean;
   canRemove: boolean;
+  courses: string[];
+  onAddCourse: (name: string) => void;
   onFileChange: (f: File) => void;
   onCourseChange: (c: Course) => void;
   onTitleChange: (t: string) => void;
   onRemove: () => void;
 }
 
-function BatchItemRow({ item, index, disabled, canRemove, onFileChange, onCourseChange, onTitleChange, onRemove }: BatchItemRowProps) {
+function BatchItemRow({ item, index, disabled, canRemove, courses, onAddCourse, onFileChange, onCourseChange, onTitleChange, onRemove }: BatchItemRowProps) {
   const inputRef = useRef<HTMLInputElement>(null);
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState('');
 
   return (
     <div className="upl-batch-item idle">
@@ -1014,10 +1184,54 @@ function BatchItemRow({ item, index, disabled, canRemove, onFileChange, onCourse
             ? <span className="upl-batch-filename">{item.file.name}</span>
             : <span className="upl-batch-placeholder">Click to select file…</span>}
         </div>
-        <select className="upl-select" value={item.course}
-          onChange={(e) => onCourseChange(e.target.value as Course)} disabled={disabled}>
-          {VALID_COURSES.map((c) => <option key={c}>{c}</option>)}
-        </select>
+        {adding ? (
+          <input
+            className="upl-input"
+            type="text"
+            placeholder="New course name"
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                const name = draft.trim();
+                if (name) {
+                  onAddCourse(name);
+                  onCourseChange(name);
+                  setAdding(false);
+                }
+              } else if (e.key === 'Escape') {
+                setAdding(false);
+              }
+            }}
+            onBlur={() => {
+              const name = draft.trim();
+              if (name) {
+                onAddCourse(name);
+                onCourseChange(name);
+              }
+              setAdding(false);
+            }}
+            autoFocus
+            maxLength={60}
+            disabled={disabled}
+          />
+        ) : (
+          <select className="upl-select" value={item.course}
+            onChange={(e) => {
+              if (e.target.value === ADD_NEW_COURSE) {
+                setAdding(true);
+                setDraft('');
+              } else {
+                onCourseChange(e.target.value as Course);
+              }
+            }}
+            disabled={disabled}>
+            {courses.map((c) => <option key={c} value={c}>{c}</option>)}
+            {!courses.includes(item.course) && <option value={item.course}>{item.course}</option>}
+            <option value={ADD_NEW_COURSE}>+ Add new course…</option>
+          </select>
+        )}
         <input className="upl-input" type="text" placeholder="Title (optional)"
           value={item.title} onChange={(e) => onTitleChange(e.target.value)} disabled={disabled} />
       </div>
@@ -1224,6 +1438,26 @@ const css = `
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 .upl-select:disabled, .upl-input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── Inline "+ Add new…" row ─────────────────────────────────────────── */
+.upl-inline-add { display: flex; gap: 6px; align-items: stretch; }
+.upl-inline-add .upl-input { flex: 1; }
+.upl-inline-add-save, .upl-inline-add-cancel {
+  font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 500;
+  border: 1px solid rgba(255,255,255,0.1); border-radius: 8px;
+  padding: 0 14px; min-height: 44px; cursor: pointer;
+  background: var(--surface2); color: var(--text-muted);
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.upl-inline-add-save {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  color: var(--accent); border-color: color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.upl-inline-add-save:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--accent) 28%, transparent);
+}
+.upl-inline-add-save:disabled { opacity: 0.5; cursor: not-allowed; }
+.upl-inline-add-cancel:hover { color: var(--text); }
 
 /* ── Cost row ────────────────────────────────────────────────────────── */
 .upl-cost-row  { display: flex; align-items: center; gap: 8px; }
@@ -1456,6 +1690,10 @@ const css = `
   gap: 12px;
   padding: 12px 18px;
   align-items: center;
+}
+.upl-review-table--no-cost .upl-review-thead,
+.upl-review-table--no-cost .upl-review-row {
+  grid-template-columns: 36px 1fr 180px 180px;
 }
 .upl-review-thead {
   font-size: 10px; font-weight: 700; text-transform: uppercase;

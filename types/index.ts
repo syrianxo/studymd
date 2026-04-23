@@ -1,9 +1,15 @@
 // ─── Core Types ────────────────────────────────────────────────────────────
 
-export type Course =
-  | 'Physical Diagnosis I'
-  | 'Anatomy & Physiology'
-  | 'Laboratory Diagnosis';
+// Courses are user-extensible strings. The legacy cohort seeded with three
+// fixed courses; new courses can be added freely via the upload flow and
+// ManageMode. They emerge from lectures.course + user_lecture_settings.course_override.
+export type Course = string;
+
+export const DEFAULT_COURSES = [
+  'Physical Diagnosis I',
+  'Anatomy & Physiology',
+  'Laboratory Diagnosis',
+] as const;
 
 import type { ThemeId } from '@/lib/themes';
 export type { ThemeId as Theme } from '@/lib/themes';

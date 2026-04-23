@@ -44,6 +44,23 @@ next-env.d.ts
 migration-data/
 scripts/
 
+# ── StudyMD internal documentation — kept local, not committed ─
+# README.md stays tracked (public-facing).
+CLAUDE.md
+CLAUDE_CODE_EXECUTION_GUIDE_V3.md
+CLAUDE_CODE_EXECUTION_GUIDE_V3_REVISED.md
+architecture.md
+decisions.md
+plan.md
+development_plan_v3.md
+documentation.md
+recommendations.md
+todo.md
+.claude/
+.Rhistory
+app/.Rhistory
+styles/.Rhistory
+
 # ── StudyMD secrets — NEVER commit ───────────────────────────
 .env.local
 .env.*.local

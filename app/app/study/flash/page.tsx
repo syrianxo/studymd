@@ -119,7 +119,7 @@ function FlashPageInner() {
       lectureTitle={lecture.title}
       lectureId={lecture.internal_id}
       cards={cards}
-      slidesStoragePath={null}
+      slidesStoragePath={lecture.internal_id}
       slideCount={lecture.slide_count}
       initialGotItIds={knownGotItIds}
       initialMissedIds={knownMissedIds}

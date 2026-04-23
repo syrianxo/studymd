@@ -22,8 +22,12 @@ import { createMiddlewareClient } from '@/lib/supabase-middleware'
  * Uses getUser() (not getSession()) — re-validates token server-side.
  */
 export async function proxy(request: NextRequest) {
+  // Surface pathname to Server Components (for layouts that need to branch by route).
+  const requestHeaders = new Headers(request.headers)
+  requestHeaders.set('x-pathname', request.nextUrl.pathname)
+
   const response = NextResponse.next({
-    request: { headers: request.headers },
+    request: { headers: requestHeaders },
   })
 
   const supabase = createMiddlewareClient(request, response)

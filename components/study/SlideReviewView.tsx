@@ -130,6 +130,11 @@ export default function SlideReviewView({
   // Map of slide_number → annotation body (or null while loading)
   const [annotations, setAnnotations] = useState<Map<number, string | null>>(new Map());
   const [annotationStatus, setAnnotationStatus] = useState<Map<number, 'idle' | 'loading' | 'done' | 'error'>>(new Map());
+  // Student notes: slide_number → body
+  const [notes, setNotes] = useState<Map<number, string>>(new Map());
+  const [noteDraft, setNoteDraft] = useState<string>('');
+  const [noteSaveStatus, setNoteSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const noteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [imageError, setImageError] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -155,6 +160,58 @@ export default function SlideReviewView({
       })
       .catch(console.error);
   }, [lectureId]);
+
+  // Fetch student notes once on mount
+  useEffect(() => {
+    if (!lectureId) return;
+    fetch(`/api/lectures/${lectureId}/notes`)
+      .then(r => r.json())
+      .then(({ notes: rows }: { notes: Array<{ slide_number: number; body: string }> }) => {
+        setNotes(() => {
+          const next = new Map<number, string>();
+          for (const row of (rows ?? [])) next.set(row.slide_number, row.body);
+          return next;
+        });
+      })
+      .catch(console.error);
+  }, [lectureId]);
+
+  // When the current slide changes, hydrate the note draft from the store
+  useEffect(() => {
+    setNoteDraft(notes.get(currentSlide) ?? '');
+    setNoteSaveStatus('idle');
+    if (noteTimerRef.current) { clearTimeout(noteTimerRef.current); noteTimerRef.current = null; }
+  }, [currentSlide, notes]);
+
+  const saveNote = useCallback(async (slideNum: number, text: string) => {
+    setNoteSaveStatus('saving');
+    try {
+      const res = await fetch(`/api/lectures/${lectureId}/notes`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slide_number: slideNum, body: text }),
+      });
+      if (!res.ok) throw new Error('save failed');
+      setNotes(prev => {
+        const next = new Map(prev);
+        if (text.trim().length === 0) next.delete(slideNum);
+        else next.set(slideNum, text);
+        return next;
+      });
+      setNoteSaveStatus('saved');
+      setTimeout(() => setNoteSaveStatus(s => (s === 'saved' ? 'idle' : s)), 1500);
+    } catch {
+      setNoteSaveStatus('error');
+    }
+  }, [lectureId]);
+
+  function onNoteChange(text: string) {
+    setNoteDraft(text);
+    if (noteTimerRef.current) clearTimeout(noteTimerRef.current);
+    noteTimerRef.current = setTimeout(() => {
+      saveNote(currentSlide, text);
+    }, 700);
+  }
 
   // When current slide changes, generate annotation if it doesn't exist yet
   const generateAnnotation = useCallback(async (slideNum: number, slideUrl: string) => {
@@ -270,7 +327,7 @@ export default function SlideReviewView({
           )}
         </div>
 
-        {/* Annotation panel */}
+        {/* Annotation + notes panel */}
         <div className="srw-annotation-panel">
           <div className="srw-annotation-label">Clinical Note</div>
           {annStatus === 'loading' || annStatus === 'idle' ? (
@@ -295,6 +352,29 @@ export default function SlideReviewView({
               {annotation ? renderMarkdown(annotation) : null}
             </div>
           )}
+
+          <div className="srw-notes-divider" />
+          <div className="srw-notes-header">
+            <span className="srw-annotation-label">My Notes</span>
+            <span className={`srw-notes-status srw-notes-status--${noteSaveStatus}`}>
+              {noteSaveStatus === 'saving' && 'Saving…'}
+              {noteSaveStatus === 'saved' && 'Saved'}
+              {noteSaveStatus === 'error' && 'Save failed'}
+            </span>
+          </div>
+          <textarea
+            className="srw-notes-input"
+            value={noteDraft}
+            placeholder="Write a note for this slide — it stays with you and syncs across devices."
+            onChange={(e) => onNoteChange(e.target.value)}
+            onBlur={() => {
+              if (noteTimerRef.current) { clearTimeout(noteTimerRef.current); noteTimerRef.current = null; }
+              if (noteDraft !== (notes.get(currentSlide) ?? '')) {
+                saveNote(currentSlide, noteDraft);
+              }
+            }}
+            rows={5}
+          />
         </div>
       </div>
 
@@ -481,6 +561,50 @@ const reviewCss = `
   cursor: pointer;
   font-family: inherit;
   align-self: flex-start;
+}
+
+/* Student notes block */
+.srw-notes-divider {
+  height: 1px;
+  background: var(--border, rgba(255,255,255,.08));
+  margin: 16px 0 4px;
+}
+.srw-notes-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.srw-notes-status {
+  font-size: 11px;
+  color: var(--text-muted, rgba(240,240,240,.55));
+  transition: opacity 200ms;
+  min-height: 14px;
+}
+.srw-notes-status--saved { color: var(--accent, #5b8dee); }
+.srw-notes-status--error { color: var(--danger, #ef4444); }
+.srw-notes-input {
+  width: 100%;
+  resize: vertical;
+  min-height: 110px;
+  border: 1.5px solid var(--border, rgba(255,255,255,.12));
+  background: var(--surface, rgba(255,255,255,.03));
+  color: var(--text, #f0f0f0);
+  border-radius: 10px;
+  padding: 10px 12px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.6;
+  box-sizing: border-box;
+  transition: border-color 160ms;
+}
+.srw-notes-input:focus {
+  outline: none;
+  border-color: var(--accent, #5b8dee);
+}
+.srw-notes-input::placeholder {
+  color: var(--text-muted, rgba(240,240,240,.45));
+  font-style: italic;
 }
 
 /* Navigation footer */

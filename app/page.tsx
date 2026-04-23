@@ -490,10 +490,16 @@ export default function HomePage() {
 
         @media (max-width: 767px) {
           .nav-links { display: none; }
-          .nav-signin { display: none; }
           .nav-cta { display: none; }
           .nav-hamburger { display: flex; }
           .nav { position: fixed; }
+          /* Keep Sign In reachable without opening the hamburger on mobile. */
+          .nav-signin {
+            display: inline-flex;
+            padding: 7px 14px;
+            font-size: 13px;
+            margin-right: 8px;
+          }
         }
 
         /* ── Hero ───────────────────────────────────────────── */
@@ -1230,7 +1236,7 @@ export default function HomePage() {
             {/* Desktop right CTAs */}
             <div className="nav-right">
               <a href="/login" className="nav-signin">Sign In</a>
-              <a href="/login" className="nav-cta">Sign Up →</a>
+              <a href="/signup" className="nav-cta">Sign Up →</a>
             </div>
 
             {/* Hamburger (mobile only) */}
@@ -1251,7 +1257,7 @@ export default function HomePage() {
             <a href="#features" onClick={() => setMenuOpen(false)}>Features</a>
             <a href="/pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
             <a href="/login" onClick={() => setMenuOpen(false)}>Sign In</a>
-            <a href="/login" className="nav-mobile-cta" onClick={() => setMenuOpen(false)}>Sign Up →</a>
+            <a href="/signup" className="nav-mobile-cta" onClick={() => setMenuOpen(false)}>Sign Up →</a>
           </div>
         </div>
       </nav>
@@ -1356,6 +1362,27 @@ export default function HomePage() {
                 desc: "Anki-style spaced repetition to optimize your long-term retention. Cards resurface at the right interval so you remember what you've learned.",
                 color: "#06b6d4",
                 badge: "Coming Soon",
+              },
+              {
+                icon: "📅",
+                title: "Study Plans",
+                desc: "Set a test date and StudyMD distributes your lectures across the weeks. A clear daily plan replaces last-minute cramming.",
+                color: "#ec4899",
+                badge: null,
+              },
+              {
+                icon: "📁",
+                title: "Smart Folders",
+                desc: "Group lectures by unit, course, or system. Drag-and-drop to reorganize. Your system, your way — not ours.",
+                color: "#f59e0b",
+                badge: null,
+              },
+              {
+                icon: "👁",
+                title: "Slide Review",
+                desc: "Preview every lecture slide alongside its linked flashcards and questions. Jump from a tough card straight to the slide it came from.",
+                color: "#22c55e",
+                badge: null,
               },
             ].map((f, i) => (
               <div

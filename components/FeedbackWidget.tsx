@@ -194,7 +194,7 @@ const css = `
 /* ── Trigger button ──────────────────────────────────────────────────────── */
 .fbw-trigger {
   position: fixed;
-  bottom: 24px;
+  bottom: max(env(safe-area-inset-bottom, 0px), 24px);
   z-index: 400;
   display: inline-flex;
   align-items: center;

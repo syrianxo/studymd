@@ -110,7 +110,7 @@ function CustomPageInner() {
         lectureTitle={sessionTitle}
         lectureId={lectures.map((l) => l.internal_id).join(',')}
         cards={cards}
-        slidesStoragePath={null}
+        slidesStoragePath={primaryLecture.internal_id}
         slideCount={primaryLecture.slide_count}
         onExit={() => router.push('/app')}
         onProgressUpdate={(gotItIds, missedIds, totalCards) => {

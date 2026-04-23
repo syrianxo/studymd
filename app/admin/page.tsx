@@ -95,42 +95,8 @@ export default async function AdminPage() {
   }
 
   if (result === 'no_profile') {
-    // Profile row missing — show instructions instead of silent redirect
-    return (
-      <div style={{
-        minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-        background: '#0d0f14', color: '#e8eaf0', fontFamily: 'monospace', padding: '2rem',
-        flexDirection: 'column', gap: '1rem', textAlign: 'center',
-      }}>
-        <div style={{ fontSize: '2rem' }}>🗄️</div>
-        <h1 style={{ fontSize: '1.25rem', color: '#f59e0b' }}>No user_profiles row found</h1>
-        <p style={{ color: '#6b7280', maxWidth: 480 }}>
-          Your user ID is not in the <code>user_profiles</code> table, or the table does not exist.
-          Run the following SQL in <strong>Supabase → SQL Editor</strong>:
-        </p>
-        <pre style={{
-          background: '#13161d', border: '1px solid rgba(255,255,255,0.1)',
-          borderRadius: '8px', padding: '1rem', textAlign: 'left',
-          fontSize: '12px', color: '#10b981', maxWidth: 560, overflow: 'auto',
-        }}>{`-- 1. Create table (safe if already exists)
-CREATE TABLE IF NOT EXISTS user_profiles (
-  user_id      UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  display_name TEXT,
-  email        TEXT,
-  role         TEXT NOT NULL DEFAULT 'user',
-  is_primary   BOOLEAN DEFAULT FALSE,
-  created_at   TIMESTAMPTZ DEFAULT NOW()
-);
-ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
-CREATE POLICY IF NOT EXISTS "own_read" ON user_profiles
-  FOR SELECT USING (auth.uid() = user_id);
-
--- 2. Seed your admin row (replace with your real UUID from Supabase Auth)
-INSERT INTO user_profiles (user_id, display_name, email, role)
-VALUES (auth.uid(), 'Khalid', 'your@email.com', 'admin')
-ON CONFLICT (user_id) DO UPDATE SET role = 'admin';`}</pre>
-      </div>
-    );
+    // New users without a profile row go through onboarding to set display_name.
+    redirect('/app/onboarding');
   }
 
   if (result === 'forbidden') {

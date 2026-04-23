@@ -196,12 +196,13 @@ export function useUserLectures(): UseUserLecturesResult {
 }
 
 // ── Helper: resolve Supabase Storage URL for a slide thumbnail ───────────────
-// Slides are stored at: slides/{internal_id}/slide_001.webp
+// Slides are stored at: slides/{internal_id}/slide_XX.jpg (2-digit padding, .jpg)
+// See lib/slide-converter.ts:152 — this format is the source of truth.
 export function getSlideThumbUrl(
   supabaseUrl: string,
   internalId: string,
   slideIndex: number
 ): string {
-  const padded = String(slideIndex + 1).padStart(3, '0');
-  return `${supabaseUrl}/storage/v1/object/public/slides/${internalId}/slide_${padded}.webp`;
+  const padded = String(slideIndex + 1).padStart(2, '0');
+  return `${supabaseUrl}/storage/v1/object/public/slides/${internalId}/slide_${padded}.jpg`;
 }

@@ -172,6 +172,12 @@ export default function ProfilePage() {
     } finally { setSaving(null); }
   }
 
+  function resetProgress() {
+    if (!confirm('Reset all study progress? Flashcard streaks, exam history, and saved sessions will be cleared. This cannot be undone.')) return;
+    try { localStorage.clear(); } catch {}
+    window.location.reload();
+  }
+
   // ── Render helpers ────────────────────────────────────────────────────────
 
   const avatarLetter = (displayName || username || auth?.email || '?')[0].toUpperCase();
@@ -420,6 +426,14 @@ export default function ProfilePage() {
         {/* ── Danger zone ─────────────────────────────────────────────── */}
         <section className="prf-section prf-danger-section">
           <h2 className="prf-section-title danger">Danger Zone</h2>
+
+          <p className="prf-hint" style={{ marginBottom: 12 }}>
+            Reset your study progress — clears flashcard streaks, exam history, and saved sessions stored on this device.
+          </p>
+          <button className="prf-action-btn" onClick={resetProgress} style={{ marginBottom: 24 }}>
+            Reset Progress
+          </button>
+
           <p className="prf-hint" style={{ marginBottom: 16 }}>
             Deleting your account permanently removes all your progress and data. This cannot be undone.
           </p>
