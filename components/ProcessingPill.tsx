@@ -59,9 +59,11 @@ function fmtRemaining(seconds: number): string {
 
 interface ProcessingPillProps {
   userId: string;
+  /** Called whenever job-active state changes — lets the parent hide the Upload button. */
+  onJobActive?: (active: boolean) => void;
 }
 
-export function ProcessingPill({ userId }: ProcessingPillProps) {
+export function ProcessingPill({ userId, onJobActive }: ProcessingPillProps) {
   const [job, setJob] = useState<PillJob | null>(null);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -117,6 +119,12 @@ export function ProcessingPill({ userId }: ProcessingPillProps) {
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
+
+  // Notify parent when job presence changes
+  useEffect(() => {
+    onJobActive?.(job !== null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [job !== null]);
 
   // Countdown ticker
   useEffect(() => {

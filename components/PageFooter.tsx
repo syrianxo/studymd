@@ -1,17 +1,30 @@
 // components/PageFooter.tsx
-// Horizontal, single-row footer used across signed-in pages.
-// Left: brand + status. Right: inline navigation links.
+// Horizontal footer used across signed-in pages.
+// Left: brand + dedication. Right: inline navigation links with active highlighting.
 // Bottom: copyright + credit.
-//
-// Differences vs. the legacy Dashboard-inline footer:
-//   · No "Clear Cache" button (removed; localStorage cache-only is a footgun).
-//   · No "Reset Progress" button (moved to /app/profile Danger Zone).
-//   · Subscriptions link lives here, not in the main header nav.
 'use client';
 
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+
+const NAV_LINKS = [
+  { href: '/app',               label: 'Dashboard' },
+  { href: '/app/lectures',      label: 'Lectures' },
+  { href: '/app/plans',         label: 'Plans' },
+  { href: '/app/progress',      label: 'Progress' },
+  { href: '/app/subscriptions', label: 'Subscriptions' },
+  { href: '/app/upload',        label: 'Upload' },
+  { href: '/app/profile',       label: 'Profile' },
+];
 
 export function PageFooter() {
+  const pathname = usePathname();
+
+  function isActive(href: string) {
+    if (href === '/app') return pathname === '/app';
+    return pathname?.startsWith(href) ?? false;
+  }
+
   return (
     <>
       <style>{footerCss}</style>
@@ -23,20 +36,20 @@ export function PageFooter() {
                 <span className="smd-logo-study">Study</span>
                 <span className="smd-logo-md">MD</span>
               </div>
-              <div className="pf-status">
-                <span className="pf-dot" />
-                Platform active
-              </div>
+              <div className="pf-dedication">Designed for Haley Lange</div>
             </div>
 
             <nav className="pf-links" aria-label="Footer navigation">
-              <Link href="/app" className="pf-link" prefetch={false}>Dashboard</Link>
-              <Link href="/app/lectures" className="pf-link" prefetch={false}>Lectures</Link>
-              <Link href="/app/plans" className="pf-link" prefetch={false}>Plans</Link>
-              <Link href="/app/progress" className="pf-link" prefetch={false}>Progress</Link>
-              <Link href="/app/subscriptions" className="pf-link" prefetch={false}>Subscriptions</Link>
-              <Link href="/app/upload" className="pf-link" prefetch={false}>Upload</Link>
-              <Link href="/app/profile" className="pf-link" prefetch={false}>Profile</Link>
+              {NAV_LINKS.map(({ href, label }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  className={`pf-link${isActive(href) ? ' pf-link--active' : ''}`}
+                  prefetch={false}
+                >
+                  {label}
+                </Link>
+              ))}
             </nav>
           </div>
 
@@ -84,30 +97,14 @@ const footerCss = `
 .pf-brand {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 14px;
   flex-shrink: 0;
 }
 
-.pf-status {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  font-size: 11px;
+.pf-dedication {
+  font-size: 12px;
   color: var(--text-muted);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-}
-.pf-dot {
-  width: 7px; height: 7px;
-  border-radius: 50%;
-  background: var(--success, #10b981);
-  box-shadow: 0 0 8px var(--success, #10b981);
-  animation: pf-pulse 2s infinite;
-}
-@keyframes pf-pulse {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.5; }
+  font-style: italic;
 }
 
 /* ── Inline links (horizontal) ─────────────────────────────────────────── */
@@ -128,6 +125,7 @@ const footerCss = `
   transition: color 0.15s;
 }
 .pf-link:hover { color: var(--text); }
+.pf-link--active { color: var(--accent, #5b8dee); }
 
 /* ── Bottom row: copyright + credit ────────────────────────────────────── */
 .pf-bottom {

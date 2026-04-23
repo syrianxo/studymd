@@ -475,6 +475,7 @@ export default function Dashboard({
         initialTheme={theme}
         onThemeChange={setTheme}
         isAdmin={isAdmin}
+        displayName={userName === 'there' ? undefined : userName}
       />
 
       <main className="smd-dashboard" id="mainDashboard">

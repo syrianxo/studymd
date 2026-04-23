@@ -64,6 +64,7 @@ export default function FlashcardView({
   const [fontSizeIdx, setFontSizeIdx] = useState(2);
 
   const [lightboxIndex, setLightboxIndex] = useState(-1);
+  const [slideImgError, setSlideImgError] = useState(false);
   const allSlideUrls = slidesStoragePath
     ? Array.from({ length: slideCount }, (_, i) =>
         getSlideThumbUrl(SUPABASE_URL, slidesStoragePath, i)
@@ -98,6 +99,9 @@ export default function FlashcardView({
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [handleKey]);
+
+  // Reset slide image error when current card changes
+  useEffect(() => { setSlideImgError(false); }, [currentIndex]);
 
   // ── Navigation ─────────────────────────────────────────────────────────
   function advanceCard() {
@@ -331,7 +335,7 @@ export default function FlashcardView({
               </div>
 
               <div className="smd-card-slide-preview" onClick={(e) => e.stopPropagation()}>
-                {slideUrl ? (
+                {slideUrl && !slideImgError ? (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -339,11 +343,17 @@ export default function FlashcardView({
                       src={slideUrl}
                       alt={`Slide ${currentCard.slide_number}`}
                       loading="lazy"
+                      onError={() => setSlideImgError(true)}
                       onClick={() => openSlide(currentCard.slide_number!)}
                     />
                     <button className="smd-slide-expand-btn" onClick={() => openSlide(currentCard.slide_number!)}>⤢ Expand</button>
                     <div className="smd-slide-number-tag">Slide {currentCard.slide_number}</div>
                   </>
+                ) : currentCard.slide_number ? (
+                  <div className="smd-slide-preview-placeholder">
+                    <span style={{ fontSize: 18 }}>🖼</span>
+                    <span>Slide {currentCard.slide_number}</span>
+                  </div>
                 ) : (
                   <div className="smd-slide-preview-placeholder">
                     <span style={{ fontSize: 18 }}>🖼</span>

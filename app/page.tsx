@@ -1343,6 +1343,13 @@ export default function HomePage() {
                 badge: null,
               },
               {
+                icon: "👁",
+                title: "Review Mode",
+                desc: "Preview every lecture slide alongside its linked flashcards and questions. Jump from a tough card straight to the slide it came from.",
+                color: "#22c55e",
+                badge: null,
+              },
+              {
                 icon: "📊",
                 title: "Progress Tracking",
                 desc: "Your progress syncs across all devices. Start on your phone, continue on your iPad, finish on your laptop. Pick up exactly where you left off.",
@@ -1355,13 +1362,6 @@ export default function HomePage() {
                 desc: "Upload a lecture PDF or PPTX. Claude AI reads your slides and generates high-yield flashcards and exam questions in minutes.",
                 color: "#f0c040",
                 badge: null,
-              },
-              {
-                icon: "🔁",
-                title: "Spaced Repetition",
-                desc: "Anki-style spaced repetition to optimize your long-term retention. Cards resurface at the right interval so you remember what you've learned.",
-                color: "#06b6d4",
-                badge: "Coming Soon",
               },
               {
                 icon: "📅",
@@ -1378,11 +1378,11 @@ export default function HomePage() {
                 badge: null,
               },
               {
-                icon: "👁",
-                title: "Slide Review",
-                desc: "Preview every lecture slide alongside its linked flashcards and questions. Jump from a tough card straight to the slide it came from.",
-                color: "#22c55e",
-                badge: null,
+                icon: "🔁",
+                title: "Spaced Repetition",
+                desc: "Anki-style spaced repetition to optimize your long-term retention. Cards resurface at the right interval so you remember what you've learned.",
+                color: "#06b6d4",
+                badge: "Coming Soon",
               },
             ].map((f, i) => (
               <div

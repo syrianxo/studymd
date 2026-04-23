@@ -28,6 +28,8 @@ interface HeaderProps {
   isAdmin?: boolean;
   /** Display name shown next to the settings gear (desktop only). */
   displayName?: string;
+  /** Hide the settings gear entirely (used on /app/profile where it's redundant). */
+  hideSettings?: boolean;
 }
 
 /** Active-route-aware nav link */
@@ -67,12 +69,14 @@ export default function Header({
   onThemeChange,
   isAdmin = false,
   displayName,
+  hideSettings = false,
 }: HeaderProps) {
   const firstName = (displayName ?? '').trim().split(/\s+/)[0] ?? '';
   const router = useRouter();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
+  const [hasActiveJob, setHasActiveJob] = useState(false);
 
   // Close settings panel on outside click/tap
   useEffect(() => {
@@ -214,9 +218,9 @@ export default function Header({
         <div className="smd-header-right">
 
           {/* Upload — desktop only (mobile version lives in drawer).
-               Hidden when a job is processing — the ProcessingPill takes its place.
-               Also hidden when on /app/upload itself (hideUploadButton). */}
-          {!hideUploadButton && !isProcessing && (
+               Hidden when a job is processing (isProcessing = upload page state,
+               hasActiveJob = DB-polled state from ProcessingPill). */}
+          {!hideUploadButton && !isProcessing && !hasActiveJob && (
             <Link
               href={uploadHref}
               className="smd-hdr-btn smd-hdr-upload smd-hdr-desktop-only"
@@ -233,13 +237,13 @@ export default function Header({
 
           {/* Background-processing pill — polls DB; visible on all pages when a job is in flight.
               When visible it sits in the Upload button's slot (the button is hidden above). */}
-          {userId && <ProcessingPill userId={userId} />}
+          {userId && <ProcessingPill userId={userId} onJobActive={setHasActiveJob} />}
 
           {/* Pomodoro mini-pill — hidden <768px (120px+ min-width collides with mobile icons). ADR-022. */}
           <PomodoroMiniPill />
 
           {/* Settings/Theme — gear icon opens panel with theme picker, profile, sign-out */}
-          <div className="smd-hdr-settings-wrap" ref={settingsRef}>
+          {!hideSettings && <div className="smd-hdr-settings-wrap" ref={settingsRef}>
             <button
               className={`smd-hdr-gear${firstName ? ' smd-hdr-gear--named' : ''}`}
               onClick={() => setSettingsOpen(o => !o)}
@@ -285,7 +289,7 @@ export default function Header({
                 </button>
               </div>
             )}
-          </div>
+          </div>}
 
         </div>
       </header>

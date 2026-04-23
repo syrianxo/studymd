@@ -428,10 +428,12 @@ function UploadPageInner() {
     persistJob(result.jobId, lecTitle);
 
     // ── Fire /api/generate (non-blocking — status flows back via polling) ──────
+    // keepalive: true keeps the request alive even if the user navigates away.
     const currentUserId = (await supabase.auth.getUser()).data.user?.id ?? '';
     fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      keepalive: true,
       body: JSON.stringify({
         fileUrl:      result.fileUrl,
         course:       singleCourse,
@@ -499,6 +501,7 @@ function UploadPageInner() {
       fetch('/api/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        keepalive: true,
         body: JSON.stringify({
           fileUrl:      result.fileUrl,
           course:       item.course,

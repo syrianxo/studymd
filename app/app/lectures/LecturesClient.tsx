@@ -17,6 +17,7 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import { PageFooter } from '@/components/PageFooter';
 import { createClient } from '@/lib/supabase';
 import type { Theme } from '@/types';
 import { migrateThemeId } from '@/lib/themes';
@@ -1276,24 +1277,6 @@ function SortableRow({ lecture, expanded, onToggle, onToast, onSummaryChange, on
   );
 }
 
-// ─── Footer ───────────────────────────────────────────────────────────────────
-
-function PageFooter() {
-  return (
-    <footer className="lm-footer">
-      <div className="lm-footer-inner">
-        <div className="lm-footer-logo">Study<span className="lm-footer-md">MD</span></div>
-        <div className="lm-footer-tagline">Designed for Haley Lange</div>
-        <div className="lm-footer-links">
-          <Link href="/app" className="lm-footer-link">Dashboard</Link>
-          <Link href="/app/upload" className="lm-footer-link">Upload</Link>
-          <Link href="/app/profile" className="lm-footer-link">Profile</Link>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function LecturesClient({ initialLectures }: { initialLectures: LectureSummary[] }) {
@@ -1791,16 +1774,6 @@ const CSS = `
 .lm-toast-err { background: #ef4444; color: #fff; }
 @keyframes lm-toast-in { from { opacity: 0; transform: translateX(-50%) translateY(12px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
 
-/* ── Footer ── */
-.lm-footer { border-top: 1px solid var(--border, rgba(255,255,255,0.08)); background: var(--surface, #13161d); }
-.lm-footer-inner { padding: 24px 40px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; }
-.lm-footer-logo { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 700; color: var(--text); }
-.lm-footer-md { color: var(--accent, #5b8dee); }
-.lm-footer-tagline { font-size: 12px; color: var(--text-muted); font-style: italic; }
-.lm-footer-links { display: flex; gap: 20px; }
-.lm-footer-link { font-size: 13px; color: var(--text-muted); text-decoration: none; transition: color .15s; }
-.lm-footer-link:hover { color: var(--text); }
-
 /* ── Mobile ── */
 @media (max-width: 767px) {
   .lm-page-wrap { padding: 0 16px; }
@@ -1812,6 +1785,5 @@ const CSS = `
   .lm-table th:nth-child(5), .lm-table td:nth-child(5),
   .lm-table th:nth-child(8), .lm-table td:nth-child(8) { display: none; }
   .lm-modal, .lm-modal-wide { padding: 20px; max-width: 100%; }
-  .lm-footer-inner { padding: 20px 16px; flex-direction: column; align-items: flex-start; gap: 12px; }
 }
 `;

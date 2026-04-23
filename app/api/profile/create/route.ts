@@ -33,7 +33,7 @@ export async function POST(req: Request) {
   if (existing) {
     const { error } = await service
       .from('user_profiles')
-      .update({ display_name: displayName, email: user.email })
+      .update({ display_name: displayName })
       .eq('user_id', user.id);
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   } else {
@@ -41,7 +41,6 @@ export async function POST(req: Request) {
       .from('user_profiles')
       .insert({
         user_id: user.id,
-        email: user.email,
         display_name: displayName,
         role: 'user',
       });
