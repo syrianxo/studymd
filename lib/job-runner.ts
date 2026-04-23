@@ -62,7 +62,7 @@ function getAnthropicClient() {
 // ─── Per-model output token limits ───────────────────────────────────────────
 const MODEL_MAX_OUTPUT: Record<string, number> = {
   'claude-haiku-4-5-20251001': 8000,
-  'claude-sonnet-4-6':        16000,
+  'claude-sonnet-4-6':        32000,
 };
 
 // ─── Progress helpers ─────────────────────────────────────────────────────────
@@ -434,8 +434,14 @@ export async function runProcessingJob(
       const fallbackValidation = validateLecture(fallback.lectureJson);
 
       if (!fallbackValidation.valid) {
-        const msg = `Both models produced invalid output. Errors: ${fallbackValidation.errors.slice(0, 5).join('; ')}`;
         await recordApiUsage(supabase, fallback.model, fallback.inputTokens, fallback.outputTokens, API_LIMITS.BATCH_API_ENABLED);
+        // If both outputs look like truncation artifacts (all top-level fields missing),
+        // give a clearer diagnostic than a raw missing-field dump.
+        const isTruncated = (o: unknown) =>
+          typeof o === 'object' && o !== null && '_truncated' in (o as object);
+        const msg = (isTruncated(result.lectureJson) && isTruncated(fallback.lectureJson))
+          ? 'Lecture output was too large for both models — the lecture may have too many slides. Try splitting it into smaller sections.'
+          : `Both models produced invalid output. Errors: ${fallbackValidation.errors.slice(0, 5).join('; ')}`;
         await markJobError(supabase, jobId, msg);
         throw new Error(msg);
       }
