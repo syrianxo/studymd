@@ -91,6 +91,11 @@ export default function Dashboard({
   const [manageOpen, setManageOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [theme, setTheme] = useState<Theme>(initialThemeProp);
+
+  // ── Study mode — determines what card click does ───────────────────────────
+  // 'learn' → FlashcardConfigModal, 'practice' → ExamConfigModal, 'review' → SlideReviewView
+  type StudyMode = 'learn' | 'practice' | 'review';
+  const [studyMode, setStudyMode] = useState<StudyMode>('learn');
   const studyConfig = useStudyConfig();
 
   // ── Active study plan (for dashboard widget + lecture badges) ────────────────
@@ -242,6 +247,16 @@ export default function Dashboard({
     } else {
       window.location.href = `/app/study/exam?lecture=${lectureId}`;
     }
+  }
+
+  function handleStartReview(lectureId: string) {
+    window.location.href = `/app/study/review?lecture=${lectureId}`;
+  }
+
+  function handleStudyAction(lectureId: string) {
+    if (studyMode === 'review') handleStartReview(lectureId);
+    else if (studyMode === 'practice') handleStartExam(lectureId);
+    else handleStartFlash(lectureId);
   }
 
   function handleStartFlashWithConfig(config: FlashcardConfig, lectureId: string) {
@@ -494,11 +509,6 @@ export default function Dashboard({
           </aside>
         </div>
 
-        {/* Subtitle — below widgets, above lecture grid */}
-        <p className="smd-section-subtitle">
-          Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.
-        </p>
-
         {/* ── SECTION HEADER ──────────────────────────────────────────────── */}
         {/* Breadcrumb removed — active pill in FolderBar shows current location */}
         <div className="smd-section-header">
@@ -527,6 +537,24 @@ export default function Dashboard({
             </button>
           </div>
         </div>
+
+        {/* ── STUDY MODE SELECTOR ─────────────────────────────────────────── */}
+        {!manageOpen && (
+          <div className="smd-mode-bar" role="group" aria-label="Study mode">
+            {(['review', 'learn', 'practice'] as const).map(mode => (
+              <button
+                key={mode}
+                className={`smd-mode-btn${studyMode === mode ? ' active' : ''}`}
+                onClick={() => setStudyMode(mode)}
+                aria-pressed={studyMode === mode}
+              >
+                {mode === 'review'   ? '📋 Review'   :
+                 mode === 'learn'    ? '📇 Learn'    :
+                                      '📝 Practice'}
+              </button>
+            ))}
+          </div>
+        )}
 
         {manageOpen && userId && (
           <ManageMode
@@ -594,8 +622,11 @@ export default function Dashboard({
               progressByLecture={progressByLecture}
               loading={lecturesLoading}
               activeTheme={theme}
+              studyMode={studyMode}
+              onStudyAction={handleStudyAction}
               onStartFlash={handleStartFlash}
               onStartExam={handleStartExam}
+              onStartReview={handleStartReview}
               onChangeCourse={handleChangeCourse}
               onChangeColor={handleChangeColor}
               onHide={handleHide}
@@ -737,6 +768,41 @@ export default function Dashboard({
 
 // ── Scoped CSS ───────────────────────────────────────────────────────────────
 const dashboardCss = `
+/* ── Study mode selector ───────────────────────────────────────────────── */
+.smd-mode-bar {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+.smd-mode-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms, border-color 140ms, color 140ms;
+  text-align: center;
+  white-space: nowrap;
+}
+.smd-mode-btn:hover:not(.active) {
+  background: var(--surface2);
+  border-color: var(--accent);
+  color: var(--text);
+}
+.smd-mode-btn.active {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+@media (max-width: 480px) {
+  .smd-mode-btn { font-size: 12px; padding: 7px 8px; }
+}
+
 /* ── Filter drawer — animates below FolderBar without unmounting ────────── */
 /* max-height transition keeps the grid from jumping when toggling All view */
 .smd-filter-drawer {
