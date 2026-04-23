@@ -12,6 +12,17 @@ _(nothing active — pick next item from Next up)_
 
 ## ✅ Recently shipped
 
+### Slice 10 — F4 + F5 Review mode + 3-tab lecture grid (ADR-029, ADR-030)
+- [x] `slide_annotations` table + RLS + migration (`supabase/migrations/20260422_slide_annotations.sql`)
+- [x] `lib/slide-annotation-prompt.ts` — clinical annotation system prompt (3–5 sentences, mnemonic, cached)
+- [x] `GET/POST /api/lectures/[id]/annotations` — lazy generation with cost gating + `increment_api_usage`
+- [x] `components/study/SlideReviewView.tsx` — slide-by-slide viewer: image left, annotation right; keyboard nav; lazy generation; mobile stacked layout
+- [x] `app/app/study/review/page.tsx` — entry route reading `?lecture=&slide=`
+- [x] Dashboard: segmented mode selector (Review / Learn / Practice) above FolderBar
+- [x] `LectureCard`: mode-aware primary button + "⋯" details button always opens LectureViewModal
+- [x] `LectureGrid`: threads `studyMode`, `onStudyAction`, `onStartReview` props
+- [x] `LectureViewModal`: Review Slides button + active mode highlighting
+
 ### Slice F1 — Flashcard/exam missed-only mode
 - [x] `FlashcardConfig` gains `cardMode: 'all'|'new'|'missed'`; `FlashcardConfigModal` shows 3-option mode selector with live counts
 - [x] `ExamConfig` gains `questionMode: 'all'|'new'|'missed'`; `ExamConfigModal` defaults to `new` when prior attempts exist
@@ -64,11 +75,7 @@ _(nothing active — pick next item from Next up)_
 - [x] `public.courses` table + RLS + 4 seeds; `lectures.course_id` FK + full backfill — ADR-030
 - [x] API: `GET/POST /api/admin/courses`, `PATCH/DELETE /api/admin/courses/[id]`, assign/unassign-lectures sub-routes
 
-### Slice 10 — F4 + F5 Review mode + 3-tab lecture grid
-- [ ] `slide_annotations` table + RLS + migration
-- [ ] API: `POST /api/lectures/[id]/annotate` → calls Claude, stores annotations
-- [ ] `SlideReviewView` component + `lib/slide-annotation-prompt.ts`
-- [ ] Three-tab `LectureGrid` (Review / Learn / Practice) — `Dashboard.tsx` refactor
+### Slice 10 — F4 + F5 Review mode + 3-tab lecture grid ✅ DONE
 
 ### ~~Slice F1 — Flashcard missed-only mode~~ ✅ Done
 - [x] `FlashcardConfigModal` All/New/Missed mode selector with live counts

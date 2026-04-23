@@ -173,8 +173,8 @@ Full design in [`development_plan_v3.md`](./development_plan_v3.md). Suggested i
 - [x] **F1** Per-user randomized greetings — `lib/greetings.ts` with 8 time-of-day buckets, display_name substitution, stable within session, rotates across day
 - [ ] **F2** Lecture-package subscriptions — `lecture_packages`, `user_package_access`, revised `lectures` RLS
 - [x] **F3** Lecture-grid folders — `folders` table, `FolderBar`/`FolderTile`/`FolderTree` components, drag-to-folder, `CustomSessionModal` folder picker (ADR-027)
-- [ ] **F4** Review tab with AI slide annotations — `slide_annotations` table, `SlideReviewView`, new `lib/slide-annotation-prompt.ts`
-- [ ] **F5** Three-tab Lecture Grid (Review / Learn / Practice) — refactor `Dashboard`, `LectureCard`, `LectureViewModal`
+- [x] **F4** Review tab with AI slide annotations — `slide_annotations` table, `SlideReviewView`, `lib/slide-annotation-prompt.ts` (ADR-029)
+- [x] **F5** Three-tab Lecture Grid (Review / Learn / Practice) — segmented mode selector on Dashboard, mode-aware LectureCard click, LectureViewModal Review button (ADR-030)
 - [ ] **F6** Worksheet uploads → static Practice exams — `lectures.kind` column, `lib/worksheet-processor-prompt.ts`
 - [ ] **F7** OSCE preparation — Option B (checklists) first, then Option A (AI patient roleplay) — `osce_*` tables, `/app/osce/*`
 - [x] **F8** Editable lecture topics — `user_lecture_settings.topics_override` jsonb, dnd-kit editor in `LectureViewModal` + inline panel in `ManageLectureCard` (ADR-026)

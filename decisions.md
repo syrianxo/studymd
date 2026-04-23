@@ -439,6 +439,34 @@ Dates reflect when the decision landed in the repo (from git history) or, for un
 
 Copy/paste and fill in:
 
+## ADR-029 · Slide annotations: lazy per-slide generation, cached in DB
+- **Date:** 2026-04-22 (commits `dc6f2f9`, `ff91445` — Slice 10)
+- **Status:** Accepted
+- **Context:** Review mode needs AI-generated clinical annotations for each lecture slide. Options: (A) generate all annotations at upload time; (B) generate on-demand per slide, cache in DB; (C) generate on-demand per slide, no cache.
+- **Decision:** Option B — generate lazily on first review visit, store in `slide_annotations` table. The API skips slides that already have an annotation so repeated visits are cheap reads.
+- **Consequences:**
+  - (+) No cost at upload time; annotations are only generated for slides users actually view.
+  - (+) Idempotent: `UPSERT ON CONFLICT (internal_id, slide_number)` prevents duplicate work even under concurrent requests.
+  - (−) First-visit latency per slide (≈1–2s with Haiku); subsequent visits are instant.
+  - (−) Annotations are shared across all users (service-role writes, all authenticated users read). This is intentional — annotations are clinical facts, not user-specific.
+  - Revisit when: annotation quality needs per-user customization or the table grows large enough to warrant partitioning.
+
+---
+
+## ADR-030 · Study mode selector: segmented pill control, not tabs or slider
+- **Date:** 2026-04-22 (commits `a5dbc59`, `123b12e` — Slice 10)
+- **Status:** Accepted
+- **Context:** F5 (three-tab lecture grid) originally proposed named tabs. The user asked for alternatives given the existing folder pill bar pattern. Options considered: (A) traditional tab strip with tab panels; (B) segmented pill control (all 3 options visible, equal width); (C) slider (continuous, 3 stops); (D) folder-bar-style scrollable pills; (E) inline header dropdown.
+- **Decision:** Option B — segmented pill control with 3 modes (Review / Learn / Practice) rendered as a horizontal bar between the section header and FolderBar. Card click fires the mode-appropriate action. A "⋯" details button always opens LectureViewModal.
+- **Consequences:**
+  - (+) Minimal chrome — no tab panels, no separate route per mode; one bar of controls.
+  - (+) Visually consistent with the FolderBar pill aesthetic but semantically distinct (equal-width segments vs scrollable independent pills).
+  - (+) Mode state lives in Dashboard component only; no URL param needed for this simple use case.
+  - (−) Removing the two quick-access buttons from card body is a behavior change — offset by the "⋯" detail button and the mode button.
+  - Revisit when: a user wants the mode persisted across sessions (add to user_preferences.study_mode).
+
+---
+
 ```markdown
 ## ADR-029 · Background processing with Vercel Cron + inline fast-path (Slice A2)
 - **Date:** 2026-04-22
