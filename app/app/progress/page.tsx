@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
+import { PageFooter } from '@/components/PageFooter';
 import { createClient } from '@/lib/supabase';
 import type { Theme } from '@/types';
 import { migrateThemeId } from '@/lib/themes';
@@ -45,6 +46,7 @@ export default function ProgressPage() {
           </p>
         </div>
       </main>
+      <PageFooter />
     </>
   );
 }

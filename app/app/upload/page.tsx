@@ -15,6 +15,7 @@ import { useState, useRef, useEffect, useCallback, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
+import { PageFooter } from '@/components/PageFooter';
 import { createClient } from '@/lib/supabase';
 import type { Theme, Course } from '@/types';
 import { DEFAULT_COURSES } from '@/types';
@@ -1070,41 +1071,7 @@ function UploadPageInner() {
 
       </main>
 
-      {/* Footer */}
-      <footer className="upl-footer">
-        <div className="upl-footer-inner">
-          <div className="upl-footer-top">
-            <div className="upl-footer-brand">
-              <div className="smd-logo">
-                <span className="smd-logo-study">Study</span>
-                <span className="smd-logo-md">MD</span>
-              </div>
-              <p className="upl-footer-note">
-                Lecture Mastery Platform — designed for{' '}
-                <em style={{ color: 'var(--accent)', fontStyle: 'normal', fontWeight: 600 }}>Haley Lange</em>
-              </p>
-            </div>
-            <div className="upl-footer-links">
-              <Link href="/app"        className="upl-footer-link">Dashboard</Link>
-              <Link href="/app/upload" className="upl-footer-link">Upload Lecture</Link>
-            </div>
-          </div>
-          <div className="upl-footer-bottom">
-            <span>© 2026 StudyMD. All rights reserved.</span>
-            <span>
-              Built with{' '}
-              <a href="https://anthropic.com" target="_blank" rel="noopener noreferrer" className="upl-footer-link-inline">
-                Anthropic Claude
-              </a>{' '}
-              — a{' '}
-              <a href="https://tutormd.com" target="_blank" rel="noopener noreferrer" className="upl-footer-link-inline">
-                TutorMD
-              </a>{' '}
-              product
-            </span>
-          </div>
-        </div>
-      </footer>
+      <PageFooter />
 
       {/* Toast */}
       {toast.visible && <div className="upl-toast">✅ {toast.msg}</div>}

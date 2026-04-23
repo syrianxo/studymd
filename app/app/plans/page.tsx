@@ -11,6 +11,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import Header from '@/components/Header';
+import { PageFooter } from '@/components/PageFooter';
 import type { StudyPlan, StudySchedule, Theme } from '@/types';
 
 // ─── Lecture shape needed in this page ───────────────────────────────────────
@@ -395,6 +396,7 @@ export default function PlansPage() {
           />
         )}
       </main>
+      <PageFooter />
     </>
   );
 }

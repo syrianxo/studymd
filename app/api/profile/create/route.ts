@@ -42,7 +42,7 @@ export async function POST(req: Request) {
       .insert({
         user_id: user.id,
         display_name: displayName,
-        role: 'user',
+        role: 'student',
       });
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   }

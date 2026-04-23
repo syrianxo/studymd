@@ -255,7 +255,7 @@ export async function checkLimits(
     if (globalCount >= API_LIMITS.ADMIN_DAILY_SANITY_CAP) {
       return {
         allowed: false,
-        reason: `Admin daily sanity cap reached (${API_LIMITS.ADMIN_DAILY_SANITY_CAP} calls/day). This is a safety limit — contact Khalid if it's too low.`,
+        reason: `Admin daily sanity cap reached (${API_LIMITS.ADMIN_DAILY_SANITY_CAP} calls/day). This is a safety limit — contact admin if it's too low.`,
       };
     }
     return { allowed: true, bypassed: true };
@@ -295,7 +295,7 @@ export async function checkLimits(
     if (monthTotal >= API_LIMITS.MAX_MONTHLY_COST_USD) {
       return {
         allowed: false,
-        reason: `Monthly API budget of $${API_LIMITS.MAX_MONTHLY_COST_USD.toFixed(2)} has been reached. Contact Khalid.`,
+        reason: `Monthly API budget of $${API_LIMITS.MAX_MONTHLY_COST_USD.toFixed(2)} has been reached. Contact admin or submit a bug report.`,
       };
     }
   }

@@ -204,5 +204,7 @@ export function getSlideThumbUrl(
   slideIndex: number
 ): string {
   const padded = String(slideIndex + 1).padStart(2, '0');
-  return `${supabaseUrl}/storage/v1/object/public/slides/${internalId}/slide_${padded}.jpg`;
+  // Files are stored at path slides/{internalId}/slide_XX.jpg inside the 'slides' bucket,
+  // so the public URL needs the extra slides/ path segment.
+  return `${supabaseUrl}/storage/v1/object/public/slides/slides/${internalId}/slide_${padded}.jpg`;
 }

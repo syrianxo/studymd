@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Header from '@/components/Header';
+import { PageFooter } from '@/components/PageFooter';
 import { createClient } from '@/lib/supabase';
 import { migrateThemeId } from '@/lib/themes';
 import type { Theme } from '@/types';
@@ -114,6 +115,7 @@ export default function SubscriptionsPage() {
           </div>
         )}
       </main>
+      <PageFooter />
     </>
   );
 }
