@@ -14,8 +14,16 @@ CREATE TABLE public.lecture_packages (
 ALTER TABLE public.lecture_packages ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "authenticated read packages" ON public.lecture_packages
   FOR SELECT TO authenticated USING (true);
+-- FOR ALL on lecture_packages would trigger the self-referential user_profiles_admin_read
+-- policy during SELECT subqueries, causing infinite recursion. Scope to writes only.
 CREATE POLICY "admin writes packages" ON public.lecture_packages
-  FOR ALL TO authenticated
+  FOR INSERT TO authenticated
+  WITH CHECK (EXISTS (SELECT 1 FROM public.user_profiles WHERE user_id = auth.uid() AND role = 'admin'));
+CREATE POLICY "admin updates packages" ON public.lecture_packages
+  FOR UPDATE TO authenticated
+  USING (EXISTS (SELECT 1 FROM public.user_profiles WHERE user_id = auth.uid() AND role = 'admin'));
+CREATE POLICY "admin deletes packages" ON public.lecture_packages
+  FOR DELETE TO authenticated
   USING (EXISTS (SELECT 1 FROM public.user_profiles WHERE user_id = auth.uid() AND role = 'admin'));
 
 CREATE TABLE public.user_package_access (
@@ -29,8 +37,15 @@ CREATE TABLE public.user_package_access (
 ALTER TABLE public.user_package_access ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "users read own access" ON public.user_package_access
   FOR SELECT TO authenticated USING (auth.uid() = user_id);
-CREATE POLICY "admin manages access" ON public.user_package_access
-  FOR ALL TO authenticated
+-- Same FOR ALL → write-only split to avoid recursion via user_profiles_admin_read
+CREATE POLICY "admin inserts access" ON public.user_package_access
+  FOR INSERT TO authenticated
+  WITH CHECK (EXISTS (SELECT 1 FROM public.user_profiles WHERE user_id = auth.uid() AND role = 'admin'));
+CREATE POLICY "admin updates access" ON public.user_package_access
+  FOR UPDATE TO authenticated
+  USING (EXISTS (SELECT 1 FROM public.user_profiles WHERE user_id = auth.uid() AND role = 'admin'));
+CREATE POLICY "admin deletes access" ON public.user_package_access
+  FOR DELETE TO authenticated
   USING (EXISTS (SELECT 1 FROM public.user_profiles WHERE user_id = auth.uid() AND role = 'admin'));
 
 -- ── Lectures RLS ──────────────────────────────────────────────────────────────
