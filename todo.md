@@ -12,6 +12,22 @@ _(nothing active — pick next item from Next up)_
 
 ## ✅ Recently shipped
 
+### Slice 12 — F2 Lecture-package subscriptions (ADR-032)
+- [x] `lecture_packages` + `user_package_access` tables + RLS (`supabase/migrations/20260422_s12_lecture_packages.sql`)
+- [x] Package-scoped `lectures` SELECT policy (replaces open authenticated-read)
+- [x] Seed `pa-year-1-fall-2026` with all 19 current lectures; backfill to all non-admin users
+- [x] `handle_new_user()` trigger: auto-grants default package on signup + ensures `user_preferences`
+- [x] `GET /api/packages` — user-facing package list with access metadata
+- [x] `GET/POST /api/admin/packages` — admin list + create
+- [x] `GET/PATCH/DELETE/POST /api/admin/packages/[id]` — admin detail, update, delete, grant/revoke
+- [x] `app/app/subscriptions/page.tsx` — user subscriptions page
+- [x] Admin Packages tab (📦) in `AdminClient.tsx`
+- [x] Header nav: Subscriptions link added (mobile drawer + desktop nav)
+
+---
+
+## ✅ Recently shipped
+
 ### Slice 10 — F4 + F5 Review mode + 3-tab lecture grid (ADR-029, ADR-030)
 - [x] `slide_annotations` table + RLS + migration (`supabase/migrations/20260422_slide_annotations.sql`)
 - [x] `lib/slide-annotation-prompt.ts` — clinical annotation system prompt (3–5 sentences, mnemonic, cached)
@@ -87,10 +103,10 @@ _(nothing active — pick next item from Next up)_
 - [ ] `lib/worksheet-processor-prompt.ts`
 - [ ] Upload UI: worksheet type selection; worksheet cards render as Practice Exam only (no flashcard mode)
 
-### Slice 12 — F2 Lecture-package subscriptions
-- [ ] `lecture_packages` + `user_package_access` tables + RLS
-- [ ] Revise `lectures` RLS to gate on package access
-- [ ] Admin UI: assign lectures to packages; assign packages to users
+### ~~Slice 12 — F2 Lecture-package subscriptions~~ ✅ Done
+- [x] `lecture_packages` + `user_package_access` tables + RLS
+- [x] Package-scoped `lectures` RLS policy (replaces open authenticated-read)
+- [x] Admin UI: packages tab with lecture assignment + user grant/revoke — ADR-032
 
 ### Slice 13 — F7 OSCE preparation (Option B)
 - [ ] `osce_cases`, `osce_checklist_items`, `osce_attempts`, `osce_attempt_scores` tables + RLS

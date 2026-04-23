@@ -41,7 +41,7 @@ interface FeedbackRow { id: string; user_id: string | null; user_name: string; t
 interface CourseRow { id: string; name: string; code: string | null; description: string | null; display_order: number; color: string | null; created_at: string; archived_at: string | null; }
 interface CourseLecture { internal_id: string; title: string; course: string | null; course_id: string | null; }
 interface ConfigRow { key: string; value: unknown; updated_at: string; }
-type Section = 'overview' | 'usage' | 'users' | 'lectures' | 'courses' | 'progress' | 'feedback' | 'config';
+type Section = 'overview' | 'usage' | 'users' | 'lectures' | 'courses' | 'packages' | 'progress' | 'feedback' | 'config';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -1355,6 +1355,237 @@ function ProfileModal({ adminName, onClose, onToast }: { adminName: string; onCl
   );
 }
 
+// ─── Packages Section ─────────────────────────────────────────────────────────
+
+interface PackageRow {
+  id: string;
+  name: string;
+  description: string | null;
+  lecture_ids: string[];
+  created_at: string;
+  user_count: number;
+}
+interface PackageUser { user_id: string; display_name: string | null; username: string | null; source: string; granted_at: string; expires_at: string | null; }
+
+function PackagesSection({ onToast }: { onToast: (m: string, t: 'ok' | 'err') => void }) {
+  const [packages, setPackages] = useState<PackageRow[]>([]);
+  const [allLectures, setAllLectures] = useState<{ internal_id: string; title: string }[]>([]);
+  const [allUsers, setAllUsers] = useState<UserRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [drawerPkg, setDrawerPkg] = useState<PackageRow | null>(null);
+  const [drawerUsers, setDrawerUsers] = useState<PackageUser[]>([]);
+  const [drawerLoading, setDrawerLoading] = useState(false);
+  const [editId, setEditId] = useState<string | null>(null);
+  const [editName, setEditName] = useState('');
+  const [editDesc, setEditDesc] = useState('');
+  const [editLectures, setEditLectures] = useState<string[]>([]);
+  const [grantUserId, setGrantUserId] = useState('');
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [pkgs, ls, us] = await Promise.all([
+        apiFetch('/api/admin/packages'),
+        apiFetch('/api/admin/lectures'),
+        apiFetch('/api/admin/users'),
+      ]);
+      setPackages(pkgs.packages ?? []);
+      setAllLectures(Array.isArray(ls) ? ls : (ls.lectures ?? []));
+      setAllUsers(Array.isArray(us) ? us : []);
+    } catch (e: any) { onToast(e.message, 'err'); }
+    finally { setLoading(false); }
+  }, [onToast]);
+
+  useEffect(() => { load(); }, [load]);
+
+  async function openDrawer(pkg: PackageRow) {
+    setDrawerPkg(pkg);
+    setDrawerLoading(true);
+    try {
+      const data = await apiFetch(`/api/admin/packages/${pkg.id}`);
+      setDrawerUsers(data.users ?? []);
+    } catch { setDrawerUsers([]); }
+    finally { setDrawerLoading(false); }
+  }
+
+  function startEdit(pkg: PackageRow) {
+    setEditId(pkg.id);
+    setEditName(pkg.name);
+    setEditDesc(pkg.description ?? '');
+    setEditLectures([...pkg.lecture_ids]);
+  }
+
+  async function saveEdit(id: string) {
+    try {
+      await apiFetch(`/api/admin/packages/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: editName, description: editDesc || null, lecture_ids: editLectures }),
+      });
+      onToast('Package updated.', 'ok');
+      setEditId(null);
+      load();
+    } catch (e: any) { onToast(e.message, 'err'); }
+  }
+
+  async function grantUser(pkgId: string) {
+    if (!grantUserId) return;
+    try {
+      await apiFetch(`/api/admin/packages/${pkgId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'grant', userId: grantUserId, source: 'admin' }),
+      });
+      onToast('Access granted.', 'ok');
+      setGrantUserId('');
+      load();
+      if (drawerPkg?.id === pkgId) openDrawer(drawerPkg);
+    } catch (e: any) { onToast(e.message, 'err'); }
+  }
+
+  async function revokeUser(pkgId: string, userId: string) {
+    try {
+      await apiFetch(`/api/admin/packages/${pkgId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'revoke', userId }),
+      });
+      onToast('Access revoked.', 'ok');
+      setDrawerUsers(prev => prev.filter(u => u.user_id !== userId));
+      load();
+    } catch (e: any) { onToast(e.message, 'err'); }
+  }
+
+  if (loading) return <div className="adm-loading">Loading packages…</div>;
+
+  return (
+    <section className="adm-section">
+      <div className="adm-section-header">
+        <h2 className="adm-section-title">📦 Packages</h2>
+        <p className="adm-section-sub">
+          Lecture packages control what content each user can access.
+          Assign lectures to packages, then grant packages to users.
+        </p>
+      </div>
+
+      <div className="adm-table-wrap">
+        <table className="adm-table">
+          <thead>
+            <tr>
+              <th>ID</th><th>Name</th><th>Lectures</th><th>Users</th><th>Created</th><th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {packages.map(pkg => (
+              <React.Fragment key={pkg.id}>
+                <tr>
+                  <td><code style={{ fontSize: 11 }}>{pkg.id}</code></td>
+                  <td>
+                    {editId === pkg.id ? (
+                      <input className="adm-input" value={editName}
+                        onChange={e => setEditName(e.target.value)}
+                        style={{ width: '100%' }} />
+                    ) : (
+                      <strong>{pkg.name}</strong>
+                    )}
+                    {editId === pkg.id && (
+                      <input className="adm-input" value={editDesc}
+                        onChange={e => setEditDesc(e.target.value)}
+                        placeholder="Description (optional)"
+                        style={{ width: '100%', marginTop: 4, fontSize: 12 }} />
+                    )}
+                  </td>
+                  <td>
+                    {editId === pkg.id ? (
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, maxHeight: 160, overflowY: 'auto' }}>
+                        {allLectures.map(l => (
+                          <label key={l.internal_id} style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12 }}>
+                            <input type="checkbox"
+                              checked={editLectures.includes(l.internal_id)}
+                              onChange={e => {
+                                if (e.target.checked) setEditLectures(prev => [...prev, l.internal_id]);
+                                else setEditLectures(prev => prev.filter(id => id !== l.internal_id));
+                              }} />
+                            {l.title}
+                          </label>
+                        ))}
+                      </div>
+                    ) : (
+                      <span>{pkg.lecture_ids.length} lecture{pkg.lecture_ids.length !== 1 ? 's' : ''}</span>
+                    )}
+                  </td>
+                  <td>{pkg.user_count}</td>
+                  <td style={{ fontSize: 12, color: 'var(--text-muted)' }}>{fmtDate(pkg.created_at)}</td>
+                  <td>
+                    <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                      {editId === pkg.id ? (
+                        <>
+                          <button className="adm-btn adm-btn-primary adm-btn-sm" onClick={() => saveEdit(pkg.id)}>Save</button>
+                          <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => setEditId(null)}>Cancel</button>
+                        </>
+                      ) : (
+                        <>
+                          <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => startEdit(pkg)}>Edit</button>
+                          <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => openDrawer(pkg)}>Access</button>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                </tr>
+                {drawerPkg?.id === pkg.id && (
+                  <tr>
+                    <td colSpan={6} style={{ background: 'rgba(255,255,255,0.03)', padding: '16px 20px' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                        <strong style={{ fontSize: 13 }}>User access — {pkg.name}</strong>
+                        <button className="adm-btn adm-btn-ghost adm-btn-sm" onClick={() => setDrawerPkg(null)}>Close</button>
+                      </div>
+                      {/* Grant form */}
+                      <div style={{ display: 'flex', gap: 8, marginBottom: 14 }}>
+                        <select className="adm-input" value={grantUserId} onChange={e => setGrantUserId(e.target.value)} style={{ flex: 1 }}>
+                          <option value="">— Select user to grant —</option>
+                          {allUsers.filter(u => u.role !== 'admin').map(u => (
+                            <option key={u.user_id} value={u.user_id}>
+                              {u.display_name ?? u.username ?? u.user_id}
+                            </option>
+                          ))}
+                        </select>
+                        <button className="adm-btn adm-btn-primary adm-btn-sm" onClick={() => grantUser(pkg.id)}>Grant</button>
+                      </div>
+                      {drawerLoading ? (
+                        <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>Loading…</div>
+                      ) : drawerUsers.length === 0 ? (
+                        <div style={{ color: 'var(--text-muted)', fontSize: 13 }}>No users have access yet.</div>
+                      ) : (
+                        <table className="adm-table" style={{ fontSize: 12 }}>
+                          <thead><tr><th>User</th><th>Source</th><th>Granted</th><th>Expires</th><th></th></tr></thead>
+                          <tbody>
+                            {drawerUsers.map(u => (
+                              <tr key={u.user_id}>
+                                <td>{u.display_name ?? u.username ?? u.user_id}</td>
+                                <td><code>{u.source}</code></td>
+                                <td>{fmtDate(u.granted_at)}</td>
+                                <td>{u.expires_at ? fmtDate(u.expires_at) : '—'}</td>
+                                <td>
+                                  <button className="adm-btn adm-btn-danger adm-btn-sm"
+                                    onClick={() => revokeUser(pkg.id, u.user_id)}>Revoke</button>
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      )}
+                    </td>
+                  </tr>
+                )}
+              </React.Fragment>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
+  );
+}
+
 // ─── Nav + Root ───────────────────────────────────────────────────────────────
 
 const NAV: { id: Section; label: string; icon: string }[] = [
@@ -1363,6 +1594,7 @@ const NAV: { id: Section; label: string; icon: string }[] = [
   { id: 'users',     label: 'Users',     icon: '👥' },
   { id: 'lectures',  label: 'Lectures',  icon: '📚' },
   { id: 'courses',   label: 'Courses',   icon: '🗂️' },
+  { id: 'packages',  label: 'Packages',  icon: '📦' },
   { id: 'progress',  label: 'Progress',  icon: '📈' },
   { id: 'feedback',  label: 'Feedback',  icon: '💬' },
   { id: 'config',    label: 'System',    icon: '⚙️' },
@@ -1420,6 +1652,7 @@ export default function AdminClient({ adminName }: { adminName: string }) {
           {section === 'users'     && <UsersSection onToast={showToast} />}
           {section === 'lectures'  && <LecturesSection onToast={showToast} />}
           {section === 'courses'   && <CoursesSection onToast={showToast} />}
+          {section === 'packages'  && <PackagesSection onToast={showToast} />}
           {section === 'progress'  && <ProgressSection onToast={showToast} />}
           {section === 'feedback'  && <FeedbackSection onToast={showToast} />}
           {section === 'config'    && <ConfigSection onToast={showToast} />}

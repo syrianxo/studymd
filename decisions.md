@@ -532,6 +532,19 @@ Copy/paste and fill in:
   - (−) IDs are scoped to lecture — cross-lecture custom sessions attribute all question IDs to every selected lecture, which can over-count "attempted" if the same question ID appears in multiple lectures (unlikely in practice).
   - Revisit when: question IDs are globally unique across lectures.
 
+## ADR-032 · Package-based lecture access control (Slice 12)
+- **Date:** 2026-04-22
+- **Status:** Accepted
+- **Context:** Lecture content was readable by any authenticated user. The cohort is currently closed but we need a model that supports tiered or time-limited access (e.g., per-year packages, guest previews, expired cohorts). Alternatives: per-lecture `allowed_users[]` (scales badly), course-level access (too coarse), Supabase Storage policies alone (can't gate JSONB queries).
+- **Decision:** Introduce `lecture_packages` (id, name, lecture_ids[]) and `user_package_access` (user_id, package_id, source, expires_at). The lectures `SELECT` RLS policy is replaced by a package-scoped subquery: a user can read a lecture only if its `internal_id` appears in a package they have non-expired access to. New users are auto-granted the default package (`pa-year-1-fall-2026`) via a `handle_new_user()` trigger on `auth.users`. Admins manage packages and access via `/api/admin/packages/*`.
+- **Consequences:**
+  - (+) Fine-grained access control without schema changes to `lectures` itself.
+  - (+) Expiry support built in — expired rows naturally fall out of the RLS subquery.
+  - (+) Extensible: multiple packages per user, per-package expirations, preview packages.
+  - (−) Every lecture SELECT now joins through `lecture_packages` and `user_package_access`; adds two joins to all lecture reads. Acceptable at current scale.
+  - (−) `lecture_ids` is a text array on the package; if a lecture is uploaded after the package is created, admin must manually add it to the package's array. Revisit with a trigger or UI shortcut when uploads become frequent.
+  - Revisit when: lecture count exceeds ~1,000 (consider a join table instead of array).
+
 ## ADR-XXX · <Title>
 - **Date:** YYYY-MM-DD (commit `<shortsha>` — "<commit message>")
 - **Status:** Proposed | Accepted | Superseded by ADR-YYY | Deprecated

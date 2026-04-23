@@ -122,6 +122,7 @@ export default function Header({
         <NavLink href="/app/lectures" onClick={() => setDrawerOpen(false)}>My Lectures</NavLink>
         <NavLink href="/app/plans" onClick={() => setDrawerOpen(false)}>My Plans</NavLink>
         <NavLink href="/app/progress" onClick={() => setDrawerOpen(false)}>My Progress</NavLink>
+        <NavLink href="/app/subscriptions" onClick={() => setDrawerOpen(false)}>Subscriptions</NavLink>
         {isAdmin && (
           <NavLink href="/admin" onClick={() => setDrawerOpen(false)}>
             Admin <span className="smd-admin-badge">ADMIN</span>
@@ -190,6 +191,7 @@ export default function Header({
             <NavLink href="/app/lectures">My Lectures</NavLink>
             <NavLink href="/app/plans">My Plans</NavLink>
             <NavLink href="/app/progress">My Progress</NavLink>
+            <NavLink href="/app/subscriptions">Subscriptions</NavLink>
             {isAdmin && (
               <NavLink href="/admin">
                 Admin <span className="smd-admin-badge">ADMIN</span>
