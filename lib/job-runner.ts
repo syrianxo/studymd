@@ -232,12 +232,17 @@ async function callClaudeAPI(
     Object.assign(params, buildLectureOutputConfig());
   }
 
-  const response = anthropicFileId
-    ? await client.beta.messages.create(
+  // Stream and resolve to a final Message. The SDK enforces streaming on
+  // requests that may exceed the 10-minute timeout (which we regularly hit on
+  // Sonnet fallback + max_tokens=32k for dense lectures); `.finalMessage()`
+  // preserves the same shape we had under the non-streaming API.
+  const stream = anthropicFileId
+    ? client.beta.messages.stream(
         params,
         { headers: { 'anthropic-beta': FILES_API_BETA_HEADER } }
       )
-    : await client.messages.create(params);
+    : client.messages.stream(params);
+  const response = await stream.finalMessage();
 
   const inputTokens  = response.usage?.input_tokens  ?? 0;
   const outputTokens = response.usage?.output_tokens ?? 0;
@@ -247,8 +252,13 @@ async function callClaudeAPI(
     return { lectureJson: { _truncated: true } as unknown as LectureJSON, inputTokens, outputTokens, model };
   }
 
-  const textBlock = response.content.find((b) => b.type === 'text');
-  if (!textBlock || textBlock.type !== 'text') throw new Error('Claude returned no text content.');
+  // Stable + beta content-block types diverge in the SDK; narrow to { type, text }
+  // since that's the only shape we need.
+  const textBlock = (response.content as Array<{ type: string; text?: string }>)
+    .find((b) => b.type === 'text');
+  if (!textBlock || textBlock.type !== 'text' || !textBlock.text) {
+    throw new Error('Claude returned no text content.');
+  }
 
   const rawText = textBlock.text
     .replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();

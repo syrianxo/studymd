@@ -129,12 +129,15 @@ export async function POST(
 
   let response: Anthropic.Message;
   try {
-    response = await anthropic.messages.create({
+    // Stream + finalMessage() — SDK enforces streaming for requests that may
+    // exceed the 10-minute timeout (Sonnet at max_tokens=16k can hit it on
+    // large decks).
+    response = await anthropic.messages.stream({
       model,
       max_tokens: 16000,
       system: buildSystemWithCache(),
       messages: [{ role: 'user', content: userContent }],
-    });
+    }).finalMessage();
   } catch (err) {
     return NextResponse.json(
       { error: `Claude API error: ${(err as Error).message}` },
