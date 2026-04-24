@@ -4,5 +4,14 @@
       "path": "/api/cron/process-jobs",
       "schedule": "* * * * *"
     }
-  ]
+  ],
+  "functions": {
+    "app/api/generate/route.ts": {
+      "maxDuration": 300
+    },
+    "app/api/cron/process-jobs/route.ts": {
+      "maxDuration": 300
+    }
+  },
+  "regions": ["iad1"]
 }

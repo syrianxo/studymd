@@ -18,6 +18,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { runProcessingJob, getSupabaseAdmin } from '@/lib/job-runner';
 
+// Vercel: Pro plan allows up to 300s on serverless functions. Lecture
+// processing can exceed the 10s default, especially for large PDFs where
+// the Haiku → Sonnet fallback path round-trips twice.
+export const maxDuration = 300;
+
 // ─── Request body type ────────────────────────────────────────────────────────
 interface GenerateRequestBody {
   fileUrl: string;

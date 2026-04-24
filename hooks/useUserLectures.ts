@@ -4,11 +4,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
 import type { Course, Theme } from '@/types';
-import type { LectureFlashcard, LectureQuestion } from '@/lib/validate-lecture';
+import type { LectureFlashcard, LectureQuestion } from '@/lib/lecture-schema';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
-// Canonical shapes live in lib/validate-lecture.ts (Anki-style front/back,
+// Canonical shapes live in lib/lecture-schema.ts (Anki-style front/back,
 // question.stem/answer/options/explanation). These aliases keep old import
 // paths working while pointing at the single source of truth.
 export type FlashCard = LectureFlashcard;

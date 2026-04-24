@@ -11,11 +11,12 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
+import type Anthropic from '@anthropic-ai/sdk';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 import { checkLimits, userIsAdmin, estimateCost, API_LIMITS } from '@/lib/api-limits';
+import { getAnthropicClient } from '@/lib/anthropic-client';
 import { buildAnnotationSystem, buildAnnotationUserPrompt } from '@/lib/slide-annotation-prompt';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -41,12 +42,6 @@ function getSupabaseAdmin() {
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY ?? '';
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return createClient<any, 'public', any>(url, key);
-}
-
-function getAnthropicClient() {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('Missing ANTHROPIC_API_KEY');
-  return new Anthropic({ apiKey });
 }
 
 // ─── GET — list annotations ───────────────────────────────────────────────────

@@ -28,12 +28,18 @@ export interface Lecture {
   created_at: string;
 }
 
-// Canonical card/question shapes live in lib/validate-lecture.ts (matches the
-// JSON the Claude processor emits and what is stored in lectures.json_data).
-// Re-exported here so both names work: `Flashcard`/`Question` alias the canonical
-// `LectureFlashcard`/`LectureQuestion`. Flashcards use `front`/`back`; questions
-// use `stem`/`answer`/`options`/`explanation` (Anki convention).
-import type { LectureFlashcard, LectureQuestion } from '@/lib/validate-lecture';
+// ─── Lecture content types ───────────────────────────────────────────────────
+// Canonical schema lives in lib/lecture-schema.ts (what the Claude processor
+// emits and what is stored in lectures.json_data). Flashcards use `front`/`back`;
+// questions use `stem`/`answer`/`options`/`explanation` (Anki convention).
+// `Flashcard`/`Question` are kept as aliases of the canonical types so existing
+// imports keep working.
+import type {
+  LectureFlashcard,
+  LectureQuestion,
+  LectureJSON,
+} from '@/lib/lecture-schema';
+export type { LectureFlashcard, LectureQuestion, LectureJSON };
 export type Flashcard = LectureFlashcard;
 export type Question = LectureQuestion;
 

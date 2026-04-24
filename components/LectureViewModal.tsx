@@ -13,7 +13,8 @@ import Lightbox from './Lightbox';
 import { TopicEditor } from './TopicEditor';
 import type { Lecture } from '@/hooks/useUserLectures';
 import { resolveColor } from '@/hooks/useUserLectures';
-import type { Flashcard, Course, Theme, StudyPlan } from '@/types';
+import type { Course, Theme, StudyPlan } from '@/types';
+import type { LectureFlashcard } from '@/lib/lecture-schema';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
 
@@ -191,7 +192,11 @@ export default function LectureViewModal({
   const course = ((lecture?.course_override ?? lecture?.course) ?? '') as Course;
   // Use per-user display_topics override if set, otherwise fall back to shared topics
   const topics = lecture?.display_topics ?? lecture?.topics ?? [];
-  const flashcards = lecture?.json_data?.flashcards ?? [];
+  // Runtime shape emitted by Claude is `front`/`back` (LectureFlashcard). The
+  // `Lecture.json_data.flashcards` TS type in useUserLectures still uses the
+  // legacy `question`/`answer` shape that the editor API returns. Cast to the
+  // canonical schema type for display reads; see ADR / decisions.md follow-up.
+  const flashcards = (lecture?.json_data?.flashcards ?? []) as unknown as LectureFlashcard[];
   const fcLen = flashcards.length;
   const qLen = ((lecture?.json_data as any)?.questions ?? []).length;
 
