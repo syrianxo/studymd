@@ -386,13 +386,23 @@ export async function runProcessingJob(
   // ── Stage: fetch file ──────────────────────────────────────────────────────
   await updateProgress(supabase, jobId, 'fetching_file', 'Fetching lecture file…', 'converting');
 
-  // Use provided URL or reconstruct from storage path
-  const fileUrl = opts.fileUrl ?? (() => {
-    const { data: urlData } = getSupabaseAdmin().storage
-      .from('slides')
-      .getPublicUrl(job.storage_path);
-    return urlData.publicUrl;
-  })();
+  // Use provided URL or reconstruct from storage path.
+  // The upload route writes to the private `uploads` bucket, so a signed URL
+  // is required — `getPublicUrl` on a private bucket returns a 400.
+  let fileUrl: string;
+  if (opts.fileUrl) {
+    fileUrl = opts.fileUrl;
+  } else {
+    const { data: urlData, error: urlErr } = await getSupabaseAdmin().storage
+      .from('uploads')
+      .createSignedUrl(job.storage_path, 1800);
+    if (urlErr || !urlData?.signedUrl) {
+      const msg = `Could not create signed URL: ${urlErr?.message ?? 'no URL returned'}`;
+      await markJobError(supabase, jobId, msg);
+      throw new Error(msg);
+    }
+    fileUrl = urlData.signedUrl;
+  }
 
   let fileBuffer: ArrayBuffer;
   try {
@@ -403,7 +413,8 @@ export async function runProcessingJob(
     throw new Error(msg);
   }
 
-  const isPptx = fileUrl.toLowerCase().includes('.pptx') || fileUrl.toLowerCase().includes('.ppt');
+  const storagePathLower = job.storage_path.toLowerCase();
+  const isPptx = storagePathLower.endsWith('.pptx') || storagePathLower.endsWith('.ppt');
   let fileBase64: string | null = null;
   let slideText: string | null = null;
   let anthropicFileId: string | null = null;
