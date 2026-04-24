@@ -28,6 +28,21 @@ export interface Lecture {
   created_at: string;
 }
 
+// ─── Lecture content types ───────────────────────────────────────────────────
+// NOTE: Claude emits the canonical schema (see lib/lecture-schema.ts) with
+// field names `front`/`back` on flashcards, but the legacy editor pipeline
+// (app/app/lectures/LecturesClient.tsx, app/api/lectures/[id]/route.ts, and
+// user_card_overrides storage) uses `question`/`answer`. Unifying the two is
+// tracked as a follow-up task; for now the shape below stays stale-but-
+// consistent with the editor API so typecheck passes. Display code that
+// reads from `json_data` directly should use `LectureFlashcard` from
+// `@/lib/lecture-schema`.
+export type {
+  LectureFlashcard,
+  LectureQuestion,
+  LectureJSON,
+} from '@/lib/lecture-schema';
+
 export interface LectureData {
   flashcards?: Flashcard[];
   questions?: Question[];

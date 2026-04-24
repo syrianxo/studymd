@@ -9,8 +9,9 @@
  * 422 without touching the database.
  */
 import { NextResponse, type NextRequest } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
+import type Anthropic from '@anthropic-ai/sdk';
 import { requireAdmin } from '@/lib/admin-auth';
+import { getAnthropicClient } from '@/lib/anthropic-client';
 import { buildSystemWithCache } from '@/lib/lecture-processor-prompt';
 import { validateLecture } from '@/lib/validate-lecture';
 import { API_LIMITS, estimateCost } from '@/lib/api-limits';
@@ -104,10 +105,12 @@ export async function POST(
   }
 
   // ── 4. Call Claude (Sonnet for reliability on reprocess) ──────────────────
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return NextResponse.json({ error: 'ANTHROPIC_API_KEY not set' }, { status: 500 });
-
-  const anthropic = new Anthropic({ apiKey });
+  let anthropic: Anthropic;
+  try {
+    anthropic = getAnthropicClient();
+  } catch (err) {
+    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+  }
   const model = API_LIMITS.MODEL_FALLBACK; // use Sonnet — reprocess is admin-only, quality matters
 
   const userContent: Anthropic.MessageParam['content'] = [];

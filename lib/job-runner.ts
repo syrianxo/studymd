@@ -10,7 +10,8 @@
  *   generating_questions → validating → saving → (complete | error)
  */
 
-import Anthropic from '@anthropic-ai/sdk';
+import type Anthropic from '@anthropic-ai/sdk';
+import { toFile } from '@anthropic-ai/sdk';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import {
   API_LIMITS,
@@ -19,8 +20,16 @@ import {
   userIsAdmin,
   checkLimits,
 } from '@/lib/api-limits';
+import {
+  getAnthropicClient,
+  STRUCTURED_OUTPUTS_ENABLED,
+  FILES_API_ENABLED,
+  FILES_API_BETA_HEADER,
+} from '@/lib/anthropic-client';
 import { buildSystemWithCache } from '@/lib/lecture-processor-prompt';
-import { validateLecture, type LectureJSON } from '@/lib/validate-lecture';
+import { validateLecture } from '@/lib/validate-lecture';
+import type { LectureJSON } from '@/lib/lecture-schema';
+import { buildLectureOutputConfig } from '@/lib/lecture-schema';
 import { extractPptxSlides, formatSlidesForClaude } from '@/lib/pptx-extractor';
 
 // ─── Theme color palette ──────────────────────────────────────────────────────
@@ -52,17 +61,13 @@ export function getSupabaseAdmin(): SupabaseClient<any, 'public', any> {
   return createClient<any, 'public', any>(url, key);
 }
 
-// ─── Anthropic client ─────────────────────────────────────────────────────────
-function getAnthropicClient() {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('Missing ANTHROPIC_API_KEY environment variable.');
-  return new Anthropic({ apiKey });
-}
-
 // ─── Per-model output token limits ───────────────────────────────────────────
+// Keyed on the bare model IDs we pass to the API (see lib/api-limits.ts).
+// Haiku is raised above the default to handle dense lectures; Sonnet ceiling
+// matches the fallback path's needs on lectures that truncated at Haiku.
 const MODEL_MAX_OUTPUT: Record<string, number> = {
-  'claude-haiku-4-5-20251001': 8000,
-  'claude-sonnet-4-6':        32000,
+  'claude-haiku-4-5':  16000,
+  'claude-sonnet-4-6': 32000,
 };
 
 // ─── Progress helpers ─────────────────────────────────────────────────────────
@@ -181,22 +186,31 @@ async function callClaudeAPI(
   client: Anthropic,
   fileBase64: string | null,
   slideText: string | null,
+  anthropicFileId: string | null,
   internalId: string,
   course: string,
   title: string,
   model: string
 ): Promise<ClaudeCallResult> {
-  const userContent: Anthropic.MessageParam['content'] = [];
+  // Branch on which path we'll use. Files API is a beta namespace + beta header;
+  // otherwise stable messages.create with base64 or text.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userContent: any[] = [];
 
-  if (fileBase64) {
+  if (anthropicFileId) {
+    userContent.push({
+      type: 'document',
+      source: { type: 'file', file_id: anthropicFileId },
+    });
+  } else if (fileBase64) {
     userContent.push({
       type: 'document',
       source: { type: 'base64', media_type: 'application/pdf', data: fileBase64 },
-    } as Anthropic.DocumentBlockParam);
+    });
   } else if (slideText) {
     userContent.push({ type: 'text', text: slideText });
   } else {
-    throw new Error('No file content provided to Claude — either fileBase64 or slideText must be set.');
+    throw new Error('No file content provided to Claude — either fileBase64, slideText, or anthropicFileId must be set.');
   }
 
   userContent.push({
@@ -204,12 +218,26 @@ async function callClaudeAPI(
     text: `Process the above lecture content as lecture ${internalId} for course "${course}". Title: "${title}". Generate the full JSON output as specified in your system prompt.`,
   });
 
-  const response = await client.messages.create({
+  // Shared params — cast to any so we can mix stable/beta shapes and the
+  // output_config add-on without the TS union getting in the way.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const params: any = {
     model,
     max_tokens: MODEL_MAX_OUTPUT[model] ?? API_LIMITS.MAX_OUTPUT_TOKENS,
     system: buildSystemWithCache(),
     messages: [{ role: 'user', content: userContent }],
-  });
+  };
+
+  if (STRUCTURED_OUTPUTS_ENABLED) {
+    Object.assign(params, buildLectureOutputConfig());
+  }
+
+  const response = anthropicFileId
+    ? await client.beta.messages.create(
+        params,
+        { headers: { 'anthropic-beta': FILES_API_BETA_HEADER } }
+      )
+    : await client.messages.create(params);
 
   const inputTokens  = response.usage?.input_tokens  ?? 0;
   const outputTokens = response.usage?.output_tokens ?? 0;
@@ -368,6 +396,7 @@ export async function runProcessingJob(
   const isPptx = fileUrl.toLowerCase().includes('.pptx') || fileUrl.toLowerCase().includes('.ppt');
   let fileBase64: string | null = null;
   let slideText: string | null = null;
+  let anthropicFileId: string | null = null;
 
   if (isPptx) {
     await updateProgress(supabase, jobId, 'extracting_text', 'Extracting slide text…');
@@ -395,7 +424,29 @@ export async function runProcessingJob(
     }
   } else {
     await updateProgress(supabase, jobId, 'extracting_text', 'Reading PDF content…');
-    fileBase64 = arrayBufferToBase64(fileBuffer);
+
+    if (FILES_API_ENABLED) {
+      // Upload once via the Files API so retries (Haiku → Sonnet fallback) and
+      // admin reprocesses don't have to re-base64 and re-transmit the file.
+      try {
+        const uploaded = await anthropic.beta.files.upload(
+          {
+            file: await toFile(fileBuffer, 'lecture.pdf', { type: 'application/pdf' }),
+          },
+          { headers: { 'anthropic-beta': FILES_API_BETA_HEADER } },
+        );
+        anthropicFileId = uploaded.id;
+        await supabase
+          .from('processing_jobs')
+          .update({ anthropic_file_id: anthropicFileId })
+          .eq('job_id', jobId);
+      } catch (err) {
+        console.warn('[job-runner] Files API upload failed — falling back to base64:', (err as Error).message);
+        fileBase64 = arrayBufferToBase64(fileBuffer);
+      }
+    } else {
+      fileBase64 = arrayBufferToBase64(fileBuffer);
+    }
   }
 
   // ── Stage: generate flashcards ─────────────────────────────────────────────
@@ -407,7 +458,7 @@ export async function runProcessingJob(
 
   try {
     result = await callClaudeAPI(
-      anthropic, fileBase64, slideText, internalId, job.course, job.title, API_LIMITS.MODEL_DEFAULT
+      anthropic, fileBase64, slideText, anthropicFileId, internalId, job.course, job.title, API_LIMITS.MODEL_DEFAULT
     );
 
     await updateProgress(supabase, jobId, 'validating', 'Validating structured output…');
@@ -428,7 +479,7 @@ export async function runProcessingJob(
       await updateProgress(supabase, jobId, 'generating_questions', `Retrying with ${API_LIMITS.MODEL_FALLBACK}…`);
       usedFallback = true;
       const fallback = await callClaudeAPI(
-        anthropic, fileBase64, slideText, internalId, job.course, job.title, API_LIMITS.MODEL_FALLBACK
+        anthropic, fileBase64, slideText, anthropicFileId, internalId, job.course, job.title, API_LIMITS.MODEL_FALLBACK
       );
       fallback.lectureJson = repairLectureOutput(fallback.lectureJson);
       const fallbackValidation = validateLecture(fallback.lectureJson);
