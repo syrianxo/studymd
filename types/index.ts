@@ -28,27 +28,18 @@ export interface Lecture {
   created_at: string;
 }
 
+// Canonical card/question shapes live in lib/validate-lecture.ts (matches the
+// JSON the Claude processor emits and what is stored in lectures.json_data).
+// Re-exported here so both names work: `Flashcard`/`Question` alias the canonical
+// `LectureFlashcard`/`LectureQuestion`. Flashcards use `front`/`back`; questions
+// use `stem`/`answer`/`options`/`explanation` (Anki convention).
+import type { LectureFlashcard, LectureQuestion } from '@/lib/validate-lecture';
+export type Flashcard = LectureFlashcard;
+export type Question = LectureQuestion;
+
 export interface LectureData {
   flashcards?: Flashcard[];
   questions?: Question[];
-}
-
-export interface Flashcard {
-  id: string;
-  question: string;
-  answer: string;
-  topic: string;
-  slide_number?: number | null;
-}
-
-export interface Question {
-  id: string;
-  type: 'mcq' | 'tf' | 'matching' | 'fillin';
-  question: string;
-  options?: string[];
-  correct_answer: string;
-  topic: string;
-  explanation?: string;
 }
 
 import type { ColorOverrideMap } from '@/hooks/useUserLectures';

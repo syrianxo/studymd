@@ -91,49 +91,59 @@ export async function GET(
     overrideMap.set(o.card_id, { overrides: o.overrides, canonical_hash: o.canonical_hash, updated_at: o.updated_at });
   }
 
-  // Merge flashcards
+  // Merge flashcards. Canonical flashcard shape (lib/validate-lecture.ts) uses
+  // `front`/`back`. Legacy `question`/`answer` keys may still exist in
+  // user_card_overrides rows written before the unification — we read both
+  // until the migration runs.
   const rawFlashcards: any[] = lecture.json_data?.flashcards ?? [];
   const flashcards = rawFlashcards.map(card => {
     const override = overrideMap.get(card.id);
     const currentHash = hashCard(card);
     const hasOverride = !!override;
     const hasConflict = hasOverride && override.canonical_hash !== currentHash;
+    const ov = override?.overrides ?? {};
     return {
       id: card.id,
-      topic: card.topic ?? '',
+      topic: ov.topic ?? card.topic ?? '',
       slideNumber: card.slide_number ?? card.slideNumber ?? null,
-      // Merged: user overrides take precedence for question/answer
-      question: override?.overrides?.question ?? card.question,
-      answer: override?.overrides?.answer ?? card.answer,
-      // Metadata for UI
+      front: ov.front ?? ov.question ?? card.front ?? card.question,
+      back:  ov.back  ?? ov.answer   ?? card.back  ?? card.answer,
       hasUserEdit: hasOverride,
       hasConflict,
-      // If conflict: give UI the canonical version so user can compare
-      canonical: hasConflict ? { question: card.question, answer: card.answer } : undefined,
+      canonical: hasConflict
+        ? { front: card.front ?? card.question, back: card.back ?? card.answer }
+        : undefined,
       userEditedAt: override?.updated_at ?? null,
     };
   });
 
-  // Merge exam questions
+  // Merge exam questions. Canonical question shape uses `stem` / `answer`;
+  // legacy override keys were `question` / `correct_answer`.
   const rawQuestions: any[] = lecture.json_data?.questions ?? [];
   const questions = rawQuestions.map(q => {
     const override = overrideMap.get(q.id);
     const currentHash = hashCard(q);
     const hasOverride = !!override;
     const hasConflict = hasOverride && override.canonical_hash !== currentHash;
+    const ov = override?.overrides ?? {};
     return {
       id: q.id,
       type: q.type ?? 'mcq',
-      topic: q.topic ?? '',
+      topic: ov.topic ?? q.topic ?? '',
       slideNumber: q.slide_number ?? q.slideNumber ?? null,
-      question: override?.overrides?.question ?? q.question,
-      correctAnswer: override?.overrides?.correct_answer ?? q.correct_answer,
-      options: override?.overrides?.options ?? q.options ?? [],
-      explanation: override?.overrides?.explanation ?? q.explanation ?? '',
+      stem: ov.stem ?? ov.question ?? q.stem ?? q.question,
+      answer: ov.answer ?? ov.correct_answer ?? q.answer ?? q.correct_answer,
+      options: ov.options ?? q.options ?? [],
+      explanation: ov.explanation ?? q.explanation ?? '',
       hasUserEdit: hasOverride,
       hasConflict,
       canonical: hasConflict
-        ? { question: q.question, correctAnswer: q.correct_answer, options: q.options, explanation: q.explanation }
+        ? {
+            stem: q.stem ?? q.question,
+            answer: q.answer ?? q.correct_answer,
+            options: q.options,
+            explanation: q.explanation,
+          }
         : undefined,
       userEditedAt: override?.updated_at ?? null,
     };

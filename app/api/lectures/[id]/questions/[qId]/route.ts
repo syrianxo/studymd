@@ -1,7 +1,9 @@
 /**
  * PUT    /api/lectures/[id]/questions/[qId]
  *   Saves a user override for a single exam question.
- *   Body: { question?, correctAnswer?, explanation?, acceptCanonical? }
+ *   Body: { stem?, answer?, explanation?, acceptCanonical? }
+ *     Legacy `question`/`correctAnswer` keys are still accepted for older
+ *     clients; they are normalized to `stem`/`answer`.
  *   acceptCanonical=true → deletes override (accept admin version).
  *
  * DELETE /api/lectures/[id]/questions/[qId]
@@ -61,9 +63,13 @@ export async function PUT(
     return NextResponse.json({ ok: true, accepted: true });
   }
 
+  // Canonical override keys are `stem`/`answer`; accept legacy
+  // `question`/`correctAnswer` for older clients.
   const overrides: Record<string, unknown> = {};
-  if ('question'      in body && body.question?.trim())      overrides.question       = body.question.trim();
-  if ('correctAnswer' in body && body.correctAnswer?.trim()) overrides.correct_answer = body.correctAnswer.trim();
+  const stem   = body.stem   ?? body.question;
+  const answer = body.answer ?? body.correctAnswer;
+  if (typeof stem   === 'string' && stem.trim())   overrides.stem   = stem.trim();
+  if (typeof answer === 'string' && answer.trim()) overrides.answer = answer.trim();
   if ('explanation'   in body)                               overrides.explanation    = body.explanation?.trim() ?? '';
   if ('topic'         in body && body.topic?.trim())         overrides.topic          = body.topic.trim();
 

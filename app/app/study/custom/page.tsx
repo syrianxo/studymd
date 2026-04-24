@@ -15,11 +15,40 @@ interface LectureData {
   internal_id: string;
   title: string;
   slide_count: number;
+  // json_data is raw storage — normalized by the helpers below which accept
+  // both canonical (front/back, stem/answer) and legacy (question/answer,
+  // correct_answer) keys.
   json_data: {
-    flashcards?: FlashCard[];
-    questions?: ExamQuestion[];
-    examQuestions?: ExamQuestion[]; // v1 key — tolerated on read
+    flashcards?: Record<string, unknown>[];
+    questions?: Record<string, unknown>[];
+    examQuestions?: Record<string, unknown>[]; // v1 key — tolerated on read
   };
+}
+
+// Canonicalize flashcard shape for FlashcardView (front/back). Tolerates
+// legacy `question`/`answer` keys until data migration completes.
+function normalizeCards(raw: Record<string, unknown>[]): FlashCard[] {
+  return raw.map((c) => ({
+    id:    String(c.id ?? ''),
+    front: String(c.front ?? c.question ?? ''),
+    back:  String(c.back  ?? c.answer   ?? ''),
+    topic: String(c.topic ?? ''),
+    slide_number: (c.slide_number ?? c.slideNumber ?? null) as number | null,
+  }));
+}
+
+// ExamView still uses legacy `question`/`correct_answer` keys — translate the
+// canonical `stem`/`answer` into that shape here.
+function normalizeQuestions(raw: Record<string, unknown>[]): ExamQuestion[] {
+  return raw.map((q) => ({
+    id:             String(q.id ?? ''),
+    type:           (q.type ?? 'mcq') as ExamQuestion['type'],
+    question:       String(q.question ?? q.stem ?? ''),
+    topic:          String(q.topic ?? ''),
+    options:        (q.options as string[] | undefined),
+    correct_answer: String(q.correct_answer ?? q.answer ?? ''),
+    explanation:    q.explanation ? String(q.explanation) : undefined,
+  }));
 }
 
 export default function CustomPage() {
@@ -82,7 +111,7 @@ function CustomPageInner() {
   // ── Build merged deck ─────────────────────────────────────────────────
   if (mode === 'flash') {
     let cards: FlashCard[] = lectures.flatMap((l) => {
-      const lCards = l.json_data?.flashcards ?? [];
+      const lCards = normalizeCards(l.json_data?.flashcards ?? []);
       if (cardMode === 'new') {
         const progress = progressByLecture[l.internal_id];
         const seen = new Set([...(progress?.got_it_ids ?? []), ...(progress?.missed_ids ?? [])]);
@@ -126,7 +155,7 @@ function CustomPageInner() {
   // ── Exam mode ──────────────────────────────────────────────────────────
   // v1 JSON uses 'examQuestions', v2 normalised key is 'questions'. Try both.
   let questions: ExamQuestion[] = lectures.flatMap((l) => {
-    const lQs: ExamQuestion[] = l.json_data?.questions ?? l.json_data?.examQuestions ?? [];
+    const lQs = normalizeQuestions(l.json_data?.questions ?? l.json_data?.examQuestions ?? []);
     if (questionMode === 'new') {
       const progress = progressByLecture[l.internal_id];
       const attempted = new Set(progress?.attempted_question_ids ?? []);

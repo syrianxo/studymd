@@ -527,8 +527,8 @@ export default function LectureViewModal({
               <div className="lvm-linked-cards">
                 {linkedCards.map(fc => (
                   <div key={fc.id} className="lvm-linked-card">
-                    <div className="lvm-linked-q">{fc.question}</div>
-                    <div className="lvm-linked-a">{fc.answer}</div>
+                    <div className="lvm-linked-q">{fc.front}</div>
+                    <div className="lvm-linked-a">{fc.back}</div>
                     <span className="lvm-linked-topic">{fc.topic}</span>
                   </div>
                 ))}

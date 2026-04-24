@@ -4,25 +4,15 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { createClient } from '@/lib/supabase';
 import type { Course, Theme } from '@/types';
+import type { LectureFlashcard, LectureQuestion } from '@/lib/validate-lecture';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
-export interface FlashCard {
-  id: string;
-  question: string;
-  answer: string;
-  topic: string;
-  slide_number?: number | null;
-}
-
-export interface ExamQuestion {
-  id: string;
-  type: 'mcq' | 'tf' | 'matching' | 'fillin';
-  question: string;
-  options?: string[];
-  correct_answer: string;
-  topic: string;
-}
+// Canonical shapes live in lib/validate-lecture.ts (Anki-style front/back,
+// question.stem/answer/options/explanation). These aliases keep old import
+// paths working while pointing at the single source of truth.
+export type FlashCard = LectureFlashcard;
+export type ExamQuestion = LectureQuestion;
 
 // Per-theme color map stored in the DB as JSONB
 export type ColorOverrideMap = Partial<Record<Theme, string>>;

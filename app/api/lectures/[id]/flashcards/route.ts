@@ -3,8 +3,9 @@
  * Adds a NEW flashcard to the lecture's json_data.
  * This is a USER action — it appends to the global json_data array.
  * (No separate user table — user-added cards become part of the lecture.)
- * 
- * Requires: { question, answer, topic }
+ *
+ * Requires: { front, back, topic }
+ * Legacy `question`/`answer` keys are accepted for backward compatibility.
  */
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
@@ -38,9 +39,11 @@ export async function POST(
   let body: any;
   try { body = await req.json(); } catch { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }); }
 
-  const { question, answer, topic } = body;
-  if (!question?.trim() || !answer?.trim())
-    return NextResponse.json({ error: 'question and answer are required' }, { status: 400 });
+  const front = (body.front ?? body.question) as string | undefined;
+  const back  = (body.back  ?? body.answer)   as string | undefined;
+  const topic = body.topic as string | undefined;
+  if (!front?.trim() || !back?.trim())
+    return NextResponse.json({ error: 'front and back are required' }, { status: 400 });
 
   // Fetch current json_data
   const { data: lecture, error: lecErr } = await supabase
@@ -52,8 +55,8 @@ export async function POST(
 
   const newCard = {
     id: 'fc_' + crypto.randomBytes(6).toString('hex'),
-    question: question.trim(),
-    answer: answer.trim(),
+    front: front.trim(),
+    back: back.trim(),
     topic: topic?.trim() ?? 'General',
     slide_number: body.slideNumber ?? null,
     added_by_user: user.id,

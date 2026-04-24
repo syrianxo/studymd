@@ -29,8 +29,11 @@ interface UsageData {
 interface UserRow { user_id: string; display_name: string | null; username: string | null; role: string; lectureCount: number; lastActive: string; is_primary?: boolean; theme?: string; }
 interface UserLecture { internal_id: string; title: string; icon: string; visible: boolean; archived: boolean; display_order: number; }
 interface UserProgress { internal_id: string; lecture_title: string; flashcard_pct: number; exam_pct: number; last_studied: string | null; }
-interface Flashcard { id: string; question: string; answer: string; topic: string; slide_number?: number | null; }
-interface ExamQuestion { id: string; type: string; question: string; options?: string[]; correct_answer: string; topic: string; explanation?: string; }
+// Canonical card shapes live in lib/validate-lecture.ts. Admin uses the same
+// keys (front/back for flashcards, stem/answer for questions) so raw json_data
+// can be rendered without translation.
+interface Flashcard { id: string; front: string; back: string; topic: string; slide_number?: number | null; }
+interface ExamQuestion { id: string; type: string; stem: string; options?: string[]; answer: string; topic: string; explanation?: string; }
 interface LectureRow {
   internal_id: string; title: string; subtitle: string | null; course: string; course_id: string | null;
   created_at: string; slide_count: number; original_file: string | null;
@@ -666,34 +669,36 @@ function CardGrid({ items, type, slideCount, onSave }: {
             {type === 'flashcard' ? (
               isEd ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                  <label className="adm-form-label">Question</label>
-                  <textarea className="adm-input adm-textarea-sm" value={ed.question ?? ''} onChange={e => field(item.id, 'question', e.target.value)} />
-                  <label className="adm-form-label">Answer</label>
-                  <textarea className="adm-input adm-textarea-sm" value={ed.answer ?? ''} onChange={e => field(item.id, 'answer', e.target.value)} />
+                  <label className="adm-form-label">Front</label>
+                  <textarea className="adm-input adm-textarea-sm" value={ed.front ?? ''} onChange={e => field(item.id, 'front', e.target.value)} />
+                  <label className="adm-form-label">Back</label>
+                  <textarea className="adm-input adm-textarea-sm" value={ed.back ?? ''} onChange={e => field(item.id, 'back', e.target.value)} />
                   <label className="adm-form-label">Link to slide #</label>
                   <input className="adm-input" style={{ maxWidth: 80 }} type="number" min={1} max={slideCount}
                     value={ed.slide_number ?? ''} onChange={e => field(item.id, 'slide_number', e.target.value ? Number(e.target.value) : null)} />
                 </div>
               ) : (
-                <><div className="adm-card-q">{item.question}</div><div className="adm-card-a">{item.answer}</div></>
+                <><div className="adm-card-q">{item.front}</div><div className="adm-card-a">{item.back}</div></>
               )
             ) : (
               isEd ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   <label className="adm-form-label">Question</label>
-                  <textarea className="adm-input adm-textarea-sm" value={ed.question ?? ''} onChange={e => field(item.id, 'question', e.target.value)} />
-                  <label className="adm-form-label">Correct Answer</label>
-                  <input className="adm-input" style={{ maxWidth: '100%' }} value={ed.correct_answer ?? ''} onChange={e => field(item.id, 'correct_answer', e.target.value)} />
+                  <textarea className="adm-input adm-textarea-sm" value={ed.stem ?? ''} onChange={e => field(item.id, 'stem', e.target.value)} />
+                  <label className="adm-form-label">Answer</label>
+                  <input className="adm-input" style={{ maxWidth: '100%' }} value={ed.answer ?? ''} onChange={e => field(item.id, 'answer', e.target.value)} />
                   <label className="adm-form-label">Type</label>
                   <select className="adm-select" value={ed.type ?? 'mcq'} onChange={e => field(item.id, 'type', e.target.value)}>
-                    <option value="mcq">MCQ</option><option value="tf">True/False</option>
-                    <option value="matching">Matching</option><option value="fillin">Fill-in</option>
+                    <option value="mcq">MCQ</option>
+                    <option value="true_false">True/False</option>
+                    <option value="short_answer">Short Answer</option>
+                    <option value="clinical_vignette">Clinical Vignette</option>
                   </select>
                   <label className="adm-form-label">Explanation</label>
                   <textarea className="adm-input adm-textarea-sm" value={ed.explanation ?? ''} onChange={e => field(item.id, 'explanation', e.target.value)} />
                 </div>
               ) : (
-                <><div className="adm-card-q">{item.question}</div><div className="adm-card-a">✓ {item.correct_answer}</div>{item.type && <span className="adm-q-type-badge">{item.type}</span>}</>
+                <><div className="adm-card-q">{item.stem}</div><div className="adm-card-a">✓ {item.answer}</div>{item.type && <span className="adm-q-type-badge">{item.type}</span>}</>
               )
             )}
             <div className="adm-content-card-footer">

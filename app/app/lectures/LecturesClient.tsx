@@ -58,15 +58,18 @@ interface LectureSummary {
   displayOrder: number;
 }
 
+// Editor-side card/question shapes returned by /api/lectures/[id].
+// Uses canonical `front`/`back` for flashcards and `stem`/`answer` for
+// questions (matching lib/validate-lecture.ts).
 interface Flashcard {
   id: string;
   topic: string;
   slideNumber: number | null;
-  question: string;
-  answer: string;
+  front: string;
+  back: string;
   hasUserEdit: boolean;
   hasConflict: boolean;
-  canonical?: { question: string; answer: string };
+  canonical?: { front: string; back: string };
   userEditedAt: string | null;
 }
 
@@ -75,13 +78,13 @@ interface ExamQuestion {
   type: string;
   topic: string;
   slideNumber: number | null;
-  question: string;
-  correctAnswer: string;
+  stem: string;
+  answer: string;
   options: string[];
   explanation: string;
   hasUserEdit: boolean;
   hasConflict: boolean;
-  canonical?: { question: string; correctAnswer: string; options: string[]; explanation: string };
+  canonical?: { stem: string; answer: string; options: string[]; explanation: string };
   userEditedAt: string | null;
 }
 
@@ -120,7 +123,12 @@ const COURSE_COLORS: Record<string, string> = {
 };
 
 const TYPE_LABELS: Record<string, string> = {
-  mcq: 'Multiple Choice', tf: 'True / False', matching: 'Matching', fillin: 'Fill in the Blank',
+  mcq: 'Multiple Choice',
+  true_false: 'True / False',
+  short_answer: 'Short Answer',
+  clinical_vignette: 'Clinical Vignette',
+  // Legacy aliases for any pre-migration content still stored with old type names
+  tf: 'True / False', matching: 'Matching', fillin: 'Fill in the Blank',
 };
 
 const PRESET_COLORS = [
@@ -251,20 +259,20 @@ function ConflictBanner({ count }: { count: number }) {
 function FlashcardEditModal({ card, lectureId, onSave, onClose }: {
   card: Flashcard; lectureId: string; onSave: (updated: Flashcard) => void; onClose: () => void;
 }) {
-  const [q, setQ] = useState(card.question);
-  const [a, setA] = useState(card.answer);
+  const [front, setFront] = useState(card.front);
+  const [back, setBack]   = useState(card.back);
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
 
   async function save() {
-    if (!q.trim() || !a.trim()) { setErr('Question and answer are required.'); return; }
+    if (!front.trim() || !back.trim()) { setErr('Front and back are required.'); return; }
     setSaving(true);
     try {
       await apiFetch(`/api/lectures/${lectureId}/flashcards/${card.id}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q.trim(), answer: a.trim() }),
+        body: JSON.stringify({ front: front.trim(), back: back.trim() }),
       });
-      onSave({ ...card, question: q.trim(), answer: a.trim(), hasUserEdit: true });
+      onSave({ ...card, front: front.trim(), back: back.trim(), hasUserEdit: true });
       onClose();
     } catch (e: any) { setErr(e.message); }
     setSaving(false);
@@ -277,7 +285,12 @@ function FlashcardEditModal({ card, lectureId, onSave, onClose }: {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ acceptCanonical: true }),
       });
-      onSave({ ...card, question: card.canonical?.question ?? card.question, answer: card.canonical?.answer ?? card.answer, hasUserEdit: false, hasConflict: false, canonical: undefined });
+      onSave({
+        ...card,
+        front: card.canonical?.front ?? card.front,
+        back:  card.canonical?.back  ?? card.back,
+        hasUserEdit: false, hasConflict: false, canonical: undefined,
+      });
       onClose();
     } catch (e: any) { setErr(e.message); }
     setSaving(false);
@@ -310,13 +323,13 @@ function FlashcardEditModal({ card, lectureId, onSave, onClose }: {
               <div className="lm-conflict-versions">
                 <div className="lm-conflict-col">
                   <div className="lm-conflict-col-label">Instructor's version</div>
-                  <div className="lm-conflict-text">{card.canonical.question}</div>
-                  <div className="lm-conflict-answer">{card.canonical.answer}</div>
+                  <div className="lm-conflict-text">{card.canonical.front}</div>
+                  <div className="lm-conflict-answer">{card.canonical.back}</div>
                 </div>
                 <div className="lm-conflict-col">
                   <div className="lm-conflict-col-label">Your version</div>
-                  <div className="lm-conflict-text">{card.question}</div>
-                  <div className="lm-conflict-answer">{card.answer}</div>
+                  <div className="lm-conflict-text">{card.front}</div>
+                  <div className="lm-conflict-answer">{card.back}</div>
                 </div>
               </div>
               <div className="lm-conflict-actions">
@@ -326,12 +339,12 @@ function FlashcardEditModal({ card, lectureId, onSave, onClose }: {
             </div>
           )}
           <div className="lm-form-field">
-            <label className="lm-form-label">Question</label>
-            <textarea className="lm-textarea" rows={3} value={q} onChange={e => setQ(e.target.value)} />
+            <label className="lm-form-label">Front</label>
+            <textarea className="lm-textarea" rows={3} value={front} onChange={e => setFront(e.target.value)} />
           </div>
           <div className="lm-form-field">
-            <label className="lm-form-label">Answer</label>
-            <textarea className="lm-textarea" rows={4} value={a} onChange={e => setA(e.target.value)} />
+            <label className="lm-form-label">Back</label>
+            <textarea className="lm-textarea" rows={4} value={back} onChange={e => setBack(e.target.value)} />
           </div>
           {card.hasUserEdit && !card.hasConflict && (
             <div className="lm-revert-row">
@@ -355,8 +368,8 @@ function FlashcardEditModal({ card, lectureId, onSave, onClose }: {
 function QuestionEditModal({ question, lectureId, onSave, onClose }: {
   question: ExamQuestion; lectureId: string; onSave: (updated: ExamQuestion) => void; onClose: () => void;
 }) {
-  const [q, setQ] = useState(question.question ?? '');
-  const [ca, setCa] = useState(question.correctAnswer ?? '');
+  const [stem, setStem] = useState(question.stem ?? '');
+  const [ca, setCa] = useState(question.answer ?? '');
   const [options, setOptions] = useState<string[]>(
     // Defensive: filter out undefined/null/object entries, coerce to string
     (() => {
@@ -365,12 +378,12 @@ function QuestionEditModal({ question, lectureId, onSave, onClose }: {
         const cleaned = raw.map(o => (o != null && typeof o === 'string' ? o : typeof o === 'object' ? JSON.stringify(o) : String(o ?? '')));
         return cleaned;
       }
-      return question.type === 'tf' ? ['True', 'False'] : [];
+      return (question.type === 'tf' || question.type === 'true_false') ? ['True', 'False'] : [];
     })()
   );
   const [exp, setExp] = useState(question.explanation ?? '');
   // missingAnswer: source data has no correct answer — show amber warning
-  const missingAnswer = !question.correctAnswer?.trim();
+  const missingAnswer = !question.answer?.trim();
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
   const [editingAnswerIdx, setEditingAnswerIdx] = useState<number | null>(null);
@@ -379,14 +392,14 @@ function QuestionEditModal({ question, lectureId, onSave, onClose }: {
   const [editingExplanation, setEditingExplanation] = useState(false);
 
   async function save() {
-    if (!q.trim() || !ca.trim()) { setErr('Question and correct answer are required.'); return; }
+    if (!stem.trim() || !ca.trim()) { setErr('Question stem and answer are required.'); return; }
     setSaving(true);
     try {
       await apiFetch(`/api/lectures/${lectureId}/questions/${question.id}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q.trim(), correctAnswer: ca.trim(), explanation: exp.trim() }),
+        body: JSON.stringify({ stem: stem.trim(), answer: ca.trim(), explanation: exp.trim() }),
       });
-      onSave({ ...question, question: q.trim(), correctAnswer: ca.trim(), explanation: exp.trim(), options, hasUserEdit: true });
+      onSave({ ...question, stem: stem.trim(), answer: ca.trim(), explanation: exp.trim(), options, hasUserEdit: true });
       onClose();
     } catch (e: any) { setErr(e.message); }
     setSaving(false);
@@ -400,7 +413,7 @@ function QuestionEditModal({ question, lectureId, onSave, onClose }: {
         body: JSON.stringify({ acceptCanonical: true }),
       });
       const c = question.canonical!;
-      onSave({ ...question, question: c.question, correctAnswer: c.correctAnswer, explanation: c.explanation, hasUserEdit: false, hasConflict: false, canonical: undefined });
+      onSave({ ...question, stem: c.stem, answer: c.answer, explanation: c.explanation, hasUserEdit: false, hasConflict: false, canonical: undefined });
       onClose();
     } catch (e: any) { setErr(e.message); }
     setSaving(false);
@@ -436,13 +449,13 @@ function QuestionEditModal({ question, lectureId, onSave, onClose }: {
               <div className="lm-conflict-versions">
                 <div className="lm-conflict-col">
                   <div className="lm-conflict-col-label">Instructor's version</div>
-                  <div className="lm-conflict-text">{question.canonical.question}</div>
-                  <div className="lm-conflict-answer">✓ {question.canonical.correctAnswer}</div>
+                  <div className="lm-conflict-text">{question.canonical.stem}</div>
+                  <div className="lm-conflict-answer">✓ {question.canonical.answer}</div>
                 </div>
                 <div className="lm-conflict-col">
                   <div className="lm-conflict-col-label">Your version</div>
-                  <div className="lm-conflict-text">{question.question}</div>
-                  <div className="lm-conflict-answer">✓ {question.correctAnswer}</div>
+                  <div className="lm-conflict-text">{question.stem}</div>
+                  <div className="lm-conflict-answer">✓ {question.answer}</div>
                 </div>
               </div>
               <div className="lm-conflict-actions">
@@ -462,13 +475,13 @@ function QuestionEditModal({ question, lectureId, onSave, onClose }: {
               <span className="lm-type-badge">{questionLabel}</span>
               {question.topic && <span className="lm-qcard-topic">{question.topic}</span>}
             </div>
-            {/* Question */}
+            {/* Question stem */}
             <div className={`lm-qcard-question ${editingQuestion ? 'lm-qcard-editing' : 'lm-qcard-clickable'}`}
               onClick={() => !editingQuestion && setEditingQuestion(true)}>
               {editingQuestion
-                ? <textarea className="lm-qcard-textarea" autoFocus rows={3} value={q}
-                    onChange={e => setQ(e.target.value)} onBlur={() => setEditingQuestion(false)} />
-                : <><span className="lm-qcard-question-text">{q}</span><span className="lm-qcard-edit-hint">✏️</span></>}
+                ? <textarea className="lm-qcard-textarea" autoFocus rows={3} value={stem}
+                    onChange={e => setStem(e.target.value)} onBlur={() => setEditingQuestion(false)} />
+                : <><span className="lm-qcard-question-text">{stem}</span><span className="lm-qcard-edit-hint">✏️</span></>}
             </div>
             {/* Options (MCQ/TF) */}
             {options.length > 0 && (
@@ -551,21 +564,25 @@ function QuestionEditModal({ question, lectureId, onSave, onClose }: {
 function AddFlashcardModal({ lectureId, onAdded, onClose }: {
   lectureId: string; onAdded: (card: Flashcard) => void; onClose: () => void;
 }) {
-  const [q, setQ] = useState('');
-  const [a, setA] = useState('');
+  const [front, setFront] = useState('');
+  const [back, setBack]   = useState('');
   const [topic, setTopic] = useState('');
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
 
   async function save() {
-    if (!q.trim() || !a.trim()) { setErr('Question and answer are required.'); return; }
+    if (!front.trim() || !back.trim()) { setErr('Front and back are required.'); return; }
     setSaving(true);
     try {
       const data = await apiFetch(`/api/lectures/${lectureId}/flashcards`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q.trim(), answer: a.trim(), topic: topic.trim() || 'General' }),
+        body: JSON.stringify({ front: front.trim(), back: back.trim(), topic: topic.trim() || 'General' }),
       });
-      onAdded({ id: data.card.id, topic: data.card.topic, slideNumber: null, question: data.card.question, answer: data.card.answer, hasUserEdit: false, hasConflict: false, userEditedAt: null });
+      onAdded({
+        id: data.card.id, topic: data.card.topic, slideNumber: null,
+        front: data.card.front, back: data.card.back,
+        hasUserEdit: false, hasConflict: false, userEditedAt: null,
+      });
       onClose();
     } catch (e: any) { setErr(e.message); }
     setSaving(false);
@@ -584,12 +601,12 @@ function AddFlashcardModal({ lectureId, onAdded, onClose }: {
             <input className="lm-input" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Cardiovascular" />
           </div>
           <div className="lm-form-field">
-            <label className="lm-form-label">Question</label>
-            <textarea className="lm-textarea" rows={3} value={q} onChange={e => setQ(e.target.value)} />
+            <label className="lm-form-label">Front</label>
+            <textarea className="lm-textarea" rows={3} value={front} onChange={e => setFront(e.target.value)} />
           </div>
           <div className="lm-form-field">
-            <label className="lm-form-label">Answer</label>
-            <textarea className="lm-textarea" rows={4} value={a} onChange={e => setA(e.target.value)} />
+            <label className="lm-form-label">Back</label>
+            <textarea className="lm-textarea" rows={4} value={back} onChange={e => setBack(e.target.value)} />
           </div>
           {err && <div className="lm-err">{err}</div>}
           <div className="lm-modal-footer">
@@ -607,7 +624,7 @@ function AddFlashcardModal({ lectureId, onAdded, onClose }: {
 function AddQuestionModal({ lectureId, onAdded, onClose }: {
   lectureId: string; onAdded: (q: ExamQuestion) => void; onClose: () => void;
 }) {
-  const [question, setQuestion] = useState('');
+  const [stem, setStem] = useState('');
   const [correct, setCorrect] = useState('');
   const [type, setType] = useState('mcq');
   const [topic, setTopic] = useState('');
@@ -615,15 +632,20 @@ function AddQuestionModal({ lectureId, onAdded, onClose }: {
   const [err, setErr] = useState('');
 
   async function save() {
-    if (!question.trim() || !correct.trim()) { setErr('Question and correct answer are required.'); return; }
+    if (!stem.trim() || !correct.trim()) { setErr('Question stem and answer are required.'); return; }
     setSaving(true);
     try {
       const data = await apiFetch(`/api/lectures/${lectureId}/questions`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: question.trim(), correctAnswer: correct.trim(), type, topic: topic.trim() || 'General' }),
+        body: JSON.stringify({ stem: stem.trim(), answer: correct.trim(), type, topic: topic.trim() || 'General' }),
       });
       const qd = data.question;
-      onAdded({ id: qd.id, type: qd.type, topic: qd.topic, slideNumber: null, question: qd.question, correctAnswer: qd.correct_answer, options: qd.options ?? [], explanation: qd.explanation ?? '', hasUserEdit: false, hasConflict: false, userEditedAt: null });
+      onAdded({
+        id: qd.id, type: qd.type, topic: qd.topic, slideNumber: null,
+        stem: qd.stem, answer: qd.answer,
+        options: qd.options ?? [], explanation: qd.explanation ?? '',
+        hasUserEdit: false, hasConflict: false, userEditedAt: null,
+      });
       onClose();
     } catch (e: any) { setErr(e.message); }
     setSaving(false);
@@ -642,9 +664,9 @@ function AddQuestionModal({ lectureId, onAdded, onClose }: {
               <label className="lm-form-label">Type</label>
               <select className="lm-select" value={type} onChange={e => setType(e.target.value)}>
                 <option value="mcq">Multiple Choice</option>
-                <option value="tf">True / False</option>
-                <option value="matching">Matching</option>
-                <option value="fillin">Fill in the Blank</option>
+                <option value="true_false">True / False</option>
+                <option value="short_answer">Short Answer</option>
+                <option value="clinical_vignette">Clinical Vignette</option>
               </select>
             </div>
             <div className="lm-form-field" style={{ flex: 2 }}>
@@ -654,7 +676,7 @@ function AddQuestionModal({ lectureId, onAdded, onClose }: {
           </div>
           <div className="lm-form-field">
             <label className="lm-form-label">Question</label>
-            <textarea className="lm-textarea" rows={3} value={question} onChange={e => setQuestion(e.target.value)} />
+            <textarea className="lm-textarea" rows={3} value={stem} onChange={e => setStem(e.target.value)} />
           </div>
           <div className="lm-form-field">
             <label className="lm-form-label">Correct Answer</label>
@@ -747,21 +769,25 @@ function AddFlashcardFromSlideModal({ lectureId, slideNumber, slideUrl, onAdded,
   onAdded: (card: Flashcard) => void;
   onClose: () => void;
 }) {
-  const [q, setQ] = useState('');
-  const [a, setA] = useState('');
+  const [front, setFront] = useState('');
+  const [back, setBack]   = useState('');
   const [topic, setTopic] = useState('');
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
 
   async function save() {
-    if (!q.trim() || !a.trim()) { setErr('Question and answer are required.'); return; }
+    if (!front.trim() || !back.trim()) { setErr('Front and back are required.'); return; }
     setSaving(true);
     try {
       const data = await apiFetch(`/api/lectures/${lectureId}/flashcards`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: q.trim(), answer: a.trim(), topic: topic.trim() || 'General', slideNumber }),
+        body: JSON.stringify({ front: front.trim(), back: back.trim(), topic: topic.trim() || 'General', slideNumber }),
       });
-      onAdded({ id: data.card.id, topic: data.card.topic, slideNumber: slideNumber, question: data.card.question, answer: data.card.answer, hasUserEdit: false, hasConflict: false, userEditedAt: null });
+      onAdded({
+        id: data.card.id, topic: data.card.topic, slideNumber,
+        front: data.card.front, back: data.card.back,
+        hasUserEdit: false, hasConflict: false, userEditedAt: null,
+      });
       onClose();
     } catch (e: any) { setErr(e.message); }
     setSaving(false);
@@ -792,13 +818,13 @@ function AddFlashcardFromSlideModal({ lectureId, slideNumber, slideUrl, onAdded,
             <input className="lm-input" value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g. Cardiovascular" />
           </div>
           <div className="lm-form-field">
-            <label className="lm-form-label">Question</label>
-            <textarea className="lm-textarea" rows={3} value={q} onChange={e => setQ(e.target.value)}
+            <label className="lm-form-label">Front</label>
+            <textarea className="lm-textarea" rows={3} value={front} onChange={e => setFront(e.target.value)}
               placeholder="Write a question about this slide…" />
           </div>
           <div className="lm-form-field">
-            <label className="lm-form-label">Answer</label>
-            <textarea className="lm-textarea" rows={3} value={a} onChange={e => setA(e.target.value)} />
+            <label className="lm-form-label">Back</label>
+            <textarea className="lm-textarea" rows={3} value={back} onChange={e => setBack(e.target.value)} />
           </div>
           {err && <div className="lm-err">{err}</div>}
           <div className="lm-modal-footer">
@@ -1134,15 +1160,15 @@ function ExpandedRow({ summary, onToast, onSummaryChange, onOpenModal, detailCac
                   {detail.flashcards.length === 0 ? <div className="lm-empty">No flashcards yet.</div> : (
                     <div className="lm-card-table-wrap">
                       <table className="lm-card-table">
-                        <thead><tr><th>Topic</th><th>Question</th><th>Answer</th><th>Slide</th><th></th></tr></thead>
+                        <thead><tr><th>Topic</th><th>Front</th><th>Back</th><th>Slide</th><th></th></tr></thead>
                         <tbody>
                           {detail.flashcards.map(card => (
                             <tr key={card.id}
                               className={`lm-card-row ${card.hasConflict ? 'lm-card-conflict' : card.hasUserEdit ? 'lm-card-edited' : ''}`}
                               onClick={() => onOpenModal({ kind: 'edit-fc', lectureId: summary.id, card })}>
                               <td className="lm-card-topic">{card.topic}</td>
-                              <td className="lm-card-preview">{card.question}</td>
-                              <td className="lm-card-preview lm-card-answer">{card.answer}</td>
+                              <td className="lm-card-preview">{card.front}</td>
+                              <td className="lm-card-preview lm-card-answer">{card.back}</td>
                               <td className="lm-card-slide">{card.slideNumber ?? '—'}</td>
                               <td className="lm-card-actions">
                                 {card.hasConflict && <span className="lm-badge lm-badge-conflict">⚠️ Updated</span>}
@@ -1177,8 +1203,8 @@ function ExpandedRow({ summary, onToast, onSummaryChange, onOpenModal, detailCac
                               onClick={() => onOpenModal({ kind: 'edit-q', lectureId: summary.id, question: q })}>
                               <td><span className="lm-type-badge">{TYPE_LABELS[q.type] ?? q.type}</span></td>
                               <td className="lm-card-topic">{q.topic}</td>
-                              <td className="lm-card-preview">{q.question}</td>
-                              <td className="lm-card-preview lm-card-answer">{q.correctAnswer}</td>
+                              <td className="lm-card-preview">{q.stem}</td>
+                              <td className="lm-card-preview lm-card-answer">{q.answer}</td>
                               <td className="lm-card-actions">
                                 {q.hasConflict && <span className="lm-badge lm-badge-conflict">⚠️ Updated</span>}
                                 {q.hasUserEdit && !q.hasConflict && <span className="lm-badge lm-badge-edit">✏️</span>}

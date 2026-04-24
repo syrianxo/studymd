@@ -11,11 +11,15 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
+// Minimal shape required by this view — aligned with the canonical
+// `LectureFlashcard` fields actually rendered here (front/back/topic/slide).
+// `tags`/`difficulty` are intentionally omitted so study pages can hand in a
+// narrow projection without synthesising unused metadata.
 export interface FlashCard {
   id: string;
-  question: string;
-  answer: string;
   topic: string;
+  front: string;
+  back: string;
   slide_number?: number | null;
 }
 
@@ -315,7 +319,7 @@ export default function FlashcardView({
             <div className="smd-card-face smd-card-front">
               <div className="smd-card-topic-tag">{currentCard.topic}</div>
               <div className="smd-card-front-label">QUESTION</div>
-              <div className="smd-card-question">{currentCard.question}</div>
+              <div className="smd-card-question">{currentCard.front}</div>
               <div className="smd-card-flip-hint">Tap to reveal ↕</div>
             </div>
 
@@ -330,7 +334,7 @@ export default function FlashcardView({
                   </div>
                 </div>
                 <div className="smd-card-answer-content" style={{ fontSize: FONT_SIZES[fontSizeIdx] }}>
-                  {currentCard.answer}
+                  {currentCard.back}
                 </div>
               </div>
 
