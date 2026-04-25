@@ -130,6 +130,7 @@ export default function Header({
         <NavLink href="/app/lectures" onClick={() => setDrawerOpen(false)}>My Lectures</NavLink>
         <NavLink href="/app/plans" onClick={() => setDrawerOpen(false)}>My Plans</NavLink>
         <NavLink href="/app/progress" onClick={() => setDrawerOpen(false)}>My Progress</NavLink>
+        <NavLink href="/app/uploads"  onClick={() => setDrawerOpen(false)}>My Uploads</NavLink>
         {isAdmin && (
           <NavLink href="/admin" onClick={() => setDrawerOpen(false)}>
             Admin <span className="smd-admin-badge">ADMIN</span>
@@ -282,6 +283,12 @@ export default function Header({
                     <path fillRule="evenodd" clipRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
                   </svg>
                   Profile & Settings
+                </Link>
+                <Link href="/app/uploads" className="smd-hdr-panel-link" onClick={() => setSettingsOpen(false)}>
+                  <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
+                    <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM10 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L11 6.414V13a1 1 0 11-2 0V6.414L6.707 8.707A1 1 0 015.293 7.293l4-4A1 1 0 0110 3z" />
+                  </svg>
+                  My Uploads
                 </Link>
                 <div className="smd-hdr-panel-divider" />
                 <button className="smd-hdr-panel-signout" onClick={handleSignOut}>

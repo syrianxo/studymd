@@ -350,7 +350,7 @@ export async function runProcessingJob(
   // ── Fetch job data ─────────────────────────────────────────────────────────
   const { data: job, error: jobFetchError } = await supabase
     .from('processing_jobs')
-    .select('job_id, user_id, storage_path, course, title, slide_count, file_size_bytes, internal_id')
+    .select('job_id, user_id, storage_path, course, title, slide_count, file_size_bytes, internal_id, anthropic_file_id')
     .eq('job_id', jobId)
     .single();
 
@@ -384,89 +384,99 @@ export async function runProcessingJob(
   }
 
   // ── Stage: fetch file ──────────────────────────────────────────────────────
-  await updateProgress(supabase, jobId, 'fetching_file', 'Fetching lecture file…', 'converting');
-
-  // Use provided URL or reconstruct from storage path.
-  // The upload route writes to the private `uploads` bucket, so a signed URL
-  // is required — `getPublicUrl` on a private bucket returns a 400.
-  let fileUrl: string;
-  if (opts.fileUrl) {
-    fileUrl = opts.fileUrl;
-  } else {
-    const { data: urlData, error: urlErr } = await getSupabaseAdmin().storage
-      .from('uploads')
-      .createSignedUrl(job.storage_path, 1800);
-    if (urlErr || !urlData?.signedUrl) {
-      const msg = `Could not create signed URL: ${urlErr?.message ?? 'no URL returned'}`;
-      await markJobError(supabase, jobId, msg);
-      throw new Error(msg);
-    }
-    fileUrl = urlData.signedUrl;
-  }
-
-  let fileBuffer: ArrayBuffer;
-  try {
-    fileBuffer = await fetchFileFromStorage(fileUrl);
-  } catch (err) {
-    const msg = `Could not retrieve lecture file: ${(err as Error).message}`;
-    await markJobError(supabase, jobId, msg);
-    throw new Error(msg);
-  }
-
   const storagePathLower = job.storage_path.toLowerCase();
   const isPptx = storagePathLower.endsWith('.pptx') || storagePathLower.endsWith('.ppt');
   let fileBase64: string | null = null;
   let slideText: string | null = null;
   let anthropicFileId: string | null = null;
 
-  if (isPptx) {
-    await updateProgress(supabase, jobId, 'extracting_text', 'Extracting slide text…');
+  // Fast path — retry on a PDF that already has a Files API id: skip Supabase
+  // fetch and the Files API re-upload entirely. PPTX always re-fetches because
+  // we extract text from the buffer, not from a stored Anthropic file.
+  const canReuseFileId = !isPptx && FILES_API_ENABLED && !!job.anthropic_file_id;
+
+  if (canReuseFileId) {
+    anthropicFileId = job.anthropic_file_id as string;
+    await updateProgress(supabase, jobId, 'extracting_text', 'Reusing previously-uploaded file…', 'converting');
+  } else {
+    await updateProgress(supabase, jobId, 'fetching_file', 'Fetching lecture file…', 'converting');
+
+    // Use provided URL or reconstruct from storage path.
+    // The upload route writes to the private `uploads` bucket, so a signed URL
+    // is required — `getPublicUrl` on a private bucket returns a 400.
+    let fileUrl: string;
+    if (opts.fileUrl) {
+      fileUrl = opts.fileUrl;
+    } else {
+      const { data: urlData, error: urlErr } = await getSupabaseAdmin().storage
+        .from('uploads')
+        .createSignedUrl(job.storage_path, 1800);
+      if (urlErr || !urlData?.signedUrl) {
+        const msg = `Could not create signed URL: ${urlErr?.message ?? 'no URL returned'}`;
+        await markJobError(supabase, jobId, msg);
+        throw new Error(msg);
+      }
+      fileUrl = urlData.signedUrl;
+    }
+
+    let fileBuffer: ArrayBuffer;
     try {
-      const slides = await extractPptxSlides(fileBuffer);
-      if (slides.length === 0) {
-        const msg = 'No slide content could be extracted from the PPTX.';
-        await markJobError(supabase, jobId, msg);
-        throw new Error(msg);
-      }
-      slideText = formatSlidesForClaude(slides, job.title);
-      if (slideText.length < 200) {
-        const msg = `PPTX extraction produced almost no text (${slideText.length} chars). Please export as PDF.`;
-        await markJobError(supabase, jobId, msg);
-        throw new Error(msg);
-      }
-      await updateProgress(supabase, jobId, 'extracting_text', `Extracted ${slides.length} slides`);
+      fileBuffer = await fetchFileFromStorage(fileUrl);
     } catch (err) {
-      if ((err as Error).message.includes('Could not retrieve') || (err as Error).message.includes('PPTX')) {
-        throw err;
-      }
-      const msg = `PPTX text extraction failed: ${(err as Error).message}`;
+      const msg = `Could not retrieve lecture file: ${(err as Error).message}`;
       await markJobError(supabase, jobId, msg);
       throw new Error(msg);
     }
-  } else {
-    await updateProgress(supabase, jobId, 'extracting_text', 'Reading PDF content…');
 
-    if (FILES_API_ENABLED) {
-      // Upload once via the Files API so retries (Haiku → Sonnet fallback) and
-      // admin reprocesses don't have to re-base64 and re-transmit the file.
+    if (isPptx) {
+      await updateProgress(supabase, jobId, 'extracting_text', 'Extracting slide text…');
       try {
-        const uploaded = await anthropic.beta.files.upload(
-          {
-            file: await toFile(fileBuffer, 'lecture.pdf', { type: 'application/pdf' }),
-          },
-          { headers: { 'anthropic-beta': FILES_API_BETA_HEADER } },
-        );
-        anthropicFileId = uploaded.id;
-        await supabase
-          .from('processing_jobs')
-          .update({ anthropic_file_id: anthropicFileId })
-          .eq('job_id', jobId);
+        const slides = await extractPptxSlides(fileBuffer);
+        if (slides.length === 0) {
+          const msg = 'No slide content could be extracted from the PPTX.';
+          await markJobError(supabase, jobId, msg);
+          throw new Error(msg);
+        }
+        slideText = formatSlidesForClaude(slides, job.title);
+        if (slideText.length < 200) {
+          const msg = `PPTX extraction produced almost no text (${slideText.length} chars). Please export as PDF.`;
+          await markJobError(supabase, jobId, msg);
+          throw new Error(msg);
+        }
+        await updateProgress(supabase, jobId, 'extracting_text', `Extracted ${slides.length} slides`);
       } catch (err) {
-        console.warn('[job-runner] Files API upload failed — falling back to base64:', (err as Error).message);
-        fileBase64 = arrayBufferToBase64(fileBuffer);
+        if ((err as Error).message.includes('Could not retrieve') || (err as Error).message.includes('PPTX')) {
+          throw err;
+        }
+        const msg = `PPTX text extraction failed: ${(err as Error).message}`;
+        await markJobError(supabase, jobId, msg);
+        throw new Error(msg);
       }
     } else {
-      fileBase64 = arrayBufferToBase64(fileBuffer);
+      await updateProgress(supabase, jobId, 'extracting_text', 'Reading PDF content…');
+
+      if (FILES_API_ENABLED) {
+        // Upload once via the Files API so retries (Haiku → Sonnet fallback) and
+        // admin reprocesses don't have to re-base64 and re-transmit the file.
+        try {
+          const uploaded = await anthropic.beta.files.upload(
+            {
+              file: await toFile(fileBuffer, 'lecture.pdf', { type: 'application/pdf' }),
+            },
+            { headers: { 'anthropic-beta': FILES_API_BETA_HEADER } },
+          );
+          anthropicFileId = uploaded.id;
+          await supabase
+            .from('processing_jobs')
+            .update({ anthropic_file_id: anthropicFileId })
+            .eq('job_id', jobId);
+        } catch (err) {
+          console.warn('[job-runner] Files API upload failed — falling back to base64:', (err as Error).message);
+          fileBase64 = arrayBufferToBase64(fileBuffer);
+        }
+      } else {
+        fileBase64 = arrayBufferToBase64(fileBuffer);
+      }
     }
   }
 
