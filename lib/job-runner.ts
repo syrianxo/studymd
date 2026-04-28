@@ -110,12 +110,29 @@ async function markJobError(
 
 // ─── File helpers ─────────────────────────────────────────────────────────────
 
-async function fetchFileFromStorage(fileUrl: string): Promise<ArrayBuffer> {
-  const response = await fetch(fileUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
+/**
+ * Download a file from a private Supabase Storage bucket using the service
+ * role client. This intentionally does NOT use a signed URL — signed URL
+ * fetches from Vercel serverless functions have been observed returning
+ * 400 Bad Request even when the URL is valid (works fine from elsewhere).
+ *
+ * The supabase-js download() method hits `/storage/v1/object/<bucket>/<path>`
+ * with `Authorization: Bearer <service-role-key>`, which is a different
+ * code path on the Supabase side from `/storage/v1/object/sign/...?token=`
+ * and does not have the same failure mode. It also avoids any
+ * URL-encoding-of-JWT-in-query-string mangling that may occur in transit.
+ */
+async function downloadFileFromStorage(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: SupabaseClient<any, 'public', any>,
+  bucket: string,
+  path: string,
+): Promise<ArrayBuffer> {
+  const { data, error } = await supabase.storage.from(bucket).download(path);
+  if (error || !data) {
+    throw new Error(`Failed to download file from ${bucket}/${path}: ${error?.message ?? 'no data returned'}`);
   }
-  return response.arrayBuffer();
+  return data.arrayBuffer();
 }
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
@@ -300,7 +317,13 @@ export interface ProcessingJobData {
 // ─── Main job runner ──────────────────────────────────────────────────────────
 
 export interface RunJobOptions {
-  /** Pre-resolved file URL (passed from the upload flow to avoid re-signing). */
+  /**
+   * @deprecated Ignored. The runner now uses the service-role client's
+   * `storage.download()` method directly against `job.storage_path`, so
+   * pre-resolved URLs aren't needed (and signed-URL fetches were unreliable
+   * from Vercel serverless functions). Kept on the type for backwards
+   * compat — old callers can still pass it without breaking.
+   */
   fileUrl?: string;
   /** Internal ID to assign to the lecture (passed from upload flow). */
   internalId?: string;
@@ -310,8 +333,11 @@ export interface RunJobOptions {
  * runProcessingJob — processes a single job end-to-end.
  *
  * Can be called:
- * 1. Inline from /api/generate (fast path) — fileUrl and internalId are known.
+ * 1. Inline from /api/generate (fast path) — internalId is known.
  * 2. From the cron endpoint — job is fetched from processing_jobs.
+ *
+ * The file is always pulled via the service-role storage client's download()
+ * method against `job.storage_path` — see downloadFileFromStorage() above.
  *
  * Returns a result object on success, throws on unrecoverable error.
  * Always writes final status to processing_jobs before returning/throwing.
@@ -401,27 +427,12 @@ export async function runProcessingJob(
   } else {
     await updateProgress(supabase, jobId, 'fetching_file', 'Fetching lecture file…', 'converting');
 
-    // Use provided URL or reconstruct from storage path.
-    // The upload route writes to the private `uploads` bucket, so a signed URL
-    // is required — `getPublicUrl` on a private bucket returns a 400.
-    let fileUrl: string;
-    if (opts.fileUrl) {
-      fileUrl = opts.fileUrl;
-    } else {
-      const { data: urlData, error: urlErr } = await getSupabaseAdmin().storage
-        .from('uploads')
-        .createSignedUrl(job.storage_path, 1800);
-      if (urlErr || !urlData?.signedUrl) {
-        const msg = `Could not create signed URL: ${urlErr?.message ?? 'no URL returned'}`;
-        await markJobError(supabase, jobId, msg);
-        throw new Error(msg);
-      }
-      fileUrl = urlData.signedUrl;
-    }
-
+    // Pull the file using the service-role client's download() method, which
+    // hits the auth-header endpoint (not the signed-URL endpoint). See
+    // downloadFileFromStorage() above for why we don't use signed URL fetch.
     let fileBuffer: ArrayBuffer;
     try {
-      fileBuffer = await fetchFileFromStorage(fileUrl);
+      fileBuffer = await downloadFileFromStorage(supabase, 'uploads', job.storage_path);
     } catch (err) {
       const msg = `Could not retrieve lecture file: ${(err as Error).message}`;
       await markJobError(supabase, jobId, msg);

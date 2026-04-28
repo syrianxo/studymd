@@ -18,7 +18,6 @@ export const dynamic = 'force-dynamic';
 // File-size caps are defined in API_LIMITS so they're a single source of truth.
 // Admin cap (250 MB) is checked after the admin status is confirmed server-side.
 const ALLOWED_EXTENSIONS  = new Set(['.pdf', '.pptx', '.ppt']);
-const STORAGE_BUCKET      = 'uploads';
 
 function getFileExtension(filename: string): string {
   const dot = filename.lastIndexOf('.');
@@ -122,22 +121,6 @@ export async function POST(request: NextRequest) {
 
     const supabase = getSupabaseAdmin();
 
-    // ── Get a signed URL so /api/generate can fetch the file ─────────────────
-    // Signed URL valid for 2 hours — plenty of time for processing
-    const { data: signedUrlData, error: signedUrlError } = await supabase.storage
-      .from(STORAGE_BUCKET)
-      .createSignedUrl(storagePath, 7200);
-
-    if (signedUrlError || !signedUrlData?.signedUrl) {
-      const detail = signedUrlError?.message ?? 'no URL returned';
-      return NextResponse.json(
-        { error: `Could not get file URL: ${detail}` },
-        { status: 500 }
-      );
-    }
-
-    const fileUrl = signedUrlData.signedUrl;
-
     // ── Insert processing_jobs row ────────────────────────────────────────────
     const { data: job, error: jobError } = await supabase
       .from('processing_jobs')
@@ -172,7 +155,9 @@ export async function POST(request: NextRequest) {
     // ── Return jobId immediately — client calls /api/generate directly ──────
     // This avoids Vercel serverless timeout issues with chained long-running
     // functions. The upload page fires /api/generate after receiving jobId.
-    return NextResponse.json({ jobId, internalId, fileUrl, estimatedCost, estimatedTokens, tokenWarning });
+    // No fileUrl is returned: the worker pulls the file via service-role
+    // download(storage_path) — see lib/job-runner.ts.
+    return NextResponse.json({ jobId, internalId, estimatedCost, estimatedTokens, tokenWarning });
   } catch (err) {
     console.error('Upload route error:', err);
     return NextResponse.json({ error: `Internal server error: ${(err as Error).message}` }, { status: 500 });

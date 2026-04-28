@@ -18,8 +18,6 @@ import { API_LIMITS, estimateCost } from '@/lib/api-limits';
 import { extractPptxSlides, formatSlidesForClaude } from '@/lib/pptx-extractor';
 
 const STORAGE_BUCKET = 'uploads';
-// Re-process signed URL valid for 30 minutes
-const SIGNED_URL_TTL = 1800;
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
@@ -65,27 +63,19 @@ export async function POST(
     );
   }
 
-  // ── 2. Get signed URL ─────────────────────────────────────────────────────
-  const { data: urlData, error: urlErr } = await supabase.storage
-    .from(STORAGE_BUCKET)
-    .createSignedUrl(job.storage_path, SIGNED_URL_TTL);
-
-  if (urlErr || !urlData?.signedUrl) {
-    return NextResponse.json(
-      { error: `Could not create signed URL: ${urlErr?.message ?? 'no URL returned'}` },
-      { status: 500 }
-    );
-  }
-
-  // ── 3. Fetch file ─────────────────────────────────────────────────────────
+  // ── 2. Download file via service-role storage client ──────────────────────
+  // Direct download (auth-header path) — signed-URL fetch from Vercel
+  // serverless has been observed returning spurious 400s.
   let fileBuffer: ArrayBuffer;
   try {
-    const res = await fetch(urlData.signedUrl);
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-    fileBuffer = await res.arrayBuffer();
+    const { data: blob, error: dlErr } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .download(job.storage_path);
+    if (dlErr || !blob) throw new Error(dlErr?.message ?? 'no data returned');
+    fileBuffer = await blob.arrayBuffer();
   } catch (err) {
     return NextResponse.json(
-      { error: `Failed to fetch file: ${(err as Error).message}` },
+      { error: `Failed to download file from ${STORAGE_BUCKET}/${job.storage_path}: ${(err as Error).message}` },
       { status: 500 }
     );
   }

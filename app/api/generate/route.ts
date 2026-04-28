@@ -2,9 +2,12 @@
  * POST /api/generate
  *
  * Thin wrapper around lib/job-runner.ts.
- * Accepts:  { fileUrl, course, title, internalId, jobId, userId, fileSizeBytes?, slideCount? }
+ * Accepts:  { course, title, internalId, jobId, userId, fileSizeBytes?, slideCount? }
  * Delegates all processing logic to runProcessingJob so the same code path
  * is used by both the inline upload flow and the Vercel Cron orphan-recovery.
+ * The runner pulls the file via service-role download() — no signed URL is
+ * passed in. (`fileUrl` in the body is accepted but ignored, for backwards
+ * compat with older client builds.)
  *
  * Fire-and-forget behavior: if the client disconnects (user navigates away),
  * the Vercel serverless function continues running to completion. The Cron
@@ -25,12 +28,13 @@ export const maxDuration = 300;
 
 // ─── Request body type ────────────────────────────────────────────────────────
 interface GenerateRequestBody {
-  fileUrl: string;
   course: string;
   title: string;
   internalId: string;
   jobId: string;
   userId: string;
+  /** @deprecated No longer used — runner downloads file via service role. Accepted for backwards compat. */
+  fileUrl?: string;
   fileSizeBytes?: number;
   slideCount?: number;
 }
@@ -61,11 +65,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid request body.' }, { status: 400 });
   }
 
-  const { fileUrl, course, title, internalId, jobId, userId, fileSizeBytes, slideCount } = body;
+  const { course, title, internalId, jobId, userId, fileSizeBytes, slideCount } = body;
 
-  if (!fileUrl || !course || !title || !internalId || !jobId || !userId) {
+  if (!course || !title || !internalId || !jobId || !userId) {
     return NextResponse.json(
-      { error: 'Missing required fields: fileUrl, course, title, internalId, jobId, userId.' },
+      { error: 'Missing required fields: course, title, internalId, jobId, userId.' },
       { status: 400 }
     );
   }
@@ -83,7 +87,7 @@ export async function POST(request: NextRequest) {
   // ── Run the job (fire; Vercel continues even if client disconnects) ─────────
   const runId = `inline_${Date.now()}`;
   try {
-    const result = await runProcessingJob(jobId, runId, { fileUrl, internalId });
+    const result = await runProcessingJob(jobId, runId, { internalId });
     return NextResponse.json({ success: true, ...result });
   } catch (err) {
     // Job status was already written to processing_jobs inside runProcessingJob.

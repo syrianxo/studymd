@@ -278,7 +278,7 @@ function UploadPageInner() {
     course: string,
     title: string,
     token: string
-  ): Promise<{ jobId: string; internalId: string; fileUrl: string; estimatedCost: number; tokenWarning?: string } | { error: string }> {
+  ): Promise<{ jobId: string; internalId: string; estimatedCost: number; tokenWarning?: string } | { error: string }> {
     // ── Step 1: upload file directly to Supabase Storage ──────────────────────
     const timestamp    = Date.now();
     const safeFilename = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
@@ -328,7 +328,6 @@ function UploadPageInner() {
       return {
         jobId:         data.jobId         as string,
         internalId:    data.internalId    as string,
-        fileUrl:       data.fileUrl       as string,
         estimatedCost: data.estimatedCost as number,
         tokenWarning:  data.tokenWarning  as string | undefined,
       };
@@ -436,7 +435,6 @@ function UploadPageInner() {
       headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
       keepalive: true,
       body: JSON.stringify({
-        fileUrl:      result.fileUrl,
         course:       singleCourse,
         title:        lecTitle,
         internalId:   result.internalId,
@@ -504,7 +502,6 @@ function UploadPageInner() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         keepalive: true,
         body: JSON.stringify({
-          fileUrl:      result.fileUrl,
           course:       item.course,
           title:        lecTitle,
           internalId:   result.internalId,
