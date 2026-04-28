@@ -7,8 +7,14 @@
  * POST /api/upload        → creates processing_jobs row, returns jobId
  * GET  /api/upload/status → polls job status
  *
- * Persistence: active jobId is stored in localStorage so polling survives
- * navigation away and resumes on next mount.
+ * Resume: on mount, queries processing_jobs for any in-flight job belonging
+ * to the current user (status pending/converting/generating, completed_at
+ * NULL, ordered by updated_at DESC). If found, picks up the polling state
+ * automatically. This is intentionally DB-first (not localStorage) so the
+ * UI also reflects:
+ *   - Jobs retried from the My Uploads page (no localStorage was written).
+ *   - Jobs picked up by the cron orphan-recovery path.
+ *   - Jobs started from another tab / device.
  */
 
 import { useState, useRef, useEffect, useCallback, Suspense } from 'react';
@@ -24,8 +30,11 @@ import { useFolders } from '@/hooks/useFolders';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-const LS_JOB_KEY   = 'studymd_active_job';   // persisted jobId + title + course
 const POLL_INTERVAL = 2500;                   // ms between status polls
+// Active statuses match the ProcessingPill query and the partial DB index
+// processing_jobs_status_idx. Kept in lockstep so both surfaces show the
+// same in-flight job.
+const ACTIVE_STATUSES = ['pending', 'converting', 'generating'] as const;
 
 // Sentinel value for the "+ Add new course" option in the course <select>.
 // Picking it swaps the select for an inline text input.
@@ -220,8 +229,9 @@ function UploadPageInner() {
       if (stored) { setTheme(stored); document.documentElement.dataset.theme = stored; }
     } catch {}
 
-    // Resume any in-flight job from a previous visit
-    resumePersistedJob();
+    // Resume any in-flight job (whether started here, retried from My Uploads,
+    // recovered by cron, or kicked off in another tab).
+    resumeActiveJob();
 
     return () => {
       if (singlePollRef.current) clearInterval(singlePollRef.current);
@@ -238,32 +248,39 @@ function UploadPageInner() {
     return session?.access_token ?? null;
   }
 
-  // ── Persist / resume job ──────────────────────────────────────────────────────
-  function persistJob(jobId: string, title: string) {
-    try { localStorage.setItem(LS_JOB_KEY, JSON.stringify({ jobId, title, ts: Date.now() })); } catch {}
-  }
-  function clearPersistedJob() {
-    try { localStorage.removeItem(LS_JOB_KEY); } catch {}
-  }
-
-  async function resumePersistedJob() {
+  // ── Resume in-flight job ────────────────────────────────────────────────────
+  // DB-first: query processing_jobs for any active job belonging to the
+  // current user. Picks up jobs from any source (this page, retry from My
+  // Uploads, cron recovery, another tab).
+  async function resumeActiveJob() {
     try {
-      const raw = localStorage.getItem(LS_JOB_KEY);
-      if (!raw) return;
-      const { jobId, title, ts } = JSON.parse(raw);
-      // Ignore if older than 24h
-      if (Date.now() - ts > 86_400_000) { clearPersistedJob(); return; }
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: job } = await supabase
+        .from('processing_jobs')
+        .select('job_id, title')
+        .eq('user_id', user.id)
+        .in('status', ACTIVE_STATUSES as unknown as string[])
+        .is('completed_at', null)
+        .order('updated_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!job) return;
 
       const token = await getToken();
       if (!token) return;
 
-      // Immediately show polling state
-      setSingleJob({ phase: 'polling', jobId, title });
-      setSingleTitle(title ?? '');
+      const title = job.title ?? '';
+      setSingleJob({ phase: 'polling', jobId: job.job_id, title });
+      setSingleTitle(title);
       setSingleSteps(applyStatusToSteps(buildInitialSteps(), 'pending', 0));
 
-      startPolling(jobId, token, title);
-    } catch {}
+      startPolling(job.job_id, token, title);
+    } catch {
+      // Best-effort — if the resume query fails, the user can still upload fresh.
+    }
   }
 
   // ── Core: upload file directly to Supabase Storage, then register job ──────────
@@ -351,7 +368,6 @@ function UploadPageInner() {
         if (!res.ok) {
           clearInterval(singlePollRef.current!);
           setSingleJob({ phase: 'error', errorMessage: data.error ?? 'Polling failed.' });
-          clearPersistedJob();
           return;
         }
 
@@ -361,7 +377,6 @@ function UploadPageInner() {
           clearInterval(singlePollRef.current!);
           const title = data.title ?? fallbackTitle;
           setSingleJob({ phase: 'complete', jobId, lectureId: data.lectureId, title });
-          clearPersistedJob();
           showToast(`New lecture ready: ${title}`);
           // Assign to folder if the user picked one. We do this client-side after
           // completion because threading group_id through processing_jobs would
@@ -379,7 +394,6 @@ function UploadPageInner() {
         } else if (data.status === 'error') {
           clearInterval(singlePollRef.current!);
           setSingleJob({ phase: 'error', errorMessage: data.error ?? 'Processing failed.' });
-          clearPersistedJob();
         }
       } catch {
         // network blip — keep polling
@@ -425,7 +439,8 @@ function UploadPageInner() {
       prev.map((s) => s.id === 'upload' ? { ...s, status: 'done', detail: undefined } : s),
       'pending', 0
     ));
-    persistJob(result.jobId, lecTitle);
+    // The job row in processing_jobs is the source of truth — resumeActiveJob()
+    // will pick it up on next mount, and the ProcessingPill polls the same DB.
 
     // ── Fire /api/generate (non-blocking — status flows back via polling) ──────
     // keepalive: true keeps the request alive even if the user navigates away.
