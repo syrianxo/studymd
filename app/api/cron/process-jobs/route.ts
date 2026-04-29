@@ -1,17 +1,28 @@
 /**
  * GET /api/cron/process-jobs
  *
- * Vercel Cron endpoint (runs every minute).
- * Picks up any processing_jobs that are:
- *   - status = 'pending' (never started), OR
- *   - status IN ('converting', 'generating') AND claim_expires_at < now()
- *     (stale — client disconnected before the inline /api/generate completed)
+ * Vercel Cron endpoint (runs every minute). Two responsibilities:
+ *
+ * 1. Hard-fail jobs that haven't progressed in > 20 minutes. Staleness is
+ *    measured against `updated_at`, NOT `created_at`. The retry path bumps
+ *    `updated_at` to `now()` while leaving `created_at` pointing at the
+ *    original upload (which may be days old) — using `created_at` here would
+ *    instantly expire any retried-old job.
+ *
+ * 2. Pick up jobs to (re)run:
+ *    - status = 'pending' (never started, or just retried), OR
+ *    - status IN ('converting', 'generating') AND claim_expires_at < now()
+ *      (stale claim — client disconnected before inline /api/generate finished).
  *
  * Auth: Vercel sends an Authorization: Bearer <CRON_SECRET> header.
  * Set CRON_SECRET in Vercel project environment variables.
  *
  * This is purely a safety net. The inline /api/generate fast-path handles
  * most jobs immediately; the cron only fires for orphans.
+ *
+ * IMPORTANT: Vercel Cron runs from the production deployment regardless of
+ * which preview branch is being tested. Any change here only takes effect
+ * once merged to the production branch.
  */
 
 import { NextRequest } from 'next/server';
@@ -32,20 +43,44 @@ export async function GET(request: NextRequest) {
     return new Response('Unauthorized', { status: 401 });
   }
 
-  // ── Find claimable jobs ────────────────────────────────────────────────────
   const supabase = getSupabaseAdmin();
 
+  // ── Expire jobs that haven't progressed in > 20 minutes ───────────────────
+  // Uses updated_at (which the trigger bumps on every change, and which the
+  // retry route resets to now()) rather than created_at — see the file-level
+  // comment for why created_at would be wrong.
+  const STALE_AFTER_MS = 20 * 60 * 1000;
+  const staleThreshold = new Date(Date.now() - STALE_AFTER_MS).toISOString();
+  const { error: expireError } = await supabase
+    .from('processing_jobs')
+    .update({
+      status: 'error',
+      status_detail: 'error',
+      status_message: 'Processing timed out — please try again.',
+      error_message: 'Job timed out after 20 minutes without progress.',
+      completed_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .in('status', ['pending', 'converting', 'generating'])
+    .is('completed_at', null)
+    .lt('updated_at', staleThreshold);
+
+  if (expireError) {
+    console.error('[cron/process-jobs] Failed to expire stale jobs:', expireError.message);
+  }
+
+  // ── Find claimable jobs ────────────────────────────────────────────────────
   const { data: jobs, error } = await supabase
     .from('processing_jobs')
     .select('job_id, storage_path')
     .or(
-      // Pending (never claimed)
+      // Pending (never claimed, or just retried)
       'status.eq.pending,' +
       // Running but claim expired (client navigated away / function timed out)
       'and(status.in.(converting,generating),claim_expires_at.lt.now())'
     )
     .is('completed_at', null)
-    .order('created_at', { ascending: true })
+    .order('updated_at', { ascending: true })
     .limit(5);
 
   if (error) {
