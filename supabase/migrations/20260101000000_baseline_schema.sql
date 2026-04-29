@@ -534,11 +534,13 @@ CREATE POLICY "users manage own folders" ON public.folders
   FOR ALL TO authenticated
   USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 
--- lectures: a placeholder open-read policy. 20260422_s12_lecture_packages drops
--- this and replaces it with the package-scoped read.
-DROP POLICY IF EXISTS "lectures: authenticated users can read" ON public.lectures;
-CREATE POLICY "lectures: authenticated users can read" ON public.lectures
-  FOR SELECT TO authenticated USING (true);
+-- lectures: NO baseline SELECT policy. The package-scoped read policy is
+-- created by 20260423005105_s12_lecture_packages.sql, which runs after
+-- baseline. Adding an open-read placeholder here would silently re-grant
+-- broad access on production if this migration ever re-runs (RLS SELECT
+-- policies OR together — placeholder + package-scoped = bypass package
+-- gating). Preview is empty until s12 runs, so a brief no-policy gap is
+-- safe there.
 
 -- processing_jobs
 DROP POLICY IF EXISTS "Users can view their own jobs" ON public.processing_jobs;
