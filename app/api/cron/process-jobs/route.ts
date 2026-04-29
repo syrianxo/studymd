@@ -19,10 +19,6 @@
  *
  * This is purely a safety net. The inline /api/generate fast-path handles
  * most jobs immediately; the cron only fires for orphans.
- *
- * IMPORTANT: Vercel Cron runs from the production deployment regardless of
- * which preview branch is being tested. Any change here only takes effect
- * once merged to the production branch.
  */
 
 import { NextRequest } from 'next/server';
