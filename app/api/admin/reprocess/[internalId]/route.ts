@@ -9,16 +9,15 @@
  * 422 without touching the database.
  */
 import { NextResponse, type NextRequest } from 'next/server';
-import Anthropic from '@anthropic-ai/sdk';
+import type Anthropic from '@anthropic-ai/sdk';
 import { requireAdmin } from '@/lib/admin-auth';
+import { getAnthropicClient } from '@/lib/anthropic-client';
 import { buildSystemWithCache } from '@/lib/lecture-processor-prompt';
 import { validateLecture } from '@/lib/validate-lecture';
 import { API_LIMITS, estimateCost } from '@/lib/api-limits';
 import { extractPptxSlides, formatSlidesForClaude } from '@/lib/pptx-extractor';
 
 const STORAGE_BUCKET = 'uploads';
-// Re-process signed URL valid for 30 minutes
-const SIGNED_URL_TTL = 1800;
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
   const bytes = new Uint8Array(buffer);
@@ -64,27 +63,19 @@ export async function POST(
     );
   }
 
-  // ── 2. Get signed URL ─────────────────────────────────────────────────────
-  const { data: urlData, error: urlErr } = await supabase.storage
-    .from(STORAGE_BUCKET)
-    .createSignedUrl(job.storage_path, SIGNED_URL_TTL);
-
-  if (urlErr || !urlData?.signedUrl) {
-    return NextResponse.json(
-      { error: `Could not create signed URL: ${urlErr?.message ?? 'no URL returned'}` },
-      { status: 500 }
-    );
-  }
-
-  // ── 3. Fetch file ─────────────────────────────────────────────────────────
+  // ── 2. Download file via service-role storage client ──────────────────────
+  // Direct download (auth-header path) — signed-URL fetch from Vercel
+  // serverless has been observed returning spurious 400s.
   let fileBuffer: ArrayBuffer;
   try {
-    const res = await fetch(urlData.signedUrl);
-    if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
-    fileBuffer = await res.arrayBuffer();
+    const { data: blob, error: dlErr } = await supabase.storage
+      .from(STORAGE_BUCKET)
+      .download(job.storage_path);
+    if (dlErr || !blob) throw new Error(dlErr?.message ?? 'no data returned');
+    fileBuffer = await blob.arrayBuffer();
   } catch (err) {
     return NextResponse.json(
-      { error: `Failed to fetch file: ${(err as Error).message}` },
+      { error: `Failed to download file from ${STORAGE_BUCKET}/${job.storage_path}: ${(err as Error).message}` },
       { status: 500 }
     );
   }
@@ -104,10 +95,12 @@ export async function POST(
   }
 
   // ── 4. Call Claude (Sonnet for reliability on reprocess) ──────────────────
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) return NextResponse.json({ error: 'ANTHROPIC_API_KEY not set' }, { status: 500 });
-
-  const anthropic = new Anthropic({ apiKey });
+  let anthropic: Anthropic;
+  try {
+    anthropic = getAnthropicClient();
+  } catch (err) {
+    return NextResponse.json({ error: (err as Error).message }, { status: 500 });
+  }
   const model = API_LIMITS.MODEL_FALLBACK; // use Sonnet — reprocess is admin-only, quality matters
 
   const userContent: Anthropic.MessageParam['content'] = [];
@@ -126,12 +119,15 @@ export async function POST(
 
   let response: Anthropic.Message;
   try {
-    response = await anthropic.messages.create({
+    // Stream + finalMessage() — SDK enforces streaming for requests that may
+    // exceed the 10-minute timeout (Sonnet at max_tokens=16k can hit it on
+    // large decks).
+    response = await anthropic.messages.stream({
       model,
       max_tokens: 16000,
       system: buildSystemWithCache(),
       messages: [{ role: 'user', content: userContent }],
-    });
+    }).finalMessage();
   } catch (err) {
     return NextResponse.json(
       { error: `Claude API error: ${(err as Error).message}` },

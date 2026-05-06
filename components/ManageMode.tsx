@@ -59,6 +59,7 @@ import { ManageLectureCard } from './ManageLectureCard';
 import { TagEditor } from './TagEditor';
 import { TopicEditor } from './TopicEditor';
 import { FilterBar, applyFilters, type FilterState } from './FilterBar';
+import { useCourses } from '@/hooks/useCourses';
 import type { LectureWithSettings, Course } from '@/types';
 
 // ─── CSS ─────────────────────────────────────────────────────────────────────
@@ -262,6 +263,9 @@ export function ManageMode({
   const [topicEditorLecture, setTopicEditorLecture] = useState<LectureWithSettings | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [, startTransition] = useTransition();
+
+  // Dynamic course list — shared across every ManageLectureCard in this grid.
+  const { courses, addLocal: addLocalCourse } = useCourses();
 
   // ── DnD Sensors ───────────────────────────────────────────────────────────
   const sensors = useSensors(
@@ -550,6 +554,8 @@ export function ManageMode({
                   onEditTopics={() => setTopicEditorLecture(lecture)}
                   onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
                   onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
+                  courses={courses}
+                  onAddCourse={addLocalCourse}
                   onRenameTitle={(title) => handleRenameTitle(lecture.internal_id, title)}
                 />
               );
@@ -588,6 +594,8 @@ export function ManageMode({
                   onEditTopics={() => setTopicEditorLecture(lecture)}
                   onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
                   onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
+                  courses={courses}
+                  onAddCourse={addLocalCourse}
                 />
               );
             })}
@@ -625,6 +633,8 @@ export function ManageMode({
                   onEditTopics={() => setTopicEditorLecture(lecture)}
                   onChangeCourse={(course) => handleChangeCourse(lecture.internal_id, course)}
                   onChangeColor={(color) => handleChangeColor(lecture.internal_id, color)}
+                  courses={courses}
+                  onAddCourse={addLocalCourse}
                 />
               );
             })}

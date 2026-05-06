@@ -59,9 +59,11 @@ function fmtRemaining(seconds: number): string {
 
 interface ProcessingPillProps {
   userId: string;
+  /** Called whenever job-active state changes — lets the parent hide the Upload button. */
+  onJobActive?: (active: boolean) => void;
 }
 
-export function ProcessingPill({ userId }: ProcessingPillProps) {
+export function ProcessingPill({ userId, onJobActive }: ProcessingPillProps) {
   const [job, setJob] = useState<PillJob | null>(null);
   const [secondsLeft, setSecondsLeft] = useState(0);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -73,13 +75,16 @@ export function ProcessingPill({ userId }: ProcessingPillProps) {
     if (!userId) return;
 
     async function poll() {
+      // Order by updated_at so a retried old job (its created_at is days
+      // ago, but updated_at was just bumped to now) sorts above any other
+      // active jobs the user may have. Matches the upload page's resume.
       const { data } = await supabase
         .from('processing_jobs')
-        .select('job_id, title, status, status_detail, created_at, slide_count')
+        .select('job_id, title, status, status_detail, created_at, updated_at, slide_count')
         .eq('user_id', userId)
         .in('status', ACTIVE_STATUSES)
         .is('completed_at', null)
-        .order('created_at', { ascending: false })
+        .order('updated_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
@@ -89,7 +94,9 @@ export function ProcessingPill({ userId }: ProcessingPillProps) {
       }
 
       const estSecs = estimateSecs(data.slide_count ?? null);
-      const startedAt = new Date(data.created_at).getTime();
+      // For ETA we want elapsed-since-this-run, not elapsed-since-original-upload.
+      // updated_at is bumped on retry/claim, so it tracks the current run.
+      const startedAt = new Date(data.updated_at ?? data.created_at).getTime();
 
       setJob((prev) => {
         // Only update if something changed (avoid unnecessary re-renders)
@@ -117,6 +124,12 @@ export function ProcessingPill({ userId }: ProcessingPillProps) {
     return () => { if (pollRef.current) clearInterval(pollRef.current); };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
+
+  // Notify parent when job presence changes
+  useEffect(() => {
+    onJobActive?.(job !== null);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [job !== null]);
 
   // Countdown ticker
   useEffect(() => {

@@ -27,7 +27,7 @@ export interface ExamSessionConfig {
   lectureId: string;
   questions: ExamQuestion[];
   onExit: () => void;
-  onSessionComplete?: (score: number, correct: number, total: number) => void;
+  onSessionComplete?: (score: number, correct: number, total: number, attemptedIds: string[], missedIds: string[]) => void;
 }
 
 // ── Per-question answer state ────────────────────────────────────────────────
@@ -172,7 +172,9 @@ export default function ExamView({
     setAnswers(gradedAnswers);
     setSubmitted(true);
     setScore({ correct, total: questions.length, pct });
-    onSessionComplete?.(pct, correct, questions.length);
+    const attemptedIds = questions.map((q) => q.id);
+    const missedIds = questions.filter((q) => !gradedAnswers[q.id]?.isCorrect).map((q) => q.id);
+    onSessionComplete?.(pct, correct, questions.length, attemptedIds, missedIds);
 
     // Scroll to results
     setTimeout(() => {

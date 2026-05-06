@@ -37,8 +37,10 @@ export const API_LIMITS = {
   /**
    * Default model for lecture processing.
    * Haiku 4.5 is 3x cheaper than Sonnet and sufficient for structured JSON output.
+   * Bare model ID (no date suffix): picks up model improvements automatically and
+   * avoids silent breakage when a snapshot is deprecated.
    */
-  MODEL_DEFAULT: 'claude-haiku-4-5-20251001' as const,
+  MODEL_DEFAULT: 'claude-haiku-4-5' as const,
 
   /**
    * Fallback model used when the default model produces JSON that fails validation.
@@ -48,18 +50,14 @@ export const API_LIMITS = {
 
   // ── Generation parameters ───────────────────────────────────────────────────
   /**
-   * Max tokens for the Claude response.
-   * Haiku 4.5 max output: 8,192 tokens
-   * Sonnet 4.6 max output: 64,000 tokens
+   * Default max_tokens for the Claude response. Per-model overrides live in
+   * MODEL_MAX_OUTPUT inside lib/job-runner.ts so Haiku can be raised past this
+   * value (16K) for dense lectures without affecting other callers.
    *
-   * A dense lecture with 40+ flashcards + 30+ questions can exceed 8K tokens.
-   * We set this to 8000 for Haiku (safe ceiling) and rely on the fallback to
-   * Sonnet when Haiku's output is truncated/invalid. For very large lectures
-   * Sonnet will be used automatically via the validation+fallback path.
-   *
-   * To always use Sonnet's higher limit, change MODEL_DEFAULT to MODEL_FALLBACK.
+   * Haiku 4.5 true ceiling: 64,000 output tokens.
+   * Sonnet 4.6 true ceiling: 64,000 output tokens.
    */
-  MAX_OUTPUT_TOKENS: 8000,
+  MAX_OUTPUT_TOKENS: 16000,
 
   // ── Batch API ───────────────────────────────────────────────────────────────
   /**
@@ -105,7 +103,7 @@ export const TOKEN_PREFLIGHT_LIMIT = API_LIMITS.TOKEN_WARNING_THRESHOLD;
 // ─── Per-model pricing (USD per token) ───────────────────────────────────────
 
 export const MODEL_PRICING: Record<string, { inputPerToken: number; outputPerToken: number }> = {
-  'claude-haiku-4-5-20251001': {
+  'claude-haiku-4-5': {
     inputPerToken: 1.00 / 1_000_000,
     outputPerToken: 5.00 / 1_000_000,
   },
@@ -255,7 +253,7 @@ export async function checkLimits(
     if (globalCount >= API_LIMITS.ADMIN_DAILY_SANITY_CAP) {
       return {
         allowed: false,
-        reason: `Admin daily sanity cap reached (${API_LIMITS.ADMIN_DAILY_SANITY_CAP} calls/day). This is a safety limit — contact Khalid if it's too low.`,
+        reason: `Admin daily sanity cap reached (${API_LIMITS.ADMIN_DAILY_SANITY_CAP} calls/day). This is a safety limit — contact admin if it's too low.`,
       };
     }
     return { allowed: true, bypassed: true };
@@ -296,7 +294,7 @@ export async function checkLimits(
     if (monthTotal >= API_LIMITS.MAX_MONTHLY_COST_USD) {
       return {
         allowed: false,
-        reason: `Monthly API budget of $${API_LIMITS.MAX_MONTHLY_COST_USD.toFixed(2)} has been reached. Contact Khalid.`,
+        reason: `Monthly API budget of $${API_LIMITS.MAX_MONTHLY_COST_USD.toFixed(2)} has been reached. Contact admin or submit a bug report.`,
       };
     }
   }

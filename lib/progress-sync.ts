@@ -25,6 +25,9 @@ export interface ProgressRecord {
     sessions: number;
     best_score: number | null;
     avg_score: number | null;
+    // Per-question tracking (added in Slice F1, backwards-compat optional)
+    attempted_question_ids?: string[]; // union across sessions (like got_it_ids)
+    missed_question_ids?: string[];    // latest session only (like missed_ids)
   };
   lastStudied: string | null;
   updatedAt: string;
@@ -112,6 +115,11 @@ function mergeRecords(a: ProgressRecord, b: ProgressRecord): ProgressRecord {
           ? Math.max(a.examProgress.best_score, b.examProgress.best_score)
           : a.examProgress.best_score ?? b.examProgress.best_score,
       avg_score: newer.examProgress.avg_score,
+      attempted_question_ids: Array.from(new Set([
+        ...(a.examProgress.attempted_question_ids ?? []),
+        ...(b.examProgress.attempted_question_ids ?? []),
+      ])),
+      missed_question_ids: newer.examProgress.missed_question_ids ?? older.examProgress.missed_question_ids ?? [],
     },
     lastStudied: newer.lastStudied,
     updatedAt: newer.updatedAt,
@@ -208,6 +216,8 @@ export async function loadAll(): Promise<Record<string, ProgressRecord>> {
           sessions: row.examProgress?.sessions ?? 0,
           best_score: row.examProgress?.best_score ?? null,
           avg_score: row.examProgress?.avg_score ?? null,
+          attempted_question_ids: row.examProgress?.attempted_question_ids ?? [],
+          missed_question_ids: row.examProgress?.missed_question_ids ?? [],
         },
         lastStudied: row.lastStudied,
         updatedAt: row.updatedAt,

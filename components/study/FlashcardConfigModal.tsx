@@ -8,10 +8,13 @@ import type { FlashCard } from './FlashcardView';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
+export type CardMode = 'all' | 'new' | 'missed';
+
 export interface FlashcardConfig {
   count: number;
   topics: string[];
   order: 'random' | 'sequential';
+  cardMode: CardMode;
 }
 
 interface FlashcardConfigModalProps {
@@ -20,6 +23,8 @@ interface FlashcardConfigModalProps {
   lectureIcon?: string;
   accentColor?: string;
   allCards: FlashCard[];
+  initialGotItIds?: string[];
+  initialMissedIds?: string[];
   onStart: (config: FlashcardConfig) => void;
   onClose: () => void;
 }
@@ -178,6 +183,31 @@ const CSS = `
 }
 .fcm-topic-action-btn:hover { opacity: 1; }
 
+/* Mode select (All / New / Missed) */
+.fcm-mode-row { display: flex; gap: 8px; }
+.fcm-mode-option {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  gap: 4px; padding: 10px 6px; border-radius: 12px; cursor: pointer;
+  border: 1.5px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  transition: all 0.15s; user-select: none; min-height: 44px;
+}
+.fcm-mode-option:hover { border-color: rgba(255,255,255,0.18); background: rgba(255,255,255,0.05); }
+.fcm-mode-option.selected {
+  border-color: var(--accent, #5b8dee);
+  background: rgba(91,141,238,0.1);
+}
+.fcm-mode-option.disabled { opacity: 0.35; cursor: not-allowed; }
+.fcm-mode-icon { font-size: 16px; }
+.fcm-mode-label {
+  font-family: 'Outfit', sans-serif; font-size: 12px; font-weight: 600;
+  color: var(--text, #e8eaf0);
+}
+.fcm-mode-hint {
+  font-family: 'Outfit', sans-serif; font-size: 10px;
+  color: var(--text-muted, #6b7280); text-align: center; line-height: 1.3;
+}
+
 /* Order select */
 .fcm-order-row { display: flex; gap: 10px; }
 .fcm-order-option {
@@ -249,6 +279,8 @@ export default function FlashcardConfigModal({
   lectureIcon = '📇',
   accentColor,
   allCards,
+  initialGotItIds = [],
+  initialMissedIds = [],
   onStart,
   onClose,
 }: FlashcardConfigModalProps) {
@@ -261,20 +293,29 @@ export default function FlashcardConfigModal({
   const [count, setCount] = useState(defaultCount);
   const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set(allTopics));
   const [order, setOrder] = useState<'random' | 'sequential'>('random');
+  const [cardMode, setCardMode] = useState<CardMode>('all');
 
-  // Count cards matching selected topics
-  const filteredCount = allCards.filter(
+  // Count cards matching selected topics (for each mode)
+  const topicFilteredCards = allCards.filter(
     (c) => selectedTopics.size === 0 || selectedTopics.has(c.topic)
-  ).length;
-  const effectiveMax = Math.max(minCards, filteredCount);
-  const effectiveCount = Math.min(count, effectiveMax);
+  );
+  const filteredCount = topicFilteredCards.length;
 
-  // Clamp count when topic selection changes
+  const seen = new Set([...initialGotItIds, ...initialMissedIds]);
+  const missed = new Set(initialMissedIds);
+  const newCount = topicFilteredCards.filter((c) => !seen.has(c.id)).length;
+  const missedCount = topicFilteredCards.filter((c) => missed.has(c.id)).length;
+
+  const poolSize = cardMode === 'new' ? newCount : cardMode === 'missed' ? missedCount : filteredCount;
+  const effectiveMax = Math.max(minCards, poolSize);
+  const effectiveCount = Math.min(count, Math.max(1, poolSize));
+
+  // Clamp count when topic selection or mode changes
   useEffect(() => {
-    if (count > filteredCount && filteredCount > 0) {
-      setCount(Math.max(minCards, filteredCount));
+    if (count > poolSize && poolSize > 0) {
+      setCount(Math.max(minCards, poolSize));
     }
-  }, [selectedTopics, filteredCount, count, minCards]);
+  }, [selectedTopics, cardMode, poolSize, count, minCards]);
 
   // Lock background scroll while modal is open
   useModalShell(true);
@@ -295,8 +336,8 @@ export default function FlashcardConfigModal({
   }
 
   function handleStart() {
-    if (filteredCount === 0) return;
-    onStart({ count: effectiveCount, topics: Array.from(selectedTopics), order });
+    if (poolSize === 0) return;
+    onStart({ count: effectiveCount, topics: Array.from(selectedTopics), order, cardMode });
   }
 
   function handleBackdropClick(e: React.MouseEvent) {
@@ -328,6 +369,39 @@ export default function FlashcardConfigModal({
 
           <div className="fcm-body">
 
+            {/* Card mode selector */}
+            <div>
+              <div className="fcm-section-label">Card Pool</div>
+              <div className="fcm-mode-row">
+                {([
+                  { value: 'all' as CardMode, icon: '📚', label: 'All cards', hint: `${filteredCount} cards` },
+                  { value: 'new' as CardMode, icon: '✨', label: 'New only', hint: newCount > 0 ? `${newCount} unseen` : 'None yet' },
+                  { value: 'missed' as CardMode, icon: '🔁', label: 'Missed only', hint: missedCount > 0 ? `${missedCount} cards` : 'None yet' },
+                ]).map((opt) => {
+                  const isDisabled = (opt.value === 'new' && newCount === 0) || (opt.value === 'missed' && missedCount === 0);
+                  return (
+                    <div
+                      key={opt.value}
+                      className={[
+                        'fcm-mode-option',
+                        cardMode === opt.value ? 'selected' : '',
+                        isDisabled ? 'disabled' : '',
+                      ].filter(Boolean).join(' ')}
+                      onClick={() => !isDisabled && setCardMode(opt.value)}
+                      role="radio"
+                      aria-checked={cardMode === opt.value}
+                      aria-disabled={isDisabled}
+                      style={cardMode === opt.value ? { borderColor: accent, background: `${accentColor ?? '#5b8dee'}12` } : {}}
+                    >
+                      <span className="fcm-mode-icon">{opt.icon}</span>
+                      <span className="fcm-mode-label">{opt.label}</span>
+                      <span className="fcm-mode-hint">{opt.hint}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
             {/* Card count slider */}
             <div>
               <div className="fcm-section-label">Number of Cards</div>
@@ -336,15 +410,17 @@ export default function FlashcardConfigModal({
                   <input
                     type="range"
                     className="fcm-slider"
-                    min={minCards}
-                    max={effectiveMax}
+                    min={1}
+                    max={Math.max(1, poolSize)}
                     value={effectiveCount}
                     onChange={(e) => setCount(Number(e.target.value))}
+                    disabled={poolSize === 0}
                     style={{ accentColor: accent } as React.CSSProperties}
                   />
                   <div className="fcm-slider-hint">
-                    {minCards} – {effectiveMax} cards available
-                    {selectedTopics.size < allTopics.length && ' (filtered by topic)'}
+                    {cardMode === 'all' && `${minCards} – ${effectiveMax} cards available${selectedTopics.size < allTopics.length ? ' (filtered by topic)' : ''}`}
+                    {cardMode === 'new' && (newCount > 0 ? `${newCount} new cards available` : 'No new cards — try "All cards"')}
+                    {cardMode === 'missed' && (missedCount > 0 ? `${missedCount} missed cards to review` : 'No missed cards recorded yet')}
                   </div>
                 </div>
                 <div className="fcm-slider-value" style={{ color: accent }}>{effectiveCount}</div>
@@ -426,7 +502,7 @@ export default function FlashcardConfigModal({
             <button
               className="fcm-start-btn"
               onClick={handleStart}
-              disabled={filteredCount === 0}
+              disabled={poolSize === 0}
               style={{ background: accent }}
             >
               Start Studying →

@@ -13,9 +13,12 @@ import Lightbox from './Lightbox';
 import { TopicEditor } from './TopicEditor';
 import type { Lecture } from '@/hooks/useUserLectures';
 import { resolveColor } from '@/hooks/useUserLectures';
-import type { Flashcard, Course, Theme, StudyPlan } from '@/types';
+import type { Course, Theme, StudyPlan } from '@/types';
+import type { LectureFlashcard } from '@/lib/lecture-schema';
 
 // ─── Props ───────────────────────────────────────────────────────────────────
+
+type StudyMode = 'learn' | 'practice' | 'review';
 
 interface LectureViewModalProps {
   lecture: Lecture | null;   // null = modal hidden but mounted
@@ -23,9 +26,11 @@ interface LectureViewModalProps {
   activeTheme: Theme;
   flashcardProgress: number;
   examProgress: number;
+  studyMode?: StudyMode;
   onClose: () => void;
   onFlashcards: () => void;
   onExam: () => void;
+  onReview?: () => void;
   onChangeColor?: (color: string) => void;
   onChangeCourse?: (course: Course) => void;
   onRenameTitle?: (title: string) => void;
@@ -172,7 +177,8 @@ function formatShort(iso: string): string {
 
 export default function LectureViewModal({
   lecture, isOpen, activeTheme, flashcardProgress, examProgress,
-  onClose, onFlashcards, onExam,
+  studyMode = 'learn',
+  onClose, onFlashcards, onExam, onReview,
   onChangeColor, onChangeCourse, onRenameTitle,
   onHide, onArchive, onTopicsChanged,
   folderName, folderIcon = '📁', onRemoveFromFolder,
@@ -186,7 +192,11 @@ export default function LectureViewModal({
   const course = ((lecture?.course_override ?? lecture?.course) ?? '') as Course;
   // Use per-user display_topics override if set, otherwise fall back to shared topics
   const topics = lecture?.display_topics ?? lecture?.topics ?? [];
-  const flashcards = lecture?.json_data?.flashcards ?? [];
+  // Runtime shape emitted by Claude is `front`/`back` (LectureFlashcard). The
+  // `Lecture.json_data.flashcards` TS type in useUserLectures still uses the
+  // legacy `question`/`answer` shape that the editor API returns. Cast to the
+  // canonical schema type for display reads; see ADR / decisions.md follow-up.
+  const flashcards = (lecture?.json_data?.flashcards ?? []) as unknown as LectureFlashcard[];
   const fcLen = flashcards.length;
   const qLen = ((lecture?.json_data as any)?.questions ?? []).length;
 
@@ -414,17 +424,35 @@ export default function LectureViewModal({
           </div>
         )}
 
-        {/* ── Study Mode — compact buttons with counts (fix #2) ── */}
+        {/* ── Study Mode — compact buttons with counts ── */}
         <div className="lvm-section-label">Study Mode</div>
         <div className="lvm-study-btns">
-          <button className="lvm-study-btn flash" onClick={() => handleStudyAction(onFlashcards)}>
+          {onReview && (
+            <button
+              className={`lvm-study-btn review${studyMode === 'review' ? ' lvm-study-btn--active' : ''}`}
+              onClick={() => handleStudyAction(onReview)}
+            >
+              <span className="lvm-btn-icon">📋</span>
+              <div className="lvm-btn-text">
+                <span className="lvm-btn-label">Review Slides</span>
+                <span className="lvm-btn-sub">AI annotations</span>
+              </div>
+            </button>
+          )}
+          <button
+            className={`lvm-study-btn flash${studyMode === 'learn' ? ' lvm-study-btn--active' : ''}`}
+            onClick={() => handleStudyAction(onFlashcards)}
+          >
             <span className="lvm-btn-icon">📇</span>
             <div className="lvm-btn-text">
               <span className="lvm-btn-label">Flashcards</span>
               <span className="lvm-btn-sub">{fcLen} cards</span>
             </div>
           </button>
-          <button className="lvm-study-btn exam" onClick={() => handleStudyAction(onExam)}>
+          <button
+            className={`lvm-study-btn exam${studyMode === 'practice' ? ' lvm-study-btn--active' : ''}`}
+            onClick={() => handleStudyAction(onExam)}
+          >
             <span className="lvm-btn-icon">📝</span>
             <div className="lvm-btn-text">
               <span className="lvm-btn-label">Practice Exam</span>
@@ -504,8 +532,8 @@ export default function LectureViewModal({
               <div className="lvm-linked-cards">
                 {linkedCards.map(fc => (
                   <div key={fc.id} className="lvm-linked-card">
-                    <div className="lvm-linked-q">{fc.question}</div>
-                    <div className="lvm-linked-a">{fc.answer}</div>
+                    <div className="lvm-linked-q">{fc.front}</div>
+                    <div className="lvm-linked-a">{fc.back}</div>
                     <span className="lvm-linked-topic">{fc.topic}</span>
                   </div>
                 ))}
@@ -652,7 +680,7 @@ const modalCss = `
 .lvm-slide-count { font-weight: 400; letter-spacing: 0.02em; text-transform: none; }
 
 /* Study buttons — compact horizontal with counts (fix #2) */
-.lvm-study-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.lvm-study-btns { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 20px; }
 .lvm-study-btn {
   display: flex; align-items: center; gap: 10px;
   padding: 10px 14px; border-radius: 10px; cursor: pointer;
@@ -661,10 +689,13 @@ const modalCss = `
   transition: all 0.15s; min-height: 44px;
 }
 .lvm-study-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(0,0,0,0.2); }
+.lvm-study-btn--active { box-shadow: 0 0 0 2px var(--accent) inset; }
 .lvm-study-btn.flash { border-color: rgba(91,141,238,0.3); }
-.lvm-study-btn.flash:hover { background: var(--accent-muted, rgba(91,141,238,0.1)); border-color: var(--accent); }
+.lvm-study-btn.flash:hover, .lvm-study-btn.flash.lvm-study-btn--active { background: var(--accent-muted, rgba(91,141,238,0.1)); border-color: var(--accent); }
 .lvm-study-btn.exam { border-color: rgba(139,92,246,0.3); }
-.lvm-study-btn.exam:hover { background: rgba(var(--accent2-rgb, 139,92,246), 0.1); border-color: var(--accent2, #8b5cf6); }
+.lvm-study-btn.exam:hover, .lvm-study-btn.exam.lvm-study-btn--active { background: rgba(139,92,246, 0.1); border-color: var(--accent2, #8b5cf6); }
+.lvm-study-btn.review { border-color: rgba(16,185,129,0.3); }
+.lvm-study-btn.review:hover, .lvm-study-btn.review.lvm-study-btn--active { background: rgba(16,185,129, 0.1); border-color: #10b981; }
 .lvm-btn-icon { font-size: 18px; line-height: 1; flex-shrink: 0; }
 .lvm-btn-text { display: flex; flex-direction: column; }
 .lvm-btn-label { font-size: 13px; font-weight: 600; }

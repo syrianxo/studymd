@@ -1,7 +1,8 @@
 /**
  * POST /api/lectures/[id]/questions
  * Adds a new exam question to the lecture's json_data.
- * Requires: { question, correctAnswer, type }
+ * Requires: { stem, answer, type }
+ * Legacy `question`/`correctAnswer` keys are accepted for compatibility.
  */
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
@@ -22,7 +23,14 @@ async function buildClient() {
   );
 }
 
-const VALID_TYPES = ['mcq', 'tf', 'matching', 'fillin'];
+// Canonical types from lib/validate-lecture.ts. Legacy aliases ('tf',
+// 'matching', 'fillin') are accepted from older clients and normalized.
+const VALID_TYPES = ['mcq', 'true_false', 'short_answer', 'clinical_vignette'];
+const TYPE_ALIASES: Record<string, string> = {
+  tf: 'true_false',
+  matching: 'short_answer',
+  fillin: 'short_answer',
+};
 
 export async function POST(
   req: NextRequest,
@@ -37,9 +45,13 @@ export async function POST(
   let body: any;
   try { body = await req.json(); } catch { return NextResponse.json({ error: 'Invalid JSON' }, { status: 400 }); }
 
-  const { question, correctAnswer, type = 'mcq', topic, options, explanation } = body;
-  if (!question?.trim() || !correctAnswer?.trim())
-    return NextResponse.json({ error: 'question and correctAnswer are required' }, { status: 400 });
+  const stem   = (body.stem   ?? body.question)      as string | undefined;
+  const answer = (body.answer ?? body.correctAnswer) as string | undefined;
+  const rawType = (body.type as string | undefined) ?? 'mcq';
+  const type = TYPE_ALIASES[rawType] ?? rawType;
+  const { topic, options, explanation } = body as { topic?: string; options?: string[]; explanation?: string };
+  if (!stem?.trim() || !answer?.trim())
+    return NextResponse.json({ error: 'stem and answer are required' }, { status: 400 });
   if (!VALID_TYPES.includes(type))
     return NextResponse.json({ error: `type must be one of: ${VALID_TYPES.join(', ')}` }, { status: 400 });
 
@@ -53,8 +65,8 @@ export async function POST(
   const newQuestion = {
     id: 'q_' + crypto.randomBytes(6).toString('hex'),
     type,
-    question: question.trim(),
-    correct_answer: correctAnswer.trim(),
+    stem: stem.trim(),
+    answer: answer.trim(),
     topic: topic?.trim() ?? 'General',
     options: options ?? [],
     explanation: explanation?.trim() ?? '',
@@ -72,3 +84,4 @@ export async function POST(
   if (updateErr) return NextResponse.json({ error: updateErr.message }, { status: 500 });
   return NextResponse.json({ ok: true, question: newQuestion });
 }
+

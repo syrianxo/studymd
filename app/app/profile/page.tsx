@@ -8,6 +8,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase';
 import { applyTheme } from '@/components/ThemePicker';
+import Header from '@/components/Header';
 import type { Theme } from '@/types';
 
 interface ProfileData {
@@ -44,6 +45,7 @@ export default function ProfilePage() {
   const [auth, setAuth]               = useState<AuthData | null>(null);
   const [stats, setStats]             = useState<StatsData | null>(null);
   const [activeTheme, setActiveTheme] = useState<Theme>('midnight');
+  const [headerUserId, setHeaderUserId] = useState('');
 
   const [displayName, setDisplayName] = useState('');
   const [username, setUsername]       = useState('');
@@ -90,6 +92,9 @@ export default function ProfilePage() {
   useEffect(() => { load(); }, [load]);
 
   useEffect(() => {
+    createClient().auth.getUser().then(({ data }) => {
+      if (data.user) setHeaderUserId(data.user.id);
+    });
     try {
       const stored = localStorage.getItem('studymd_theme') as Theme | null;
       const t = stored ?? 'midnight';
@@ -172,6 +177,19 @@ export default function ProfilePage() {
     } finally { setSaving(null); }
   }
 
+  function resetProgress() {
+    if (!confirm('Reset all study progress? Flashcard streaks, exam history, and saved sessions will be cleared. This cannot be undone.')) return;
+    try { localStorage.clear(); } catch {}
+    window.location.reload();
+  }
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/login');
+    router.refresh();
+  }
+
   // ── Render helpers ────────────────────────────────────────────────────────
 
   const avatarLetter = (displayName || username || auth?.email || '?')[0].toUpperCase();
@@ -189,6 +207,7 @@ export default function ProfilePage() {
     return (
       <>
         <style>{profileCss}</style>
+        <Header lectureCount={0} userId={headerUserId} initialTheme={activeTheme} hideSettings hideUploadButton />
         <div className="prf-loading"><div className="prf-spinner" /></div>
       </>
     );
@@ -198,6 +217,7 @@ export default function ProfilePage() {
     return (
       <>
         <style>{profileCss}</style>
+        <Header lectureCount={0} userId={headerUserId} initialTheme={activeTheme} hideSettings hideUploadButton />
         <div className="prf-loading" style={{ flexDirection: 'column', gap: 16 }}>
           <div style={{ fontSize: 36 }}>⚠️</div>
           <div style={{ fontFamily: "'Fraunces', serif", fontSize: 20, color: 'var(--text)' }}>
@@ -207,8 +227,8 @@ export default function ProfilePage() {
           <button className="prf-action-btn" onClick={load} style={{ minWidth: 120 }}>
             Try again
           </button>
-          <Link href="/app" className="prf-nav-back" style={{ marginTop: 8 }}>
-            ← Back to Dashboard
+          <Link href="/app" className="prf-back-btn" style={{ marginTop: 8 }}>
+            ← Dashboard
           </Link>
         </div>
       </>
@@ -221,19 +241,24 @@ export default function ProfilePage() {
     <>
       <style>{profileCss}</style>
 
-      <nav className="prf-nav">
-        <Link href="/app" className="prf-nav-back">
-          <svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16" aria-hidden="true">
+      <Header
+        lectureCount={0}
+        userId={headerUserId}
+        initialTheme={activeTheme}
+        hideSettings
+        hideUploadButton
+        displayName={profile?.displayName ?? undefined}
+      />
+
+      <main className="prf-main">
+
+        <Link href="/app" className="prf-back-btn">
+          <svg viewBox="0 0 20 20" fill="currentColor" width="15" height="15" aria-hidden="true">
             <path fillRule="evenodd" clipRule="evenodd"
               d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" />
           </svg>
           Dashboard
         </Link>
-        <div className="prf-nav-title">Profile &amp; Settings</div>
-        <div style={{ width: 80 }} />
-      </nav>
-
-      <main className="prf-main">
 
         {/* ── Avatar ──────────────────────────────────────────────────── */}
         <section className="prf-section prf-avatar-section">
@@ -417,9 +442,30 @@ export default function ProfilePage() {
 
         <SectionDivider />
 
+        {/* ── Sign out ────────────────────────────────────────────────── */}
+        <section className="prf-section">
+          <h2 className="prf-section-title">Session</h2>
+          <p className="prf-hint" style={{ marginBottom: 16 }}>
+            Sign out of your account on this device.
+          </p>
+          <button className="prf-action-btn" onClick={handleSignOut}>
+            Sign Out
+          </button>
+        </section>
+
+        <SectionDivider />
+
         {/* ── Danger zone ─────────────────────────────────────────────── */}
         <section className="prf-section prf-danger-section">
           <h2 className="prf-section-title danger">Danger Zone</h2>
+
+          <p className="prf-hint" style={{ marginBottom: 12 }}>
+            Reset your study progress — clears flashcard streaks, exam history, and saved sessions stored on this device.
+          </p>
+          <button className="prf-action-btn" onClick={resetProgress} style={{ marginBottom: 24 }}>
+            Reset Progress
+          </button>
+
           <p className="prf-hint" style={{ marginBottom: 16 }}>
             Deleting your account permanently removes all your progress and data. This cannot be undone.
           </p>
@@ -476,23 +522,15 @@ const profileCss = `
 }
 @keyframes prf-spin { to { transform: rotate(360deg); } }
 
-.prf-nav {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 40px; border-bottom: 1px solid var(--border);
-  background: var(--bg); position: sticky; top: 0; z-index: 100;
-}
-.prf-nav-back {
-  display: flex; align-items: center; gap: 6px;
-  font-size: 13px; color: var(--text-muted); text-decoration: none;
-  min-height: 44px; padding: 0 4px; transition: color 0.15s;
-}
-.prf-nav-back:hover { color: var(--text); }
-.prf-nav-title {
-  font-family: 'Fraunces', serif; font-size: 16px;
-  font-weight: 700; color: var(--text);
-}
+.prf-main { max-width: 660px; margin: 0 auto; padding: 32px 24px 80px; }
 
-.prf-main { max-width: 660px; margin: 0 auto; padding: 40px 24px 80px; }
+.prf-back-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; color: var(--text-muted); text-decoration: none;
+  padding: 6px 10px 6px 6px; border-radius: 8px; margin-bottom: 28px;
+  transition: background 0.15s, color 0.15s; min-height: 36px;
+}
+.prf-back-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
 
 .prf-section { padding: 28px 0; }
 .prf-section-title {
@@ -679,7 +717,6 @@ const profileCss = `
 .prf-modal-cancel:hover { background: rgba(255,255,255,0.1); }
 
 @media (max-width: 767px) {
-  .prf-nav  { padding: 12px 16px; }
   .prf-main { padding: 24px 16px 80px; }
   .prf-stats-grid { grid-template-columns: repeat(2, 1fr); }
   .prf-stats-grid .prf-stat-card:last-child { grid-column: 1 / -1; }

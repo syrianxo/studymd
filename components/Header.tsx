@@ -26,6 +26,10 @@ interface HeaderProps {
   onThemeChange?: (theme: import('@/types').Theme) => void;
   /** Show Admin link in nav */
   isAdmin?: boolean;
+  /** Display name shown next to the settings gear (desktop only). */
+  displayName?: string;
+  /** Hide the settings gear entirely (used on /app/profile where it's redundant). */
+  hideSettings?: boolean;
 }
 
 /** Active-route-aware nav link */
@@ -64,11 +68,15 @@ export default function Header({
   hideUploadButton = false,
   onThemeChange,
   isAdmin = false,
+  displayName,
+  hideSettings = false,
 }: HeaderProps) {
+  const firstName = (displayName ?? '').trim().split(/\s+/)[0] ?? '';
   const router = useRouter();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const settingsRef = useRef<HTMLDivElement>(null);
+  const [hasActiveJob, setHasActiveJob] = useState(false);
 
   // Close settings panel on outside click/tap
   useEffect(() => {
@@ -122,6 +130,7 @@ export default function Header({
         <NavLink href="/app/lectures" onClick={() => setDrawerOpen(false)}>My Lectures</NavLink>
         <NavLink href="/app/plans" onClick={() => setDrawerOpen(false)}>My Plans</NavLink>
         <NavLink href="/app/progress" onClick={() => setDrawerOpen(false)}>My Progress</NavLink>
+        <NavLink href="/app/uploads"  onClick={() => setDrawerOpen(false)}>My Uploads</NavLink>
         {isAdmin && (
           <NavLink href="/admin" onClick={() => setDrawerOpen(false)}>
             Admin <span className="smd-admin-badge">ADMIN</span>
@@ -210,42 +219,36 @@ export default function Header({
         <div className="smd-header-right">
 
           {/* Upload — desktop only (mobile version lives in drawer).
-               Always rendered so right-side width stays constant across pages;
-               visibility:hidden when hideUploadButton to avoid layout shift. */}
-          <Link
-            href={uploadHref}
-            className="smd-hdr-btn smd-hdr-upload smd-hdr-desktop-only"
-            aria-label={isProcessing ? 'Processing lecture…' : 'Upload lecture'}
-            title="Upload Lecture"
-            aria-hidden={hideUploadButton}
-            tabIndex={hideUploadButton ? -1 : undefined}
-            style={hideUploadButton ? { visibility: 'hidden', pointerEvents: 'none' } : undefined}
-          >
-            {isProcessing
-              ? <span className="smd-hdr-spinner" aria-hidden="true" />
-              : (
-                <svg className="smd-hdr-icon-svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path d="M10 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L11 6.414V13a1 1 0 11-2 0V6.414L6.707 8.707A1 1 0 015.293 7.293l4-4A1 1 0 0110 3z" />
-                  <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
-                </svg>
-              )}
-            <span className="smd-hdr-label">
-              {isProcessing ? 'Processing…' : 'Upload'}
-            </span>
-          </Link>
+               Hidden when a job is processing (isProcessing = upload page state,
+               hasActiveJob = DB-polled state from ProcessingPill). */}
+          {!hideUploadButton && !isProcessing && !hasActiveJob && (
+            <Link
+              href={uploadHref}
+              className="smd-hdr-btn smd-hdr-upload smd-hdr-desktop-only"
+              aria-label="Upload lecture"
+              title="Upload Lecture"
+            >
+              <svg className="smd-hdr-icon-svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path d="M10 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L11 6.414V13a1 1 0 11-2 0V6.414L6.707 8.707A1 1 0 015.293 7.293l4-4A1 1 0 0110 3z" />
+                <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" />
+              </svg>
+              <span className="smd-hdr-label">Upload</span>
+            </Link>
+          )}
 
-          {/* Background-processing pill — polls DB; visible on all pages when a job is in flight */}
-          {userId && <ProcessingPill userId={userId} />}
+          {/* Background-processing pill — polls DB; visible on all pages when a job is in flight.
+              When visible it sits in the Upload button's slot (the button is hidden above). */}
+          {userId && <ProcessingPill userId={userId} onJobActive={setHasActiveJob} />}
 
           {/* Pomodoro mini-pill — hidden <768px (120px+ min-width collides with mobile icons). ADR-022. */}
           <PomodoroMiniPill />
 
           {/* Settings/Theme — gear icon opens panel with theme picker, profile, sign-out */}
-          <div className="smd-hdr-settings-wrap" ref={settingsRef}>
+          {!hideSettings && <div className="smd-hdr-settings-wrap" ref={settingsRef}>
             <button
-              className="smd-hdr-gear"
+              className={`smd-hdr-gear${firstName ? ' smd-hdr-gear--named' : ''}`}
               onClick={() => setSettingsOpen(o => !o)}
-              aria-label="Settings"
+              aria-label={firstName ? `Settings for ${firstName}` : 'Settings'}
               title="Settings"
               aria-expanded={settingsOpen}
             >
@@ -261,6 +264,9 @@ export default function Header({
                   d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z"
                 />
               </svg>
+              {firstName && (
+                <span className="smd-hdr-gear-name smd-hdr-desktop-only">{firstName}</span>
+              )}
             </button>
 
             {settingsOpen && (
@@ -278,13 +284,19 @@ export default function Header({
                   </svg>
                   Profile & Settings
                 </Link>
+                <Link href="/app/uploads" className="smd-hdr-panel-link" onClick={() => setSettingsOpen(false)}>
+                  <svg viewBox="0 0 20 20" fill="currentColor" width="14" height="14" aria-hidden="true">
+                    <path d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM10 3a1 1 0 01.707.293l4 4a1 1 0 01-1.414 1.414L11 6.414V13a1 1 0 11-2 0V6.414L6.707 8.707A1 1 0 015.293 7.293l4-4A1 1 0 0110 3z" />
+                  </svg>
+                  My Uploads
+                </Link>
                 <div className="smd-hdr-panel-divider" />
                 <button className="smd-hdr-panel-signout" onClick={handleSignOut}>
                   Sign out
                 </button>
               </div>
             )}
-          </div>
+          </div>}
 
         </div>
       </header>
@@ -502,6 +514,23 @@ const headerCss = `
 }
 .smd-hdr-gear[aria-expanded="true"] .smd-hdr-gear-icon {
   transform: rotate(45deg);
+}
+
+/* When the gear carries a name, let it auto-size and show the pill form */
+.smd-hdr-gear--named {
+  width: auto;
+  padding: 0 12px 0 10px;
+  gap: 8px;
+}
+.smd-hdr-gear-name {
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: inherit;
+  max-width: 120px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* ── Settings dropdown panel ───────────────────────────────────────── */

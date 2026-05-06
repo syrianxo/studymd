@@ -49,12 +49,6 @@ export interface ValidationResult {
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-const VALID_COURSES = [
-  'Physical Diagnosis I',
-  'Anatomy & Physiology',
-  'Laboratory Diagnosis',
-] as const;
-
 const VALID_QUESTION_TYPES = ['mcq', 'true_false', 'short_answer', 'clinical_vignette'] as const;
 
 const VALID_DIFFICULTIES = ['easy', 'medium', 'hard'] as const;
@@ -102,10 +96,11 @@ export function validateLecture(data: unknown): ValidationResult {
   if (errors.length > 0) return { valid: false, errors };
 
   // ── 2. Course validation ───────────────────────────────────────────────────
-  if (!VALID_COURSES.includes(obj.course as (typeof VALID_COURSES)[number])) {
-    errors.push(
-      `Invalid course: "${obj.course}". Must be one of: ${VALID_COURSES.map(c => `"${c}"`).join(', ')}.`
-    );
+  // Courses are user-extensible strings. We only require a non-empty value;
+  // the job row supplies it authoritatively (job-runner.ts overwrites
+  // whatever Claude returns), so this is really just a safety net.
+  if (typeof obj.course !== 'string' || obj.course.trim().length === 0) {
+    errors.push(`Field "course" must be a non-empty string (got ${JSON.stringify(obj.course)}).`);
   }
 
   // ── 3. Topics ──────────────────────────────────────────────────────────────

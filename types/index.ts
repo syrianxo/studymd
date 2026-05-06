@@ -1,9 +1,15 @@
 // ─── Core Types ────────────────────────────────────────────────────────────
 
-export type Course =
-  | 'Physical Diagnosis I'
-  | 'Anatomy & Physiology'
-  | 'Laboratory Diagnosis';
+// Courses are user-extensible strings. The legacy cohort seeded with three
+// fixed courses; new courses can be added freely via the upload flow and
+// ManageMode. They emerge from lectures.course + user_lecture_settings.course_override.
+export type Course = string;
+
+export const DEFAULT_COURSES = [
+  'Physical Diagnosis I',
+  'Anatomy & Physiology',
+  'Laboratory Diagnosis',
+] as const;
 
 import type { ThemeId } from '@/lib/themes';
 export type { ThemeId as Theme } from '@/lib/themes';
@@ -22,27 +28,24 @@ export interface Lecture {
   created_at: string;
 }
 
+// ─── Lecture content types ───────────────────────────────────────────────────
+// Canonical schema lives in lib/lecture-schema.ts (what the Claude processor
+// emits and what is stored in lectures.json_data). Flashcards use `front`/`back`;
+// questions use `stem`/`answer`/`options`/`explanation` (Anki convention).
+// `Flashcard`/`Question` are kept as aliases of the canonical types so existing
+// imports keep working.
+import type {
+  LectureFlashcard,
+  LectureQuestion,
+  LectureJSON,
+} from '@/lib/lecture-schema';
+export type { LectureFlashcard, LectureQuestion, LectureJSON };
+export type Flashcard = LectureFlashcard;
+export type Question = LectureQuestion;
+
 export interface LectureData {
   flashcards?: Flashcard[];
   questions?: Question[];
-}
-
-export interface Flashcard {
-  id: string;
-  question: string;
-  answer: string;
-  topic: string;
-  slide_number?: number | null;
-}
-
-export interface Question {
-  id: string;
-  type: 'mcq' | 'tf' | 'matching' | 'fillin';
-  question: string;
-  options?: string[];
-  correct_answer: string;
-  topic: string;
-  explanation?: string;
 }
 
 import type { ColorOverrideMap } from '@/hooks/useUserLectures';

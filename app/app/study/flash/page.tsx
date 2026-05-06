@@ -12,8 +12,10 @@ interface LectureData {
   internal_id: string;
   title: string;
   slide_count: number;
+  // json_data comes straight from Supabase — shape checked by normalizeCards,
+  // which accepts both canonical (front/back) and legacy (question/answer) keys.
   json_data: {
-    flashcards?: FlashCard[];
+    flashcards?: Record<string, unknown>[];
     [key: string]: unknown;
   };
 }
@@ -35,7 +37,8 @@ function FlashPageInner() {
   const lectureId = params.get('lecture') ?? '';
   const topicsFilter = params.get('topics')?.split(',').filter(Boolean) ?? [];
   const countParam = Number(params.get('count') ?? '0');
-  const order = (params.get('order') ?? 'random') as 'random' | 'sequential' | 'missed';
+  const order = (params.get('order') ?? 'random') as 'random' | 'sequential';
+  const cardMode = (params.get('cardMode') ?? 'all') as 'all' | 'new' | 'missed';
 
   const [lecture, setLecture] = useState<LectureData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -89,11 +92,18 @@ function FlashPageInner() {
   const knownGotItIds = existing?.got_it_ids ?? [];
   const knownMissedIds = existing?.missed_ids ?? [];
 
-  let cards: FlashCard[] = normalizeCards(
-    (lecture.json_data?.flashcards as Record<string, unknown>[] | undefined) ?? []
-  );
+  let cards: FlashCard[] = normalizeCards(lecture.json_data?.flashcards ?? []);
   if (topicsFilter.length > 0) {
     cards = cards.filter((c) => topicsFilter.includes(c.topic));
+  }
+
+  // ── Apply card mode filter ─────────────────────────────────────────────
+  if (cardMode === 'new') {
+    const seen = new Set([...knownGotItIds, ...knownMissedIds]);
+    cards = cards.filter((c) => !seen.has(c.id));
+  } else if (cardMode === 'missed') {
+    const missed = new Set(knownMissedIds);
+    cards = cards.filter((c) => missed.has(c.id));
   }
 
   if (order !== 'sequential') {
@@ -109,7 +119,7 @@ function FlashPageInner() {
       lectureTitle={lecture.title}
       lectureId={lecture.internal_id}
       cards={cards}
-      slidesStoragePath={null}
+      slidesStoragePath={lecture.internal_id}
       slideCount={lecture.slide_count}
       initialGotItIds={knownGotItIds}
       initialMissedIds={knownMissedIds}
@@ -120,12 +130,15 @@ function FlashPageInner() {
   );
 }
 
+// Normalize raw json_data flashcards into the canonical shape the study view
+// expects. Tolerates legacy `question`/`answer` keys left over from before the
+// field-name unification — remove once no lectures contain the old shape.
 function normalizeCards(raw: Record<string, unknown>[]): FlashCard[] {
   return raw.map((c) => ({
     id:           String(c.id ?? ''),
-    question:     String(c.question ?? c.front ?? ''),
-    answer:       String(c.answer  ?? c.back  ?? ''),
-    topic:        String(c.topic   ?? ''),
+    front:        String(c.front ?? c.question ?? ''),
+    back:         String(c.back  ?? c.answer   ?? ''),
+    topic:        String(c.topic ?? ''),
     slide_number: (c.slide_number ?? c.slideNumber ?? null) as number | null,
   }));
 }

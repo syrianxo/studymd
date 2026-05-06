@@ -328,7 +328,10 @@ function LoginForm() {
       </form>
 
       <p className="footer-note">
-        Accounts are provisioned by your administrator.
+        Don&apos;t have an account?{' '}
+        <a href="/signup" style={{ color: 'var(--accent)', textDecoration: 'none', fontWeight: 500 }}>
+          Sign up
+        </a>
       </p>
     </>
   )

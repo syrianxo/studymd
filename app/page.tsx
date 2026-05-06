@@ -490,10 +490,16 @@ export default function HomePage() {
 
         @media (max-width: 767px) {
           .nav-links { display: none; }
-          .nav-signin { display: none; }
           .nav-cta { display: none; }
           .nav-hamburger { display: flex; }
           .nav { position: fixed; }
+          /* Keep Sign In reachable without opening the hamburger on mobile. */
+          .nav-signin {
+            display: inline-flex;
+            padding: 7px 14px;
+            font-size: 13px;
+            margin-right: 8px;
+          }
         }
 
         /* ── Hero ───────────────────────────────────────────── */
@@ -1230,7 +1236,7 @@ export default function HomePage() {
             {/* Desktop right CTAs */}
             <div className="nav-right">
               <a href="/login" className="nav-signin">Sign In</a>
-              <a href="/login" className="nav-cta">Sign Up →</a>
+              <a href="/signup" className="nav-cta">Sign Up →</a>
             </div>
 
             {/* Hamburger (mobile only) */}
@@ -1251,7 +1257,7 @@ export default function HomePage() {
             <a href="#features" onClick={() => setMenuOpen(false)}>Features</a>
             <a href="/pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
             <a href="/login" onClick={() => setMenuOpen(false)}>Sign In</a>
-            <a href="/login" className="nav-mobile-cta" onClick={() => setMenuOpen(false)}>Sign Up →</a>
+            <a href="/signup" className="nav-mobile-cta" onClick={() => setMenuOpen(false)}>Sign Up →</a>
           </div>
         </div>
       </nav>
@@ -1337,6 +1343,13 @@ export default function HomePage() {
                 badge: null,
               },
               {
+                icon: "👁",
+                title: "Review Mode",
+                desc: "Preview every lecture slide alongside its linked flashcards and questions. Jump from a tough card straight to the slide it came from.",
+                color: "#22c55e",
+                badge: null,
+              },
+              {
                 icon: "📊",
                 title: "Progress Tracking",
                 desc: "Your progress syncs across all devices. Start on your phone, continue on your iPad, finish on your laptop. Pick up exactly where you left off.",
@@ -1348,6 +1361,20 @@ export default function HomePage() {
                 title: "AI-Powered",
                 desc: "Upload a lecture PDF or PPTX. Claude AI reads your slides and generates high-yield flashcards and exam questions in minutes.",
                 color: "#f0c040",
+                badge: null,
+              },
+              {
+                icon: "📅",
+                title: "Study Plans",
+                desc: "Set a test date and StudyMD distributes your lectures across the weeks. A clear daily plan replaces last-minute cramming.",
+                color: "#ec4899",
+                badge: null,
+              },
+              {
+                icon: "📁",
+                title: "Smart Folders",
+                desc: "Group lectures by unit, course, or system. Drag-and-drop to reorganize. Your system, your way — not ours.",
+                color: "#f59e0b",
                 badge: null,
               },
               {

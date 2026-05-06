@@ -38,6 +38,7 @@ import ExamConfigModal, { type ExamConfig } from './study/ExamConfigModal';
 import type { LectureWithSettings } from '@/types';
 import type { FlashCard } from './study/FlashcardView';
 import type { ExamQuestion } from './study/ExamView';
+import type { LectureProgress } from '@/hooks/useProgress';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -56,6 +57,8 @@ interface StudyConfigManagerProps extends StudyConfigState {
   onStartFlashcards: (lecture: LectureWithSettings, config: FlashcardConfig) => void;
   /** Called when user confirms exam config. */
   onStartExam: (lecture: LectureWithSettings, config: ExamConfig) => void;
+  /** Progress data keyed by lecture internal_id — enables mode counts in config modals. */
+  progressByLecture?: Record<string, LectureProgress>;
 }
 
 // ── Hook ─────────────────────────────────────────────────────────────────────
@@ -99,8 +102,11 @@ export function StudyConfigManager({
   close,
   onStartFlashcards,
   onStartExam,
+  progressByLecture = {},
 }: StudyConfigManagerProps) {
   if (!lecture || !mode) return null;
+
+  const lectureProgress = progressByLecture[lecture.internal_id];
 
   // Extract cards and questions from json_data
   const jsonData = lecture.json_data as {
@@ -125,6 +131,8 @@ export function StudyConfigManager({
         lectureIcon={lecture.icon ?? '📇'}
         accentColor={lecture.display_color}
         allCards={allCards}
+        initialGotItIds={lectureProgress?.got_it_ids}
+        initialMissedIds={lectureProgress?.missed_ids}
         onStart={(config) => {
           close();
           onStartFlashcards(lecture, config);
@@ -145,6 +153,8 @@ export function StudyConfigManager({
         lectureIcon={lecture.icon ?? '📝'}
         accentColor={lecture.display_color}
         allQuestions={allQuestions}
+        initialAttemptedIds={lectureProgress?.attempted_question_ids}
+        initialMissedQuestionIds={lectureProgress?.missed_question_ids}
         onStart={(config) => {
           close();
           onStartExam(lecture, config);

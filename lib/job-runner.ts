@@ -10,7 +10,8 @@
  *   generating_questions → validating → saving → (complete | error)
  */
 
-import Anthropic from '@anthropic-ai/sdk';
+import type Anthropic from '@anthropic-ai/sdk';
+import { toFile } from '@anthropic-ai/sdk';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import {
   API_LIMITS,
@@ -20,8 +21,16 @@ import {
   checkLimits,
   recordUserCall,
 } from '@/lib/api-limits';
+import {
+  getAnthropicClient,
+  STRUCTURED_OUTPUTS_ENABLED,
+  FILES_API_ENABLED,
+  FILES_API_BETA_HEADER,
+} from '@/lib/anthropic-client';
 import { buildSystemWithCache } from '@/lib/lecture-processor-prompt';
-import { validateLecture, type LectureJSON } from '@/lib/validate-lecture';
+import { validateLecture } from '@/lib/validate-lecture';
+import type { LectureJSON } from '@/lib/lecture-schema';
+import { buildLectureOutputConfig } from '@/lib/lecture-schema';
 import { extractPptxSlides, formatSlidesForClaude } from '@/lib/pptx-extractor';
 
 // ─── Theme color palette ──────────────────────────────────────────────────────
@@ -53,19 +62,14 @@ export function getSupabaseAdmin(): SupabaseClient<any, 'public', any> {
   return createClient<any, 'public', any>(url, key);
 }
 
-// ─── Anthropic client ─────────────────────────────────────────────────────────
-function getAnthropicClient() {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
-  if (!apiKey) throw new Error('Missing ANTHROPIC_API_KEY environment variable.');
-  return new Anthropic({ apiKey });
-}
-
 // ─── Per-model output token limits ───────────────────────────────────────────
-// Haiku max: 8,192. Sonnet max: 64,000 — we use 48K to give room for large
-// lectures (40+ flashcards + 30+ questions) without hitting the hard ceiling.
+// Keyed on the bare model IDs we pass to the API (see lib/api-limits.ts).
+// Haiku raised above the default to handle dense lectures; Sonnet sized to
+// give 40+ flashcard / 30+ question lectures room without hitting the
+// hard ceiling on the fallback retry.
 const MODEL_MAX_OUTPUT: Record<string, number> = {
-  'claude-haiku-4-5-20251001': 8000,
-  'claude-sonnet-4-6':        48000,
+  'claude-haiku-4-5':  16000,
+  'claude-sonnet-4-6': 48000,
 };
 
 // ─── Progress helpers ─────────────────────────────────────────────────────────
@@ -108,12 +112,29 @@ async function markJobError(
 
 // ─── File helpers ─────────────────────────────────────────────────────────────
 
-async function fetchFileFromStorage(fileUrl: string): Promise<ArrayBuffer> {
-  const response = await fetch(fileUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to fetch file: ${response.status} ${response.statusText}`);
+/**
+ * Download a file from a private Supabase Storage bucket using the service
+ * role client. This intentionally does NOT use a signed URL — signed URL
+ * fetches from Vercel serverless functions have been observed returning
+ * 400 Bad Request even when the URL is valid (works fine from elsewhere).
+ *
+ * The supabase-js download() method hits `/storage/v1/object/<bucket>/<path>`
+ * with `Authorization: Bearer <service-role-key>`, which is a different
+ * code path on the Supabase side from `/storage/v1/object/sign/...?token=`
+ * and does not have the same failure mode. It also avoids any
+ * URL-encoding-of-JWT-in-query-string mangling that may occur in transit.
+ */
+async function downloadFileFromStorage(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: SupabaseClient<any, 'public', any>,
+  bucket: string,
+  path: string,
+): Promise<ArrayBuffer> {
+  const { data, error } = await supabase.storage.from(bucket).download(path);
+  if (error || !data) {
+    throw new Error(`Failed to download file from ${bucket}/${path}: ${error?.message ?? 'no data returned'}`);
   }
-  return response.arrayBuffer();
+  return data.arrayBuffer();
 }
 
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
@@ -184,22 +205,31 @@ async function callClaudeAPI(
   client: Anthropic,
   fileBase64: string | null,
   slideText: string | null,
+  anthropicFileId: string | null,
   internalId: string,
   course: string,
   title: string,
   model: string
 ): Promise<ClaudeCallResult> {
-  const userContent: Anthropic.MessageParam['content'] = [];
+  // Branch on which path we'll use. Files API is a beta namespace + beta header;
+  // otherwise stable messages.create with base64 or text.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userContent: any[] = [];
 
-  if (fileBase64) {
+  if (anthropicFileId) {
+    userContent.push({
+      type: 'document',
+      source: { type: 'file', file_id: anthropicFileId },
+    });
+  } else if (fileBase64) {
     userContent.push({
       type: 'document',
       source: { type: 'base64', media_type: 'application/pdf', data: fileBase64 },
-    } as Anthropic.DocumentBlockParam);
+    });
   } else if (slideText) {
     userContent.push({ type: 'text', text: slideText });
   } else {
-    throw new Error('No file content provided to Claude — either fileBase64 or slideText must be set.');
+    throw new Error('No file content provided to Claude — either fileBase64, slideText, or anthropicFileId must be set.');
   }
 
   userContent.push({
@@ -207,12 +237,31 @@ async function callClaudeAPI(
     text: `Process the above lecture content as lecture ${internalId} for course "${course}". Title: "${title}". Generate the full JSON output as specified in your system prompt.`,
   });
 
-  const response = await client.messages.create({
+  // Shared params — cast to any so we can mix stable/beta shapes and the
+  // output_config add-on without the TS union getting in the way.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const params: any = {
     model,
     max_tokens: MODEL_MAX_OUTPUT[model] ?? API_LIMITS.MAX_OUTPUT_TOKENS,
     system: buildSystemWithCache(),
     messages: [{ role: 'user', content: userContent }],
-  });
+  };
+
+  if (STRUCTURED_OUTPUTS_ENABLED) {
+    Object.assign(params, buildLectureOutputConfig());
+  }
+
+  // Stream and resolve to a final Message. The SDK enforces streaming on
+  // requests that may exceed the 10-minute timeout (which we regularly hit on
+  // Sonnet fallback + max_tokens=32k for dense lectures); `.finalMessage()`
+  // preserves the same shape we had under the non-streaming API.
+  const stream = anthropicFileId
+    ? client.beta.messages.stream(
+        params,
+        { headers: { 'anthropic-beta': FILES_API_BETA_HEADER } }
+      )
+    : client.messages.stream(params);
+  const response = await stream.finalMessage();
 
   const inputTokens  = response.usage?.input_tokens  ?? 0;
   const outputTokens = response.usage?.output_tokens ?? 0;
@@ -222,8 +271,13 @@ async function callClaudeAPI(
     return { lectureJson: { _truncated: true } as unknown as LectureJSON, inputTokens, outputTokens, model };
   }
 
-  const textBlock = response.content.find((b) => b.type === 'text');
-  if (!textBlock || textBlock.type !== 'text') throw new Error('Claude returned no text content.');
+  // Stable + beta content-block types diverge in the SDK; narrow to { type, text }
+  // since that's the only shape we need.
+  const textBlock = (response.content as Array<{ type: string; text?: string }>)
+    .find((b) => b.type === 'text');
+  if (!textBlock || textBlock.type !== 'text' || !textBlock.text) {
+    throw new Error('Claude returned no text content.');
+  }
 
   const rawText = textBlock.text
     .replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
@@ -265,7 +319,13 @@ export interface ProcessingJobData {
 // ─── Main job runner ──────────────────────────────────────────────────────────
 
 export interface RunJobOptions {
-  /** Pre-resolved file URL (passed from the upload flow to avoid re-signing). */
+  /**
+   * @deprecated Ignored. The runner now uses the service-role client's
+   * `storage.download()` method directly against `job.storage_path`, so
+   * pre-resolved URLs aren't needed (and signed-URL fetches were unreliable
+   * from Vercel serverless functions). Kept on the type for backwards
+   * compat — old callers can still pass it without breaking.
+   */
   fileUrl?: string;
   /** Internal ID to assign to the lecture (passed from upload flow). */
   internalId?: string;
@@ -275,8 +335,11 @@ export interface RunJobOptions {
  * runProcessingJob — processes a single job end-to-end.
  *
  * Can be called:
- * 1. Inline from /api/generate (fast path) — fileUrl and internalId are known.
+ * 1. Inline from /api/generate (fast path) — internalId is known.
  * 2. From the cron endpoint — job is fetched from processing_jobs.
+ *
+ * The file is always pulled via the service-role storage client's download()
+ * method against `job.storage_path` — see downloadFileFromStorage() above.
  *
  * Returns a result object on success, throws on unrecoverable error.
  * Always writes final status to processing_jobs before returning/throwing.
@@ -315,7 +378,7 @@ export async function runProcessingJob(
   // ── Fetch job data ─────────────────────────────────────────────────────────
   const { data: job, error: jobFetchError } = await supabase
     .from('processing_jobs')
-    .select('job_id, user_id, storage_path, course, title, slide_count, file_size_bytes, internal_id')
+    .select('job_id, user_id, storage_path, course, title, slide_count, file_size_bytes, internal_id, anthropic_file_id')
     .eq('job_id', jobId)
     .single();
 
@@ -349,56 +412,85 @@ export async function runProcessingJob(
   }
 
   // ── Stage: fetch file ──────────────────────────────────────────────────────
-  await updateProgress(supabase, jobId, 'fetching_file', 'Fetching lecture file…', 'converting');
-
-  // Use provided URL or reconstruct from storage path
-  const fileUrl = opts.fileUrl ?? (() => {
-    const { data: urlData } = getSupabaseAdmin().storage
-      .from('slides')
-      .getPublicUrl(job.storage_path);
-    return urlData.publicUrl;
-  })();
-
-  let fileBuffer: ArrayBuffer;
-  try {
-    fileBuffer = await fetchFileFromStorage(fileUrl);
-  } catch (err) {
-    const msg = `Could not retrieve lecture file: ${(err as Error).message}`;
-    await markJobError(supabase, jobId, msg);
-    throw new Error(msg);
-  }
-
-  const isPptx = fileUrl.toLowerCase().includes('.pptx') || fileUrl.toLowerCase().includes('.ppt');
+  const storagePathLower = job.storage_path.toLowerCase();
+  const isPptx = storagePathLower.endsWith('.pptx') || storagePathLower.endsWith('.ppt');
   let fileBase64: string | null = null;
   let slideText: string | null = null;
+  let anthropicFileId: string | null = null;
 
-  if (isPptx) {
-    await updateProgress(supabase, jobId, 'extracting_text', 'Extracting slide text…');
+  // Fast path — retry on a PDF that already has a Files API id: skip Supabase
+  // fetch and the Files API re-upload entirely. PPTX always re-fetches because
+  // we extract text from the buffer, not from a stored Anthropic file.
+  const canReuseFileId = !isPptx && FILES_API_ENABLED && !!job.anthropic_file_id;
+
+  if (canReuseFileId) {
+    anthropicFileId = job.anthropic_file_id as string;
+    await updateProgress(supabase, jobId, 'extracting_text', 'Reusing previously-uploaded file…', 'converting');
+  } else {
+    await updateProgress(supabase, jobId, 'fetching_file', 'Fetching lecture file…', 'converting');
+
+    // Pull the file using the service-role client's download() method, which
+    // hits the auth-header endpoint (not the signed-URL endpoint). See
+    // downloadFileFromStorage() above for why we don't use signed URL fetch.
+    let fileBuffer: ArrayBuffer;
     try {
-      const slides = await extractPptxSlides(fileBuffer);
-      if (slides.length === 0) {
-        const msg = 'No slide content could be extracted from the PPTX.';
-        await markJobError(supabase, jobId, msg);
-        throw new Error(msg);
-      }
-      slideText = formatSlidesForClaude(slides, job.title);
-      if (slideText.length < 200) {
-        const msg = `PPTX extraction produced almost no text (${slideText.length} chars). Please export as PDF.`;
-        await markJobError(supabase, jobId, msg);
-        throw new Error(msg);
-      }
-      await updateProgress(supabase, jobId, 'extracting_text', `Extracted ${slides.length} slides`);
+      fileBuffer = await downloadFileFromStorage(supabase, 'uploads', job.storage_path);
     } catch (err) {
-      if ((err as Error).message.includes('Could not retrieve') || (err as Error).message.includes('PPTX')) {
-        throw err;
-      }
-      const msg = `PPTX text extraction failed: ${(err as Error).message}`;
+      const msg = `Could not retrieve lecture file: ${(err as Error).message}`;
       await markJobError(supabase, jobId, msg);
       throw new Error(msg);
     }
-  } else {
-    await updateProgress(supabase, jobId, 'extracting_text', 'Reading PDF content…');
-    fileBase64 = arrayBufferToBase64(fileBuffer);
+
+    if (isPptx) {
+      await updateProgress(supabase, jobId, 'extracting_text', 'Extracting slide text…');
+      try {
+        const slides = await extractPptxSlides(fileBuffer);
+        if (slides.length === 0) {
+          const msg = 'No slide content could be extracted from the PPTX.';
+          await markJobError(supabase, jobId, msg);
+          throw new Error(msg);
+        }
+        slideText = formatSlidesForClaude(slides, job.title);
+        if (slideText.length < 200) {
+          const msg = `PPTX extraction produced almost no text (${slideText.length} chars). Please export as PDF.`;
+          await markJobError(supabase, jobId, msg);
+          throw new Error(msg);
+        }
+        await updateProgress(supabase, jobId, 'extracting_text', `Extracted ${slides.length} slides`);
+      } catch (err) {
+        if ((err as Error).message.includes('Could not retrieve') || (err as Error).message.includes('PPTX')) {
+          throw err;
+        }
+        const msg = `PPTX text extraction failed: ${(err as Error).message}`;
+        await markJobError(supabase, jobId, msg);
+        throw new Error(msg);
+      }
+    } else {
+      await updateProgress(supabase, jobId, 'extracting_text', 'Reading PDF content…');
+
+      if (FILES_API_ENABLED) {
+        // Upload once via the Files API so retries (Haiku → Sonnet fallback) and
+        // admin reprocesses don't have to re-base64 and re-transmit the file.
+        try {
+          const uploaded = await anthropic.beta.files.upload(
+            {
+              file: await toFile(fileBuffer, 'lecture.pdf', { type: 'application/pdf' }),
+            },
+            { headers: { 'anthropic-beta': FILES_API_BETA_HEADER } },
+          );
+          anthropicFileId = uploaded.id;
+          await supabase
+            .from('processing_jobs')
+            .update({ anthropic_file_id: anthropicFileId })
+            .eq('job_id', jobId);
+        } catch (err) {
+          console.warn('[job-runner] Files API upload failed — falling back to base64:', (err as Error).message);
+          fileBase64 = arrayBufferToBase64(fileBuffer);
+        }
+      } else {
+        fileBase64 = arrayBufferToBase64(fileBuffer);
+      }
+    }
   }
 
   // ── Stage: generate flashcards ─────────────────────────────────────────────
@@ -410,7 +502,7 @@ export async function runProcessingJob(
 
   try {
     result = await callClaudeAPI(
-      anthropic, fileBase64, slideText, internalId, job.course, job.title, API_LIMITS.MODEL_DEFAULT
+      anthropic, fileBase64, slideText, anthropicFileId, internalId, job.course, job.title, API_LIMITS.MODEL_DEFAULT
     );
 
     await updateProgress(supabase, jobId, 'validating', 'Validating structured output…');
@@ -426,7 +518,7 @@ export async function runProcessingJob(
       await updateProgress(supabase, jobId, 'generating_questions', `Output too large for Haiku — retrying with ${API_LIMITS.MODEL_FALLBACK}…`);
       usedFallback = true;
       const fallback = await callClaudeAPI(
-        anthropic, fileBase64, slideText, internalId, job.course, job.title, API_LIMITS.MODEL_FALLBACK
+        anthropic, fileBase64, slideText, anthropicFileId, internalId, job.course, job.title, API_LIMITS.MODEL_FALLBACK
       );
       const fallbackTruncated = (fallback.lectureJson as unknown as Record<string, unknown>)._truncated === true;
       if (fallbackTruncated) {
@@ -438,6 +530,8 @@ export async function runProcessingJob(
       fallback.lectureJson = repairLectureOutput(fallback.lectureJson);
       const fallbackValidation = validateLecture(fallback.lectureJson);
       if (!fallbackValidation.valid) {
+        // Both passed the not-truncated check above, so this is a content
+        // failure — Sonnet generated something invalid even with full budget.
         const msg = `Sonnet output invalid after truncation retry. Errors: ${fallbackValidation.errors.slice(0, 5).join('; ')}`;
         await recordApiUsage(supabase, fallback.model, fallback.inputTokens, fallback.outputTokens, API_LIMITS.BATCH_API_ENABLED);
         await markJobError(supabase, jobId, msg);
@@ -461,7 +555,7 @@ export async function runProcessingJob(
         await updateProgress(supabase, jobId, 'generating_questions', `Retrying with ${API_LIMITS.MODEL_FALLBACK}…`);
         usedFallback = true;
         const fallback = await callClaudeAPI(
-          anthropic, fileBase64, slideText, internalId, job.course, job.title, API_LIMITS.MODEL_FALLBACK
+          anthropic, fileBase64, slideText, anthropicFileId, internalId, job.course, job.title, API_LIMITS.MODEL_FALLBACK
         );
         fallback.lectureJson = repairLectureOutput(fallback.lectureJson);
         const fallbackValidation = validateLecture(fallback.lectureJson);

@@ -56,13 +56,16 @@ export async function fetchLecturesWithSettings(userId: string) {
 
 export async function fetchUserPreferences(userId: string) {
   const supabase = await createServerComponentClient();
+  // user_profiles is queried via service role so role/is_primary are always
+  // readable regardless of JWT state — a stale cookie can't silently hide admin.
+  const service = createServiceClient();
   const [prefsResult, profileResult] = await Promise.all([
     supabase
       .from('user_preferences')
       .select('theme, settings, display_name')
       .eq('user_id', userId)
       .single(),
-    supabase
+    service
       .from('user_profiles')
       .select('is_primary, role')
       .eq('user_id', userId)
@@ -73,7 +76,7 @@ export async function fetchUserPreferences(userId: string) {
     theme: prefsResult.data?.theme ?? 'midnight',
     settings: prefsResult.data?.settings ?? {},
     display_name: prefsResult.data?.display_name ?? null,
-    // is_primary is authoritative on user_profiles, not user_preferences
+    // is_primary and role are authoritative on user_profiles
     is_primary: profileResult.data?.is_primary ?? false,
     role: (profileResult.data?.role ?? 'student') as string,
   };

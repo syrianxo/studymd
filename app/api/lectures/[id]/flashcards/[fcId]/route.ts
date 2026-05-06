@@ -2,7 +2,9 @@
  * PUT    /api/lectures/[id]/flashcards/[fcId]
  *   Saves a user override for a single flashcard.
  *   Stores in user_card_overrides — does NOT touch global json_data.
- *   Body: { question?, answer?, topic?, acceptCanonical? }
+ *   Body: { front?, back?, topic?, acceptCanonical? }
+ *     Legacy `question`/`answer` keys are still accepted for compatibility
+ *     with older clients; they are normalized to `front`/`back`.
  *   If acceptCanonical=true: deletes the override (user accepts admin version).
  *
  * DELETE /api/lectures/[id]/flashcards/[fcId]
@@ -64,11 +66,14 @@ export async function PUT(
     return NextResponse.json({ ok: true, accepted: true });
   }
 
-  // Build override object — only store fields the user explicitly changed
+  // Build override object — only store fields the user explicitly changed.
+  // Canonical keys are `front`/`back`; accept legacy `question`/`answer` too.
   const overrides: Record<string, unknown> = {};
-  if ('question' in body && body.question?.trim()) overrides.question = body.question.trim();
-  if ('answer'   in body && body.answer?.trim())   overrides.answer   = body.answer.trim();
-  if ('topic'    in body && body.topic?.trim())    overrides.topic    = body.topic.trim();
+  const front = body.front ?? body.question;
+  const back  = body.back  ?? body.answer;
+  if (typeof front === 'string' && front.trim()) overrides.front = front.trim();
+  if (typeof back  === 'string' && back.trim())  overrides.back  = back.trim();
+  if (typeof body.topic === 'string' && body.topic.trim()) overrides.topic = body.topic.trim();
 
   if (Object.keys(overrides).length === 0)
     return NextResponse.json({ error: 'Nothing to update' }, { status: 400 });

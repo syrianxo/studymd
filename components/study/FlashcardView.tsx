@@ -11,11 +11,15 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL ?? '';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
+// Minimal shape required by this view — aligned with the canonical
+// `LectureFlashcard` fields actually rendered here (front/back/topic/slide).
+// `tags`/`difficulty` are intentionally omitted so study pages can hand in a
+// narrow projection without synthesising unused metadata.
 export interface FlashCard {
   id: string;
-  question: string;
-  answer: string;
   topic: string;
+  front: string;
+  back: string;
   slide_number?: number | null;
 }
 
@@ -64,6 +68,7 @@ export default function FlashcardView({
   const [fontSizeIdx, setFontSizeIdx] = useState(2);
 
   const [lightboxIndex, setLightboxIndex] = useState(-1);
+  const [slideImgError, setSlideImgError] = useState(false);
   const allSlideUrls = slidesStoragePath
     ? Array.from({ length: slideCount }, (_, i) =>
         getSlideThumbUrl(SUPABASE_URL, slidesStoragePath, i)
@@ -98,6 +103,9 @@ export default function FlashcardView({
     document.addEventListener('keydown', handleKey);
     return () => document.removeEventListener('keydown', handleKey);
   }, [handleKey]);
+
+  // Reset slide image error when current card changes
+  useEffect(() => { setSlideImgError(false); }, [currentIndex]);
 
   // ── Navigation ─────────────────────────────────────────────────────────
   function advanceCard() {
@@ -311,7 +319,7 @@ export default function FlashcardView({
             <div className="smd-card-face smd-card-front">
               <div className="smd-card-topic-tag">{currentCard.topic}</div>
               <div className="smd-card-front-label">QUESTION</div>
-              <div className="smd-card-question">{currentCard.question}</div>
+              <div className="smd-card-question">{currentCard.front}</div>
               <div className="smd-card-flip-hint">Tap to reveal ↕</div>
             </div>
 
@@ -326,12 +334,12 @@ export default function FlashcardView({
                   </div>
                 </div>
                 <div className="smd-card-answer-content" style={{ fontSize: FONT_SIZES[fontSizeIdx] }}>
-                  {currentCard.answer}
+                  {currentCard.back}
                 </div>
               </div>
 
               <div className="smd-card-slide-preview" onClick={(e) => e.stopPropagation()}>
-                {slideUrl ? (
+                {slideUrl && !slideImgError ? (
                   <>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
@@ -339,11 +347,17 @@ export default function FlashcardView({
                       src={slideUrl}
                       alt={`Slide ${currentCard.slide_number}`}
                       loading="lazy"
+                      onError={() => setSlideImgError(true)}
                       onClick={() => openSlide(currentCard.slide_number!)}
                     />
                     <button className="smd-slide-expand-btn" onClick={() => openSlide(currentCard.slide_number!)}>⤢ Expand</button>
                     <div className="smd-slide-number-tag">Slide {currentCard.slide_number}</div>
                   </>
+                ) : currentCard.slide_number ? (
+                  <div className="smd-slide-preview-placeholder">
+                    <span style={{ fontSize: 18 }}>🖼</span>
+                    <span>Slide {currentCard.slide_number}</span>
+                  </div>
                 ) : (
                   <div className="smd-slide-preview-placeholder">
                     <span style={{ fontSize: 18 }}>🖼</span>

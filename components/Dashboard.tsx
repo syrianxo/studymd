@@ -12,6 +12,7 @@ import LectureGrid from './LectureGrid';
 import FolderBar from './FolderBar';
 import NewFolderModal from './NewFolderModal';
 import { ManageMode } from './ManageMode';
+import { PageFooter } from './PageFooter';
 import CustomSessionModal, { type CustomSessionConfig } from './CustomSessionModal';
 import { useUserLectures, resolveColor } from '@/hooks/useUserLectures';
 import type { Lecture } from '@/hooks/useUserLectures';
@@ -91,6 +92,11 @@ export default function Dashboard({
   const [manageOpen, setManageOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [theme, setTheme] = useState<Theme>(initialThemeProp);
+
+  // ── Study mode — determines what card click does ───────────────────────────
+  // 'learn' → FlashcardConfigModal, 'practice' → ExamConfigModal, 'review' → SlideReviewView
+  type StudyMode = 'learn' | 'practice' | 'review';
+  const [studyMode, setStudyMode] = useState<StudyMode>('learn');
   const studyConfig = useStudyConfig();
 
   // ── Active study plan (for dashboard widget + lecture badges) ────────────────
@@ -244,17 +250,27 @@ export default function Dashboard({
     }
   }
 
+  function handleStartReview(lectureId: string) {
+    window.location.href = `/app/study/review?lecture=${lectureId}`;
+  }
+
+  function handleStudyAction(lectureId: string) {
+    if (studyMode === 'review') handleStartReview(lectureId);
+    else if (studyMode === 'practice') handleStartExam(lectureId);
+    else handleStartFlash(lectureId);
+  }
+
   function handleStartFlashWithConfig(config: FlashcardConfig, lectureId: string) {
     const topicsParam = config.topics.map(encodeURIComponent).join(',');
     window.location.href =
-      `/app/study/flash?lecture=${lectureId}&count=${config.count}&topics=${topicsParam}&order=${config.order}`;
+      `/app/study/flash?lecture=${lectureId}&count=${config.count}&topics=${topicsParam}&order=${config.order}&cardMode=${config.cardMode}`;
   }
 
   function handleStartExamWithConfig(config: ExamConfig, lectureId: string) {
     const topicsParam = config.topics.map(encodeURIComponent).join(',');
     const typesParam = config.types.join(',');
     window.location.href =
-      `/app/study/exam?lecture=${lectureId}&count=${config.count}&topics=${topicsParam}&types=${typesParam}`;
+      `/app/study/exam?lecture=${lectureId}&count=${config.count}&topics=${topicsParam}&types=${typesParam}&questionMode=${config.questionMode}`;
   }
 
   function handleCustomSession(config: CustomSessionConfig) {
@@ -264,6 +280,8 @@ export default function Dashboard({
       topics: config.topics.join(','),
       count: String(config.count),
       types: config.questionTypes.join(','),
+      cardMode: config.cardMode ?? 'all',
+      questionMode: config.questionMode ?? 'all',
     });
     window.location.href = `/app/study/custom?${params.toString()}`;
   }
@@ -428,6 +446,7 @@ export default function Dashboard({
           initialTheme={theme}
           onThemeChange={setTheme}
           isAdmin={isAdmin}
+          displayName={userName === 'there' ? undefined : userName}
         />
         <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', gap: 12, padding: 40, textAlign: 'center' }}>
           <div style={{ fontSize: 42 }}>⚠️</div>
@@ -456,6 +475,7 @@ export default function Dashboard({
         initialTheme={theme}
         onThemeChange={setTheme}
         isAdmin={isAdmin}
+        displayName={userName === 'there' ? undefined : userName}
       />
 
       <main className="smd-dashboard" id="mainDashboard">
@@ -492,11 +512,6 @@ export default function Dashboard({
           </aside>
         </div>
 
-        {/* Subtitle — below widgets, above lecture grid */}
-        <p className="smd-section-subtitle">
-          Select a lecture below to study with adaptive flashcards or challenge yourself with a practice exam.
-        </p>
-
         {/* ── SECTION HEADER ──────────────────────────────────────────────── */}
         {/* Breadcrumb removed — active pill in FolderBar shows current location */}
         <div className="smd-section-header">
@@ -525,6 +540,24 @@ export default function Dashboard({
             </button>
           </div>
         </div>
+
+        {/* ── STUDY MODE SELECTOR ─────────────────────────────────────────── */}
+        {!manageOpen && (
+          <div className="smd-mode-bar" role="group" aria-label="Study mode">
+            {(['review', 'learn', 'practice'] as const).map(mode => (
+              <button
+                key={mode}
+                className={`smd-mode-btn${studyMode === mode ? ' active' : ''}`}
+                onClick={() => setStudyMode(mode)}
+                aria-pressed={studyMode === mode}
+              >
+                {mode === 'review'   ? '📋 Review'   :
+                 mode === 'learn'    ? '📇 Learn'    :
+                                      '📝 Practice'}
+              </button>
+            ))}
+          </div>
+        )}
 
         {manageOpen && userId && (
           <ManageMode
@@ -592,8 +625,11 @@ export default function Dashboard({
               progressByLecture={progressByLecture}
               loading={lecturesLoading}
               activeTheme={theme}
+              studyMode={studyMode}
+              onStudyAction={handleStudyAction}
               onStartFlash={handleStartFlash}
               onStartExam={handleStartExam}
+              onStartReview={handleStartReview}
               onChangeCourse={handleChangeCourse}
               onChangeColor={handleChangeColor}
               onHide={handleHide}
@@ -632,76 +668,7 @@ export default function Dashboard({
         )}
       </main>
 
-      {/* ── FOOTER ──────────────────────────────────────────────────────────── */}
-      <footer className="smd-footer">
-        <div className="smd-footer-inner">
-          <div className="smd-footer-top">
-            <div className="smd-footer-brand">
-              <div className="smd-logo">
-                <span className="smd-logo-study">Study</span>
-                <span className="smd-logo-md">MD</span>
-              </div>
-              <p className="smd-footer-dedication">
-                A personalized lecture mastery platform designed for the one and only{' '}
-                <em>Haley Lange</em>
-              </p>
-              <div className="smd-footer-status">
-                <span className="smd-footer-dot" />
-                Platform active
-              </div>
-            </div>
-
-            <div className="smd-footer-links">
-              <div className="smd-footer-col">
-                <div className="smd-footer-col-label">Navigate</div>
-                <a href="#mainDashboard" className="smd-footer-link">Back to top</a>
-                <a href="/app" className="smd-footer-link">Dashboard</a>
-                <a href="/app/lectures" className="smd-footer-link">My Lectures</a>
-                <a href="/app/plans" className="smd-footer-link">Study Plans</a>
-                <a href="/app/upload" className="smd-footer-link">Upload Lecture</a>
-              </div>
-              <div className="smd-footer-col">
-                <div className="smd-footer-col-label">Your Data</div>
-                <button
-                  className="smd-footer-link smd-footer-btn"
-                  onClick={() => {
-                    if (confirm('Reset all progress? This cannot be undone.')) {
-                      localStorage.clear();
-                      window.location.reload();
-                    }
-                  }}
-                >
-                  Reset Progress
-                </button>
-                <button
-                  className="smd-footer-link smd-footer-btn"
-                  onClick={() => {
-                    localStorage.clear();
-                    alert('Cache cleared.');
-                  }}
-                >
-                  Clear Cache
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="smd-footer-bottom">
-            <span>© 2026 StudyMD. All rights reserved.</span>
-            <span className="smd-footer-credit">
-              Built with{' '}
-              <a href="https://anthropic.com" target="_blank" rel="noopener noreferrer" className="smd-footer-link-inline">
-                Anthropic Claude
-              </a>{' '}
-              — a{' '}
-              <a href="https://tutormd.com" target="_blank" rel="noopener noreferrer" className="smd-footer-link-inline">
-                TutorMD
-              </a>{' '}
-              product
-            </span>
-          </div>
-        </div>
-      </footer>
+      <PageFooter />
 
       <NewFolderModal
         isOpen={newFolderModalOpen}
@@ -711,6 +678,7 @@ export default function Dashboard({
       />
       <StudyConfigManager
         {...studyConfig}
+        progressByLecture={progressByLecture}
         onStartFlashcards={(lecture, config) =>
           handleStartFlashWithConfig(config, lecture.internal_id)
         }
@@ -734,6 +702,41 @@ export default function Dashboard({
 
 // ── Scoped CSS ───────────────────────────────────────────────────────────────
 const dashboardCss = `
+/* ── Study mode selector ───────────────────────────────────────────────── */
+.smd-mode-bar {
+  display: flex;
+  gap: 6px;
+  margin: 0 0 12px;
+}
+.smd-mode-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: 'Outfit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 140ms, border-color 140ms, color 140ms;
+  text-align: center;
+  white-space: nowrap;
+}
+.smd-mode-btn:hover:not(.active) {
+  background: var(--surface2);
+  border-color: var(--accent);
+  color: var(--text);
+}
+.smd-mode-btn.active {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+@media (max-width: 480px) {
+  .smd-mode-btn { font-size: 12px; padding: 7px 8px; }
+}
+
 /* ── Filter drawer — animates below FolderBar without unmounting ────────── */
 /* max-height transition keeps the grid from jumping when toggling All view */
 .smd-filter-drawer {
@@ -917,145 +920,10 @@ const dashboardCss = `
 
 .smd-icon-btn:hover { background: rgba(255,255,255,0.06); }
 
-/* ── Footer ────────────────────────────────────────────────────────────── */
-.smd-footer {
-  border-top: 1px solid var(--border);
-  background: color-mix(in srgb, var(--surface) 60%, var(--bg));
-  margin-top: 80px;
-}
-
-.smd-footer-inner {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 48px 40px 32px;
-}
-
-.smd-footer-top {
-  display: flex;
-  justify-content: space-between;
-  gap: 48px;
-  margin-bottom: 40px;
-  flex-wrap: wrap;
-}
-
-.smd-footer-brand {
-  flex: 1 1 260px;
-  min-width: 0;
-}
-
-.smd-footer-dedication {
-  font-size: 13px;
-  color: var(--text-muted);
-  line-height: 1.6;
-  margin-top: 10px;
-  max-width: 320px;
-}
-
-.smd-footer-dedication em {
-  color: var(--accent);
-  font-style: normal;
-  font-weight: 600;
-}
-
-.smd-footer-status {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  margin-top: 14px;
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.07em;
-}
-
-.smd-footer-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--success, #10b981);
-  box-shadow: 0 0 8px var(--success, #10b981);
-  animation: smd-pulse 2s infinite;
-  flex-shrink: 0;
-}
-
-.smd-footer-links {
-  display: flex;
-  gap: 48px;
-  flex-shrink: 0;
-}
-
-.smd-footer-col {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.smd-footer-col-label {
-  font-size: 10px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  font-weight: 700;
-  color: var(--text-muted);
-  margin-bottom: 2px;
-}
-
-.smd-footer-link {
-  font-size: 13px;
-  color: var(--text-dim, #9ca3af);
-  text-decoration: none;
-  transition: color 0.15s;
-  font-family: 'Outfit', sans-serif;
-  line-height: 1.4;
-}
-
-.smd-footer-link:hover {
-  color: var(--text);
-}
-
-.smd-footer-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  text-align: left;
-  min-height: 44px;
-  display: flex;
-  align-items: center;
-}
-
-.smd-footer-bottom {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  border-top: 1px solid var(--border);
-  padding-top: 20px;
-  font-size: 12px;
-  color: var(--text-muted);
-}
-
-.smd-footer-link-inline {
-  color: var(--accent);
-  text-decoration: none;
-  transition: opacity 0.15s;
-}
-
-.smd-footer-link-inline:hover { opacity: 0.8; }
-
 /* ── Mobile overrides ─────────────────────────────────────────────────── */
 @media (max-width: 767px) {
   .smd-dashboard { padding: 24px 16px; }
   .smd-hero { margin: 1.5rem auto 1rem; }
   .smd-section-actions .btn { min-height: 44px; }
-  .smd-footer-inner { padding: 36px 16px 24px; }
-  .smd-footer-top   { flex-direction: column; gap: 32px; }
-  .smd-footer-links { flex-wrap: wrap; gap: 28px; }
-  .smd-footer-bottom {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
-  }
 }
 `;

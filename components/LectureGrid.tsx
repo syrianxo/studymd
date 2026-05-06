@@ -15,13 +15,20 @@ import type { Lecture } from '@/hooks/useUserLectures';
 import type { LectureProgress } from '@/hooks/useProgress';
 import type { Course, Theme, Folder } from '@/types';
 
+type StudyMode = 'learn' | 'practice' | 'review';
+
 interface LectureGridProps {
   lectures: Lecture[];
   progressByLecture: Record<string, LectureProgress>;
   loading: boolean;
   activeTheme: Theme;
+  /** Current study mode — determines what card click does */
+  studyMode?: StudyMode;
+  /** Called when a card is clicked in any mode (dispatches to flash/exam/review) */
+  onStudyAction?: (lectureId: string) => void;
   onStartFlash: (lectureId: string) => void;
   onStartExam: (lectureId: string) => void;
+  onStartReview?: (lectureId: string) => void;
   onChangeCourse?: (lectureId: string, course: Course) => void;
   onChangeColor?: (lectureId: string, color: string) => void;
   onHide?: (lectureId: string) => void;
@@ -42,7 +49,9 @@ interface LectureGridProps {
 export default function LectureGrid({
   lectures, progressByLecture, loading,
   activeTheme,
-  onStartFlash, onStartExam,
+  studyMode = 'learn',
+  onStudyAction,
+  onStartFlash, onStartExam, onStartReview,
   onChangeCourse, onChangeColor,
   onHide, onArchive, onRenameTitle, onTopicsChanged,
   planNextReview: _planNextReview = {},
@@ -110,9 +119,12 @@ export default function LectureGrid({
                 activeTheme={activeTheme}
                 flashcardProgress={progress?.mastery_pct ?? 0}
                 examProgress={progress?.best_exam_score ?? 0}
+                studyMode={studyMode}
                 onOpen={() => handleOpen(lecture)}
+                onStudyAction={onStudyAction ? () => onStudyAction(lecture.internal_id) : undefined}
                 onFlashcards={() => onStartFlash(lecture.internal_id)}
                 onExam={() => onStartExam(lecture.internal_id)}
+                onReview={onStartReview ? () => onStartReview(lecture.internal_id) : undefined}
                 onChangeCourse={onChangeCourse ? (c) => onChangeCourse(lecture.internal_id, c) : undefined}
                 onChangeColor={onChangeColor ? (c) => onChangeColor(lecture.internal_id, c) : undefined}
                 onHide={onHide ? () => onHide(lecture.internal_id) : undefined}
@@ -130,6 +142,7 @@ export default function LectureGrid({
         activeTheme={activeTheme}
         flashcardProgress={openProgress?.mastery_pct ?? 0}
         examProgress={openProgress?.best_exam_score ?? 0}
+        studyMode={studyMode}
         onClose={handleClose}
         onFlashcards={() => {
           handleClose();
@@ -139,6 +152,10 @@ export default function LectureGrid({
           handleClose();
           if (openLecture) onStartExam(openLecture.internal_id);
         }}
+        onReview={onStartReview ? () => {
+          handleClose();
+          if (openLecture) onStartReview(openLecture.internal_id);
+        } : undefined}
         onChangeColor={onChangeColor && openLecture ? (c) => onChangeColor(openLecture.internal_id, c) : undefined}
         onChangeCourse={onChangeCourse && openLecture ? (c) => onChangeCourse(openLecture.internal_id, c) : undefined}
         onRenameTitle={onRenameTitle && openLecture ? (t) => onRenameTitle(openLecture.internal_id, t) : undefined}

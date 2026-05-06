@@ -11,12 +11,11 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { createClient } from '@/lib/supabase';
 import type { LectureWithSettings, Course } from '@/types';
+import { DEFAULT_COURSES } from '@/types';
 
-const COURSES: Course[] = [
-  'Physical Diagnosis I',
-  'Anatomy & Physiology',
-  'Laboratory Diagnosis',
-];
+// Sentinel value for the "+ Add new course" option in course menus.
+// Selecting it flips the menu into an inline text input.
+const ADD_NEW_COURSE = '__add_new_course__';
 
 // Per-theme color palettes
 const THEME_COLORS: Record<string, string[]> = {
@@ -381,6 +380,33 @@ const cardCss = `
 .lc-ctx-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 2px 0; }
 @media (max-width: 639px) { .lc-ctx-item { min-height: 44px; font-size: 14px; padding: 10px 18px; } }
 
+/* Inline "Add new course" row — used in both ContextMenu and KebabMenu submenu */
+.lc-ctx-add-row {
+  display: flex; gap: 6px; align-items: center;
+  padding: 8px 12px;
+  border-top: 1px solid rgba(255,255,255,0.04);
+}
+.lc-ctx-add-input {
+  flex: 1; min-width: 0;
+  background: var(--surface, #13161d);
+  border: 1px solid rgba(91,141,238,0.35); border-radius: 6px;
+  color: var(--text, #e8eaf0);
+  font-family: 'Outfit', sans-serif; font-size: 13px;
+  padding: 6px 8px; outline: none;
+}
+.lc-ctx-add-input:focus { border-color: var(--accent, #5b8dee); }
+.lc-ctx-add-save, .lc-ctx-add-cancel {
+  flex-shrink: 0; width: 28px; height: 28px;
+  border-radius: 6px; border: 1px solid rgba(255,255,255,0.08);
+  background: var(--surface, #13161d); color: var(--text, #e8eaf0);
+  font-size: 12px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.12s, border-color 0.12s;
+}
+.lc-ctx-add-save { color: var(--accent, #5b8dee); border-color: rgba(91,141,238,0.3); }
+.lc-ctx-add-save:hover { background: rgba(91,141,238,0.12); }
+.lc-ctx-add-cancel:hover { background: rgba(255,255,255,0.06); }
+
 `;
 
 // ─── Lightbox ─────────────────────────────────────────────────────────────────
@@ -540,6 +566,8 @@ interface ContextMenuProps {
   activeTheme: string;
   showColor: boolean; showCourse: boolean; showVisibility: boolean;
   isArchived: boolean; isHidden: boolean;
+  courses: string[];
+  onAddCourse: (name: string) => void;
   onChangeCourse: (c: Course) => void; onChangeColor: (c: string) => void;
   onHide: () => void; onArchive: () => void; onRestore: () => void;
   onClose: () => void;
@@ -550,10 +578,24 @@ function ContextMenu({
   activeTheme,
   showColor, showCourse, showVisibility,
   isArchived, isHidden,
+  courses, onAddCourse,
   onChangeCourse, onChangeColor, onHide, onArchive, onRestore, onClose,
 }: ContextMenuProps) {
   const ref = useRef<HTMLDivElement>(null);
   const [pos, setPos] = useState({ x, y });
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState('');
+
+  const courseList = Array.from(new Set([...courses, ...DEFAULT_COURSES])).sort((a, b) => a.localeCompare(b));
+
+  function commitAdd() {
+    const name = draft.trim();
+    if (!name) { setAdding(false); setDraft(''); return; }
+    onAddCourse(name);
+    onChangeCourse(name);
+    setAdding(false); setDraft('');
+    onClose();
+  }
 
   useEffect(() => {
     if (!ref.current) return;
@@ -612,13 +654,39 @@ function ContextMenu({
       {showCourse && (
         <>
           <div className="lc-ctx-label">Course</div>
-          {COURSES.map(c => (
+          {courseList.map(c => (
             <button key={c} className="lc-ctx-item" role="menuitem"
               onClick={() => { onChangeCourse(c); onClose(); }}>
               <span style={{ opacity: c === currentCourse ? 1 : 0, width: 16, flexShrink: 0 }}>✓</span>
               {c}
             </button>
           ))}
+          {adding ? (
+            <div className="lc-ctx-add-row" onClick={(e) => e.stopPropagation()}>
+              <input
+                autoFocus
+                className="lc-ctx-add-input"
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') { e.preventDefault(); commitAdd(); }
+                  if (e.key === 'Escape') { e.preventDefault(); setAdding(false); setDraft(''); }
+                }}
+                placeholder="New course name"
+              />
+              <button className="lc-ctx-add-save" onClick={commitAdd} aria-label="Save course">✓</button>
+              <button className="lc-ctx-add-cancel"
+                onClick={() => { setAdding(false); setDraft(''); }}
+                aria-label="Cancel">✕</button>
+            </div>
+          ) : (
+            <button className="lc-ctx-item" role="menuitem"
+              onClick={(e) => { e.stopPropagation(); setAdding(true); }}
+              style={{ color: 'var(--accent, #5b8dee)' }}>
+              <span style={{ width: 16, flexShrink: 0 }}>+</span>
+              Add new course…
+            </button>
+          )}
           {showVisibility && <div className="lc-ctx-divider" />}
         </>
       )}
@@ -652,6 +720,8 @@ interface KebabMenuProps {
   anchorRect: DOMRect;
   lecture: LectureWithSettings;
   activeTheme: string;
+  courses: string[];
+  onAddCourse: (name: string) => void;
   onHide: () => void; onArchive: () => void; onRestore: () => void;
   onEditTags: () => void;
   onEditTopics: () => void;
@@ -660,10 +730,35 @@ interface KebabMenuProps {
   onClose: () => void;
 }
 
-function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRestore, onEditTags, onEditTopics, onChangeCourse, onChangeColor, onClose }: KebabMenuProps) {
+function KebabMenu({ anchorRect, lecture, activeTheme, courses, onAddCourse, onHide, onArchive, onRestore, onEditTags, onEditTopics, onChangeCourse, onChangeColor, onClose }: KebabMenuProps) {
   const [showCourse, setShowCourse] = useState(false);
   const [showColor, setShowColor] = useState(false);
+  const [showExport, setShowExport] = useState(false);
+  const [adding, setAdding] = useState(false);
+  const [draft, setDraft] = useState('');
   const menuRef = useRef<HTMLDivElement>(null);
+
+  function triggerExport(format: 'md' | 'docx') {
+    const url = `/api/lectures/${encodeURIComponent(lecture.internal_id)}/export?format=${format}`;
+    const a = document.createElement('a');
+    a.href = url;
+    a.rel = 'noopener';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    onClose();
+  }
+
+  const courseList = Array.from(new Set([...courses, ...DEFAULT_COURSES])).sort((a, b) => a.localeCompare(b));
+
+  function commitAdd() {
+    const name = draft.trim();
+    if (!name) { setAdding(false); setDraft(''); return; }
+    onAddCourse(name);
+    onChangeCourse(name);
+    setAdding(false); setDraft('');
+    onClose();
+  }
 
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   useEffect(() => {
@@ -737,12 +832,38 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
         </div>
         {showCourse && (
           <div className="lc-submenu">
-            {COURSES.map(c => (
+            {courseList.map(c => (
               <button key={c} className="lc-menu-item"
                 onClick={() => { onChangeCourse(c); onClose(); }} role="menuitem">
                 <span style={{ opacity: c === lecture.display_course ? 1 : 0, width: 16, flexShrink: 0 }}>✓</span> {c}
               </button>
             ))}
+            {adding ? (
+              <div className="lc-ctx-add-row" onClick={(e) => e.stopPropagation()}>
+                <input
+                  autoFocus
+                  className="lc-ctx-add-input"
+                  value={draft}
+                  onChange={(e) => setDraft(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') { e.preventDefault(); commitAdd(); }
+                    if (e.key === 'Escape') { e.preventDefault(); setAdding(false); setDraft(''); }
+                  }}
+                  placeholder="New course name"
+                />
+                <button className="lc-ctx-add-save" onClick={commitAdd} aria-label="Save course">✓</button>
+                <button className="lc-ctx-add-cancel"
+                  onClick={() => { setAdding(false); setDraft(''); }}
+                  aria-label="Cancel">✕</button>
+              </div>
+            ) : (
+              <button className="lc-menu-item" role="menuitem"
+                onClick={(e) => { e.stopPropagation(); setAdding(true); }}
+                style={{ color: 'var(--accent, #5b8dee)' }}>
+                <span style={{ width: 16, flexShrink: 0 }}>+</span>
+                Add new course…
+              </button>
+            )}
           </div>
         )}
       </div>
@@ -771,7 +892,31 @@ function KebabMenu({ anchorRect, lecture, activeTheme, onHide, onArchive, onRest
         )}
       </div>
 
-      <div className="lc-menu-divider" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }} />
+      <div className="lc-menu-row"
+        onMouseEnter={() => { setShowExport(true); setShowCourse(false); setShowColor(false); }}>
+        <div className="lc-menu-row-inner">
+          <button className={`lc-menu-item${showExport ? ' active' : ''}`}
+            onClick={() => { setShowExport(v => !v); setShowCourse(false); setShowColor(false); }}
+            role="menuitem" aria-haspopup="true" aria-expanded={showExport}>
+            <span>⬇️</span> Export
+            <span style={{ marginLeft: 'auto', opacity: 0.5, transform: showExport ? 'rotate(90deg)' : 'none', transition: 'transform 0.15s', display: 'inline-block' }}>›</span>
+          </button>
+        </div>
+        {showExport && (
+          <div className="lc-submenu">
+            <button className="lc-menu-item" role="menuitem"
+              onClick={() => triggerExport('md')}>
+              <span style={{ width: 16, flexShrink: 0 }}>📝</span> Markdown (.md)
+            </button>
+            <button className="lc-menu-item" role="menuitem"
+              onClick={() => triggerExport('docx')}>
+              <span style={{ width: 16, flexShrink: 0 }}>📄</span> Word (.docx)
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="lc-menu-divider" onMouseEnter={() => { setShowCourse(false); setShowColor(false); setShowExport(false); }} />
 
       {lecture.settings.archived ? (
         <div className="lc-menu-row" onMouseEnter={() => { setShowCourse(false); setShowColor(false); }}><div className="lc-menu-row-inner">
@@ -818,6 +963,10 @@ interface LectureCardProps {
   onRenameTitle?: (title: string) => void;
   /** Folder assignment shown as a special chip alongside tags (e.g. "📁 Anatomy") */
   folderName?: string;
+  /** Dynamic list of courses (from useCourses hook) for the Change Course menu. */
+  courses: string[];
+  /** Registers a newly-typed course name in the caller's courses list. */
+  onAddCourse: (name: string) => void;
 }
 
 export function ManageLectureCard({
@@ -827,6 +976,7 @@ export function ManageLectureCard({
   onHide, onArchive, onRestore, onEditTags, onEditTopics,
   onChangeCourse, onChangeColor, onRenameTitle,
   folderName,
+  courses, onAddCourse,
 }: LectureCardProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [kebabRect, setKebabRect] = useState<DOMRect | null>(null);
@@ -961,6 +1111,8 @@ export function ManageLectureCard({
             anchorRect={kebabRect}
             lecture={{ ...lecture, display_color: displayColor, display_course: displayCourse }}
             activeTheme={activeTheme}
+            courses={courses}
+            onAddCourse={onAddCourse}
             onHide={onHide} onArchive={onArchive} onRestore={onRestore}
             onEditTags={onEditTags}
             onEditTopics={onEditTopics ?? (() => {})}
@@ -978,6 +1130,8 @@ export function ManageLectureCard({
             showVisibility={ctxMenu.showVisibility}
             isArchived={lecture.settings.archived}
             isHidden={!lecture.settings.visible}
+            courses={courses}
+            onAddCourse={onAddCourse}
             onChangeCourse={handleChangeCourse} onChangeColor={handleChangeColor}
             onHide={onHide} onArchive={onArchive} onRestore={onRestore}
             onClose={() => setCtxMenu(null)}

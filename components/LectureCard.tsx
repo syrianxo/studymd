@@ -29,14 +29,20 @@ function getThemeColors(theme: string): string[] {
   return THEME_COLORS[theme] ?? THEME_COLORS.midnight;
 }
 
+type StudyMode = 'learn' | 'practice' | 'review';
+
 interface LectureCardProps {
   lecture: Lecture;
   activeTheme: Theme;
   flashcardProgress: number;
   examProgress: number;
+  studyMode?: StudyMode;
+  /** Called when the card body is clicked — fires the mode-appropriate action */
+  onStudyAction?: () => void;
   onOpen: () => void;
   onFlashcards: () => void;
   onExam: () => void;
+  onReview?: () => void;
   onChangeCourse?: (course: Course) => void;
   onChangeColor?: (color: string) => void;
   onHide?: () => void;
@@ -45,7 +51,8 @@ interface LectureCardProps {
 
 export default function LectureCard({
   lecture, activeTheme, flashcardProgress, examProgress,
-  onOpen, onFlashcards, onExam,
+  studyMode = 'learn',
+  onStudyAction, onOpen, onFlashcards, onExam, onReview,
   onChangeCourse, onChangeColor, onHide, onArchive,
 }: LectureCardProps) {
   // Optimistic local color — avoids jarring flicker from parent refetch()
@@ -89,12 +96,12 @@ export default function LectureCard({
       <div
         className="smd-lecture-card"
         style={{ '--card-color': color } as React.CSSProperties}
-        onClick={onOpen}
+        onClick={onStudyAction ?? onOpen}
         onContextMenu={handleCtx}
         role="button"
         tabIndex={0}
         onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen(); }
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); (onStudyAction ?? onOpen)(); }
         }}
       >
         <div className="smd-card-summary">
@@ -135,13 +142,29 @@ export default function LectureCard({
             </div>
           </div>
 
-          {/* Quick-access study buttons */}
+          {/* Primary study button — label changes with mode */}
           <div className="smd-card-actions">
-            <button className="btn btn-flash" onClick={(e) => { e.stopPropagation(); onFlashcards(); }}>
-              📇 Flashcards
-            </button>
-            <button className="btn btn-exam" onClick={(e) => { e.stopPropagation(); onExam(); }}>
-              📝 Exam
+            {studyMode === 'review' ? (
+              <button className="btn btn-flash" onClick={(e) => { e.stopPropagation(); onReview?.(); }}>
+                📋 Review Slides
+              </button>
+            ) : studyMode === 'practice' ? (
+              <button className="btn btn-exam" onClick={(e) => { e.stopPropagation(); onExam(); }}>
+                📝 Practice Exam
+              </button>
+            ) : (
+              <button className="btn btn-flash" onClick={(e) => { e.stopPropagation(); onFlashcards(); }}>
+                📇 Flashcards
+              </button>
+            )}
+            {/* Detail button — always opens the lecture view modal */}
+            <button
+              className="btn btn-details"
+              title="View lecture details"
+              aria-label="Lecture details"
+              onClick={(e) => { e.stopPropagation(); onOpen(); }}
+            >
+              ⋯
             </button>
           </div>
         </div>
@@ -262,6 +285,23 @@ const cardExtraCss = `
 }
 .smd-card-progress-row { display: flex; gap: 12px; }
 .smd-card-progress-col { flex: 1; min-width: 0; }
+/* Details ⋯ button — compact, no label text */
+.btn-details {
+  flex-shrink: 0;
+  padding: 0 10px;
+  border: 1.5px solid var(--border, rgba(255,255,255,.1));
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 140ms, border-color 140ms;
+  min-height: 32px;
+  display: grid;
+  place-items: center;
+}
+.btn-details:hover { background: var(--surface2); border-color: var(--accent); color: var(--text); }
 `;
 
 const ctxCss = `
