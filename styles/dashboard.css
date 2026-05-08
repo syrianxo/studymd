@@ -538,7 +538,10 @@ body::before {
 
 .smd-card-actions {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* Primary action (Review/Flashcards/Exam) takes all available width;
+     kebab "details" button is intrinsic-sized — looks like a true
+     options-expansion button, not a co-equal action. */
+  grid-template-columns: 1fr auto;
   gap: 8px;
 }
 

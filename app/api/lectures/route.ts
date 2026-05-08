@@ -12,7 +12,9 @@ interface LectureRow {
   title: string;
   subtitle: string | null;
   course: string;
-  color: string;
+  // Per-theme color map (JSONB). lectures.color was dropped (ADR-023);
+  // theme_colors replaced it.
+  theme_colors: Record<string, string> | null;
   icon: string;
   topics: unknown[];
   slide_count: number;
@@ -26,7 +28,9 @@ interface SettingsRow {
   group_id: string | null;
   tags: string[];
   course_override: string | null;
-  color_override: string | null;
+  // user_lecture_settings.color_override is JSONB (per-theme map). The
+  // legacy text variant is preserved separately as color_override_legacy.
+  color_override: Record<string, string> | null;
   custom_title: string | null;
 }
 
@@ -65,12 +69,25 @@ function applyOverrides(row: JoinedRow) {
     custom_title: null,
   };
 
+  // Back-compat: legacy consumers (TodaysPlanWidget, plans/page.tsx) read a
+  // single `color` string. Resolve it from the per-theme maps using a default
+  // theme so they keep working unchanged. Theme-aware consumers can use
+  // `themeColors` + `colorOverride` directly.
+  const DEFAULT_THEME = 'midnight';
+  const resolvedColor =
+    settings.color_override?.[DEFAULT_THEME] ??
+    row.theme_colors?.[DEFAULT_THEME] ??
+    null;
+
   return {
     internalId: row.internal_id,
     title: settings.custom_title ?? row.title,
     subtitle: row.subtitle,
     course: settings.course_override ?? row.course,
-    color: settings.color_override ?? row.color,
+    color: resolvedColor,
+    // Per-theme JSONB maps; theme-aware consumers resolve themselves.
+    themeColors: row.theme_colors,
+    colorOverride: settings.color_override,
     icon: row.icon,
     topics: row.topics,
     slideCount: row.slide_count,
@@ -117,7 +134,7 @@ export async function GET(_req: NextRequest) {
       title,
       subtitle,
       course,
-      color,
+      theme_colors,
       icon,
       topics,
       slide_count,

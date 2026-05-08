@@ -28,6 +28,12 @@ import {
   FILES_API_BETA_HEADER,
 } from '@/lib/anthropic-client';
 import { buildSystemWithCache } from '@/lib/lecture-processor-prompt';
+import {
+  buildMetadataPrompt,
+  buildFlashcardsPrompt,
+  buildQuestionsPrompt,
+  asCacheableSystem,
+} from '@/lib/lecture-processor-prompts-split';
 import { validateLecture } from '@/lib/validate-lecture';
 import type { LectureJSON } from '@/lib/lecture-schema';
 import { buildLectureOutputConfig } from '@/lib/lecture-schema';
@@ -304,6 +310,189 @@ async function callClaudeAPI(
   return { lectureJson, inputTokens, outputTokens, model };
 }
 
+// ─── Split-phase generation (metadata → parallel flashcards + questions) ────
+// Splits the single big call into three smaller ones to:
+//  1. Eliminate Haiku→Sonnet truncation fallback (each phase fits in 16k out)
+//  2. Run flashcards + questions in parallel (≈½ the wall-clock time)
+//  3. Reuse the same system prompt across phases via prompt caching so the
+//     repeated rules block doesn't get billed at full input rate three times.
+//
+// Returns the combined LectureJSON in the same shape callClaudeAPI does.
+
+interface PhaseCallInput {
+  client: Anthropic;
+  fileBase64: string | null;
+  slideText: string | null;
+  anthropicFileId: string | null;
+  internalId: string;
+  course: string;
+  title: string;
+  model: string;
+}
+
+/** Build the user content block: document/text + a phase-specific suffix. */
+function buildUserContent(
+  fileBase64: string | null,
+  slideText: string | null,
+  anthropicFileId: string | null,
+  trailingInstruction: string,
+): unknown[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const userContent: any[] = [];
+
+  if (anthropicFileId) {
+    userContent.push({
+      type: 'document',
+      source: { type: 'file', file_id: anthropicFileId },
+      // Cache the document so phase 2 + 3 read it instead of re-billing it.
+      cache_control: { type: 'ephemeral' },
+    });
+  } else if (fileBase64) {
+    userContent.push({
+      type: 'document',
+      source: { type: 'base64', media_type: 'application/pdf', data: fileBase64 },
+      cache_control: { type: 'ephemeral' },
+    });
+  } else if (slideText) {
+    userContent.push({
+      type: 'text',
+      text: slideText,
+      cache_control: { type: 'ephemeral' },
+    });
+  } else {
+    throw new Error('No file content provided to Claude.');
+  }
+
+  userContent.push({ type: 'text', text: trailingInstruction });
+  return userContent;
+}
+
+/** Run a single phase call. Streams + finalMessage(). */
+async function runPhase(
+  input: PhaseCallInput,
+  systemPrompt: string,
+  trailingInstruction: string,
+  maxOutputTokens: number,
+): Promise<{ parsed: Record<string, unknown>; inputTokens: number; outputTokens: number }> {
+  const { client, fileBase64, slideText, anthropicFileId, model } = input;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const params: any = {
+    model,
+    max_tokens: maxOutputTokens,
+    system: asCacheableSystem(systemPrompt),
+    messages: [
+      {
+        role: 'user',
+        content: buildUserContent(fileBase64, slideText, anthropicFileId, trailingInstruction),
+      },
+    ],
+  };
+
+  const stream = anthropicFileId
+    ? client.beta.messages.stream(params, { headers: { 'anthropic-beta': FILES_API_BETA_HEADER } })
+    : client.messages.stream(params);
+  const response = await stream.finalMessage();
+
+  const inputTokens  = response.usage?.input_tokens  ?? 0;
+  const outputTokens = response.usage?.output_tokens ?? 0;
+
+  if (response.stop_reason === 'max_tokens') {
+    throw new Error(`Phase output truncated at max_tokens (${maxOutputTokens}). Lecture may be too dense.`);
+  }
+
+  const textBlock = (response.content as Array<{ type: string; text?: string }>)
+    .find((b) => b.type === 'text');
+  if (!textBlock || textBlock.type !== 'text' || !textBlock.text) {
+    throw new Error('Phase returned no text content.');
+  }
+
+  const rawText = textBlock.text
+    .replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/\s*```$/i, '').trim();
+  const firstBrace = rawText.indexOf('{');
+  const lastBrace  = rawText.lastIndexOf('}');
+  const jsonStr = (firstBrace !== -1 && lastBrace > firstBrace)
+    ? rawText.slice(firstBrace, lastBrace + 1)
+    : rawText;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(jsonStr);
+  } catch (e) {
+    throw new Error(
+      `Phase response was not valid JSON: ${(e as Error).message}. First 300 chars: ${jsonStr.slice(0, 300)}`
+    );
+  }
+
+  return {
+    parsed: parsed as Record<string, unknown>,
+    inputTokens,
+    outputTokens,
+  };
+}
+
+/**
+ * Generate the full lecture JSON by splitting into 3 phases.
+ * Returns the same shape as callClaudeAPI for drop-in compatibility.
+ */
+async function callClaudeAPISplit(
+  input: PhaseCallInput,
+): Promise<ClaudeCallResult> {
+  // Phase 1 — metadata + topics (small, fast). Blocking: phases 2 and 3 need topics.
+  const metaPhase = await runPhase(
+    input,
+    buildMetadataPrompt(),
+    `Process the above lecture content as lecture ${input.internalId} for course "${input.course}". Title: "${input.title}". Generate ONLY the metadata + topics JSON as specified.`,
+    2000,
+  );
+
+  const meta = metaPhase.parsed as {
+    lecture_id?: string; course?: string; title?: string;
+    summary?: string; topics?: string[];
+  };
+
+  if (!Array.isArray(meta.topics) || meta.topics.length < 1) {
+    throw new Error('Metadata phase did not produce a topics list.');
+  }
+
+  // Phase 2 + 3 — flashcards and questions in parallel, both with known topics.
+  // Output budgets are sized so a dense lecture (≥41 slides) fits.
+  const [flashPhase, questionsPhase] = await Promise.all([
+    runPhase(
+      input,
+      buildFlashcardsPrompt(meta.topics),
+      `Generate flashcards for lecture ${input.internalId}.`,
+      MODEL_MAX_OUTPUT[input.model] ?? API_LIMITS.MAX_OUTPUT_TOKENS,
+    ),
+    runPhase(
+      input,
+      buildQuestionsPrompt(meta.topics),
+      `Generate questions for lecture ${input.internalId}.`,
+      MODEL_MAX_OUTPUT[input.model] ?? API_LIMITS.MAX_OUTPUT_TOKENS,
+    ),
+  ]);
+
+  const flashcards = (flashPhase.parsed.flashcards as unknown[]) ?? [];
+  const questions  = (questionsPhase.parsed.questions  as unknown[]) ?? [];
+
+  const lectureJson = {
+    lecture_id: input.internalId,
+    course:     input.course,
+    title:      input.title,
+    summary:    meta.summary ?? '',
+    topics:     meta.topics,
+    flashcards,
+    questions,
+  } as unknown as LectureJSON;
+
+  return {
+    lectureJson,
+    inputTokens:  metaPhase.inputTokens  + flashPhase.inputTokens  + questionsPhase.inputTokens,
+    outputTokens: metaPhase.outputTokens + flashPhase.outputTokens + questionsPhase.outputTokens,
+    model:        input.model,
+  };
+}
+
 // ─── Job data type ────────────────────────────────────────────────────────────
 
 export interface ProcessingJobData {
@@ -493,86 +682,70 @@ export async function runProcessingJob(
     }
   }
 
-  // ── Stage: generate flashcards ─────────────────────────────────────────────
-  await updateProgress(supabase, jobId, 'generating_flashcards', 'Generating flashcards with Claude (Haiku 4.5)…', 'generating');
+  // ── Stage: generate (split into 3 phases — metadata, then parallel
+  //          flashcards + questions) ────────────────────────────────────────
+  // The split path eliminates the Haiku→Sonnet "output truncated" fallback
+  // (each phase fits in 16k) and runs the bulk of the work (phases 2+3) in
+  // parallel, halving wall-clock time for dense lectures. See
+  // lib/lecture-processor-prompts-split.ts for the per-phase prompts.
+  await updateProgress(supabase, jobId, 'generating_flashcards', 'Generating with Claude (Haiku 4.5, parallel phases)…', 'generating');
 
   let result: ClaudeCallResult;
   let firstAttemptErrors: string[] = [];
   let usedFallback = false;
 
+  const phaseInput: PhaseCallInput = {
+    client:           anthropic,
+    fileBase64,
+    slideText,
+    anthropicFileId,
+    internalId,
+    course:           job.course,
+    title:            job.title,
+    model:            API_LIMITS.MODEL_DEFAULT,
+  };
+
   try {
-    result = await callClaudeAPI(
-      anthropic, fileBase64, slideText, anthropicFileId, internalId, job.course, job.title, API_LIMITS.MODEL_DEFAULT
-    );
+    result = await callClaudeAPISplit(phaseInput);
 
     await updateProgress(supabase, jobId, 'validating', 'Validating structured output…');
 
-    // Detect truncation before repair/validate — a truncated response has no
-    // usable content and will always fail with misleading "missing field" errors.
-    const isTruncated = (result.lectureJson as unknown as Record<string, unknown>)._truncated === true;
+    // Repair minor omissions before validating.
+    result.lectureJson = repairLectureOutput(result.lectureJson);
 
-    if (isTruncated) {
-      firstAttemptErrors = ['Output was truncated (max_tokens reached).'];
-      console.warn(`[job-runner] ${API_LIMITS.MODEL_DEFAULT} output truncated. Retrying with ${API_LIMITS.MODEL_FALLBACK}…`);
-      await recordApiUsage(supabase, result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED);
-      await updateProgress(supabase, jobId, 'generating_questions', `Output too large for Haiku — retrying with ${API_LIMITS.MODEL_FALLBACK}…`);
-      usedFallback = true;
-      const fallback = await callClaudeAPI(
-        anthropic, fileBase64, slideText, anthropicFileId, internalId, job.course, job.title, API_LIMITS.MODEL_FALLBACK
+    const validation = validateLecture(result.lectureJson);
+    if (!validation.valid) {
+      firstAttemptErrors = validation.errors;
+      console.warn(
+        `[job-runner] ${API_LIMITS.MODEL_DEFAULT} split-validation failed (${validation.errors.length} errors). ` +
+        `Retrying full lecture with ${API_LIMITS.MODEL_FALLBACK}…`
       );
-      const fallbackTruncated = (fallback.lectureJson as unknown as Record<string, unknown>)._truncated === true;
-      if (fallbackTruncated) {
-        const msg = 'Lecture is too large to process — output exceeded the maximum token limit for both models. Try splitting the lecture into smaller sections.';
-        await recordApiUsage(supabase, fallback.model, fallback.inputTokens, fallback.outputTokens, API_LIMITS.BATCH_API_ENABLED);
-        await markJobError(supabase, jobId, msg);
-        throw new Error(msg);
-      }
+      await recordApiUsage(supabase, result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED);
+
+      await updateProgress(supabase, jobId, 'generating_questions', `Retrying with ${API_LIMITS.MODEL_FALLBACK}…`);
+      usedFallback = true;
+
+      // Sonnet fallback also uses split path. It's higher-quality + larger
+      // output budget so this almost always succeeds when Haiku didn't.
+      const fallback = await callClaudeAPISplit({
+        ...phaseInput,
+        model: API_LIMITS.MODEL_FALLBACK,
+      });
       fallback.lectureJson = repairLectureOutput(fallback.lectureJson);
       const fallbackValidation = validateLecture(fallback.lectureJson);
+
       if (!fallbackValidation.valid) {
-        // Both passed the not-truncated check above, so this is a content
-        // failure — Sonnet generated something invalid even with full budget.
-        const msg = `Sonnet output invalid after truncation retry. Errors: ${fallbackValidation.errors.slice(0, 5).join('; ')}`;
+        const msg = `Both models produced invalid output. Errors: ${fallbackValidation.errors.slice(0, 5).join('; ')}`;
         await recordApiUsage(supabase, fallback.model, fallback.inputTokens, fallback.outputTokens, API_LIMITS.BATCH_API_ENABLED);
         await markJobError(supabase, jobId, msg);
         throw new Error(msg);
       }
       result = fallback;
-    } else {
-      // Repair minor omissions (e.g. missing explanation fields) before validating
-      // so they don't needlessly trigger the Sonnet fallback.
-      result.lectureJson = repairLectureOutput(result.lectureJson);
-
-      const validation = validateLecture(result.lectureJson);
-      if (!validation.valid) {
-        firstAttemptErrors = validation.errors;
-        console.warn(
-          `[job-runner] ${API_LIMITS.MODEL_DEFAULT} validation failed (${validation.errors.length} errors). ` +
-          `Retrying with ${API_LIMITS.MODEL_FALLBACK}…`
-        );
-        await recordApiUsage(supabase, result.model, result.inputTokens, result.outputTokens, API_LIMITS.BATCH_API_ENABLED);
-
-        await updateProgress(supabase, jobId, 'generating_questions', `Retrying with ${API_LIMITS.MODEL_FALLBACK}…`);
-        usedFallback = true;
-        const fallback = await callClaudeAPI(
-          anthropic, fileBase64, slideText, anthropicFileId, internalId, job.course, job.title, API_LIMITS.MODEL_FALLBACK
-        );
-        fallback.lectureJson = repairLectureOutput(fallback.lectureJson);
-        const fallbackValidation = validateLecture(fallback.lectureJson);
-
-        if (!fallbackValidation.valid) {
-          const msg = `Both models produced invalid output. Errors: ${fallbackValidation.errors.slice(0, 5).join('; ')}`;
-          await recordApiUsage(supabase, fallback.model, fallback.inputTokens, fallback.outputTokens, API_LIMITS.BATCH_API_ENABLED);
-          await markJobError(supabase, jobId, msg);
-          throw new Error(msg);
-        }
-        result = fallback;
-      }
     }
   } catch (err) {
     const msg = (err as Error).message;
     // These prefixes indicate markJobError was already called — don't double-wrap.
-    const alreadyHandled = ['Both models', 'Lecture is too large', 'Sonnet output invalid', 'Output exceeded'];
+    const alreadyHandled = ['Both models', 'Lecture is too large', 'Sonnet output invalid'];
     if (!alreadyHandled.some((prefix) => msg.startsWith(prefix))) {
       const wrapped = `Claude API error: ${msg}`;
       await markJobError(supabase, jobId, wrapped);

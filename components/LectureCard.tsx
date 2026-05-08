@@ -285,19 +285,22 @@ const cardExtraCss = `
 }
 .smd-card-progress-row { display: flex; gap: 12px; }
 .smd-card-progress-col { flex: 1; min-width: 0; }
-/* Details ⋯ button — compact, no label text */
+/* Details ⋯ button — compact, square; sits next to the primary action.
+   Sized as an icon button so the primary Review/Flashcards/Exam button
+   gets the bulk of the card width (grid-template-columns: 1fr auto). */
 .btn-details {
   flex-shrink: 0;
-  padding: 0 10px;
+  width: 36px;
+  padding: 0;
   border: 1.5px solid var(--border, rgba(255,255,255,.1));
   border-radius: 8px;
   background: transparent;
   color: var(--text-muted);
-  font-size: 16px;
+  font-size: 18px;
   line-height: 1;
   cursor: pointer;
   transition: background 140ms, border-color 140ms;
-  min-height: 32px;
+  min-height: 36px;
   display: grid;
   place-items: center;
 }
